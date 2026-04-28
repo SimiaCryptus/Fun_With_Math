@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Symmetry Diffusion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="sidebar">
+      <h2>Symmetry Diffusion</h2>
+
+      <section class="panel">
+        <h3>Drawing Tools</h3>
+        <div id="tool-buttons">
+          <button class="tool-btn active" data-tool="draw">✏️ Draw</button>
+          <button class="tool-btn" data-tool="erase">🧹 Erase</button>
+          <button class="tool-btn" data-tool="fill">🪣 Fill</button>
+        </div>
+        <div id="color-row">
+          <label>Color: <input type="color" id="color-picker" value="#ff4444"></label>
+          <label>Size: <input type="range" id="brush-size" min="1" max="10" value="2"></label>
+          <span id="brush-size-val">2</span>
+        </div>
+        <div id="palette">
+          <div class="swatch" style="background:#ff4444" data-color="#ff4444"></div>
+          <div class="swatch" style="background:#44aaff" data-color="#44aaff"></div>
+          <div class="swatch" style="background:#44ff88" data-color="#44ff88"></div>
+          <div class="swatch" style="background:#ffdd44" data-color="#ffdd44"></div>
+          <div class="swatch" style="background:#ff44ff" data-color="#ff44ff"></div>
+          <div class="swatch" style="background:#44ffff" data-color="#44ffff"></div>
+          <div class="swatch" style="background:#ffffff" data-color="#ffffff"></div>
+          <div class="swatch" style="background:#000000" data-color="#000000"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3>Symmetry</h3>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-translation-x"> Translation X (wrap)
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-translation-y"> Translation Y (wrap)
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-mirror-x"> Mirror X
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-mirror-y"> Mirror Y
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-rot180"> Rotation 180°
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-rot90"> Rotation 90° (×4)
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-rot60"> Rotation 60° (×6)
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-rot30"> Rotation 30° (×12)
+        </label>
+        <label class="toggle-row">
+          <input type="checkbox" id="sym-diagonal"> Diagonal Mirror
+        </label>
+      </section>
+
+      <section class="panel">
+        <h3>Diffusion</h3>
+        <label>Rate:
+          <input type="range" id="diff-rate" min="0" max="100" value="30">
+          <span id="diff-rate-val">0.30</span>
+        </label>
+        <label>Renorm:
+          <input type="range" id="diff-renorm" min="0" max="100" value="100">
+          <span id="diff-renorm-val">1.0</span>
+        </label>
+        <label>Neighborhood:
+          <select id="diff-neighborhood">
+            <option value="4" selected>4-connected</option>
+            <option value="8">8-connected</option>
+            <option value="12">12-radius</option>
+          </select>
+        </label>
+        <div id="diff-controls">
+          <button id="btn-step">Step</button>
+          <button id="btn-play">▶ Play</button>
+          <button id="btn-stop">⏹ Stop</button>
+        </div>
+        <label>Speed:
+          <input type="range" id="diff-speed" min="1" max="120" value="15">
+          <span id="diff-speed-val">15</span> fps
+        </label>
+      </section>
+
+      <section class="panel">
+        <h3>Canvas</h3>
+        <label>Grid:
+          <select id="grid-size">
+            <option value="32">32</option>
+            <option value="64" selected>64</option>
+            <option value="128">128</option>
+            <option value="256">256</option>
+          </select>
+          (base width)
+        </label>
+        <label>Aspect W/H:
+          <input type="range" id="aspect-ratio" min="25" max="400" value="100">
+          <span id="aspect-ratio-val">1.00</span>
+        </label>
+        <div id="canvas-controls">
+          <button id="btn-clear">Clear</button>
+          <button id="btn-random">Random</button>
+          <button id="btn-save">Save PNG</button>
+        </div>
+        <label class="toggle-row">
+          <input type="checkbox" id="show-grid"> Show Grid
+        </label>
+      </section>
+
+      <section class="panel" id="info-panel">
+        <h3>Info</h3>
+        <div id="info-text">Hover over canvas</div>
+      </section>
+    </div>
+
+    <div id="canvas-area">
+      <canvas id="main-canvas"></canvas>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

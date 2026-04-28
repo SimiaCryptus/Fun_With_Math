@@ -1,114 +1,328 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Fun With Math – interactive mathematical experiments and visualizations in your browser." />
-  <title>Fun With Math</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <style>
-    .hero {
-      text-align: center;
-      padding: 5rem 1.5rem 3rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(88,166,255,.12), transparent);
-      pointer-events: none;
-    }
-    .hero h1 {
-      font-size: clamp(2.5rem, 7vw, 4.5rem);
-      background: linear-gradient(135deg, #58a6ff 30%, #bc8cff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 1rem;
-      line-height: 1.1;
-    }
-    .hero p {
-      color: var(--text-muted);
-      font-size: 1.15rem;
-      max-width: 560px;
-      margin: 0 auto 2rem;
-    }
-    .hero-badge {
-      display: inline-block;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: .35rem 1rem;
-      font-size: .8rem;
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-      background: rgba(255,255,255,.03);
-    }
-    .section-title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      padding: 0 1.5rem;
-      max-width: 1100px;
-      margin: 1rem auto 0;
-      color: var(--text);
-    }
-    .section-title span { color: var(--text-muted); font-weight: 400; font-size: 1rem; }
-  </style>
-</head>
-<body>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="description" content="Fun With Math – interactive mathematical experiments and visualizations in your browser." />
+      <title>Fun With Math</title>
+      <link rel="stylesheet" href="css/style.css" />
+      <script src="js/marked.min.js"></script>
+      <style>
+        .hero {
+          text-align: center;
+          padding: 5rem 1.5rem 3rem;
+          position: relative;
+          overflow: hidden;
+        }
+        .hero::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(88,166,255,.12), transparent);
+          pointer-events: none;
+        }
+        .hero h1 {
+          font-size: clamp(2.5rem, 7vw, 4.5rem);
+          background: linear-gradient(135deg, #58a6ff 30%, #bc8cff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 1rem;
+          line-height: 1.1;
+        }
+        .hero p {
+          color: var(--text-muted);
+          font-size: 1.15rem;
+          max-width: 560px;
+          margin: 0 auto 2rem;
+        }
+        .hero-badge {
+          display: inline-block;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          padding: .35rem 1rem;
+          font-size: .8rem;
+          color: var(--text-muted);
+          margin-bottom: 1.5rem;
+          background: rgba(255,255,255,.03);
+        }
+        .section-title {
+          font-size: 1.6rem;
+          font-weight: 700;
+          padding: 0 1.5rem;
+          max-width: 1100px;
+          margin: 2.5rem auto .5rem;
+          color: var(--text);
+        }
+        .section-title span { color: var(--text-muted); font-weight: 400; font-size: 1rem; }
+        .section-subtitle {
+          color: var(--text-muted);
+          padding: 0 1.5rem;
+          max-width: 1100px;
+          margin: 0 auto 1rem;
+          font-size: .95rem;
+        }
 
-<nav>
-  <a class="brand" href="index.html">∑ Fun With Math</a>
-  <span class="spacer"></span>
-  <a href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub ↗</a>
-</nav>
+        /* Featured experiment cards (with README preview) */
+        .featured-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 1rem 1.5rem;
+        }
+        .featured-card {
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          overflow: hidden;
+          display: grid;
+          grid-template-columns: 1fr;
+          transition: border-color .25s, box-shadow .25s, transform .25s;
+          color: var(--text);
+          text-decoration: none;
+        }
+        .featured-card:hover {
+          border-color: var(--accent);
+          box-shadow: var(--shadow);
+          transform: translateY(-2px);
+        }
+        .featured-card-header {
+          padding: 1.5rem 1.75rem 1rem;
+          border-bottom: 1px solid var(--border);
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        .featured-card-icon { font-size: 2.5rem; line-height: 1; }
+        .featured-card-title {
+          font-size: 1.4rem;
+          color: var(--accent);
+          margin: 0;
+          flex: 1;
+          min-width: 200px;
+        }
+        .featured-card-launch {
+          background: var(--accent);
+          color: #0d1117;
+          padding: .5rem 1.1rem;
+          border-radius: 6px;
+          font-weight: 600;
+          font-size: .9rem;
+          white-space: nowrap;
+        }
+        .readme-preview {
+          padding: 1.25rem 1.75rem 1.5rem;
+          font-size: .92rem;
+          color: var(--text-muted);
+          line-height: 1.7;
+          max-height: 380px;
+          overflow: hidden;
+          position: relative;
+        }
+        .readme-preview::after {
+          content: '';
+          position: absolute;
+          left: 0; right: 0; bottom: 0;
+          height: 90px;
+          background: linear-gradient(to bottom, transparent, var(--surface));
+          pointer-events: none;
+        }
+        .readme-preview h1,
+        .readme-preview h2,
+        .readme-preview h3 {
+          color: var(--text);
+          margin: 1rem 0 .5rem;
+          line-height: 1.3;
+        }
+        .readme-preview h1 { font-size: 1.25rem; color: var(--accent2); }
+        .readme-preview h2 { font-size: 1.1rem; }
+        .readme-preview h3 { font-size: 1rem; }
+        .readme-preview p { margin: .5rem 0; }
+        .readme-preview ul, .readme-preview ol {
+          margin: .5rem 0 .5rem 1.4rem;
+        }
+        .readme-preview code {
+          background: rgba(255,255,255,.06);
+          padding: .1em .35em;
+          border-radius: 4px;
+          font-family: 'Fira Code', Consolas, monospace;
+          font-size: .85em;
+          color: var(--accent2);
+        }
+        .readme-preview pre {
+          background: rgba(0,0,0,.35);
+          border: 1px solid var(--border);
+          padding: .75rem;
+          border-radius: 6px;
+          overflow-x: auto;
+          margin: .75rem 0;
+        }
+        .readme-preview pre code {
+          background: none;
+          padding: 0;
+          color: var(--text);
+        }
+        .readme-preview blockquote {
+          border-left: 3px solid var(--accent);
+          padding-left: 1rem;
+          color: var(--text-muted);
+          margin: .75rem 0;
+        }
+        .readme-preview a { color: var(--accent); }
+        .readme-preview img { max-width: 100%; border-radius: 6px; }
+        .readme-loading {
+          color: var(--text-muted);
+          font-style: italic;
+          padding: .5rem 0;
+        }
+      </style>
+    </head>
+    <body>
 
-<section class="hero">
-  <div class="hero-badge">✨ Interactive experiments, no install required</div>
-  <h1>Fun With Math</h1>
-  <p>Explore beautiful mathematical concepts through interactive visualizations—all running live in your browser.</p>
-</section>
+    <nav>
+      <a class="brand" href="index.html">∑ Fun With Math</a>
+      <span class="spacer"></span>
+      <a href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub ↗</a>
+    </nav>
 
-<p class="section-title">Experiments <span>— click any card to explore</span></p>
+    <section class="hero">
+      <div class="hero-badge">✨ Interactive experiments, no install required</div>
+      <h1>Fun With Math</h1>
+      <p>Explore beautiful mathematical concepts through interactive visualizations—all running live in your browser.</p>
+    </section>
 
-<div class="card-grid">
+    <p class="section-title">Featured Labs <span>— research-grade experiments</span></p>
+    <p class="section-subtitle">Long-form interactive labs, each with a deep README explaining the math, motivation, and methods.</p>
 
-  <a class="card" href="experiments/mandelbrot.html">
-    <div class="card-icon">🌀</div>
-    <h2>Mandelbrot Set</h2>
-    <p>Dive into the iconic fractal boundary of the complex plane. Zoom and pan to reveal infinite self-similar detail.</p>
-    <span class="tag">Complex Numbers</span>
-  </a>
+    <div class="featured-grid" id="featuredGrid">
 
-  <a class="card" href="experiments/primes.html">
-    <div class="card-icon">🔢</div>
-    <h2>Prime Number Sieve</h2>
-    <p>Watch the Sieve of Eratosthenes strike out composites in real time, leaving only primes behind.</p>
-    <span class="tag">Number Theory</span>
-  </a>
+      <a class="featured-card" href="experiments/symmetry_simple/index.html" data-readme="experiments/symmetry_simple/README.md">
+        <div class="featured-card-header">
+          <div class="featured-card-icon">🔷</div>
+          <h2 class="featured-card-title">Space-Color Symmetry</h2>
+          <span class="featured-card-launch">Launch Lab →</span>
+        </div>
+        <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
+      </a>
 
-  <a class="card" href="experiments/fourier.html">
-    <div class="card-icon">〰️</div>
-    <h2>Fourier Series</h2>
-    <p>Build any periodic waveform from spinning circles. See how harmonics add up to approximate complex shapes.</p>
-    <span class="tag">Calculus · Signals</span>
-  </a>
+      <a class="featured-card" href="experiments/geometric-entropy/index.html" data-readme="experiments/geometric-entropy/README.md">
+        <div class="featured-card-header">
+          <div class="featured-card-icon">🌌</div>
+          <h2 class="featured-card-title">Geometric Entropy</h2>
+          <span class="featured-card-launch">Launch Lab →</span>
+        </div>
+        <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
+      </a>
 
-  <a class="card" href="experiments/collatz.html">
-    <div class="card-icon">📈</div>
-    <h2>Collatz Conjecture</h2>
-    <p>Follow any positive integer through the famous 3n+1 sequence. Will it always reach 1? Nobody knows for sure.</p>
-    <span class="tag">Open Problem</span>
-  </a>
+      <a class="featured-card" href="experiments/spacelike-knots/index.html" data-readme="experiments/spacelike-knots/README.md">
+        <div class="featured-card-header">
+          <div class="featured-card-icon">🪢</div>
+          <h2 class="featured-card-title">Spacelike Knots</h2>
+          <span class="featured-card-launch">Launch Lab →</span>
+        </div>
+        <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
+      </a>
 
-</div>
+    </div>
 
-<footer>
-  <p>Built with plain HTML, CSS &amp; JavaScript &mdash;
-    <a href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">view source on GitHub</a>
-  </p>
-</footer>
+    <p class="section-title">Quick Experiments <span>— bite-size visualizations</span></p>
+    <p class="section-subtitle">Classic mathematical demos to play with in a few seconds.</p>
 
-</body>
-</html>
+    <div class="card-grid">
+
+      <a class="card" href="experiments/basic/mandelbrot.html">
+        <div class="card-icon">🌀</div>
+        <h2>Mandelbrot Set</h2>
+        <p>Dive into the iconic fractal boundary of the complex plane. Zoom and pan to reveal infinite self-similar detail.</p>
+        <span class="tag">Complex Numbers</span>
+      </a>
+
+      <a class="card" href="experiments/basic/primes.html">
+        <div class="card-icon">🔢</div>
+        <h2>Prime Number Sieve</h2>
+        <p>Watch the Sieve of Eratosthenes strike out composites in real time, leaving only primes behind.</p>
+        <span class="tag">Number Theory</span>
+      </a>
+
+      <a class="card" href="experiments/basic/fourier.html">
+        <div class="card-icon">〰️</div>
+        <h2>Fourier Series</h2>
+        <p>Build any periodic waveform from spinning circles. See how harmonics add up to approximate complex shapes.</p>
+        <span class="tag">Calculus · Signals</span>
+      </a>
+
+      <a class="card" href="experiments/basic/collatz.html">
+        <div class="card-icon">📈</div>
+        <h2>Collatz Conjecture</h2>
+        <p>Follow any positive integer through the famous 3n+1 sequence. Will it always reach 1? Nobody knows for sure.</p>
+        <span class="tag">Open Problem</span>
+      </a>
+
+    </div>
+
+    <footer>
+      <p>Built with plain HTML, CSS &amp; JavaScript &mdash;
+        <a href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">view source on GitHub</a>
+      </p>
+    </footer>
+
+    <script>
+      // Configure marked for safety + nice rendering
+      if (window.marked) {
+        marked.setOptions({
+          gfm: true,
+          breaks: false,
+          headerIds: false,
+          mangle: false
+        });
+      }
+
+      // Rewrite relative links/images in rendered README so they resolve from the experiment dir
+      function rewriteRelative(html, baseDir) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        tmp.querySelectorAll('img[src]').forEach(img => {
+          const src = img.getAttribute('src');
+          if (!/^([a-z]+:)?\/\//i.test(src) && !src.startsWith('/') && !src.startsWith('data:')) {
+            img.setAttribute('src', baseDir + src);
+          }
+          img.setAttribute('loading', 'lazy');
+        });
+        tmp.querySelectorAll('a[href]').forEach(a => {
+          const href = a.getAttribute('href');
+          if (!/^([a-z]+:)?\/\//i.test(href) && !href.startsWith('#') && !href.startsWith('/')) {
+            a.setAttribute('href', baseDir + href);
+          }
+          // Prevent inner links from hijacking the card click
+          a.addEventListener('click', e => e.stopPropagation());
+        });
+        return tmp.innerHTML;
+      }
+
+      async function loadReadmes() {
+        const cards = document.querySelectorAll('.featured-card[data-readme]');
+        for (const card of cards) {
+          const path = card.dataset.readme;
+          const baseDir = path.substring(0, path.lastIndexOf('/') + 1);
+          const target = card.querySelector('.readme-preview');
+          try {
+            const res = await fetch(path);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const md = await res.text();
+            const html = marked.parse(md);
+            target.innerHTML = rewriteRelative(html, baseDir);
+          } catch (err) {
+            target.innerHTML = '<p class="readme-loading">Description unavailable. Click to launch the lab.</p>';
+            console.warn('Failed to load README:', path, err);
+          }
+        }
+      }
+
+      loadReadmes();
+    </script>
+
+    </body>
+    </html>
