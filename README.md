@@ -12,7 +12,7 @@ npx serve .
 python -m http.server
 ```
 
-Then navigate to `http://localhost:3000` (or whichever port is shown).
+Then navigate to the URL shown in your terminal (e.g. `http://localhost:3000` for `serve`, `http://localhost:8000` for Python).
 
 ## 🧮 Experiments
 
