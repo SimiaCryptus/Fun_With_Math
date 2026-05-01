@@ -50,20 +50,19 @@
           <input type="checkbox" id="sym-mirror-y"> Mirror Y
         </label>
         <label class="toggle-row">
-          <input type="checkbox" id="sym-rot180"> Rotation 180°
-        </label>
-        <label class="toggle-row">
-          <input type="checkbox" id="sym-rot90"> Rotation 90° (×4)
-        </label>
-        <label class="toggle-row">
-          <input type="checkbox" id="sym-rot60"> Rotation 60° (×6)
-        </label>
-        <label class="toggle-row">
-          <input type="checkbox" id="sym-rot30"> Rotation 30° (×12)
-        </label>
-        <label class="toggle-row">
           <input type="checkbox" id="sym-diagonal"> Diagonal Mirror
         </label>
+       <div class="rot-section">
+         <div class="rot-label">Rotations (each angle independent):</div>
+         <div id="rot-toggles"></div>
+         <div class="rot-actions">
+           <button id="btn-rot-clear" class="mini-btn">None</button>
+           <button id="btn-rot-c4"    class="mini-btn">C4</button>
+           <button id="btn-rot-c6"    class="mini-btn">C6</button>
+           <button id="btn-rot-c8"    class="mini-btn">C8</button>
+           <button id="btn-rot-c12"   class="mini-btn">C12</button>
+         </div>
+       </div>
       </section>
 
       <section class="panel">

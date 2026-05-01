@@ -4,6 +4,9 @@
 
 (function () {
   'use strict';
+   // Available rotation angles (degrees). Each is an independent toggle.
+   const ROT_ANGLES = [15, 30, 45, 60, 72, 90, 120, 135, 144, 180, 225, 270];
+
 
   // ── State ──────────────────────────────────
   let GRID_W = 64;
@@ -37,13 +40,12 @@
       translationY: false,
       mirrorX: false,
       mirrorY: false,
-      rot180: false,
-      rot90: false,
-      rot60: false,
-      rot30: false,
       diagonal: false,
+       // Per-angle rotation toggles, keyed by integer degree
+       rotations: {},
     },
   };
+   for (const a of ROT_ANGLES) state.symmetry.rotations[a] = false;
 
   let animHandle = null;
   let lastFrameTime = 0;
@@ -151,29 +153,22 @@
     if (sym.mirrorX)              seeds.push([mx, y]);
     if (sym.mirrorY)              seeds.push([x, my]);
     if (sym.mirrorX && sym.mirrorY) seeds.push([mx, my]);
-   if (sym.rot180)               seeds.push([W - 1 - x, H - 1 - y]);
 
-    if (sym.rot90) {
-      // Rotate (x,y) around centre by 90°, 180°, 270°
-      const dx = x - cx, dy = y - cy;
-     seeds.push([Math.round(cx + dy), Math.round(cy - dx)]);  // +90°  (CCW)
-     seeds.push([Math.round(cx - dx), Math.round(cy - dy)]);  // 180°
-     seeds.push([Math.round(cx - dy), Math.round(cy + dx)]);  // +270° (CCW)
-    }
 
-    if (sym.rot60 || sym.rot30) {
-      const dx = x - cx, dy = y - cy;
-      const steps = sym.rot30 ? 12 : 6;
-      const baseAngle = (2 * Math.PI) / steps;
-      for (let k = 1; k < steps; k++) {
-        const angle = k * baseAngle;
-        const cos = Math.cos(angle), sin = Math.sin(angle);
-        seeds.push([
-          Math.round(cx + dx * cos - dy * sin),
-          Math.round(cy + dx * sin + dy * cos),
-        ]);
-      }
-    }
+
+     // Per-angle rotations: each enabled angle adds a single rotated seed.
+     {
+       const dx = x - cx, dy = y - cy;
+       for (const angDeg of ROT_ANGLES) {
+         if (!sym.rotations[angDeg]) continue;
+         const ang = angDeg * Math.PI / 180;
+         const cos = Math.cos(ang), sin = Math.sin(ang);
+         seeds.push([
+           Math.round(cx + dx * cos - dy * sin),
+           Math.round(cy + dx * sin + dy * cos),
+         ]);
+       }
+     }
 
     if (sym.diagonal) {
       seeds.push([y, x]);
@@ -270,26 +265,19 @@
 
     if (sym.mirrorX) symPeers.push([mx, y]);
     if (sym.mirrorY) symPeers.push([x, my]);
-    if (sym.rot180)  symPeers.push([mx, my]);
-    if (sym.rot90) {
-      const dx = x - cx, dy = y - cy;
-     symPeers.push([cx + dy, cy - dx]);  // +90°  (CCW)
-     symPeers.push([cx - dx, cy - dy]);  // 180°
-     symPeers.push([cx - dy, cy + dx]);  // +270° (CCW)
-    }
-    if (sym.rot60 || sym.rot30) {
-      const dx = x - cx, dy = y - cy;
-      const steps = sym.rot30 ? 12 : 6;
-      const baseAngle = (2 * Math.PI) / steps;
-      for (let k = 1; k < steps; k++) {
-        const angle = k * baseAngle;
-        const cos = Math.cos(angle), sin = Math.sin(angle);
-        symPeers.push([
-         cx + dx * cos - dy * sin,
-         cy + dx * sin + dy * cos,
-        ]);
-      }
-    }
+     // Per-angle rotational symmetry peers
+     {
+       const dx = x - cx, dy = y - cy;
+       for (const angDeg of ROT_ANGLES) {
+         if (!sym.rotations[angDeg]) continue;
+         const ang = angDeg * Math.PI / 180;
+         const cos = Math.cos(ang), sin = Math.sin(ang);
+         symPeers.push([
+           cx + dx * cos - dy * sin,
+           cy + dx * sin + dy * cos,
+         ]);
+       }
+     }
    if (sym.diagonal) symPeers.push([y, x]);   // already integer
    if (sym.diagonal && sym.mirrorX && sym.mirrorY) symPeers.push([my, mx]); // anti-diagonal
    // Helper: add bilinear (nearest-4) weighted connections for a fractional peer position
@@ -662,10 +650,11 @@
    }
    function symmetrySignature() {
      const s = state.symmetry;
+    const rotKey = ROT_ANGLES.map(a => s.rotations[a] ? a : '').join(',');
      return [
        GRID_W, GRID_H, state.neighborhood,
        s.translationX|0, s.translationY|0, s.mirrorX|0, s.mirrorY|0,
-       s.rot180|0, s.rot90|0, s.rot60|0, s.rot30|0, s.diagonal|0,
+      s.diagonal|0, rotKey,
        state.spectralK,
      ].join(':');
    }
@@ -959,10 +948,6 @@
     'sym-translation-y': 'translationY',
     'sym-mirror-x':      'mirrorX',
     'sym-mirror-y':      'mirrorY',
-    'sym-rot180':        'rot180',
-    'sym-rot90':         'rot90',
-    'sym-rot60':         'rot60',
-    'sym-rot30':         'rot30',
     'sym-diagonal':      'diagonal',
   };
   Object.entries(symMap).forEach(([id, key]) => {
@@ -971,6 +956,50 @@
        invalidateSpectral();
     });
   });
+   // Build per-angle rotation toggles
+   const rotContainer = document.getElementById('rot-toggles');
+   const rotCheckboxes = {};
+   for (const angDeg of ROT_ANGLES) {
+     const label = document.createElement('label');
+     label.className = 'rot-toggle';
+     const cb = document.createElement('input');
+     cb.type = 'checkbox';
+     cb.dataset.angle = angDeg;
+     cb.addEventListener('change', () => {
+       state.symmetry.rotations[angDeg] = cb.checked;
+       label.classList.toggle('active', cb.checked);
+       invalidateSpectral();
+     });
+     rotCheckboxes[angDeg] = cb;
+     label.appendChild(cb);
+     const span = document.createElement('span');
+     span.textContent = angDeg + '°';
+     label.appendChild(span);
+     rotContainer.appendChild(label);
+   }
+   function setRotations(anglesSet) {
+     for (const a of ROT_ANGLES) {
+       const on = anglesSet.has(a);
+       state.symmetry.rotations[a] = on;
+       rotCheckboxes[a].checked = on;
+       rotCheckboxes[a].parentElement.classList.toggle('active', on);
+     }
+     invalidateSpectral();
+   }
+   // Preset buttons: cyclic group Cn = rotations by 360/n * k for k=1..n-1
+   function cyclicAngles(n) {
+     const out = new Set();
+     for (let k = 1; k < n; k++) {
+       const a = Math.round(360 * k / n);
+       if (ROT_ANGLES.includes(a)) out.add(a);
+     }
+     return out;
+   }
+   document.getElementById('btn-rot-clear').addEventListener('click', () => setRotations(new Set()));
+   document.getElementById('btn-rot-c4').addEventListener('click',    () => setRotations(cyclicAngles(4)));
+   document.getElementById('btn-rot-c6').addEventListener('click',    () => setRotations(cyclicAngles(6)));
+   document.getElementById('btn-rot-c8').addEventListener('click',    () => setRotations(cyclicAngles(8)));
+   document.getElementById('btn-rot-c12').addEventListener('click',   () => setRotations(cyclicAngles(12)));
 
   // Diffusion controls
   const diffRateSlider = document.getElementById('diff-rate');
