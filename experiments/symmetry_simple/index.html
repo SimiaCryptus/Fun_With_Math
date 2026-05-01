@@ -80,6 +80,26 @@
          </div>
        </div>
       </section>
+      <section class="panel">
+        <h3>Color Permutation</h3>
+        <div style="font-size:11px; opacity:0.7; line-height:1.4; margin-bottom:6px;">
+          Applied across symmetry linkages (mirror / rotation / translation).
+          Negation flips the channel around 0.5.
+        </div>
+        <div id="color-perm-row" style="display:flex; gap:6px; align-items:center;">
+          <label>R'=<select class="perm-sel" data-out="0"></select></label>
+          <label>G'=<select class="perm-sel" data-out="1"></select></label>
+          <label>B'=<select class="perm-sel" data-out="2"></select></label>
+        </div>
+        <div class="rot-actions" style="margin-top:6px;">
+          <button id="btn-perm-id"      class="mini-btn">id</button>
+          <button id="btn-perm-negate"  class="mini-btn">−id</button>
+          <button id="btn-perm-rgb-rot" class="mini-btn">rgb→gbr</button>
+          <button id="btn-perm-swap-rg" class="mini-btn">swap rg</button>
+          <button id="btn-perm-neg-g"   class="mini-btn">r,−g,b</button>
+        </div>
+      </section>
+
 
       <section class="panel">
         <h3>Diffusion</h3>

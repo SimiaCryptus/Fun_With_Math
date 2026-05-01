@@ -42,6 +42,15 @@
     // the smaller grid dimension.
     latticeRadius: 0,    // 0 = auto (min(W,H)/2 - 1)
     latticeCurvature: 1, // scale factor on the metric (k); larger = more curved
+    // Global signed color permutation applied to symmetry-induced linkages.
+    // Each entry is { src: 0|1|2, sign: +1|-1 } meaning the output channel
+    // takes ±(value of source channel). The default identity is r,g,b.
+    // A negated channel means "flipped around 0.5": -c -> 1 - c.
+    colorPerm: [
+      { src: 0, sign: 1 },
+      { src: 1, sign: 1 },
+      { src: 2, sign: 1 },
+    ],
     symmetry: {
       translationX: false,
       translationY: false,
@@ -57,6 +66,65 @@
     },
   };
    for (const a of ROT_ANGLES) state.symmetry.rotations[a] = false;
+  // ── Color-permutation helpers ──────────────
+  // The permutation P is a signed 3x3 monomial matrix acting on RGB values.
+  // Negation is interpreted as flip-around-0.5, so the affine action is:
+  //   out[i] = sign_i * (in[src_i] - 0.5) + 0.5
+  // For composition we work in centered space (value - 0.5).
+  const IDENTITY_PERM = [
+    { src: 0, sign: 1 },
+    { src: 1, sign: 1 },
+    { src: 2, sign: 1 },
+  ];
+  function applyPerm(perm, rgb) {
+    const r = rgb[0] - 0.5, g = rgb[1] - 0.5, b = rgb[2] - 0.5;
+    const c = [r, g, b];
+    return [
+      perm[0].sign * c[perm[0].src] + 0.5,
+      perm[1].sign * c[perm[1].src] + 0.5,
+      perm[2].sign * c[perm[2].src] + 0.5,
+    ];
+  }
+  // Compose perms: (a ∘ b)(x) = a(b(x))
+  function composePerm(a, b) {
+    const out = new Array(3);
+    for (let i = 0; i < 3; i++) {
+      const ai = a[i];
+      const bi = b[ai.src];
+      out[i] = { src: bi.src, sign: ai.sign * bi.sign };
+    }
+    return out;
+  }
+  function permPow(p, k) {
+    let out = IDENTITY_PERM.map(e => ({ ...e }));
+    if (k === 0) return out;
+    const sign = k > 0 ? 1 : -1;
+    const n = Math.abs(k);
+    let base = sign === 1 ? p : invertPerm(p);
+    for (let i = 0; i < n; i++) out = composePerm(out, base);
+    return out;
+  }
+  function invertPerm(p) {
+    const out = new Array(3);
+    for (let i = 0; i < 3; i++) {
+      // p sends src -> i with sign s; inverse sends i -> src with sign s
+      out[p[i].src] = { src: i, sign: p[i].sign };
+    }
+    return out;
+  }
+  function isIdentityPerm(p) {
+    for (let i = 0; i < 3; i++) {
+      if (p[i].src !== i || p[i].sign !== 1) return false;
+    }
+    return true;
+  }
+  // Channel-by-channel application: returns sign and source channel for output `c`.
+  // Used inside hot diffusion loops to avoid array allocation.
+  function permEntry(perm, c) { return perm[c]; }
+  function permSignature(p) {
+    return p.map(e => `${e.sign > 0 ? '+' : '-'}${e.src}`).join(',');
+  }
+
 
   let animHandle = null;
   let lastFrameTime = 0;
@@ -257,7 +325,9 @@
 
   // Returns list of [x,y] mirror positions for a given (x,y)
   function symmetryPositions(x, y) {
-    const positions = new Set();
+    // Returns array of { x, y, perm } where perm is the color permutation to
+    // apply to the source colour before depositing at (x,y).
+    const seen = new Map(); // key "x,y" -> perm (first one wins)
 
     const sym = state.symmetry;
     const W = GRID_W, H = GRID_H;
@@ -268,11 +338,16 @@
     const cx = (W - 1) / 2;
     const cy = (H - 1) / 2;
 
-    const seeds = [[x, y]];
+    // seeds: [px, py, perm] where perm is the permutation applied to the
+    // *source* colour to obtain the colour deposited at (px, py). The
+    // identity seed is (x, y, identity).
+    const P = state.colorPerm;
+    const ID = IDENTITY_PERM;
+    const seeds = [[x, y, ID]];
 
-    if (sym.mirrorX)              seeds.push([mx, y]);
-    if (sym.mirrorY)              seeds.push([x, my]);
-    if (sym.mirrorX && sym.mirrorY) seeds.push([mx, my]);
+    if (sym.mirrorX)               seeds.push([mx, y, P]);
+    if (sym.mirrorY)               seeds.push([x, my, P]);
+    if (sym.mirrorX && sym.mirrorY) seeds.push([mx, my, composePerm(P, P)]);
 
 
 
@@ -286,14 +361,15 @@
          seeds.push([
            Math.round(cx + dx * cos - dy * sin),
            Math.round(cy + dx * sin + dy * cos),
+           P,
          ]);
        }
      }
 
     if (sym.diagonal) {
-      seeds.push([y, x]);
+      seeds.push([y, x, P]);
      // anti-diagonal reflection: (x,y) -> (H-1-y, W-1-x) — only add when both mirrors active
-     if (sym.mirrorX && sym.mirrorY) seeds.push([my, mx]);
+     if (sym.mirrorX && sym.mirrorY) seeds.push([my, mx, composePerm(P, P)]);
     }
     // Lattice translation symmetries (fractional vectors in [0,1]).
     // For each (tx,ty) we add seeds at integer multiples ±k of the vector,
@@ -307,29 +383,43 @@
         if (Math.abs(dxCells) < 1e-6 && Math.abs(dyCells) < 1e-6) continue;
         // Replicate up to a reasonable number of multiples
         const maxK = 8;
-        for (const [bx, by] of baseSeeds) {
+        for (const [bx, by, bp] of baseSeeds) {
           for (let k = 1; k <= maxK; k++) {
-            seeds.push([bx + dxCells * k, by + dyCells * k]);
-            seeds.push([bx - dxCells * k, by - dyCells * k]);
+            seeds.push([bx + dxCells * k, by + dyCells * k, composePerm(bp, permPow(P,  k))]);
+            seeds.push([bx - dxCells * k, by - dyCells * k, composePerm(bp, permPow(P, -k))]);
           }
         }
       }
     }
 
 
-    for (const [sx, sy] of seeds) {
-      addPos(positions, sx, sy);
+    const tryAdd = (sx, sy, perm) => {
+      const ix = Math.round(sx), iy = Math.round(sy);
+      const cxw = state.symmetry.translationX ? wrapX(ix) : ix;
+      const cyw = state.symmetry.translationY ? wrapY(iy) : iy;
+      if (cxw < 0 || cxw >= GRID_W || cyw < 0 || cyw >= GRID_H) return;
+      if (activeMask && !activeMask[cyw * GRID_W + cxw]) return;
+      const key = cxw + ',' + cyw;
+      if (!seen.has(key)) seen.set(key, perm);
+    };
+    for (const [sx, sy, perm] of seeds) {
+      tryAdd(sx, sy, perm);
       if (sym.translationX) {
-        addPos(positions, sx + Math.floor(W / 2), sy);
-        addPos(positions, sx - Math.floor(W / 2), sy);
+        tryAdd(sx + Math.floor(W / 2), sy, perm);
+        tryAdd(sx - Math.floor(W / 2), sy, perm);
       }
       if (sym.translationY) {
-        addPos(positions, sx, sy + Math.floor(H / 2));
-        addPos(positions, sx, sy - Math.floor(H / 2));
+        tryAdd(sx, sy + Math.floor(H / 2), perm);
+        tryAdd(sx, sy - Math.floor(H / 2), perm);
       }
     }
 
-    return [...positions].map(s => s.split(',').map(Number));
+    const result = [];
+    for (const [key, perm] of seen) {
+      const [xs, ys] = key.split(',').map(Number);
+      result.push({ x: xs, y: ys, perm });
+    }
+    return result;
   }
 
   // ── Drawing ────────────────────────────────
@@ -401,7 +491,7 @@
       const dist = latticeDist(x, y, wx, wy);
       if (!isFinite(dist) || dist <= 0) continue;
       const weight = 1 / dist;
-      neighbors.push({ x: wx, y: wy, w: weight });
+      neighbors.push({ x: wx, y: wy, w: weight, perm: IDENTITY_PERM });
     }
 
     // Symmetry-induced extra connections
@@ -410,9 +500,13 @@
     const mx = W - 1 - x, my = H - 1 - y;
     const cx = (W - 1) / 2, cy = (H - 1) / 2;
     const symPeers = [];
+    // Each symPeer is [px, py, perm] — perm is the colour permutation to
+    // apply to the peer's value before it acts on this cell.
+    const P = state.colorPerm;
+    const ID = IDENTITY_PERM;
 
-    if (sym.mirrorX) symPeers.push([mx, y]);
-    if (sym.mirrorY) symPeers.push([x, my]);
+    if (sym.mirrorX) symPeers.push([mx, y, P]);
+    if (sym.mirrorY) symPeers.push([x, my, P]);
      // Per-angle rotational symmetry peers
      {
        const dx = x - cx, dy = y - cy;
@@ -423,11 +517,12 @@
          symPeers.push([
            cx + dx * cos - dy * sin,
            cy + dx * sin + dy * cos,
+           P,
          ]);
        }
      }
-   if (sym.diagonal) symPeers.push([y, x]);   // already integer
-   if (sym.diagonal && sym.mirrorX && sym.mirrorY) symPeers.push([my, mx]); // anti-diagonal
+   if (sym.diagonal) symPeers.push([y, x, P]);   // already integer
+   if (sym.diagonal && sym.mirrorX && sym.mirrorY) symPeers.push([my, mx, composePerm(P, P)]);
    // Lattice translation symmetry peers: ±k * (tx*W, ty*H)
    {
      const latTrans = sym.latticeTranslations || [];
@@ -437,13 +532,13 @@
        if (Math.abs(dxCells) < 1e-6 && Math.abs(dyCells) < 1e-6) continue;
        const maxK = 4;
        for (let k = 1; k <= maxK; k++) {
-         symPeers.push([x + dxCells * k, y + dyCells * k]);
-         symPeers.push([x - dxCells * k, y - dyCells * k]);
+         symPeers.push([x + dxCells * k, y + dyCells * k, permPow(P,  k)]);
+         symPeers.push([x - dxCells * k, y - dyCells * k, permPow(P, -k)]);
        }
      }
    }
    // Helper: add bilinear (nearest-4) weighted connections for a fractional peer position
-   function addBilinearNeighbors(fx, fy, baseWeight) {
+   function addBilinearNeighbors(fx, fy, baseWeight, perm) {
      const x0 = Math.floor(fx), y0 = Math.floor(fy);
      const x1 = x0 + 1,        y1 = y0 + 1;
      const tx = fx - x0,        ty = fy - y0;
@@ -457,13 +552,13 @@
        if (w < 1e-6) continue;
        if (cx < 0 || cx >= GRID_W || cy < 0 || cy >= GRID_H) continue;
        if (cx === x && cy === y) continue;
-       neighbors.push({ x: cx, y: cy, w: baseWeight * w });
+       neighbors.push({ x: cx, y: cy, w: baseWeight * w, perm });
      }
    }
 
 
-    for (const [sx, sy] of symPeers) {
-    addBilinearNeighbors(sx, sy, 1.0);
+   for (const [sx, sy, perm] of symPeers) {
+   addBilinearNeighbors(sx, sy, 1.0, perm);
     }
 
     return neighbors;
@@ -510,9 +605,16 @@
         for (const nb of neighbors) {
           const j   = idx(nb.x, nb.y);
           const wn  = nb.w / (totalW || 1);
-          nr  += rate * wn * (pixels[j]     - pixels[i]);
-          ng  += rate * wn * (pixels[j + 1] - pixels[i + 1]);
-          nb2 += rate * wn * (pixels[j + 2] - pixels[i + 2]);
+          const perm = nb.perm || IDENTITY_PERM;
+          // Permuted peer value (in centered space, then re-shifted):
+          //   pv[c] = sign_c * (pixels[j + src_c] - 0.5) + 0.5
+          const pe0 = perm[0], pe1 = perm[1], pe2 = perm[2];
+          const pv0 = pe0.sign * (pixels[j + pe0.src] - 0.5) + 0.5;
+          const pv1 = pe1.sign * (pixels[j + pe1.src] - 0.5) + 0.5;
+          const pv2 = pe2.sign * (pixels[j + pe2.src] - 0.5) + 0.5;
+          nr  += rate * wn * (pv0 - pixels[i]);
+          ng  += rate * wn * (pv1 - pixels[i + 1]);
+          nb2 += rate * wn * (pv2 - pixels[i + 2]);
         }
 
         next[i]     = nr;
@@ -820,6 +922,7 @@
        s.translationX|0, s.translationY|0, s.mirrorX|0, s.mirrorY|0,
       s.diagonal|0, rotKey,
       latKey,
+      permSignature(state.colorPerm),
        state.spectralK,
      ].join(':');
    }
@@ -1237,6 +1340,57 @@
      [0.25, Math.sqrt(3) / 4],
    ]));
    renderLatTransList();
+   // ── Color permutation UI ──────────────────
+   const PERM_OPTIONS = [
+     { v: '+0', label: '+r' }, { v: '-0', label: '−r' },
+     { v: '+1', label: '+g' }, { v: '-1', label: '−g' },
+     { v: '+2', label: '+b' }, { v: '-2', label: '−b' },
+   ];
+   const permSelects = document.querySelectorAll('.perm-sel');
+   permSelects.forEach(sel => {
+     for (const opt of PERM_OPTIONS) {
+       const o = document.createElement('option');
+       o.value = opt.v;
+       o.textContent = opt.label;
+       sel.appendChild(o);
+     }
+     sel.addEventListener('change', () => {
+       const out = parseInt(sel.dataset.out);
+       const v = sel.value;
+       const sign = v[0] === '-' ? -1 : 1;
+       const src = parseInt(v.slice(1));
+       state.colorPerm[out] = { src, sign };
+       invalidateSpectral();
+     });
+   });
+   function syncPermUI() {
+     permSelects.forEach(sel => {
+       const out = parseInt(sel.dataset.out);
+       const e = state.colorPerm[out];
+       sel.value = (e.sign > 0 ? '+' : '-') + e.src;
+     });
+   }
+   function setPerm(arr) {
+     state.colorPerm = arr.map(e => ({ ...e }));
+     syncPermUI();
+     invalidateSpectral();
+   }
+   syncPermUI();
+   document.getElementById('btn-perm-id').addEventListener('click', () => setPerm([
+     { src: 0, sign:  1 }, { src: 1, sign:  1 }, { src: 2, sign:  1 },
+   ]));
+   document.getElementById('btn-perm-negate').addEventListener('click', () => setPerm([
+     { src: 0, sign: -1 }, { src: 1, sign: -1 }, { src: 2, sign: -1 },
+   ]));
+   document.getElementById('btn-perm-rgb-rot').addEventListener('click', () => setPerm([
+     { src: 1, sign:  1 }, { src: 2, sign:  1 }, { src: 0, sign:  1 },
+   ]));
+   document.getElementById('btn-perm-swap-rg').addEventListener('click', () => setPerm([
+     { src: 1, sign:  1 }, { src: 0, sign:  1 }, { src: 2, sign:  1 },
+   ]));
+   document.getElementById('btn-perm-neg-g').addEventListener('click', () => setPerm([
+     { src: 0, sign:  1 }, { src: 1, sign: -1 }, { src: 2, sign:  1 },
+   ]));
 
 
   // Diffusion controls
