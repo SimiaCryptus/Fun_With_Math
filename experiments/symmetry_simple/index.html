@@ -68,21 +68,59 @@
 
       <section class="panel">
         <h3>Diffusion</h3>
-        <label>Rate:
-          <input type="range" id="diff-rate" min="0" max="100" value="30">
-          <span id="diff-rate-val">0.30</span>
-        </label>
-        <label>Renorm:
-          <input type="range" id="diff-renorm" min="0" max="100" value="100">
-          <span id="diff-renorm-val">1.0</span>
-        </label>
-        <label>Neighborhood:
-          <select id="diff-neighborhood">
-            <option value="4" selected>4-connected</option>
-            <option value="8">8-connected</option>
-            <option value="12">12-radius</option>
-          </select>
-        </label>
+         <label>Mode:
+           <select id="diff-mode">
+             <option value="local" selected>Local (graph step)</option>
+             <option value="spectral">Spectral filter</option>
+             <!--<option value="reaction">Reaction-Diffusion (matrix exp)</option>-->
+           </select>
+         </label>
+        <div id="local-controls">
+          <label>Rate:
+            <input type="range" id="diff-rate" min="0" max="100" value="30">
+            <span id="diff-rate-val">0.30</span>
+          </label>
+          <label>Renorm:
+            <input type="range" id="diff-renorm" min="0" max="100" value="100">
+            <span id="diff-renorm-val">1.0</span>
+          </label>
+          <label>Neighborhood:
+            <select id="diff-neighborhood">
+              <option value="4" selected>4-connected</option>
+              <option value="8">8-connected</option>
+              <option value="12">12-radius</option>
+            </select>
+          </label>
+        </div>
+         <div id="spectral-controls" style="display:none;">
+           <label>Filter f(λ):
+             <select id="spectral-filter">
+               <option value="invsqrt" selected>Posterize: λ^(-t/2)</option>
+               <option value="heat">Heat (low-pass): exp(-tλ)</option>
+               <option value="tikhonov">Tikhonov: 1/(1+tλ)</option>
+               <option value="wave">Wave: sinc(t√λ)</option>
+             </select>
+           </label>
+           <label>t:
+             <input type="range" id="spectral-t" min="1" max="500" value="50">
+             <span id="spectral-t-val">0.50</span>
+           </label>
+           <label>K (eigvecs):
+             <input type="range" id="spectral-k" min="4" max="256" value="64">
+             <span id="spectral-k-val">64</span>
+           </label>
+           <button id="btn-recompute-spectral">Recompute basis</button>
+         </div>
+         <div id="reaction-controls" style="display:none;">
+           <label>Feed F:
+             <input type="range" id="rd-feed" min="10" max="100" value="55">
+             <span id="rd-feed-val">0.055</span>
+           </label>
+           <label>Kill k:
+             <input type="range" id="rd-kill" min="40" max="80" value="62">
+             <span id="rd-kill-val">0.062</span>
+           </label>
+         </div>
         <div id="diff-controls">
           <button id="btn-step">Step</button>
           <button id="btn-play">▶ Play</button>

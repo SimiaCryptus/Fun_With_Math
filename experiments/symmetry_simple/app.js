@@ -23,6 +23,15 @@
     fps: 15,
     gridSize: 64,
     aspectRatio: 1.0,   // width / height  (e.g. 2.0 = landscape)
+     // Diffusion mode: 'local' | 'spectral' | 'reaction'
+     diffMode: 'local',
+     // Spectral parameters
+     spectralFilter: 'invsqrt',// 'heat' | 'tikhonov' | 'invsqrt' | 'wave'
+     spectralT: 0.5,           // time/strength parameter
+     spectralK: 64,            // number of eigenvectors
+     // Reaction-diffusion parameters (Gray-Scott-ish, applied per channel pair)
+     rdFeed: 0.055,
+     rdKill: 0.062,
     symmetry: {
       translationX: false,
       translationY: false,
@@ -38,6 +47,18 @@
 
   let animHandle = null;
   let lastFrameTime = 0;
+   // ── Spectral cache ─────────────────────────
+   // Eigendecomposition of the (negative) graph Laplacian for the current
+   // grid + symmetry settings. Recomputed lazily when invalidated.
+   const spectralCache = {
+     valid: false,
+     N: 0,
+     K: 0,
+     eigvals: null,         // Float32Array length K
+     eigvecs: null,         // Float32Array length N*K  (column-major: vec k at offset k*N)
+     signature: '',
+   };
+   function invalidateSpectral() { spectralCache.valid = false; }
 
   // ── Canvas setup ───────────────────────────
   const canvas = document.getElementById('main-canvas');
@@ -57,6 +78,7 @@
     imageData = ctx.createImageData(GRID_W, GRID_H);
     resizeCanvas();
     clearPixels();
+     invalidateSpectral();
   }
 
   function resizeCanvas() {
@@ -215,8 +237,8 @@
     }
   }
 
-  // ── Neighborhood / Diffusion ───────────────
-  function getNeighbors(x, y) {
+    // ── Neighborhood / Diffusion ───────────────
+    function getNeighbors(x, y) {
     const neighbors = [];
     const n = state.neighborhood;
 
@@ -396,6 +418,372 @@
 
     pixels = next;
   }
+   // ───────────────────────────────────────────
+   //  Spectral diffusion
+   // ───────────────────────────────────────────
+   // Build a sparse representation of the symmetric normalised Laplacian L
+   // implicitly defined by getNeighbors(). We symmetrise by averaging weights:
+   //   W_sym(i,j) = (w(i,j) + w(j,i)) / 2
+   // L = D - W_sym  (with row sums of W_sym as D)
+   //
+   // Returns { rowPtr, colIdx, vals, deg } in CSR form for a symmetric matrix.
+   function buildLaplacian() {
+     const N = GRID_W * GRID_H;
+     // Map (i -> list of {j, w})
+     const adj = new Array(N);
+     for (let i = 0; i < N; i++) adj[i] = new Map();
+     for (let y = 0; y < GRID_H; y++) {
+       for (let x = 0; x < GRID_W; x++) {
+         const i = y * GRID_W + x;
+         const nbs = getNeighbors(x, y);
+         // Normalise neighbor weights so each row sums to 1
+         let totalW = 0;
+         for (const nb of nbs) totalW += nb.w;
+         if (totalW <= 0) continue;
+         for (const nb of nbs) {
+           const j = nb.y * GRID_W + nb.x;
+           if (j === i) continue;
+           const w = nb.w / totalW;
+           // accumulate
+           adj[i].set(j, (adj[i].get(j) || 0) + w);
+         }
+       }
+     }
+     // Symmetrise: average forward/backward weights
+     for (let i = 0; i < N; i++) {
+       for (const [j, w] of adj[i]) {
+         if (j > i) {
+           const wji = adj[j].get(i) || 0;
+           const wsym = 0.5 * (w + wji);
+           adj[i].set(j, wsym);
+           adj[j].set(i, wsym);
+         }
+       }
+     }
+     // Build CSR for L = D - W
+     const rowPtr = new Int32Array(N + 1);
+     let nnz = 0;
+     for (let i = 0; i < N; i++) {
+       rowPtr[i] = nnz;
+       nnz += adj[i].size + 1; // +1 for diagonal
+     }
+     rowPtr[N] = nnz;
+     const colIdx = new Int32Array(nnz);
+     const vals   = new Float32Array(nnz);
+     const deg    = new Float32Array(N);
+     for (let i = 0; i < N; i++) {
+       let p = rowPtr[i];
+       let dsum = 0;
+       // off-diagonal entries
+       const entries = [...adj[i].entries()].sort((a, b) => a[0] - b[0]);
+       // we'll insert diagonal at the right sorted position
+       let inserted = false;
+       for (const [j, w] of entries) {
+         if (!inserted && j > i) {
+           colIdx[p] = i; vals[p] = 0; // placeholder, fill after
+           p++;
+           inserted = true;
+         }
+         colIdx[p] = j;
+         vals[p]   = -w;
+         dsum     += w;
+         p++;
+       }
+       if (!inserted) {
+         colIdx[p] = i; vals[p] = 0;
+         p++;
+       }
+       deg[i] = dsum;
+       // fill diagonal value
+       for (let q = rowPtr[i]; q < rowPtr[i + 1]; q++) {
+         if (colIdx[q] === i) { vals[q] = dsum; break; }
+       }
+     }
+     return { N, rowPtr, colIdx, vals, deg };
+   }
+   // y = L * x  for CSR matrix L
+   function spmv(L, x, y) {
+     const { N, rowPtr, colIdx, vals } = L;
+     for (let i = 0; i < N; i++) {
+       let s = 0;
+       const end = rowPtr[i + 1];
+       for (let p = rowPtr[i]; p < end; p++) {
+         s += vals[p] * x[colIdx[p]];
+       }
+       y[i] = s;
+     }
+   }
+   // Lanczos iteration to find K smallest eigenvalues/vectors of L (symmetric PSD).
+   // L is the CSR Laplacian. Returns { eigvals: Float32Array(K), eigvecs: Float32Array(N*K) }
+   //
+   // We run M >= K Lanczos steps with full reorthogonalisation, build the M x M
+   // tridiagonal T, diagonalise it (Jacobi), pick the K smallest Ritz values, and
+   // form the corresponding Ritz vectors.
+   function lanczosSmallest(L, K, maxIters) {
+     const N = L.N;
+     const M = Math.min(maxIters, N);
+     // Storage for Lanczos vectors V (N x M), column-major
+     const V = new Float32Array(N * M);
+     const alpha = new Float64Array(M);
+     const beta  = new Float64Array(M + 1);
+     // Initial random vector
+     const v = new Float32Array(N);
+     for (let i = 0; i < N; i++) v[i] = Math.random() - 0.5;
+     // normalize
+     let nrm = 0;
+     for (let i = 0; i < N; i++) nrm += v[i] * v[i];
+     nrm = Math.sqrt(nrm);
+     for (let i = 0; i < N; i++) v[i] /= nrm;
+     // place into V[:, 0]
+     for (let i = 0; i < N; i++) V[0 * N + i] = v[i];
+     const w = new Float32Array(N);
+     const vPrev = new Float32Array(N);
+     let mActual = 0;
+     for (let j = 0; j < M; j++) {
+       // w = L * v
+       spmv(L, v, w);
+       // w -= alpha_j * v
+       let a = 0;
+       for (let i = 0; i < N; i++) a += w[i] * v[i];
+       alpha[j] = a;
+       for (let i = 0; i < N; i++) w[i] -= a * v[i] + (j > 0 ? beta[j] * vPrev[i] : 0);
+       // Full reorthogonalisation against all previous V columns
+       for (let r = 0; r <= j; r++) {
+         let dot = 0;
+         for (let i = 0; i < N; i++) dot += w[i] * V[r * N + i];
+         for (let i = 0; i < N; i++) w[i] -= dot * V[r * N + i];
+       }
+       // beta_{j+1}
+       let bnorm = 0;
+       for (let i = 0; i < N; i++) bnorm += w[i] * w[i];
+       bnorm = Math.sqrt(bnorm);
+       beta[j + 1] = bnorm;
+       mActual = j + 1;
+       if (bnorm < 1e-10) break;
+       // shift
+       for (let i = 0; i < N; i++) {
+         vPrev[i] = v[i];
+         v[i]     = w[i] / bnorm;
+       }
+       if (j + 1 < M) {
+         for (let i = 0; i < N; i++) V[(j + 1) * N + i] = v[i];
+       }
+     }
+     // Diagonalise the m x m tridiagonal matrix T = tridiag(beta, alpha, beta)
+     const m = mActual;
+     // T as dense (small) matrix
+     const T = new Float64Array(m * m);
+     for (let i = 0; i < m; i++) {
+       T[i * m + i] = alpha[i];
+       if (i + 1 < m) {
+         T[i * m + (i + 1)] = beta[i + 1];
+         T[(i + 1) * m + i] = beta[i + 1];
+       }
+     }
+     const Q = new Float64Array(m * m);
+     for (let i = 0; i < m; i++) Q[i * m + i] = 1;
+     jacobiEig(T, Q, m);
+     // eigenvalues on diag(T); eigenvectors are columns of Q
+     // Sort by eigenvalue ascending
+     const order = new Array(m);
+     for (let i = 0; i < m; i++) order[i] = i;
+     order.sort((a, b) => T[a * m + a] - T[b * m + b]);
+     const Keff = Math.min(K, m);
+     const eigvals = new Float32Array(Keff);
+     const eigvecs = new Float32Array(N * Keff);
+     for (let k = 0; k < Keff; k++) {
+       const idxK = order[k];
+       eigvals[k] = T[idxK * m + idxK];
+       // Ritz vector = V * Q[:, idxK]
+       for (let i = 0; i < N; i++) {
+         let s = 0;
+         for (let r = 0; r < m; r++) {
+           s += V[r * N + i] * Q[r * m + idxK];
+         }
+         eigvecs[k * N + i] = s;
+       }
+       // re-normalise just in case
+       let nrm2 = 0;
+       for (let i = 0; i < N; i++) nrm2 += eigvecs[k * N + i] ** 2;
+       nrm2 = Math.sqrt(nrm2) || 1;
+       for (let i = 0; i < N; i++) eigvecs[k * N + i] /= nrm2;
+     }
+     return { eigvals, eigvecs, K: Keff };
+   }
+   // Cyclic Jacobi eigendecomposition for a small symmetric m x m matrix.
+   // T is overwritten so that diag(T) holds eigenvalues, off-diagonals -> 0.
+   // Q starts as identity and ends as the orthogonal matrix of eigenvectors (columns).
+   function jacobiEig(T, Q, m) {
+     const maxSweeps = 50;
+     for (let sweep = 0; sweep < maxSweeps; sweep++) {
+       let off = 0;
+       for (let p = 0; p < m - 1; p++) {
+         for (let q = p + 1; q < m; q++) off += T[p * m + q] ** 2;
+       }
+       if (off < 1e-20) break;
+       for (let p = 0; p < m - 1; p++) {
+         for (let q = p + 1; q < m; q++) {
+           const apq = T[p * m + q];
+           if (Math.abs(apq) < 1e-14) continue;
+           const app = T[p * m + p];
+           const aqq = T[q * m + q];
+           const theta = (aqq - app) / (2 * apq);
+           let t;
+           if (Math.abs(theta) > 1e15) t = 1 / (2 * theta);
+           else t = Math.sign(theta) / (Math.abs(theta) + Math.sqrt(1 + theta * theta));
+           if (theta === 0) t = 1;
+           const c = 1 / Math.sqrt(1 + t * t);
+           const s = t * c;
+           // update T
+           T[p * m + p] = app - t * apq;
+           T[q * m + q] = aqq + t * apq;
+           T[p * m + q] = 0;
+           T[q * m + p] = 0;
+           for (let i = 0; i < m; i++) {
+             if (i !== p && i !== q) {
+               const aip = T[i * m + p];
+               const aiq = T[i * m + q];
+               T[i * m + p] = c * aip - s * aiq;
+               T[p * m + i] = T[i * m + p];
+               T[i * m + q] = s * aip + c * aiq;
+               T[q * m + i] = T[i * m + q];
+             }
+           }
+           // update Q
+           for (let i = 0; i < m; i++) {
+             const qip = Q[i * m + p];
+             const qiq = Q[i * m + q];
+             Q[i * m + p] = c * qip - s * qiq;
+             Q[i * m + q] = s * qip + c * qiq;
+           }
+         }
+       }
+     }
+   }
+   function symmetrySignature() {
+     const s = state.symmetry;
+     return [
+       GRID_W, GRID_H, state.neighborhood,
+       s.translationX|0, s.translationY|0, s.mirrorX|0, s.mirrorY|0,
+       s.rot180|0, s.rot90|0, s.rot60|0, s.rot30|0, s.diagonal|0,
+       state.spectralK,
+     ].join(':');
+   }
+   function ensureSpectral() {
+     const sig = symmetrySignature();
+     if (spectralCache.valid && spectralCache.signature === sig) return;
+     const N = GRID_W * GRID_H;
+     const K = Math.min(state.spectralK, N - 1);
+     const M = Math.min(N, Math.max(K * 2 + 10, 32));
+     const t0 = performance.now();
+     const L = buildLaplacian();
+     const { eigvals, eigvecs, K: Keff } = lanczosSmallest(L, K, M);
+     const t1 = performance.now();
+     spectralCache.valid     = true;
+     spectralCache.signature = sig;
+     spectralCache.N         = N;
+     spectralCache.K         = Keff;
+     spectralCache.eigvals   = eigvals;
+     spectralCache.eigvecs   = eigvecs;
+     const info = document.getElementById('info-text');
+     if (info) info.textContent =
+       `Spectral: ${Keff} eigvecs of ${N}-node graph in ${(t1 - t0).toFixed(0)} ms\n` +
+       `λ range: [${eigvals[0].toFixed(4)}, ${eigvals[Keff - 1].toFixed(4)}]`;
+   }
+   function applySpectralFilter(filterFn) {
+     ensureSpectral();
+     const { N, K, eigvals, eigvecs } = spectralCache;
+     const next = new Float32Array(pixels.length);
+     // Pre-compute filter values
+     const fvals = new Float32Array(K);
+     for (let k = 0; k < K; k++) fvals[k] = filterFn(eigvals[k]);
+     // For each colour channel: project onto eigenbasis, scale, project back.
+     //   u' = sum_k f(λ_k) * <u, v_k> * v_k
+     // Components outside the computed K-dimensional subspace are dropped
+     // (low-rank approximation).  Coefficients are computed once per channel
+     // and accumulated into `next`.
+     for (let c = 0; c < 3; c++) {
+       // Compute all K coefficients first
+       const coefs = new Float32Array(K);
+       for (let k = 0; k < K; k++) {
+         const vk = eigvecs.subarray(k * N, k * N + N);
+         let coef = 0;
+         for (let i = 0; i < N; i++) coef += pixels[i * 3 + c] * vk[i];
+         coefs[k] = coef * fvals[k];
+       }
+       // Reconstruct: next[i,c] = Σ_k coefs[k] * v_k[i]
+       for (let i = 0; i < N; i++) next[i * 3 + c] = 0;
+       for (let k = 0; k < K; k++) {
+         const vk = eigvecs.subarray(k * N, k * N + N);
+         const a = coefs[k];
+         if (Math.abs(a) < 1e-9) continue;
+         for (let i = 0; i < N; i++) next[i * 3 + c] += a * vk[i];
+       }
+       // Clamp
+       for (let i = 0; i < N; i++) {
+         const j = i * 3 + c;
+         if (next[j] < 0) next[j] = 0;
+         else if (next[j] > 1) next[j] = 1;
+       }
+     }
+     pixels = next;
+   }
+   function spectralFilterFn() {
+     const t = state.spectralT;
+     switch (state.spectralFilter) {
+       // Multiply t by a constant so the slider's 0.01-5 range covers a useful
+       // span for each filter shape.
+       case 'heat':     return (lam) => Math.exp(-10 * t * lam);
+       case 'tikhonov': return (lam) => 1 / (1 + 10 * t * lam);
+       case 'invsqrt':  return (lam) => lam < 1e-6 ? 1 : Math.pow(lam, -0.5 * t);
+       case 'wave': {
+         return (lam) => {
+           if (lam < 1e-6) return 1;
+           const s = t * Math.sqrt(lam);
+           return Math.sin(s) / s;
+         };
+       }
+       default:         return (lam) => Math.exp(-10 * t * lam);
+     }
+   }
+   function spectralStep() {
+     applySpectralFilter(spectralFilterFn());
+   }
+   // ── Reaction-diffusion via matrix exponential ──
+   // We use the heat-kernel filter exp(-δL) for the diffusion half-step,
+   // then add a Gray-Scott style nonlinearity coupling channels R (=u) and G (=v).
+   function reactionDiffusionStep() {
+     // 1) diffuse with heat kernel exp(-δL)
+     const t = state.spectralT;
+     applySpectralFilter((lam) => Math.exp(-10 * t * lam));
+     // 2) Gray-Scott reaction on R (u) and G (v) channels
+     //    du/dt = -uv^2 + F(1-u)
+     //    dv/dt =  uv^2 - (F+k)v
+     const F = state.rdFeed, k = state.rdKill;
+     const N = GRID_W * GRID_H;
+     const dt = 1.0;
+     for (let i = 0; i < N; i++) {
+       const j = i * 3;
+       const u = pixels[j];
+       const v = pixels[j + 1];
+       const uv2 = u * v * v;
+       let nu = u + dt * (-uv2 + F * (1 - u));
+       let nv = v + dt * ( uv2 - (F + k) * v);
+       if (nu < 0) nu = 0; else if (nu > 1) nu = 1;
+       if (nv < 0) nv = 0; else if (nv > 1) nv = 1;
+       pixels[j]     = nu;
+       pixels[j + 1] = nv;
+       // B channel: visualise |u-v|
+       pixels[j + 2] = Math.abs(nu - nv);
+     }
+   }
+   function step() {
+     switch (state.diffMode) {
+       case 'spectral': spectralStep(); break;
+       case 'reaction': reactionDiffusionStep(); break;
+       default:         diffuseStep();
+     }
+   }
 
   // ── Render ─────────────────────────────────
   function render() {
@@ -430,7 +818,7 @@
     const interval = 1000 / state.fps;
     if (ts - lastFrameTime >= interval) {
       lastFrameTime = ts;
-      diffuseStep();
+       step();
       render();
     }
     animHandle = requestAnimationFrame(animLoop);
@@ -580,6 +968,7 @@
   Object.entries(symMap).forEach(([id, key]) => {
     document.getElementById(id).addEventListener('change', e => {
       state.symmetry[key] = e.target.checked;
+       invalidateSpectral();
     });
   });
 
@@ -598,10 +987,11 @@
 
   document.getElementById('diff-neighborhood').addEventListener('change', e => {
     state.neighborhood = parseInt(e.target.value);
+     invalidateSpectral();
   });
 
   document.getElementById('btn-step').addEventListener('click', () => {
-    diffuseStep();
+     step();
     render();
   });
 
@@ -613,6 +1003,51 @@
     state.fps = parseInt(speedSlider.value);
     document.getElementById('diff-speed-val').textContent = state.fps;
   });
+
+   // ── Spectral / mode controls ──────────────
+   document.getElementById('diff-mode').addEventListener('change', e => {
+     state.diffMode = e.target.value;
+     document.getElementById('spectral-controls').style.display =
+       state.diffMode === 'spectral' ? '' : 'none';
+     document.getElementById('reaction-controls').style.display =
+       state.diffMode === 'reaction' ? '' : 'none';
+     // Local-mode controls (rate, renorm, neighborhood) are hidden in spectral mode
+     document.getElementById('local-controls').style.display =
+       state.diffMode === 'local' ? '' : 'none';
+   });
+
+   document.getElementById('spectral-filter').addEventListener('change', e => {
+     state.spectralFilter = e.target.value;
+   });
+
+   const spectralTSlider = document.getElementById('spectral-t');
+   spectralTSlider.addEventListener('input', () => {
+     state.spectralT = parseInt(spectralTSlider.value) / 100;
+     document.getElementById('spectral-t-val').textContent = state.spectralT.toFixed(2);
+   });
+
+   const spectralKSlider = document.getElementById('spectral-k');
+   spectralKSlider.addEventListener('input', () => {
+     state.spectralK = parseInt(spectralKSlider.value);
+     document.getElementById('spectral-k-val').textContent = state.spectralK;
+     invalidateSpectral();
+   });
+
+   document.getElementById('btn-recompute-spectral').addEventListener('click', () => {
+     invalidateSpectral();
+     ensureSpectral();
+   });
+
+   const rdFeedSlider = document.getElementById('rd-feed');
+   rdFeedSlider.addEventListener('input', () => {
+     state.rdFeed = parseInt(rdFeedSlider.value) / 1000;
+     document.getElementById('rd-feed-val').textContent = state.rdFeed.toFixed(3);
+   });
+   const rdKillSlider = document.getElementById('rd-kill');
+   rdKillSlider.addEventListener('input', () => {
+     state.rdKill = parseInt(rdKillSlider.value) / 1000;
+     document.getElementById('rd-kill-val').textContent = state.rdKill.toFixed(3);
+   });
 
   // Canvas / grid controls
   document.getElementById('grid-size').addEventListener('change', e => {
