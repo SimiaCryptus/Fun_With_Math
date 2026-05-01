@@ -63,6 +63,22 @@
            <button id="btn-rot-c12"   class="mini-btn">C12</button>
          </div>
        </div>
+       <div class="rot-section">
+         <div class="rot-label">Lattice translations (relative; 1.0 = full grid):</div>
+         <div id="lat-trans-list"></div>
+         <div class="lat-trans-add">
+           <label>x: <input type="number" id="lat-trans-x" step="0.05" value="0.5" style="width:60px"></label>
+           <label>y: <input type="number" id="lat-trans-y" step="0.05" value="0" style="width:60px"></label>
+           <button id="btn-lat-trans-add" class="mini-btn">Add</button>
+         </div>
+         <div class="rot-actions">
+           <button id="btn-lat-trans-clear" class="mini-btn">None</button>
+           <button id="btn-lat-half"        class="mini-btn">½ tile</button>
+           <button id="btn-lat-third"       class="mini-btn">⅓ tile</button>
+           <button id="btn-lat-quarter"     class="mini-btn">¼ tile</button>
+           <button id="btn-lat-hex"         class="mini-btn">hex</button>
+         </div>
+       </div>
       </section>
 
       <section class="panel">
@@ -154,6 +170,30 @@
         <label class="toggle-row">
           <input type="checkbox" id="show-grid"> Show Grid
         </label>
+      </section>
+      <section class="panel">
+        <h3>Lattice Geometry</h3>
+        <label>Mode:
+          <select id="lattice-mode">
+            <option value="euclidean" selected>Euclidean (full grid)</option>
+            <option value="circular">Circular (disk, flat)</option>
+            <option value="hyperbolic">Hyperbolic (Poincaré disk)</option>
+            <option value="spherical">Spherical (stereographic disk)</option>
+          </select>
+        </label>
+        <label>Curvature k:
+          <input type="range" id="lattice-curvature" min="10" max="500" value="100">
+          <span id="lattice-curvature-val">1.00</span>
+        </label>
+        <label>Radius (cells):
+          <input type="range" id="lattice-radius" min="0" max="128" value="0">
+          <span id="lattice-radius-val">auto</span>
+        </label>
+        <div style="font-size:11px; opacity:0.7; line-height:1.4;">
+          Disk modes mask cells outside a circle and use a non-Euclidean
+          metric for diffusion. Hyperbolic stretches distances near the rim;
+          spherical contracts them.
+        </div>
       </section>
 
       <section class="panel" id="info-panel">

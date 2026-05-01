@@ -35,6 +35,13 @@
      // Reaction-diffusion parameters (Gray-Scott-ish, applied per channel pair)
      rdFeed: 0.055,
      rdKill: 0.062,
+    // Lattice geometry: 'euclidean' | 'circular' | 'hyperbolic' | 'spherical'
+    lattice: 'euclidean',
+    // For non-euclidean modes, the grid is bounded by a disk; cells outside
+    // the disk are inactive (masked). Radius is in cells, defaults to half
+    // the smaller grid dimension.
+    latticeRadius: 0,    // 0 = auto (min(W,H)/2 - 1)
+    latticeCurvature: 1, // scale factor on the metric (k); larger = more curved
     symmetry: {
       translationX: false,
       translationY: false,
@@ -43,12 +50,111 @@
       diagonal: false,
        // Per-angle rotation toggles, keyed by integer degree
        rotations: {},
+      // Lattice translation symmetries: array of {x, y} in relative
+      // coordinates where (1,0) = full grid width, (0,1) = full grid height.
+      // Each vector adds peers at (px + tx*W, py + ty*H) and its negative.
+      latticeTranslations: [],
     },
   };
    for (const a of ROT_ANGLES) state.symmetry.rotations[a] = false;
 
   let animHandle = null;
   let lastFrameTime = 0;
+  // ── Lattice mask ───────────────────────────
+  // active[y*W + x] = 1 if the cell participates in the lattice. For
+  // 'euclidean' all cells are active. For disk-based geometries, only
+  // cells inside the disk are active.
+  let activeMask = null;
+  function isActive(x, y) {
+    return activeMask[y * GRID_W + x] === 1;
+  }
+  function latticeRadius() {
+    if (state.latticeRadius > 0) return state.latticeRadius;
+    return Math.min(GRID_W, GRID_H) / 2 - 1;
+  }
+  function latticeCenter() {
+    return [(GRID_W - 1) / 2, (GRID_H - 1) / 2];
+  }
+  // Disk-normalised coordinates: maps cell (x,y) into the open unit disk
+  // (used by hyperbolic & spherical metrics). Returns [u, v, r] where r=√(u²+v²).
+  function diskCoords(x, y) {
+    const [cx, cy] = latticeCenter();
+    const R = latticeRadius();
+    const u = (x - cx) / R;
+    const v = (y - cy) / R;
+    return [u, v, Math.sqrt(u * u + v * v)];
+  }
+  // Distance between two cells under the current lattice geometry.
+  // Returns Infinity if either endpoint is inactive.
+  function latticeDist(x1, y1, x2, y2) {
+    if (!isActive(x1, y1) || !isActive(x2, y2)) return Infinity;
+    const k = state.latticeCurvature || 1;
+    switch (state.lattice) {
+      case 'circular': {
+        // Plain Euclidean distance (the disk is just a clipped Cartesian grid).
+        const dx = x2 - x1, dy = y2 - y1;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+      case 'hyperbolic': {
+        // Poincaré disk distance: d = arccosh(1 + 2|a-b|² / ((1-|a|²)(1-|b|²)))
+        const [u1, v1] = diskCoords(x1, y1);
+        const [u2, v2] = diskCoords(x2, y2);
+        const a2 = u1 * u1 + v1 * v1;
+        const b2 = u2 * u2 + v2 * v2;
+        const du = u2 - u1, dv = v2 - v1;
+        const num = 2 * (du * du + dv * dv);
+        const den = Math.max(1e-9, (1 - a2) * (1 - b2));
+        const arg = 1 + num / den;
+        return k * Math.acosh(Math.max(1, arg));
+      }
+      case 'spherical': {
+        // Map disk → sphere via stereographic projection (north-pole based):
+        //   (u,v) ∈ unit disk → 3D point on unit sphere.
+        // Then return the great-circle (geodesic) distance.
+        const [u1, v1] = diskCoords(x1, y1);
+        const [u2, v2] = diskCoords(x2, y2);
+        const s1 = 1 + u1 * u1 + v1 * v1;
+        const s2 = 1 + u2 * u2 + v2 * v2;
+        const p1 = [2 * u1 / s1, 2 * v1 / s1, (s1 - 2) / s1];
+        const p2 = [2 * u2 / s2, 2 * v2 / s2, (s2 - 2) / s2];
+        let dot = p1[0] * p2[0] + p1[1] * p2[1] + p1[2] * p2[2];
+        if (dot >  1) dot =  1;
+        if (dot < -1) dot = -1;
+        return k * Math.acos(dot);
+      }
+      case 'euclidean':
+      default: {
+        const dx = x2 - x1, dy = y2 - y1;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+    }
+  }
+  function rebuildLatticeMask() {
+    const N = GRID_W * GRID_H;
+    activeMask = new Uint8Array(N);
+    if (state.lattice === 'euclidean') {
+      activeMask.fill(1);
+      return;
+    }
+    const [cx, cy] = latticeCenter();
+    const R = latticeRadius();
+    for (let y = 0; y < GRID_H; y++) {
+      for (let x = 0; x < GRID_W; x++) {
+        const dx = x - cx, dy = y - cy;
+        if (dx * dx + dy * dy <= R * R) activeMask[y * GRID_W + x] = 1;
+      }
+    }
+    // Zero out inactive pixels so they don't contribute stale colour
+    if (pixels) {
+      for (let i = 0; i < N; i++) {
+        if (!activeMask[i]) {
+          pixels[i * 3] = 0;
+          pixels[i * 3 + 1] = 0;
+          pixels[i * 3 + 2] = 0;
+        }
+      }
+    }
+  }
    // ── Spectral cache ─────────────────────────
    // Eigendecomposition of the (negative) graph Laplacian for the current
    // grid + symmetry settings. Recomputed lazily when invalidated.
@@ -79,6 +185,7 @@
     pixels = new Float32Array(GRID_W * GRID_H * 3);
     imageData = ctx.createImageData(GRID_W, GRID_H);
     resizeCanvas();
+    rebuildLatticeMask();
     clearPixels();
      invalidateSpectral();
   }
@@ -107,6 +214,7 @@
 
   function setPixel(x, y, r, g, b) {
     if (x < 0 || x >= GRID_W || y < 0 || y >= GRID_H) return;
+    if (activeMask && !activeMask[y * GRID_W + x]) return;
     const i = idx(x, y);
     pixels[i]     = Math.max(0, Math.min(1, r));
     pixels[i + 1] = Math.max(0, Math.min(1, g));
@@ -119,7 +227,16 @@
   }
 
   function randomPixels() {
-    for (let i = 0; i < pixels.length; i++) pixels[i] = Math.random();
+    const N = GRID_W * GRID_H;
+    for (let i = 0; i < N; i++) {
+      if (activeMask && !activeMask[i]) {
+        pixels[i * 3] = 0; pixels[i * 3 + 1] = 0; pixels[i * 3 + 2] = 0;
+      } else {
+        pixels[i * 3]     = Math.random();
+        pixels[i * 3 + 1] = Math.random();
+        pixels[i * 3 + 2] = Math.random();
+      }
+    }
     render();
   }
 
@@ -129,9 +246,12 @@
 
   // Clamp-or-wrap a position depending on translation symmetry flags
   function addPos(positions, px, py) {
-    const cx = state.symmetry.translationX ? wrapX(px) : px;
-    const cy = state.symmetry.translationY ? wrapY(py) : py;
+    // Round fractional positions (lattice translations may produce non-integers)
+    const ix = Math.round(px), iy = Math.round(py);
+    const cx = state.symmetry.translationX ? wrapX(ix) : ix;
+    const cy = state.symmetry.translationY ? wrapY(iy) : iy;
     if (cx < 0 || cx >= GRID_W || cy < 0 || cy >= GRID_H) return;
+    if (activeMask && !activeMask[cy * GRID_W + cx]) return;
     positions.add(cx + ',' + cy);
   }
 
@@ -175,6 +295,27 @@
      // anti-diagonal reflection: (x,y) -> (H-1-y, W-1-x) — only add when both mirrors active
      if (sym.mirrorX && sym.mirrorY) seeds.push([my, mx]);
     }
+    // Lattice translation symmetries (fractional vectors in [0,1]).
+    // For each (tx,ty) we add seeds at integer multiples ±k of the vector,
+    // for k=1..maxK, as long as they remain potentially in-grid.
+    const latTrans = sym.latticeTranslations || [];
+    if (latTrans.length) {
+      const baseSeeds = seeds.slice(); // snapshot before extending
+      for (const t of latTrans) {
+        const dxCells = t.x * W;
+        const dyCells = t.y * H;
+        if (Math.abs(dxCells) < 1e-6 && Math.abs(dyCells) < 1e-6) continue;
+        // Replicate up to a reasonable number of multiples
+        const maxK = 8;
+        for (const [bx, by] of baseSeeds) {
+          for (let k = 1; k <= maxK; k++) {
+            seeds.push([bx + dxCells * k, by + dyCells * k]);
+            seeds.push([bx - dxCells * k, by - dyCells * k]);
+          }
+        }
+      }
+    }
+
 
     for (const [sx, sy] of seeds) {
       addPos(positions, sx, sy);
@@ -235,6 +376,7 @@
     // ── Neighborhood / Diffusion ───────────────
     function getNeighbors(x, y) {
     const neighbors = [];
+    if (activeMask && !activeMask[y * GRID_W + x]) return neighbors;
     const n = state.neighborhood;
 
     const offsets4  = [[1,0],[-1,0],[0,1],[0,-1]];
@@ -250,8 +392,14 @@
       const wy = state.symmetry.translationY ? wrapY(ny) : ny;
 
       if (wx < 0 || wx >= GRID_W || wy < 0 || wy >= GRID_H) continue;
+      if (activeMask && !activeMask[wy * GRID_W + wx]) continue;
 
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      // Use the lattice metric to compute a geometric distance, then
+      // weight inversely. For non-Euclidean lattices this means cells
+      // near the disk boundary effectively become much further apart
+      // (hyperbolic) or closer (spherical), shaping diffusion accordingly.
+      const dist = latticeDist(x, y, wx, wy);
+      if (!isFinite(dist) || dist <= 0) continue;
       const weight = 1 / dist;
       neighbors.push({ x: wx, y: wy, w: weight });
     }
@@ -280,6 +428,20 @@
      }
    if (sym.diagonal) symPeers.push([y, x]);   // already integer
    if (sym.diagonal && sym.mirrorX && sym.mirrorY) symPeers.push([my, mx]); // anti-diagonal
+   // Lattice translation symmetry peers: ±k * (tx*W, ty*H)
+   {
+     const latTrans = sym.latticeTranslations || [];
+     for (const t of latTrans) {
+       const dxCells = t.x * W;
+       const dyCells = t.y * H;
+       if (Math.abs(dxCells) < 1e-6 && Math.abs(dyCells) < 1e-6) continue;
+       const maxK = 4;
+       for (let k = 1; k <= maxK; k++) {
+         symPeers.push([x + dxCells * k, y + dyCells * k]);
+         symPeers.push([x - dxCells * k, y - dyCells * k]);
+       }
+     }
+   }
    // Helper: add bilinear (nearest-4) weighted connections for a fractional peer position
    function addBilinearNeighbors(fx, fy, baseWeight) {
      const x0 = Math.floor(fx), y0 = Math.floor(fy);
@@ -651,10 +813,13 @@
    function symmetrySignature() {
      const s = state.symmetry;
     const rotKey = ROT_ANGLES.map(a => s.rotations[a] ? a : '').join(',');
+    const latKey = (s.latticeTranslations || [])
+      .map(t => `${t.x.toFixed(4)},${t.y.toFixed(4)}`).join('|');
      return [
        GRID_W, GRID_H, state.neighborhood,
        s.translationX|0, s.translationY|0, s.mirrorX|0, s.mirrorY|0,
       s.diagonal|0, rotKey,
+      latKey,
        state.spectralK,
      ].join(':');
    }
@@ -780,10 +945,18 @@
     for (let i = 0; i < GRID_W * GRID_H; i++) {
       const pi = i * 3;
       const di = i * 4;
-      data[di]     = Math.round(pixels[pi]     * 255);
-      data[di + 1] = Math.round(pixels[pi + 1] * 255);
-      data[di + 2] = Math.round(pixels[pi + 2] * 255);
-      data[di + 3] = 255;
+      if (activeMask && !activeMask[i]) {
+        // Inactive cells: dim background to indicate the lattice boundary
+        data[di]     = 18;
+        data[di + 1] = 18;
+        data[di + 2] = 36;
+        data[di + 3] = 255;
+      } else {
+        data[di]     = Math.round(pixels[pi]     * 255);
+        data[di + 1] = Math.round(pixels[pi + 1] * 255);
+        data[di + 2] = Math.round(pixels[pi + 2] * 255);
+        data[di + 3] = 255;
+      }
     }
     ctx.putImageData(imageData, 0, 0);
 
@@ -1000,6 +1173,71 @@
    document.getElementById('btn-rot-c6').addEventListener('click',    () => setRotations(cyclicAngles(6)));
    document.getElementById('btn-rot-c8').addEventListener('click',    () => setRotations(cyclicAngles(8)));
    document.getElementById('btn-rot-c12').addEventListener('click',   () => setRotations(cyclicAngles(12)));
+   // ── Lattice translation symmetries ────────
+   const latTransListEl = document.getElementById('lat-trans-list');
+   function renderLatTransList() {
+     latTransListEl.innerHTML = '';
+     const list = state.symmetry.latticeTranslations;
+     if (!list.length) {
+       const empty = document.createElement('div');
+       empty.style.cssText = 'opacity:0.5; font-size:11px; padding:2px 0;';
+       empty.textContent = '(none)';
+       latTransListEl.appendChild(empty);
+       return;
+     }
+     list.forEach((t, i) => {
+       const row = document.createElement('div');
+       row.className = 'lat-trans-item';
+       row.style.cssText = 'display:flex; gap:6px; align-items:center; font-size:11px; padding:1px 0;';
+       const lab = document.createElement('span');
+       lab.style.flex = '1';
+       lab.textContent = `(${t.x.toFixed(3)}, ${t.y.toFixed(3)})`;
+       const rm = document.createElement('button');
+       rm.className = 'mini-btn';
+       rm.textContent = '✕';
+       rm.addEventListener('click', () => {
+         state.symmetry.latticeTranslations.splice(i, 1);
+         invalidateSpectral();
+         renderLatTransList();
+       });
+       row.appendChild(lab);
+       row.appendChild(rm);
+       latTransListEl.appendChild(row);
+     });
+   }
+   function addLatTrans(x, y) {
+     if (!isFinite(x) || !isFinite(y)) return;
+     // Avoid duplicates within tolerance
+     const eps = 1e-4;
+     const list = state.symmetry.latticeTranslations;
+     for (const t of list) {
+       if (Math.abs(t.x - x) < eps && Math.abs(t.y - y) < eps) return;
+     }
+     list.push({ x, y });
+     invalidateSpectral();
+     renderLatTransList();
+   }
+   function setLatTrans(vectors) {
+     state.symmetry.latticeTranslations = vectors.map(([x, y]) => ({ x, y }));
+     invalidateSpectral();
+     renderLatTransList();
+   }
+   document.getElementById('btn-lat-trans-add').addEventListener('click', () => {
+     const x = parseFloat(document.getElementById('lat-trans-x').value);
+     const y = parseFloat(document.getElementById('lat-trans-y').value);
+     addLatTrans(x, y);
+   });
+   document.getElementById('btn-lat-trans-clear').addEventListener('click', () => setLatTrans([]));
+   document.getElementById('btn-lat-half').addEventListener('click',    () => setLatTrans([[0.5, 0], [0, 0.5]]));
+   document.getElementById('btn-lat-third').addEventListener('click',   () => setLatTrans([[1/3, 0], [0, 1/3]]));
+   document.getElementById('btn-lat-quarter').addEventListener('click', () => setLatTrans([[0.25, 0], [0, 0.25]]));
+   // Hexagonal-ish: two vectors at 60° apart
+   document.getElementById('btn-lat-hex').addEventListener('click', () => setLatTrans([
+     [0.5, 0],
+     [0.25, Math.sqrt(3) / 4],
+   ]));
+   renderLatTransList();
+
 
   // Diffusion controls
   const diffRateSlider = document.getElementById('diff-rate');
@@ -1098,6 +1336,34 @@
 
   document.getElementById('btn-clear').addEventListener('click', clearPixels);
   document.getElementById('btn-random').addEventListener('click', randomPixels);
+  // ── Lattice geometry controls ──────────────
+  const latticeSelect = document.getElementById('lattice-mode');
+  latticeSelect.addEventListener('change', e => {
+    state.lattice = e.target.value;
+    rebuildLatticeMask();
+    invalidateSpectral();
+    render();
+  });
+  const latticeCurvSlider = document.getElementById('lattice-curvature');
+  if (latticeCurvSlider) {
+    latticeCurvSlider.addEventListener('input', () => {
+      state.latticeCurvature = parseInt(latticeCurvSlider.value) / 100;
+      document.getElementById('lattice-curvature-val').textContent =
+        state.latticeCurvature.toFixed(2);
+      invalidateSpectral();
+    });
+  }
+  const latticeRadSlider = document.getElementById('lattice-radius');
+  if (latticeRadSlider) {
+    latticeRadSlider.addEventListener('input', () => {
+      state.latticeRadius = parseInt(latticeRadSlider.value);
+      document.getElementById('lattice-radius-val').textContent =
+        state.latticeRadius === 0 ? 'auto' : state.latticeRadius;
+      rebuildLatticeMask();
+      invalidateSpectral();
+      render();
+    });
+  }
 
   document.getElementById('btn-save').addEventListener('click', () => {
     const link = document.createElement('a');
