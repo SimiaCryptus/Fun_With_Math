@@ -3,8 +3,8 @@
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="description" content="Fun With Math – interactive mathematical experiments and visualizations in your browser." />
-      <title>Fun With Math</title>
+     <meta name="description" content="Mathematical Explorations — interactive experiments and visualizations of mathematical concepts, running in the browser." />
+     <title>Mathematical Explorations</title>
       <link rel="stylesheet" href="css/style.css" />
       <script src="js/marked.min.js"></script>
       <style>
@@ -97,6 +97,23 @@
           flex-wrap: wrap;
         }
         .featured-card-icon { font-size: 2.5rem; line-height: 1; }
+       .featured-card-icon,
+       .modal-icon {
+         font-family: 'Fira Code', Consolas, ui-monospace, monospace;
+         font-weight: 600;
+         font-size: 1.5rem;
+         line-height: 1;
+         color: var(--accent2);
+         border: 1px solid var(--border);
+         border-radius: 8px;
+         width: 48px;
+         height: 48px;
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         background: rgba(255,255,255,.03);
+         letter-spacing: .02em;
+       }
         .featured-card-title {
           font-size: 1.4rem;
           color: var(--accent);
@@ -180,7 +197,6 @@
            border-radius: var(--radius) var(--radius) 0 0;
            z-index: 2;
          }
-         .modal-icon { font-size: 2.5rem; line-height: 1; }
          .modal-title {
            font-size: 1.4rem;
            color: var(--accent);
@@ -317,97 +333,101 @@
     <body>
 
     <nav>
-      <a class="brand" href="index.html">∑ Fun With Math</a>
+     <a class="brand" href="index.html">∑ Mathematical Explorations</a>
       <span class="spacer"></span>
       <a href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
 
     <section class="hero">
-      <div class="hero-badge">✨ Interactive experiments, no install required</div>
-      <h1>Fun With Math</h1>
-      <p>Explore beautiful mathematical concepts through interactive visualizations—all running live in your browser.</p>
+     <div class="hero-badge">Interactive experiments · runs entirely in the browser</div>
+     <h1>Mathematical Explorations</h1>
+     <p>A collection of interactive visualizations and computational experiments exploring concepts from analysis, geometry, number theory, and dynamical systems.</p>
     </section>
 
-    <p class="section-title">Featured Labs <span>— research-grade experiments</span></p>
-    <p class="section-subtitle">Long-form interactive labs, each with a deep README explaining the math, motivation, and methods.</p>
+   <p class="section-title">Featured Laboratories <span>— in-depth experiments</span></p>
+   <p class="section-subtitle">Extended interactive studies, each accompanied by documentation describing the underlying mathematics, motivation, and methods.</p>
 
     <div class="featured-grid" id="featuredGrid">
 
        <div class="featured-card" data-href="experiments/symmetry_simple/index.html" data-readme="experiments/symmetry_simple/README.md" tabindex="0" role="button">
         <div class="featured-card-header">
-          <div class="featured-card-icon">🔷</div>
+         <div class="featured-card-icon" aria-hidden="true">SY</div>
           <h2 class="featured-card-title">Space-Color Symmetry</h2>
-           <a class="featured-card-launch" href="experiments/symmetry_simple/index.html">Launch Lab →</a>
+          <a class="featured-card-launch" href="experiments/symmetry_simple/index.html">Open →</a>
         </div>
         <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
        </div>
 
        <div class="featured-card" data-href="experiments/geometric-entropy/index.html" data-readme="experiments/geometric-entropy/README.md" tabindex="0" role="button">
         <div class="featured-card-header">
-          <div class="featured-card-icon">🌌</div>
+         <div class="featured-card-icon" aria-hidden="true">GE</div>
           <h2 class="featured-card-title">Geometric Entropy</h2>
-           <a class="featured-card-launch" href="experiments/geometric-entropy/index.html">Launch Lab →</a>
+          <a class="featured-card-launch" href="experiments/geometric-entropy/index.html">Open →</a>
         </div>
         <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
        </div>
 
          <div class="featured-card" data-href="experiments/spacelike-knots/index.html" data-readme="experiments/spacelike-knots/README.md" tabindex="0" role="button">
             <div class="featured-card-header">
-                <div class="featured-card-icon">🪢</div>
+               <div class="featured-card-icon" aria-hidden="true">SK</div>
                 <h2 class="featured-card-title">Spacelike Knots</h2>
-                 <a class="featured-card-launch" href="experiments/spacelike-knots/index.html">Launch Lab →</a>
+                <a class="featured-card-launch" href="experiments/spacelike-knots/index.html">Open →</a>
             </div>
             <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
          </div>
 
          <div class="featured-card" data-href="experiments/layered_ca/index.html" data-readme="experiments/layered_ca/README.md" tabindex="0" role="button">
             <div class="featured-card-header">
-                <div class="featured-card-icon">📶</div>
+               <div class="featured-card-icon" aria-hidden="true">CA</div>
                 <h2 class="featured-card-title">Layered Cellular Automata</h2>
-                 <a class="featured-card-launch" href="experiments/layered_ca/index.html">Launch Lab →</a>
+                <a class="featured-card-launch" href="experiments/layered_ca/index.html">Open →</a>
             </div>
             <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
          </div>
-
+<!--experiments/Pentagon_Lattice_Geometry-->
+        <div class="featured-card" data-href="experiments/Pentagon_Lattice_Geometry/index.html" data-readme="experiments/Pentagon_Lattice_Geometry/README.md" tabindex="0" role="button">
+            <div class="featured-card-header">
+               <div class="featured-card-icon" aria-hidden="true">PL</div>
+                <h2 class="featured-card-title">Pentagonal Lattice Geometry</h2>
+                <a class="featured-card-launch" href="experiments/Pentagon_Lattice_Geometry/index.html">Open →</a>
+            </div>
+            <div class="readme-preview"><p class="readme-loading">Loading description…</p></div>
+         </div>
     </div>
 
-    <p class="section-title">Quick Experiments <span>— bite-size visualizations</span></p>
-    <p class="section-subtitle">Classic mathematical demos to play with in a few seconds.</p>
+   <p class="section-title">Short Demonstrations <span>— concise visualizations</span></p>
+   <p class="section-subtitle">Compact, self-contained demonstrations of classical mathematical concepts.</p>
 
     <div class="card-grid">
 
       <a class="card" href="experiments/basic/mandelbrot.html">
-        <div class="card-icon">🌀</div>
         <h2>Mandelbrot Set</h2>
-        <p>Dive into the iconic fractal boundary of the complex plane. Zoom and pan to reveal infinite self-similar detail.</p>
+       <p>Explore the fractal boundary defined by iteration of z ↦ z² + c in the complex plane. Pan and zoom to examine its self-similar structure.</p>
         <span class="tag">Complex Numbers</span>
       </a>
 
       <a class="card" href="experiments/basic/primes.html">
-        <div class="card-icon">🔢</div>
         <h2>Prime Number Sieve</h2>
-        <p>Watch the Sieve of Eratosthenes strike out composites in real time, leaving only primes behind.</p>
+       <p>A real-time visualization of the Sieve of Eratosthenes, illustrating the elimination of composite numbers to isolate the primes.</p>
         <span class="tag">Number Theory</span>
       </a>
 
       <a class="card" href="experiments/basic/fourier.html">
-        <div class="card-icon">〰️</div>
         <h2>Fourier Series</h2>
-        <p>Build any periodic waveform from spinning circles. See how harmonics add up to approximate complex shapes.</p>
+       <p>Construct periodic waveforms as sums of rotating phasors, illustrating how harmonic components combine to approximate arbitrary signals.</p>
         <span class="tag">Calculus · Signals</span>
       </a>
 
       <a class="card" href="experiments/basic/collatz.html">
-        <div class="card-icon">📈</div>
         <h2>Collatz Conjecture</h2>
-        <p>Follow any positive integer through the famous 3n+1 sequence. Will it always reach 1? Nobody knows for sure.</p>
+       <p>Trace the trajectory of any positive integer under the 3n + 1 iteration. Whether every sequence reaches 1 remains an open problem.</p>
         <span class="tag">Open Problem</span>
       </a>
 
     </div>
 
     <footer>
-      <p>Built with plain HTML, CSS &amp; JavaScript &mdash;
+     <p>Implemented in plain HTML, CSS, and JavaScript &mdash;
         <a href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">view source on GitHub</a>
       </p>
     </footer>
@@ -415,9 +435,9 @@
      <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-hidden="true">
        <div class="modal-card" id="modalCard">
          <div class="modal-header">
-           <div class="modal-icon" id="modalIcon"></div>
+          <div class="modal-icon" id="modalIcon" aria-hidden="true"></div>
            <h2 class="modal-title" id="modalTitle"></h2>
-           <a class="modal-launch" id="modalLaunch" href="#">Launch Lab →</a>
+          <a class="modal-launch" id="modalLaunch" href="#">Open →</a>
            <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
          </div>
          <div class="modal-body" id="modalBody"></div>
