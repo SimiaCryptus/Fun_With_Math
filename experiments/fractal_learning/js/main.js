@@ -30,7 +30,12 @@ const state = {
   K: 2,
   N: 7,
   enumeration: "commutative",
-  target: presetCircle(150),
+   // `targetSource` is the user-provided target (drawn or preset). `target` is
+   // a resampled version of length == orbit size, which is what the loss and
+   // renderer actually consume. Keeping the source lets us re-resample when N
+   // or K changes the orbit size.
+   targetSource: presetCircle(150),
+   target: presetCircle(150),
   model: null,
   optimizer: null,
   optimizerName: "adam",
@@ -46,6 +51,28 @@ const state = {
 
 const view = new View($("view"), $("lossCanvas"));
 let panel = null;
+// ---------- target resampling ----------
+// Resample `src` to exactly `n` points. Deterministic given (src, n):
+//   - n == 0       -> []
+//   - n <= len     -> evenly spaced subsample
+//   - n  > len     -> repeat with even spacing (wrap-around)
+// This preserves shape/order without random jitter.
+function resampleTo(src, n) {
+   if (n <= 0 || src.length === 0) return [];
+   const out = new Array(n);
+   for (let i = 0; i < n; i++) {
+     const idx = Math.floor((i * src.length) / n) % src.length;
+     const p = src[idx];
+     out[i] = [p[0], p[1]];
+   }
+   return out;
+}
+function rebuildResampledTarget() {
+   const want = state.orbitSize || 0;
+   state.target = resampleTo(state.targetSource, want);
+   invalidateLossFn();
+}
+
 
 // ---------- words cache ----------
 function getWords() {
@@ -62,8 +89,9 @@ function getWords() {
          state.orbitSize = state.words.length;
        }
     state.wordsKey = key;
-    // Invalidate lossFn (depends on words)
-    invalidateLossFn();
+     // Orbit size changed -> resample target to match, which also invalidates
+     // the loss closure (since Q changes).
+     rebuildResampledTarget();
   }
   return state.words;
 }
@@ -271,15 +299,16 @@ function bindUI() {
 
   // Target
   $("targetClear").addEventListener("click", () => {
-    state.target = [];
+     state.targetSource = [];
+     state.target = [];
     invalidateLossFn();
     draw();
   });
   $("loadPreset").addEventListener("click", () => {
     const v = $("targetPreset").value;
     if (!v) return;
-    state.target = PRESETS[v]();
-    invalidateLossFn();
+     state.targetSource = PRESETS[v]();
+     rebuildResampledTarget();
     draw();
   });
 
@@ -302,13 +331,14 @@ function bindUI() {
     const sx = (e.clientX - rect.left) * dpr;
     const sy = (e.clientY - rect.top) * dpr;
     const [wx, wy] = view.s2w(sx, sy);
-    const last = state.target[state.target.length - 1];
+     const src = state.targetSource;
+     const last = src[src.length - 1];
     if (last) {
       const d = Math.hypot(wx - last[0], wy - last[1]);
       if (d < 0.015) return;
     }
-    state.target.push([wx, wy]);
-    invalidateLossFn();
+     src.push([wx, wy]);
+     rebuildResampledTarget();
     draw();
   }
 
