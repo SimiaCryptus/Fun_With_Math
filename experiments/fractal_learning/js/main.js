@@ -9,6 +9,7 @@ import { OptimizerQQN } from "./optimizer-qqn.js";
 import { PRESETS, presetCircle } from "./presets.js";
 import { View } from "./view.js";
 import { TransformsPanel } from "./ui-transforms.js";
+   import { commutativeOrbitSize } from "./orbit-commutative.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -50,7 +51,16 @@ let panel = null;
 function getWords() {
   const key = `${state.K}|${state.N}|${state.enumeration}`;
   if (key !== state.wordsKey) {
-    state.words = enumerate(state.K, state.N, state.enumeration);
+       // Fast path: commutative enumeration uses the binary-power DP
+       // (algo.md). We don't need the explicit word list at all; we mark
+       // state.words = null and just track the orbit size for the HUD.
+       if (state.enumeration === "commutative") {
+         state.words = null;
+         state.orbitSize = commutativeOrbitSize(state.K, state.N);
+       } else {
+         state.words = enumerate(state.K, state.N, state.enumeration);
+         state.orbitSize = state.words.length;
+       }
     state.wordsKey = key;
     // Invalidate lossFn (depends on words)
     invalidateLossFn();
@@ -66,6 +76,7 @@ function readHparams() {
     lamb: parseFloat($("lamb").value) || 0,
     lamC: parseFloat($("lamC").value) || 0,
     eps: parseFloat($("eps").value) || 0,
+       N: state.N,
   };
 }
 
@@ -76,7 +87,7 @@ function invalidateLossFn() {
 
 function ensureLossFn() {
   const hp = readHparams();
-  const sig = `${state.target.length}|${state.wordsKey}|${JSON.stringify(hp)}`;
+     const sig = `${state.target.length}|${state.wordsKey}|${state.N}|${JSON.stringify(hp)}`;
   if (state.lossFn && sig === state.lossHparamSig) return state.lossFn;
   invalidateLossFn();
   const words = getWords();
@@ -104,7 +115,10 @@ function buildOptimizer() {
 // ---------- forward/render only ----------
 function forwardRender() {
   const words = getWords();
-  const orbitT = state.model.computeOrbit(words);
+     const orbitT =
+       words === null
+         ? state.model.computeCommutativeOrbit(state.N)
+         : state.model.computeOrbit(words);
   const orbit = orbitT.arraySync();
   orbitT.dispose();
   return orbit;
@@ -125,22 +139,25 @@ function trainStep() {
 function draw() {
   const orbit = forwardRender();
   view.drawGrid();
-  view.drawPoints(state.target, "#3fb950", 2.5);
-  view.drawPoints(orbit, "#58a6ff", 1.8);
+   const dpr = window.devicePixelRatio || 1;
+   view.drawPoints(state.target, "#3fb950", 2.0 * dpr);
+   view.drawPoints(orbit, "#58a6ff", 2.6 * dpr);
   view.drawFixedPoints(state.model.readTransforms());
   view.drawLossCurve(state.lossHistory);
   updateHUD(orbit.length);
 }
 
 function updateHUD(orbitN) {
+     const words = getWords();
+     const orbSize = words === null ? state.orbitSize : words.length;
   $("targCount").textContent = state.target.length;
-  $("orbitCount").textContent = orbitN ?? getWords().length;
+     $("orbitCount").textContent = orbitN ?? orbSize;
   $("iterVal").textContent = state.iter;
   $("lossVal").textContent =
     state.lastLoss == null ? "—" : state.lastLoss.toExponential(3);
   $("activeCount").textContent = state.model.activeCount();
   $("totalCount").textContent = state.model.K;
-  $("orbitSize").textContent = `orbit size: ${getWords().length} words`;
+     $("orbitSize").textContent = `orbit size: ${orbSize} words${words === null ? " (DP)" : ""}`;
 }
 
 // ---------- UI wiring ----------

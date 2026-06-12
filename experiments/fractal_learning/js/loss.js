@@ -57,13 +57,17 @@ export function regularizers(
  * Full training loss builder (returns a closure that allocates target Q once).
  * @param {IFSModel} model
  * @param {number[][]} targetArr  list of [x,y]
- * @param {number[][]} words
+    * @param {number[][]|null} words  list of words (ordered or commutative);
+    *   if null, the commutative fast path is used with depth `hparams.N`.
  */
 export function makeLossFn(model, targetArr, words, hparams) {
   const Q = tf.tensor2d(targetArr, [targetArr.length, 2]);
   const lossFn = () => {
     return tf.tidy(() => {
-      const P = model.computeOrbit(words);
+         const P =
+           words === null
+             ? model.computeCommutativeOrbit(hparams.N)
+             : model.computeOrbit(words);
       const chamfer = chamferLoss(P, Q, hparams.alpha, hparams.beta);
       const reg = regularizers(model, hparams);
       return tf.add(chamfer, reg);
