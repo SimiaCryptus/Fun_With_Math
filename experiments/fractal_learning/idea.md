@@ -88,15 +88,15 @@ Define the one-sided Chamfer terms:
 $$
 D_{P \to Q}(\theta)
 \;=\; \frac{1}{|\mathcal{P}_N|}
-      \sum_{p \in \mathcal{P}_N(\theta)}
-      \min_{q \in \mathcal{Q}} \; \|p - q\|_2^2,
+\sum_{p \in \mathcal{P}_N(\theta)}
+\min_{q \in \mathcal{Q}} \; \|p - q\|_2^2,
 $$
 
 $$
 D_{Q \to P}(\theta)
 \;=\; \frac{1}{|\mathcal{Q}|}
-      \sum_{q \in \mathcal{Q}}
-      \min_{p \in \mathcal{P}_N(\theta)} \; \|p - q\|_2^2.
+\sum_{q \in \mathcal{Q}}
+\min_{p \in \mathcal{P}_N(\theta)} \; \|p - q\|_2^2.
 $$
 
 The symmetric Chamfer loss is

@@ -16,12 +16,12 @@ Then navigate to the URL shown in your terminal (e.g. `http://localhost:3000` fo
 
 ## 🧮 Experiments
 
-| Experiment | Description |
-|---|---|
-| [Mandelbrot Set](experiments/basic/mandelbrot.html) | Zoom and pan the iconic complex-plane fractal |
-| [Prime Number Sieve](experiments/basic/primes.html) | Animated Sieve of Eratosthenes |
-| [Fourier Series](experiments/basic/fourier.html) | Build waveforms from rotating circles |
-| [Collatz Conjecture](experiments/basic/collatz.html) | Visualize the 3n+1 sequence |
+| Experiment                                           | Description                                   |
+| ---------------------------------------------------- | --------------------------------------------- |
+| [Mandelbrot Set](experiments/basic/mandelbrot.html)  | Zoom and pan the iconic complex-plane fractal |
+| [Prime Number Sieve](experiments/basic/primes.html)  | Animated Sieve of Eratosthenes                |
+| [Fourier Series](experiments/basic/fourier.html)     | Build waveforms from rotating circles         |
+| [Collatz Conjecture](experiments/basic/collatz.html) | Visualize the 3n+1 sequence                   |
 
 ## 🗂 Project Structure
 

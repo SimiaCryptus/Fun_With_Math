@@ -1,0 +1,27 @@
+{
+  "type": "module",
+  "name": "mathematical-explorations",
+  "version": "0.1.0",
+  "scripts": {
+    "test": "node test/run-all.js",
+    "serve": "npx http-server -p 8080 -c-1",
+    "lint": "eslint '**/*.js'",
+    "lint:fix": "eslint --fix '**/*.js'",
+    "format": "prettier --write '**/*.js' '*.html' '*.css' '*.md'",
+    "format:json": "prettier --write '**/*.json'",
+    "format:check": "prettier --check '**/*.js' '*.html' '*.css' '*.md'",
+    "validate": "npm run lint && npm run format:check && npm run test"
+  },
+  "dependencies": {
+    "canvas": "^3.2.3",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@bubblewrap/cli": "^1.24.1",
+    "@eslint/js": "^9.0.0",
+    "eslint": "^9.0.0",
+    "globals": "^15.0.0",
+    "prettier": "^3.0.0"
+  }
+}

@@ -1,286 +1,311 @@
 <!doctype html>
-    <html lang="en">
-    <head>
-    <meta charset="utf-8" />
-    <title>Affine IFS Point-Set Fitting — Lab</title>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>Affine IFS Point-Set Fitting — Lab (TF.js)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
     <style>
-      :root {
-        --bg: #0e1116;
-        --panel: #161b22;
-        --ink: #d4d4d4;
-        --muted: #7d8590;
-        --accent: #58a6ff;
-        --accent2: #ff7b72;
-        --good: #3fb950;
-        --warn: #d29922;
-        --border: #30363d;
-      }
-      * { box-sizing: border-box; }
-      html, body {
-        margin: 0; padding: 0; height: 100%;
-        background: var(--bg); color: var(--ink);
-        font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
-        font-size: 13px;
-      }
-      .app {
-        display: grid;
-        grid-template-columns: 320px 1fr 280px;
-        grid-template-rows: 100vh;
-        gap: 0;
-      }
-      .panel {
-        background: var(--panel);
-        border-right: 1px solid var(--border);
-        overflow-y: auto;
-        padding: 12px;
-      }
-      .panel.right { border-right: none; border-left: 1px solid var(--border); }
-      .center {
-        display: flex; flex-direction: column;
-        background: #0a0d12;
-      }
-      canvas#view {
-        flex: 1;
-        width: 100%; height: 100%;
-        display: block;
-        cursor: crosshair;
-      }
-      .toolbar {
-        display: flex; gap: 6px; padding: 8px;
-        border-bottom: 1px solid var(--border);
-        background: var(--panel);
-        flex-wrap: wrap;
-      }
-      h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
-           color: var(--muted); margin: 14px 0 6px; }
-      h2:first-child { margin-top: 0; }
-      label { display: block; margin: 6px 0 2px; color: var(--muted); }
-      .row { display: flex; gap: 6px; align-items: center; }
-      .row > * { flex: 1; }
-      input[type="number"], input[type="text"], select {
-        background: #0d1117; color: var(--ink);
-        border: 1px solid var(--border); border-radius: 4px;
-        padding: 4px 6px; width: 100%; font-family: inherit; font-size: 12px;
-      }
-      input[type="range"] { width: 100%; }
-      button {
-        background: #21262d; color: var(--ink);
-        border: 1px solid var(--border); border-radius: 4px;
-        padding: 6px 10px; cursor: pointer; font-family: inherit; font-size: 12px;
-      }
-      button:hover { background: #30363d; }
-      button.primary { background: #1f6feb; border-color: #1f6feb; color: white; }
-      button.primary:hover { background: #2f7af0; }
-      button.danger { background: #5a1d24; border-color: #6e2530; }
-      button.good { background: #1f5e2a; border-color: #2a7c39; }
-      .pill {
-        display: inline-block;
-        padding: 2px 6px;
-        border-radius: 8px;
-        background: #21262d; color: var(--muted);
-        font-size: 11px;
-        font-family: ui-monospace, monospace;
-      }
-      .stat {
-        display: flex; justify-content: space-between;
-        font-family: ui-monospace, monospace;
-        padding: 2px 0;
-      }
-      .stat b { color: var(--accent); }
-      .legend {
-        display: flex; flex-direction: column; gap: 4px;
-        font-size: 12px;
-      }
-      .swatch {
-        display: inline-block; width: 10px; height: 10px;
-        border-radius: 2px; margin-right: 6px; vertical-align: middle;
-      }
-      .small { font-size: 11px; color: var(--muted); }
-      .transforms {
-        display: flex; flex-direction: column; gap: 8px;
-      }
-      .tf {
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        padding: 6px;
-        background: #0d1117;
-        font-family: ui-monospace, monospace;
-        font-size: 11px;
-      }
-      .tf-head { display: flex; justify-content: space-between; margin-bottom: 4px; }
-      .matrix-row {
-        display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
-      }
-      .matrix-row input { padding: 2px 4px; font-size: 11px; font-family: ui-monospace, monospace; }
-      details { margin: 4px 0; }
-      summary { cursor: pointer; color: var(--muted); user-select: none; }
-      .checkbox { display: flex; align-items: center; gap: 6px; }
-      .checkbox input { width: auto; flex: 0; }
-      .loss-canvas {
-        width: 100%; height: 100px;
-        background: #0d1117;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-      }
-      .kbd {
-        font-family: ui-monospace, monospace;
-        background: #21262d;
-        border: 1px solid var(--border);
-        border-radius: 3px;
-        padding: 1px 4px;
-        font-size: 10px;
-      }
+        :root {
+          --bg: #0e1116;
+          --panel: #161b22;
+          --ink: #d4d4d4;
+          --muted: #7d8590;
+          --accent: #58a6ff;
+          --accent2: #ff7b72;
+          --good: #3fb950;
+          --warn: #d29922;
+          --border: #30363d;
+        }
+        * { box-sizing: border-box; }
+        html, body {
+          margin: 0; padding: 0; height: 100%;
+          background: var(--bg); color: var(--ink);
+          font-family: ui-sans-serif, -apple-system, system-ui, "Segoe UI", Roboto, sans-serif;
+          font-size: 13px;
+        }
+        .app {
+          display: grid;
+          grid-template-columns: 320px 1fr 320px;
+          grid-template-rows: 100vh;
+          gap: 0;
+        }
+        .panel {
+          background: var(--panel);
+          border-right: 1px solid var(--border);
+          overflow-y: auto;
+          padding: 12px;
+        }
+        .panel.right { border-right: none; border-left: 1px solid var(--border); }
+        .center {
+          display: flex; flex-direction: column;
+          background: #0a0d12;
+        }
+        canvas#view {
+          flex: 1;
+          width: 100%; height: 100%;
+          display: block;
+          cursor: crosshair;
+        }
+        .toolbar {
+          display: flex; gap: 6px; padding: 8px;
+          border-bottom: 1px solid var(--border);
+          background: var(--panel);
+          flex-wrap: wrap;
+          align-items: center;
+        }
+        h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+             color: var(--muted); margin: 14px 0 6px; }
+        h2:first-child { margin-top: 0; }
+        label { display: block; margin: 6px 0 2px; color: var(--muted); }
+        .row { display: flex; gap: 6px; align-items: center; }
+        .row > * { flex: 1; }
+        input[type="number"], input[type="text"], select {
+          background: #0d1117; color: var(--ink);
+          border: 1px solid var(--border); border-radius: 4px;
+          padding: 4px 6px; width: 100%; font-family: inherit; font-size: 12px;
+        }
+        input[type="range"] { width: 100%; }
+        button {
+          background: #21262d; color: var(--ink);
+          border: 1px solid var(--border); border-radius: 4px;
+          padding: 6px 10px; cursor: pointer; font-family: inherit; font-size: 12px;
+        }
+        button:hover { background: #30363d; }
+        button.primary { background: #1f6feb; border-color: #1f6feb; color: white; }
+        button.primary:hover { background: #2f7af0; }
+        button.danger { background: #5a1d24; border-color: #6e2530; }
+        button.good { background: #1f5e2a; border-color: #2a7c39; }
+        .pill {
+          display: inline-block;
+          padding: 2px 6px;
+          border-radius: 8px;
+          background: #21262d; color: var(--muted);
+          font-size: 11px;
+          font-family: ui-monospace, monospace;
+        }
+        .stat {
+          display: flex; justify-content: space-between;
+          font-family: ui-monospace, monospace;
+          padding: 2px 0;
+        }
+        .stat b { color: var(--accent); }
+        .legend {
+          display: flex; flex-direction: column; gap: 4px;
+          font-size: 12px;
+        }
+        .swatch {
+          display: inline-block; width: 10px; height: 10px;
+          border-radius: 2px; margin-right: 6px; vertical-align: middle;
+        }
+        .small { font-size: 11px; color: var(--muted); }
+        .transforms {
+          display: flex; flex-direction: column; gap: 8px;
+        }
+        .tf {
+          border: 1px solid var(--border);
+          border-radius: 4px;
+          padding: 6px;
+          background: #0d1117;
+          font-family: ui-monospace, monospace;
+          font-size: 11px;
+        }
+        .tf.frozen { border-color: #d29922; background: #1a1410; }
+        .tf-head {
+          display: flex; justify-content: space-between;
+          align-items: center; margin-bottom: 4px;
+          gap: 6px;
+        }
+        .tf-head .left { display: flex; align-items: center; gap: 6px; }
+        .tf-head .right { display: flex; align-items: center; gap: 4px; }
+        .tf-head .badge {
+          font-size: 9px; padding: 1px 4px; border-radius: 3px;
+          background: #21262d; color: var(--muted);
+        }
+        .tf-head .badge.frozen { background: #d29922; color: #1a1410; }
+        .matrix-row {
+          display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
+          margin-bottom: 2px;
+        }
+        .matrix-row input { padding: 2px 4px; font-size: 11px; font-family: ui-monospace, monospace; }
+        .tf .meta { display: flex; justify-content: space-between; margin-top: 4px; }
+        details { margin: 4px 0; }
+        summary { cursor: pointer; color: var(--muted); user-select: none; }
+        .checkbox { display: flex; align-items: center; gap: 6px; }
+        .checkbox input { width: auto; flex: 0; }
+        .loss-canvas {
+          width: 100%; height: 100px;
+          background: #0d1117;
+          border: 1px solid var(--border);
+          border-radius: 4px;
+        }
+        .kbd {
+          font-family: ui-monospace, monospace;
+          background: #21262d;
+          border: 1px solid var(--border);
+          border-radius: 3px;
+          padding: 1px 4px;
+          font-size: 10px;
+        }
+        .tf-actions { display: flex; gap: 4px; margin-top: 4px; }
+        .tf-actions button { padding: 2px 6px; font-size: 10px; flex: 1; }
+        .bulk-actions { display: flex; gap: 4px; margin-bottom: 8px; }
+        .bulk-actions button { flex: 1; padding: 4px 6px; font-size: 11px; }
     </style>
-    </head>
-    <body>
-    <div class="app">
-      <!-- LEFT PANEL: controls -->
-      <div class="panel left">
+</head>
+<body>
+<div class="app">
+    <!-- LEFT PANEL: controls -->
+    <div class="panel left">
+        <h2>Backend</h2>
+        <div class="small" id="backendInfo">tf.js loading…</div>
+
         <h2>Model</h2>
         <div class="row">
-          <div>
-            <label>K (transforms)</label>
-            <input type="number" id="K" value="2" min="1" max="6" step="1" />
-          </div>
-          <div>
-            <label>N (depth)</label>
-            <input type="number" id="N" value="7" min="1" max="12" step="1" />
-          </div>
+            <div>
+                <label>K (transforms)</label>
+                <input id="K" max="6" min="1" step="1" type="number" value="2"/>
+            </div>
+            <div>
+                <label>N (depth)</label>
+                <input id="N" max="12" min="1" step="1" type="number" value="7"/>
+            </div>
         </div>
         <label>Enumeration</label>
         <select id="enum">
-          <option value="ordered">Ordered (K^N words)</option>
-          <option value="commutative" selected>Commutative (multisets)</option>
+            <option value="ordered">Ordered (K^N words)</option>
+            <option selected value="commutative">Commutative (multisets)</option>
         </select>
         <div class="small" id="orbitSize">orbit size: ?</div>
 
         <h2>Optimizer</h2>
+        <label>algorithm</label>
+        <select id="optim">
+            <option selected value="adam">Adam</option>
+            <option value="lbfgs">L-BFGS</option>
+            <option value="qqn">QQN</option>
+        </select>
         <div class="row">
-          <div>
-            <label>learning rate</label>
-            <input type="number" id="lr" value="0.02" step="0.005" />
-          </div>
-          <div>
-            <label>optimizer</label>
-            <select id="optim">
-              <option value="adam" selected>Adam</option>
-              <option value="sgd">SGD</option>
-            </select>
-          </div>
+            <div>
+                <label>learning rate</label>
+                <input id="lr" step="0.005" type="number" value="0.02"/>
+            </div>
+            <div>
+                <label>steps / click</label>
+                <input id="steps" min="1" step="5" type="number" value="20"/>
+            </div>
         </div>
-        <div class="row">
-          <div>
-            <label>steps / click</label>
-            <input type="number" id="steps" value="50" step="10" min="1"/>
-          </div>
-          <div>
-            <label>fps cap</label>
-            <input type="number" id="fps" value="60" step="5" min="1" max="240"/>
-          </div>
-        </div>
+        <label>fps cap</label>
+        <input id="fps" max="240" min="1" step="5" type="number" value="60"/>
 
         <h2>Loss</h2>
         <div class="row">
-          <div>
-            <label>α (P→Q)</label>
-            <input type="number" id="alpha" value="1" step="0.1" />
-          </div>
-          <div>
-            <label>β (Q→P)</label>
-            <input type="number" id="beta" value="1" step="0.1" />
-          </div>
+            <div>
+                <label>α (P→Q)</label>
+                <input id="alpha" step="0.1" type="number" value="1"/>
+            </div>
+            <div>
+                <label>β (Q→P)</label>
+                <input id="beta" step="0.1" type="number" value="1"/>
+            </div>
         </div>
 
         <h2>Regularizers</h2>
         <label>λ_A (||A||²_F)</label>
-        <input type="number" id="lamA" value="0" step="0.001" />
+        <input id="lamA" step="0.001" type="number" value="0"/>
         <label>λ_b (||b||²)</label>
-        <input type="number" id="lamb" value="0" step="0.001" />
-        <label>contractivity penalty (max σ(A) ≤ 1-ε)</label>
+        <input id="lamb" step="0.001" type="number" value="0"/>
+        <label>contractivity penalty (||A||_F ≤ √2(1-ε))</label>
         <div class="row">
-          <div>
-            <input type="number" id="lamC" value="0.1" step="0.05" />
-            <span class="small">weight</span>
-          </div>
-          <div>
-            <input type="number" id="eps" value="0.02" step="0.01" />
-            <span class="small">ε</span>
-          </div>
+            <div>
+                <input id="lamC" step="0.05" type="number" value="0.1"/>
+                <span class="small">weight</span>
+            </div>
+            <div>
+                <input id="eps" step="0.01" type="number" value="0.02"/>
+                <span class="small">ε</span>
+            </div>
         </div>
 
         <h2>Initialization</h2>
         <div class="row">
-          <button id="initSmall">small random</button>
-          <button id="initRot">rotations</button>
+            <button id="initSmall">small random</button>
+            <button id="initRot">rotations</button>
         </div>
         <div class="row">
-          <button id="initShrink">contractions</button>
-          <button id="initSierp">Sierpinski-3</button>
+            <button id="initShrink">contractions</button>
+            <button id="initSierp">Sierpinski-3</button>
         </div>
         <div class="row">
-          <button id="initBarnsley">Barnsley (K=4)</button>
+            <button id="initBarnsley">Barnsley (K=4)</button>
         </div>
         <label>random seed</label>
-        <input type="number" id="seed" value="1" />
+        <input id="seed" type="number" value="1"/>
 
         <h2>Run</h2>
         <div class="row">
-          <button id="step" class="primary">Step</button>
-          <button id="run" class="good">▶ Run</button>
-          <button id="reset" class="danger">Reset</button>
+            <button class="primary" id="step">Step</button>
+            <button class="good" id="run">▶ Run</button>
+            <button class="danger" id="reset">Reset</button>
         </div>
 
         <h2>Loss curve</h2>
         <canvas class="loss-canvas" id="lossCanvas"></canvas>
-      </div>
+    </div>
 
-      <!-- CENTER: canvas viewport -->
-      <div class="center">
+    <!-- CENTER: canvas viewport -->
+    <div class="center">
         <div class="toolbar">
-          <button id="targetClear">Clear target</button>
-          <select id="targetPreset">
-            <option value="">-- preset --</option>
-            <option value="circle">Circle</option>
-            <option value="square">Square outline</option>
-            <option value="heart">Heart</option>
-            <option value="spiral">Spiral</option>
-            <option value="sierpinski">Sierpinski triangle</option>
-            <option value="fern">Barnsley fern</option>
-            <option value="cantor">Cantor dust</option>
-            <option value="grid">Grid</option>
-          </select>
-          <button id="loadPreset">Load preset</button>
-          <span class="pill"><span id="targCount">0</span> target pts</span>
-          <span class="pill"><span id="orbitCount">0</span> orbit pts</span>
-          <span class="pill">loss: <span id="lossVal">—</span></span>
-          <span class="pill">iter: <span id="iterVal">0</span></span>
-          <span style="flex:1"></span>
-          <span class="small">click/drag to draw target • <span class="kbd">Space</span> step</span>
+            <button id="targetClear">Clear target</button>
+            <select id="targetPreset">
+                <option value="">-- preset --</option>
+                <option value="circle">Circle</option>
+                <option value="square">Square outline</option>
+                <option value="heart">Heart</option>
+                <option value="spiral">Spiral</option>
+                <option value="sierpinski">Sierpinski triangle</option>
+                <option value="fern">Barnsley fern</option>
+                <option value="cantor">Cantor dust</option>
+                <option value="grid">Grid</option>
+            </select>
+            <button id="loadPreset">Load preset</button>
+            <span class="pill"><span id="targCount">0</span> target pts</span>
+            <span class="pill"><span id="orbitCount">0</span> orbit pts</span>
+            <span class="pill">loss: <span id="lossVal">—</span></span>
+            <span class="pill">iter: <span id="iterVal">0</span></span>
+            <span class="pill">active θ: <span id="activeCount">0</span>/<span id="totalCount">0</span></span>
+            <span style="flex:1"></span>
+            <span class="small">click/drag draw • <span class="kbd">Space</span> step</span>
         </div>
         <canvas id="view"></canvas>
-      </div>
+    </div>
 
-      <!-- RIGHT PANEL: transforms inspector -->
-      <div class="panel right">
+    <!-- RIGHT PANEL: transforms inspector -->
+    <div class="panel right">
         <h2>Transforms θ</h2>
         <div class="legend">
-          <div><span class="swatch" style="background:#3fb950"></span>target Q</div>
-          <div><span class="swatch" style="background:#58a6ff"></span>orbit P_N(θ)</div>
-          <div><span class="swatch" style="background:#ff7b72"></span>fixed points</div>
+            <div><span class="swatch" style="background:#3fb950"></span>target Q</div>
+            <div><span class="swatch" style="background:#58a6ff"></span>orbit P_N(θ)</div>
+            <div><span class="swatch" style="background:#ff7b72"></span>fixed points</div>
         </div>
-        <div id="transforms" class="transforms" style="margin-top:8px;"></div>
+        <div class="bulk-actions" style="margin-top:8px;">
+            <button id="freezeAll">Freeze all</button>
+            <button id="unfreezeAll">Unfreeze all</button>
+            <button id="invertFreeze">Invert</button>
+        </div>
+        <div class="transforms" id="transforms"></div>
 
         <h2>Notes</h2>
         <div class="small">
-          Each transform is T_k(x)=A_k x + b_k in ℝ². Orbit P_N(θ) is
-          the set of points obtained by applying length-N words (commutative
-          ↔ multiset) starting from 0. Loss is symmetric Chamfer
-          (squared NN distance). Gradients are computed in closed form
-          and accumulated via reverse-mode through each path.
+            Each transform is T_k(x)=A_k x + b_k in ℝ². The orbit P_N(θ) is
+            the set of points obtained by applying length-N words (commutative
+            ↔ multiset) starting from 0. Loss is symmetric Chamfer
+            (squared NN distance). Gradients flow through TensorFlow.js
+            autodiff. Frozen transforms are held constant — their gradients
+            are masked to zero before the optimizer step.
         </div>
-      </div>
     </div>
+</div>
 
-    <script type="module" src="./lab.js"></script>
-    </body>
-    </html>
+<script src="./js/main.js" type="module"></script>
+</body>
+</html>

@@ -18,7 +18,8 @@ export function mod(a, n) {
 
 // Rotate a 2D point by angle (radians) around origin.
 export function rot2(x, y, angle) {
-  const c = Math.cos(angle), s = Math.sin(angle);
+  const c = Math.cos(angle),
+    s = Math.sin(angle);
   return [c * x - s * y, s * x + c * y];
 }
 
@@ -52,7 +53,7 @@ export function ngonVertices(cx, cy, n, orient, sigma) {
   const baseAngle = sigma === 0 ? Math.PI / 2 : -Math.PI / 2;
   const verts = [];
   for (let k = 0; k < n; k++) {
-    const angle = baseAngle + (orient + k) * (2 * Math.PI / n);
+    const angle = baseAngle + (orient + k) * ((2 * Math.PI) / n);
     verts.push([cx + R * Math.cos(angle), cy + R * Math.sin(angle)]);
   }
   return verts;
@@ -89,7 +90,7 @@ export function ngonNeighbour(cx, cy, n, orient, sigma, k) {
 
   // For odd n, sigma must flip for the shared edge to match.
   // For even n, a pure rotation by π about the midpoint works.
-  const newSigma = (n % 2 === 1) ? 1 - sigma : sigma;
+  const newSigma = n % 2 === 1 ? 1 - sigma : sigma;
 
   // Find orient shift: try all n values and pick the one where
   // the neighbour's edge kk shares the same midpoint as edge k of self.
@@ -160,16 +161,16 @@ export function buildSierpinski(depth) {
   const byId = new Map();
 
   function triVerts(bx, by, s) {
-    const h = s * SQRT3 / 2;
+    const h = (s * SQRT3) / 2;
     return [
-      [bx,           by    ],
-      [bx + s,       by    ],
-      [bx + s / 2,   by + h],
+      [bx, by],
+      [bx + s, by],
+      [bx + s / 2, by + h],
     ];
   }
 
   function triCentroid(bx, by, s) {
-    const h = s * SQRT3 / 2;
+    const h = (s * SQRT3) / 2;
     return [bx + s / 2, by + h / 3];
   }
 
@@ -195,14 +196,16 @@ export function buildSierpinski(depth) {
       centroidF: [cx, cy],
       orient: 0,
       sigma: 0,
-      sheet: d % 5,   // use depth mod 5 for color variety
+      sheet: d % 5, // use depth mod 5 for color variety
       depth: d,
       verts,
       vertsF: verts,
       neighbors: [null, null, null],
       neighborSheetDeltas: [0, 0, 0],
       // Sierpinski-specific
-      bx, by, s,
+      bx,
+      by,
+      s,
       isSierpinski: true,
       n: 3,
     };
@@ -216,12 +219,12 @@ export function buildSierpinski(depth) {
     const idx = expand(bx, by, s, d, -1, -1);
     if (d >= depth) return idx;
 
-    const h = s * SQRT3 / 2;
+    const h = (s * SQRT3) / 2;
     const ns = s / 2;
     const children = [
-      [bx,           by,       ns],
-      [bx + ns,      by,       ns],
-      [bx + ns / 2,  by + h / 2, ns],
+      [bx, by, ns],
+      [bx + ns, by, ns],
+      [bx + ns / 2, by + h / 2, ns],
     ];
 
     for (let k = 0; k < 3; k++) {
@@ -238,7 +241,14 @@ export function buildSierpinski(depth) {
   // For simplicity we leave sibling links as null; the CA will still
   // work using parent→child links.
 
-  return { tiles, byId, groupOrder: 5, radius: depth, isSierpinski: true, n: 3 };
+  return {
+    tiles,
+    byId,
+    groupOrder: 5,
+    radius: depth,
+    isSierpinski: true,
+    n: 3,
+  };
 }
 
 // ── Lattice builder for regular n-gons ───────────────────────────────────────
@@ -283,7 +293,14 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
     for (let k = 0; k < n; k++) {
       if (t.neighbors[k] !== null) continue;
 
-      const nb = ngonNeighbour(t.centroid[0], t.centroid[1], n, t.orient, t.sigma, k);
+      const nb = ngonNeighbour(
+        t.centroid[0],
+        t.centroid[1],
+        n,
+        t.orient,
+        t.sigma,
+        k,
+      );
       const delta = k % groupOrder;
       const newSheet = mod(t.sheet + delta, groupOrder);
       const [ncx, ncy] = nb.centroid;
@@ -318,30 +335,36 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
 
 export function fieldInfoForN(n) {
   const fields = {
-    3:  { field: "ℚ(√3)",        group: "ℤ₆",  result: "Periodic lattice (d=2)" },
-    4:  { field: "ℚ",            group: "ℤ₄",  result: "Periodic lattice (d=2)" },
-    5:  { field: "ℚ(√5)",        group: "ℤ₅",  result: "Multi-sheeted (2<d<3)" },
-    6:  { field: "ℚ(√3)",        group: "ℤ₆",  result: "Periodic lattice (d=2)" },
-    7:  { field: "ℚ(cos 2π/7)",  group: "ℤ₇",  result: "Non-reconnective (tree)" },
-    8:  { field: "ℚ(√2)",        group: "ℤ₈",  result: "Quasicrystal / multi-sheeted" },
-    9:  { field: "ℚ(cos 2π/9)",  group: "ℤ₉",  result: "Non-reconnective (tree)" },
-    10: { field: "ℚ(√5)",        group: "ℤ₁₀", result: "Quasicrystal / multi-sheeted" },
-    12: { field: "ℚ(√3)",        group: "ℤ₁₂", result: "Periodic lattice (d=2)" },
+    3: { field: "ℚ(√3)", group: "ℤ₆", result: "Periodic lattice (d=2)" },
+    4: { field: "ℚ", group: "ℤ₄", result: "Periodic lattice (d=2)" },
+    5: { field: "ℚ(√5)", group: "ℤ₅", result: "Multi-sheeted (2<d<3)" },
+    6: { field: "ℚ(√3)", group: "ℤ₆", result: "Periodic lattice (d=2)" },
+    7: { field: "ℚ(cos 2π/7)", group: "ℤ₇", result: "Non-reconnective (tree)" },
+    8: { field: "ℚ(√2)", group: "ℤ₈", result: "Quasicrystal / multi-sheeted" },
+    9: { field: "ℚ(cos 2π/9)", group: "ℤ₉", result: "Non-reconnective (tree)" },
+    10: {
+      field: "ℚ(√5)",
+      group: "ℤ₁₀",
+      result: "Quasicrystal / multi-sheeted",
+    },
+    12: { field: "ℚ(√3)", group: "ℤ₁₂", result: "Periodic lattice (d=2)" },
   };
-  return fields[n] || {
-    field: `ℚ(cos 2π/${n})`,
-    group: `ℤ${n}`,
-    result: "Non-reconnective (tree)",
-  };
+  return (
+    fields[n] || {
+      field: `ℚ(cos 2π/${n})`,
+      group: `ℤ${n}`,
+      result: "Non-reconnective (tree)",
+    }
+  );
 }
 
 export const POLY_PRESETS = {
-  triangle:   { n: 3,  label: "Equilateral Triangle" },
-  square:     { n: 4,  label: "Square" },
-  pentagon:   { n: 5,  label: "Regular Pentagon" },
-  hexagon:    { n: 6,  label: "Regular Hexagon" },
-  heptagon:   { n: 7,  label: "Regular Heptagon" },
-  octagon:    { n: 8,  label: "Regular Octagon" },
-  decagon:    { n: 10, label: "Regular Decagon" },
-  dodecagon:  { n: 12, label: "Regular Dodecagon" },
+  triangle: { n: 3, label: "Equilateral Triangle" },
+  square: { n: 4, label: "Square" },
+  pentagon: { n: 5, label: "Regular Pentagon" },
+  hexagon: { n: 6, label: "Regular Hexagon" },
+  heptagon: { n: 7, label: "Regular Heptagon" },
+  octagon: { n: 8, label: "Regular Octagon" },
+  decagon: { n: 10, label: "Regular Decagon" },
+  dodecagon: { n: 12, label: "Regular Dodecagon" },
 };

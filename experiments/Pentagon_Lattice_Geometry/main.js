@@ -2,7 +2,12 @@
 // Top-level wiring: build lattice, install canvas interactions,
 // hook up keyboard walking and side-panel updates.
 
-import { buildNgonLattice, buildSierpinski, fieldInfoForN, POLY_PRESETS } from "./ngon.js";
+import {
+  buildNgonLattice,
+  buildSierpinski,
+  fieldInfoForN,
+  POLY_PRESETS,
+} from "./ngon.js";
 import { LatticeView } from "./render.js";
 import { renderTileInfo, appendWalkStep, clearWalk } from "./ui.js";
 import { initDocs } from "./ui.js";
@@ -102,10 +107,16 @@ let caRAF = null;
 function getPolyConfig() {
   const type = els.polyType.value;
   if (type === "sierpinski") {
-    return { mode: "sierpinski", depth: parseInt(els.sierpinskiDepth.value, 10) || 4 };
+    return {
+      mode: "sierpinski",
+      depth: parseInt(els.sierpinskiDepth.value, 10) || 4,
+    };
   }
   if (type === "custom") {
-    return { mode: "ngon", n: Math.max(3, Math.min(24, parseInt(els.customN.value, 10) || 7)) };
+    return {
+      mode: "ngon",
+      n: Math.max(3, Math.min(24, parseInt(els.customN.value, 10) || 7)),
+    };
   }
   const preset = POLY_PRESETS[type];
   if (preset) return { mode: "ngon", n: preset.n };
@@ -114,12 +125,13 @@ function getPolyConfig() {
 
 function updatePolyTypeUI() {
   const type = els.polyType.value;
-  els.customNLabel.style.display = (type === "custom") ? "" : "none";
-  els.sierpinskiDepthLabel.style.display = (type === "sierpinski") ? "" : "none";
+  els.customNLabel.style.display = type === "custom" ? "" : "none";
+  els.sierpinskiDepthLabel.style.display = type === "sierpinski" ? "" : "none";
 
   // Show/hide BFS radius (not meaningful for Sierpiński).
   const radiusLabel = els.radius.closest("label");
-  if (radiusLabel) radiusLabel.style.display = (type === "sierpinski") ? "none" : "";
+  if (radiusLabel)
+    radiusLabel.style.display = type === "sierpinski" ? "none" : "";
 
   // Update field info box.
   if (type === "sierpinski") {
@@ -142,13 +154,16 @@ function updatePolyTypeUI() {
   if (sub) {
     const cfg = getPolyConfig();
     if (cfg.mode === "sierpinski") {
-      sub.innerHTML = `Sierpiński Triangle IFS. Click a tile to inspect. ` +
+      sub.innerHTML =
+        `Sierpiński Triangle IFS. Click a tile to inspect. ` +
         `Press <kbd>space</kbd> to play/pause CA, <kbd>n</kbd> to step.`;
     } else {
-      const edgeKeys = cfg.n <= 9
-        ? `<kbd>1</kbd>–<kbd>${cfg.n}</kbd>`
-        : `<kbd>1</kbd>–<kbd>9</kbd>`;
-      sub.innerHTML = `Regular ${cfg.n}-gon lattice. Click a tile to inspect. ` +
+      const edgeKeys =
+        cfg.n <= 9
+          ? `<kbd>1</kbd>–<kbd>${cfg.n}</kbd>`
+          : `<kbd>1</kbd>–<kbd>9</kbd>`;
+      sub.innerHTML =
+        `Regular ${cfg.n}-gon lattice. Click a tile to inspect. ` +
         `Press ${edgeKeys} to walk. ` +
         `Press <kbd>space</kbd> to play/pause CA, <kbd>n</kbd> to step.`;
     }
@@ -169,7 +184,10 @@ function rebuild() {
   if (cfg.mode === "sierpinski") {
     lattice = buildSierpinski(cfg.depth);
   } else {
-    const radius = Math.max(0, Math.min(8, parseInt(els.radius.value, 10) || 3));
+    const radius = Math.max(
+      0,
+      Math.min(8, parseInt(els.radius.value, 10) || 3),
+    );
     const groupOrder = groupOrderFromSel();
     lattice = buildNgonLattice({ n: cfg.n, radius, groupOrder });
   }
@@ -185,8 +203,10 @@ function rebuild() {
 }
 
 function initCA() {
-  const numStates = Math.max(2, Math.min(16,
-    parseInt(els.caNumStates.value, 10) || 2));
+  const numStates = Math.max(
+    2,
+    Math.min(16, parseInt(els.caNumStates.value, 10) || 2),
+  );
   ca = new CA(lattice, {
     numStates,
     family: els.caFamily.value,
@@ -214,7 +234,10 @@ function updateCAStats() {
 }
 
 function caTick(now) {
-  if (!caPlaying) { caRAF = null; return; }
+  if (!caPlaying) {
+    caRAF = null;
+    return;
+  }
   const interval = 1000 / caStepsPerSec;
   if (now - caLastStepTime >= interval) {
     ca.step();
@@ -240,15 +263,18 @@ function caPlayPause(force) {
 
 function updateFamilyVisibility() {
   const fam = els.caFamily.value;
-  els.caLifeRuleLabel.style.display = (fam === "life") ? "" : "none";
-  els.caLifePresetLabel.style.display = (fam === "life") ? "" : "none";
-  els.caThresholdLabel.style.display = (fam === "cyclic") ? "" : "none";
+  els.caLifeRuleLabel.style.display = fam === "life" ? "" : "none";
+  els.caLifePresetLabel.style.display = fam === "life" ? "" : "none";
+  els.caThresholdLabel.style.display = fam === "cyclic" ? "" : "none";
 }
 
 // ── Event wiring ─────────────────────────────────────────────────────────────
 
 els.rebuild.addEventListener("click", rebuild);
-els.reset.addEventListener("click", () => { view.fit(); view.draw(); });
+els.reset.addEventListener("click", () => {
+  view.fit();
+  view.draw();
+});
 
 els.polyType.addEventListener("change", () => {
   updatePolyTypeUI();
@@ -256,7 +282,10 @@ els.polyType.addEventListener("change", () => {
   rebuild();
 });
 els.customN.addEventListener("change", () => {
-  if (els.polyType.value === "custom") { updatePolyTypeUI(); rebuild(); }
+  if (els.polyType.value === "custom") {
+    updatePolyTypeUI();
+    rebuild();
+  }
 });
 els.sierpinskiDepth.addEventListener("change", () => {
   if (els.polyType.value === "sierpinski") rebuild();
@@ -286,16 +315,41 @@ function bindRange(el, name, display, transform = (x) => x, fmt = (x) => x) {
 
 bindSelect(els.colorMode, "colorMode");
 bindSelect(els.palette, "palette");
-bindRange(els.alphaSel, "alphaSelected", els.alphaSelVal,
-          (v) => v / 100, (v) => v.toFixed(2));
-bindRange(els.alphaOther, "alphaOther", els.alphaOtherVal,
-          (v) => v / 100, (v) => v.toFixed(2));
-bindRange(els.sat, "saturation", els.satVal,
-          (v) => v, (v) => String(Math.round(v)));
-bindRange(els.light, "lightness", els.lightVal,
-          (v) => v, (v) => String(Math.round(v)));
-bindRange(els.border, "borderWidth", els.borderVal,
-          (v) => v / 10, (v) => v.toFixed(1));
+bindRange(
+  els.alphaSel,
+  "alphaSelected",
+  els.alphaSelVal,
+  (v) => v / 100,
+  (v) => v.toFixed(2),
+);
+bindRange(
+  els.alphaOther,
+  "alphaOther",
+  els.alphaOtherVal,
+  (v) => v / 100,
+  (v) => v.toFixed(2),
+);
+bindRange(
+  els.sat,
+  "saturation",
+  els.satVal,
+  (v) => v,
+  (v) => String(Math.round(v)),
+);
+bindRange(
+  els.light,
+  "lightness",
+  els.lightVal,
+  (v) => v,
+  (v) => String(Math.round(v)),
+);
+bindRange(
+  els.border,
+  "borderWidth",
+  els.borderVal,
+  (v) => v / 10,
+  (v) => v.toFixed(1),
+);
 bindCheckbox(els.fillTiles, "fillTiles");
 bindCheckbox(els.strokeTiles, "strokeTiles");
 bindCheckbox(els.onlySelSheet, "onlySelSheet");
@@ -307,13 +361,23 @@ bindCheckbox(els.edgelabels, "edgeLabels");
 bindCheckbox(els.depthLabels, "depthLabels");
 bindCheckbox(els.indexLabels, "indexLabels");
 bindCheckbox(els.labelsAllSheets, "labelsAllSheets");
-bindRange(els.labelSize, "labelSize", els.labelSizeVal,
-          (v) => v, (v) => String(Math.round(v)));
+bindRange(
+  els.labelSize,
+  "labelSize",
+  els.labelSizeVal,
+  (v) => v,
+  (v) => String(Math.round(v)),
+);
 
 bindCheckbox(els.showSelGlow, "showSelGlow");
 bindCheckbox(els.showNeighborLinks, "showNeighborLinks");
-bindRange(els.glow, "glowStrength", els.glowVal,
-          (v) => v, (v) => String(Math.round(v)));
+bindRange(
+  els.glow,
+  "glowStrength",
+  els.glowVal,
+  (v) => v,
+  (v) => String(Math.round(v)),
+);
 
 // ---- CA wiring ----
 bindCheckbox(els.caOverlay, "caOverlay");
@@ -335,8 +399,7 @@ els.caLifePreset.addEventListener("change", () => {
   if (ca) ca.setLifeRule(v);
 });
 els.caNumStates.addEventListener("change", () => {
-  const n = Math.max(2, Math.min(16,
-    parseInt(els.caNumStates.value, 10) || 2));
+  const n = Math.max(2, Math.min(16, parseInt(els.caNumStates.value, 10) || 2));
   if (ca) ca.setNumStates(n);
   view.draw();
   updateCAStats();
@@ -409,31 +472,35 @@ function ensureCAOverlayOn() {
 
 caStepsPerSec = parseInt(els.caSpeed.value, 10) || 8;
 els.caSpeedVal.textContent = String(caStepsPerSec);
-els.caDensityVal.textContent =
-  ((parseInt(els.caDensity.value, 10) || 0) / 100).toFixed(2);
+els.caDensityVal.textContent = (
+  (parseInt(els.caDensity.value, 10) || 0) / 100
+).toFixed(2);
 updateFamilyVisibility();
 
 els.clearHist.addEventListener("click", () => {
   clearWalk(els.walk);
-  if (lattice) appendWalkStep(els.walk, lattice.tiles[currentTileIdx],
-                              null, "origin");
+  if (lattice)
+    appendWalkStep(els.walk, lattice.tiles[currentTileIdx], null, "origin");
 });
 
 // Canvas interaction: click to select, drag to pan, wheel to zoom.
 let dragging = false;
 let dragMoved = false;
-let lastX = 0, lastY = 0;
+let lastX = 0,
+  lastY = 0;
 canvas.addEventListener("mousedown", (e) => {
   dragging = true;
   dragMoved = false;
-  lastX = e.clientX; lastY = e.clientY;
+  lastX = e.clientX;
+  lastY = e.clientY;
 });
 window.addEventListener("mousemove", (e) => {
   if (!dragging) return;
   const dx = e.clientX - lastX;
   const dy = e.clientY - lastY;
   if (Math.abs(dx) + Math.abs(dy) > 2) dragMoved = true;
-  lastX = e.clientX; lastY = e.clientY;
+  lastX = e.clientX;
+  lastY = e.clientY;
   view.pan(dx, dy);
 });
 window.addEventListener("mouseup", (e) => {
@@ -457,12 +524,16 @@ window.addEventListener("mouseup", (e) => {
     }
   }
 });
-canvas.addEventListener("wheel", (e) => {
-  e.preventDefault();
-  const [sx, sy] = view.eventToCanvas(e);
-  const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-  view.zoom(factor, sx, sy);
-}, { passive: false });
+canvas.addEventListener(
+  "wheel",
+  (e) => {
+    e.preventDefault();
+    const [sx, sy] = view.eventToCanvas(e);
+    const factor = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    view.zoom(factor, sx, sy);
+  },
+  { passive: false },
+);
 
 // Keyboard walking: 1..9 steps across edges of the currently selected tile.
 window.addEventListener("keydown", (e) => {
