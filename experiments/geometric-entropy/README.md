@@ -1,5 +1,10 @@
 # Geometric Entropy Lab
 
+> **A continuous analogue of the Erdős distinct-distance problem.**
+> Points on a manifold are arranged to extremize the Shannon entropy of their
+> pairwise-distance distribution, producing highly symmetric, extremal
+> configurations on spheres, tori, cubes, and arbitrary STL meshes.
+
 An interactive browser-based demo for optimizing point distributions on various 3D geometries using **Spherical Gram
 Matrix Entropy** and **TensorFlow.js**.
 
@@ -11,6 +16,21 @@ Open `index.html` in a modern browser — no build step required.
 
 Points are placed on a chosen geometry (sphere, torus, cube, etc.) and optimized by maximizing or minimizing a Shannon
 entropy derived from a Gaussian kernel density estimate over pairwise distances.
+
+### The Erdős Connection
+
+The classical Erdős distinct-distance problem asks: how many *distinct* pairwise
+distances must $n$ points in the plane determine? It's a combinatorial counting
+problem with a discrete answer.
+
+This lab plays the *continuous* version of the same game. Instead of counting
+distinct distances, we treat the multiset of pairwise distances as a probability
+distribution (via a Gaussian kernel) and maximize its Shannon entropy. The
+result is the most "distance-diverse" configuration the manifold admits — a
+continuous extremizer in place of a discrete counting bound.
+
+Maximizing entropy spreads points apart; minimizing concentrates them; matching
+a target value lets you dial in a specific level of distance diversity.
 
 ### Core Math
 
@@ -116,6 +136,63 @@ Available variables: `rho` (Nx1), `p` (Nx1x3), `q` (1xNx3), `D` (NxN dist²), `t
 | **Adam**   | Adaptive moment estimation — robust default              |
 | **QQN**    | Quasi-Quasi-Newton — faster convergence on smooth losses |
 | **L-BFGS** | Limited-memory BFGS — best for small N, high precision   |
+
+### The ln(N) Bound and Optimizer Fingerprinting
+For a kernel-density entropy of the form $H = -\sum p_i \log p_i$ over $N$
+points, the maximum possible value is $\log N$, attained when the induced
+distribution $p$ is uniform ($p_i = 1/N$ for all $i$). Equivalently, when every
+point has identical local kernel density $\rho_i$, the entropy saturates its
+information-theoretic ceiling:
+
+```
+H_max = ln(N)
+```
+
+This is just the standard Shannon bound applied to the per-point density
+distribution, and it grows **proportionally to $\ln N$** as the point count
+increases. Empirically, runs of the maximizer asymptote at this value for every
+geometry we have tried — sphere, torus, cube, saddle, or arbitrary STL.
+
+#### A Sparse Fitness Landscape
+
+What makes this problem interesting (and a little strange) is that the
+condition for achieving $H = \ln N$ is **highly underdetermined**. The
+objective only requires that all $\rho_i$ be equal; it says nothing about
+*where* the points sit, only that each one must see the same total kernel mass
+from its neighbours. On a curved or non-trivial manifold there are typically a
+continuous family — sometimes a high-dimensional manifold — of configurations
+satisfying this constraint.
+
+In optimization terms, the fitness function is **sparse**: a vast set of
+distinct geometric arrangements all sit at the same global optimum. The loss
+surface has a large, flat, connected (or near-connected) optimal set rather
+than a single isolated minimum.
+
+#### Optimizer Fingerprinting
+
+Because the optimum is degenerate, the *path* an optimizer takes through
+configuration space determines *which* extremal configuration it lands on.
+Running the same problem with **Adam**, **QQN**, and **L-BFGS** — or even the
+same optimizer at different learning rates or temperatures $\tau$ — reliably
+produces visibly different point arrangements, each of which achieves the same
+$H \approx \ln N$ value.
+
+- **Adam** tends to produce slightly noisy, isotropic, lattice-like packings.
+- **QQN** carves out smoother, more symmetric arrangements with visible
+   curvature-aligned structure.
+- **L-BFGS** snaps quickly into crystalline, near-perfectly-regular
+   configurations, often with sharp symmetry groups.
+
+The resulting geometry is, in effect, a **fingerprint** of the optimizer's
+internal dynamics — its preconditioner, momentum, and step-selection rules
+projected onto the manifold of entropy-maximal configurations. This is a
+previously unremarked-upon (and admittedly **useless**) property: the entropy
+value tells you nothing about which optimizer produced it, but the *shape* of
+the resulting point cloud does. You can identify the optimizer by looking at
+the picture.
+
+This is a small, charming consequence of optimizing a sparse objective on a
+continuous manifold, and the lab is a convenient place to play with it.
 
 ---
 

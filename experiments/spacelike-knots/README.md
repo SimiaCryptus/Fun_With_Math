@@ -1,7 +1,36 @@
-# Knot Topology Lab — Distance Matrix Analysis
+# Knot Topology Lab — Causal Crossings via Minkowski Metric
+
+> **A knot equipped with a Minkowski metric, turning crossings into causal relationships.**
+> Each strand pair is classified as timelike (causally connected), spacelike (causally
+> disconnected), or lightlike (null) — recasting the over/under choice of a crossing as
+> a *causal inversion* in a relativistic embedding of the knot.
 
 An interactive 3D knot theory visualization tool that uses TensorFlow.js for physics-based optimization and distance
 matrix analysis. Explore classical knot types through the lens of Euclidean and Minkowski spacetime metrics.
+
+---
+
+## Why This Is Different
+
+Standard knot visualizations focus on 3D embeddings, crossings, or projections to
+knot diagrams. This lab adds an axis of structure that's normally absent from knot
+theory: a **causal metric**.
+
+By designating one spatial axis as "time" and computing pairwise Minkowski
+intervals $ds^2 = -c^2\,dt^2 + dx^2 + dy^2$, every pair of points on the knot is
+classified as:
+
+- **Timelike** — one point can causally influence the other
+- **Spacelike** — the two points are causally disconnected
+- **Lightlike (null)** — the two points lie on each other's light cone
+
+Crossings in the Euclidean picture become **causal inversions** in the Minkowski
+picture: the strand that's "above" is also the strand that's in the causal future,
+and tugging the knot through itself flips the causal ordering of nearby strand
+pairs. The distance matrix becomes a *causal diagram* of the knot.
+
+This is not a known invariant; it's a fresh visualization angle that makes
+knot topology look like a small relativistic spacetime.
 
 ---
 
@@ -100,6 +129,10 @@ The right panel shows the **N×N pairwise distance matrix** D[i,j] = ‖pᵢ −
 - Banding patterns near the diagonal reflect local strand geometry
 - Off-diagonal structure encodes global knot topology
 - Hover over any cell to highlight the corresponding point pair in the 3D view
+
+In Minkowski mode, the matrix becomes a **causal diagram** — the colored cells
+show, for every pair of points on the knot, whether one could in principle send
+a signal to the other. Crossings show up as small islands of causal inversion.
 
 ---
 
