@@ -1,1049 +1,433 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-         content="Mathematical Explorations — original mathematical experiments and visualizations. Multi-sheeted polygon covers, algebraic noise lattices, causal knot metrics, and other browser-native math research."
-    />
-    <title>Mathematical Explorations</title>
-    <link rel="stylesheet" href="css/style.css" />
-    <script src="js/marked.min.js"></script>
-     <!-- MathJax configuration must be set before the library loads -->
-     <script>
-       window.MathJax = {
-         tex: {
-           inlineMath: [
-             ["$", "$"],
-             ["\\(", "\\)"],
-           ],
-           displayMath: [
-             ["$$", "$$"],
-             ["\\[", "\\]"],
-           ],
-           processEscapes: true,
-           processEnvironments: true,
-         },
-         options: {
-           skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"],
-           ignoreHtmlClass: "tex2jax_ignore",
-           processHtmlClass: "tex2jax_process",
-         },
-         svg: { fontCache: "global" },
-         startup: {
-           typeset: false,
-         },
-       };
-     </script>
-     <script
-       id="MathJax-script"
-       async
-       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-     ></script>
-     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <style>
-      .hero {
-        text-align: center;
-        padding: 5rem 1.5rem 3rem;
-        position: relative;
-        overflow: hidden;
-      }
-      .hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(
-          ellipse 80% 50% at 50% -20%,
-          rgba(88, 166, 255, 0.12),
-          transparent
-        );
-        pointer-events: none;
-      }
-      .hero h1 {
-        font-size: clamp(2.5rem, 7vw, 4.5rem);
-        background: linear-gradient(135deg, #58a6ff 30%, #bc8cff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: 1rem;
-        line-height: 1.1;
-      }
-      .hero p {
-        color: var(--text-muted);
-        font-size: 1.15rem;
-        max-width: 560px;
-        margin: 0 auto 2rem;
-      }
-         .hero-tagline {
-           color: var(--text);
-           font-size: 1.05rem;
-           max-width: 640px;
-           margin: 0 auto 1.5rem;
-           font-style: italic;
-           opacity: 0.85;
-         }
-      .hero-badge {
-        display: inline-block;
-        border: 1px solid var(--border);
-        border-radius: 999px;
-        padding: 0.35rem 1rem;
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 1.5rem;
-        background: rgba(255, 255, 255, 0.03);
-      }
-         /* Start Here intro panel */
-         .intro-panel {
-           max-width: 900px;
-           margin: 1rem auto 2rem;
-           padding: 1.5rem 1.75rem;
-           border: 1px solid var(--border);
-           border-radius: var(--radius);
-           background: linear-gradient(
-             180deg,
-             rgba(88, 166, 255, 0.06),
-             rgba(188, 140, 255, 0.03)
-           );
-         }
-         .intro-panel h2 {
-           margin: 0 0 0.75rem;
-           font-size: 1.2rem;
-           color: var(--accent);
-         }
-         .intro-panel p {
-           margin: 0.5rem 0;
-           color: var(--text-muted);
-           line-height: 1.6;
-           font-size: 0.96rem;
-         }
-         .intro-panel .theme-list {
-           margin: 0.75rem 0 0;
-           padding: 0;
-           list-style: none;
-           display: grid;
-           grid-template-columns: 1fr;
-           gap: 0.4rem;
-         }
-         .intro-panel .theme-list li {
-           padding-left: 1.25rem;
-           position: relative;
-           color: var(--text-muted);
-           font-size: 0.92rem;
-         }
-         .intro-panel .theme-list li::before {
-           content: "→";
-           position: absolute;
-           left: 0;
-           color: var(--accent2);
-         }
-         .intro-panel strong {
-           color: var(--text);
-         }
-      .section-title {
-        font-size: 1.6rem;
-        font-weight: 700;
-        padding: 0 1.5rem;
-        max-width: 1100px;
-        margin: 2.5rem auto 0.5rem;
-        color: var(--text);
-      }
-      .section-title span {
-        color: var(--text-muted);
-        font-weight: 400;
-        font-size: 1rem;
-      }
-      .section-subtitle {
-        color: var(--text-muted);
-        padding: 0 1.5rem;
-        max-width: 1100px;
-        margin: 0 auto 1rem;
-        font-size: 0.95rem;
-      }
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+          name="description"
+          content="Mathematical Explorations — original mathematical experiments and visualizations. Multi-sheeted polygon covers, algebraic noise lattices, causal knot metrics, and other browser-native math research."
+        />
+        <title>Mathematical Explorations</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="css/home.css" />
+        <script src="js/marked.min.js"></script>
+        <!-- MathJax configuration must be set before the library loads -->
+        <script>
+          window.MathJax = {
+            tex: {
+              inlineMath: [
+                ["$", "$"],
+                ["\\(", "\\)"],
+              ],
+              displayMath: [
+                ["$$", "$$"],
+                ["\\[", "\\]"],
+              ],
+              processEscapes: true,
+              processEnvironments: true,
+            },
+            options: {
+              skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+              ignoreHtmlClass: "tex2jax_ignore",
+              processHtmlClass: "tex2jax_process",
+            },
+            svg: { fontCache: "global" },
+            startup: {
+              typeset: false,
+            },
+          };
+        </script>
+        <script
+          id="MathJax-script"
+          async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+        ></script>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      </head>
+      <body>
+        <canvas id="bgCanvas" aria-hidden="true"></canvas>
+        <div class="aurora" aria-hidden="true">
+          <div class="aurora-blob aurora-blob-1"></div>
+          <div class="aurora-blob aurora-blob-2"></div>
+          <div class="aurora-blob aurora-blob-3"></div>
+        </div>
+        <div class="grid-overlay" aria-hidden="true"></div>
 
-      /* Featured experiment cards (with README preview) */
-      .featured-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 1rem 1.5rem;
-      }
-      .featured-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-        display: grid;
-        grid-template-columns: 1fr;
-        transition:
-          border-color 0.25s,
-          box-shadow 0.25s,
-          transform 0.25s;
-        color: var(--text);
-        text-decoration: none;
-      }
-      .featured-card:hover {
-        border-color: var(--accent);
-        box-shadow: var(--shadow);
-        transform: translateY(-2px);
-      }
-      .featured-card-header {
-        padding: 1.5rem 1.75rem 1rem;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-      }
-      .featured-card-icon {
-        font-size: 2.5rem;
-        line-height: 1;
-      }
-      .featured-card-icon,
-      .modal-icon {
-        font-family: "Fira Code", Consolas, ui-monospace, monospace;
-        font-weight: 600;
-        font-size: 1.5rem;
-        line-height: 1;
-        color: var(--accent2);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        width: 48px;
-        height: 48px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.03);
-        letter-spacing: 0.02em;
-      }
-      .featured-card-title {
-        font-size: 1.4rem;
-        color: var(--accent);
-        margin: 0;
-        flex: 1;
-        min-width: 200px;
-      }
-         .featured-card-pitch {
-           padding: 0.5rem 1.75rem 0;
-           color: var(--text);
-           font-size: 0.98rem;
-           line-height: 1.55;
-           font-style: italic;
-           opacity: 0.92;
-         }
-      .featured-card-launch {
-        background: var(--accent);
-        color: #0d1117;
-        padding: 0.5rem 1.1rem;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        white-space: nowrap;
-      }
-      .readme-preview {
-        padding: 1.25rem 1.75rem 1.5rem;
-        font-size: 0.92rem;
-        color: var(--text-muted);
-        line-height: 1.7;
-        max-height: 380px;
-        overflow: hidden;
-        position: relative;
-      }
-      .readme-preview::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 90px;
-        background: linear-gradient(to bottom, transparent, var(--surface));
-        pointer-events: none;
-      }
-      /* Modal */
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
-        display: none;
-        align-items: flex-start;
-        justify-content: center;
-        z-index: 1000;
-        padding: 2rem 1rem;
-        overflow-y: auto;
-      }
-      .modal-overlay.open {
-        display: flex;
-        animation: fadeIn 0.2s ease-out;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      .modal-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        width: 100%;
-        max-width: 900px;
-        margin: auto;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        position: relative;
-        animation: slideUp 0.25s ease-out;
-      }
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .modal-header {
-        padding: 1.5rem 1.75rem 1rem;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        flex-wrap: wrap;
-        position: sticky;
-        top: 0;
-        background: var(--surface);
-        border-radius: var(--radius) var(--radius) 0 0;
-        z-index: 2;
-      }
-      .modal-title {
-        font-size: 1.4rem;
-        color: var(--accent);
-        margin: 0;
-        flex: 1;
-        min-width: 200px;
-      }
-      .modal-launch {
-        background: var(--accent);
-        color: #0d1117;
-        padding: 0.5rem 1.1rem;
-        border-radius: 6px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        text-decoration: none;
-      }
-      .modal-close {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text);
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        font-size: 1.2rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition:
-          background 0.2s,
-          border-color 0.2s;
-      }
-      .modal-close:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: var(--accent);
-      }
-      .modal-body {
-        padding: 1.5rem 1.75rem 2rem;
-        font-size: 0.95rem;
-        color: var(--text-muted);
-        line-height: 1.7;
-      }
-      .modal-body h1,
-      .modal-body h2,
-      .modal-body h3 {
-        color: var(--text);
-        margin: 1.2rem 0 0.6rem;
-        line-height: 1.3;
-      }
-      .modal-body h1 {
-        font-size: 1.5rem;
-        color: var(--accent2);
-      }
-      .modal-body h2 {
-        font-size: 1.25rem;
-      }
-      .modal-body h3 {
-        font-size: 1.1rem;
-      }
-      .modal-body p {
-        margin: 0.6rem 0;
-      }
-      .modal-body ul,
-      .modal-body ol {
-        margin: 0.6rem 0 0.6rem 1.5rem;
-      }
-      .modal-body code {
-        background: rgba(255, 255, 255, 0.06);
-        padding: 0.1em 0.35em;
-        border-radius: 4px;
-        font-family: "Fira Code", Consolas, monospace;
-        font-size: 0.85em;
-        color: var(--accent2);
-      }
-      .modal-body pre {
-        background: rgba(0, 0, 0, 0.35);
-        border: 1px solid var(--border);
-        padding: 0.75rem;
-        border-radius: 6px;
-        overflow-x: auto;
-        margin: 0.75rem 0;
-      }
-      .modal-body pre code {
-        background: none;
-        padding: 0;
-        color: var(--text);
-      }
-      .modal-body blockquote {
-        border-left: 3px solid var(--accent);
-        padding-left: 1rem;
-        color: var(--text-muted);
-        margin: 0.75rem 0;
-      }
-      .modal-body a {
-        color: var(--accent);
-      }
-      .modal-body img {
-        max-width: 100%;
-        border-radius: 6px;
-      }
-      body.modal-open {
-        overflow: hidden;
-      }
-      .readme-preview h1,
-      .readme-preview h2,
-      .readme-preview h3 {
-        color: var(--text);
-        margin: 1rem 0 0.5rem;
-        line-height: 1.3;
-      }
-      .readme-preview h1 {
-        font-size: 1.25rem;
-        color: var(--accent2);
-      }
-      .readme-preview h2 {
-        font-size: 1.1rem;
-      }
-      .readme-preview h3 {
-        font-size: 1rem;
-      }
-      .readme-preview p {
-        margin: 0.5rem 0;
-      }
-      .readme-preview ul,
-      .readme-preview ol {
-        margin: 0.5rem 0 0.5rem 1.4rem;
-      }
-      .readme-preview code {
-        background: rgba(255, 255, 255, 0.06);
-        padding: 0.1em 0.35em;
-        border-radius: 4px;
-        font-family: "Fira Code", Consolas, monospace;
-        font-size: 0.85em;
-        color: var(--accent2);
-      }
-      .readme-preview pre {
-        background: rgba(0, 0, 0, 0.35);
-        border: 1px solid var(--border);
-        padding: 0.75rem;
-        border-radius: 6px;
-        overflow-x: auto;
-        margin: 0.75rem 0;
-      }
-      .readme-preview pre code {
-        background: none;
-        padding: 0;
-        color: var(--text);
-      }
-      .readme-preview blockquote {
-        border-left: 3px solid var(--accent);
-        padding-left: 1rem;
-        color: var(--text-muted);
-        margin: 0.75rem 0;
-      }
-      .readme-preview a {
-        color: var(--accent);
-      }
-      .readme-preview img {
-        max-width: 100%;
-        border-radius: 6px;
-      }
-      .readme-loading {
-        color: var(--text-muted);
-        font-style: italic;
-        padding: 0.5rem 0;
-      }
-    </style>
-  </head>
-  <body>
-    <nav>
-      <a class="brand" href="index.html">∑ Mathematical Explorations</a>
-      <span class="spacer"></span>
-      <a
-        href="https://github.com/SimiaCryptus/Fun_With_Math"
-        target="_blank"
-        rel="noopener"
-        >GitHub ↗</a
-      >
-    </nav>
-
-    <section class="hero">
-      <div class="hero-badge">
-        Interactive experiments · runs entirely in the browser
-      </div>
-      <h1>Mathematical Explorations</h1>
-      <p>
-           A collection of original interactive experiments in geometry, number
-           theory, and dynamical systems — each lab is a small piece of
-           in-browser mathematical research, not a textbook visualization.
-      </p>
-         <p class="hero-tagline">
-           “What happens if you poke a rigid structure with one irrational?”
-         </p>
-    </section>
-       <div class="intro-panel">
-         <h2>Start Here</h2>
-         <p>
-           Most of the labs below share a single recurring question:
-           <strong>what happens to a clean algebraic or geometric structure
-           when you introduce one carefully chosen twist?</strong>
-           A single irrational coordinate, a single symmetry edge in a
-           diffusion graph, a single causal direction in a knot — small
-           perturbations that produce surprisingly rich behavior.
-         </p>
-         <p>Three loose themes run through the featured labs:</p>
-         <ul class="theme-list">
-           <li>
-             <strong>Algebraic structure → emergent geometry.</strong>
-             <em>Pentagon Lattice</em> and <em>Irrational Lattice</em> both
-             start with a number field and watch geometry crystallize out
-             of it — fractional dimension, aperiodic moiré, spinor-like
-             holonomy.
-           </li>
-           <li>
-             <strong>Dynamics on symmetric or causal substrates.</strong>
-             <em>Space-Color Symmetry</em> and <em>Layered CA</em> wire
-             symmetry orbits or substrate colors into the dynamics; the
-             result is diffusion on a quotient manifold or three-layer
-             feedback between agents and a Conway-Life host.
-           </li>
-           <li>
-             <strong>New metrics on familiar objects.</strong>
-             <em>Geometric Entropy</em> recasts the Erdős distinct-distance
-             problem as a continuous entropy optimization;
-             <em>Spacelike Knots</em> equips a knot with a Minkowski metric
-             so crossings become causal inversions.
-           </li>
-         </ul>
-         <p style="margin-top: 0.9rem;">
-           If you only have a few minutes, open
-           <strong>Pentagon Lattice Geometry</strong> or
-           <strong>Spacelike Knots</strong> — they're the most
-           self-contained, most novel, and the easiest to play with cold.
-         </p>
-       </div>
-
-    <p class="section-title">
-      Featured Laboratories <span>— in-depth experiments</span>
-    </p>
-    <p class="section-subtitle">
-      Extended interactive studies, each accompanied by documentation describing
-         the underlying mathematics, motivation, and methods. Click a card to read
-         its full notes; use the Open button to launch the lab.
-    </p>
-
-    <div class="featured-grid" id="featuredGrid">
-      <div
-        class="featured-card"
-        data-href="experiments/Pentagon_Lattice_Geometry/index.html"
-        data-readme="experiments/Pentagon_Lattice_Geometry/README.md"
-        tabindex="0"
-        role="button"
-      >
-        <div class="featured-card-header">
-          <div class="featured-card-icon" aria-hidden="true">PL</div>
-          <h2 class="featured-card-title">Pentagonal Lattice Geometry</h2>
+        <nav>
+          <a class="brand" href="index.html">
+            <span class="brand-glyph">∑</span>
+            <span class="brand-text">Mathematical Explorations</span>
+          </a>
+          <span class="spacer"></span>
           <a
-            class="featured-card-launch"
-            href="experiments/Pentagon_Lattice_Geometry/index.html"
-            >Open →</a
+            class="nav-link"
+            href="https://github.com/SimiaCryptus/Fun_With_Math"
+            target="_blank"
+            rel="noopener"
+            >GitHub <span class="arrow">↗</span></a
           >
-        </div>
-           <p class="featured-card-pitch">
-             A multi-sheeted covering construction in which the regular pentagon
-             develops fractional dimension (d ≈ 2.37) and spinor-like holonomy
-             — a discrete model where a single loop requires two passes to
-             return to identity.
-           </p>
-        <div class="readme-preview">
-          <p class="readme-loading">Loading description…</p>
-        </div>
-      </div>
+        </nav>
 
-      <div
-        class="featured-card"
-        data-href="experiments/symmetry_simple/index.html"
-        data-readme="experiments/symmetry_simple/README.md"
-        tabindex="0"
-        role="button"
-      >
-        <div class="featured-card-header">
-          <div class="featured-card-icon" aria-hidden="true">SY</div>
-          <h2 class="featured-card-title">Space-Color Symmetry</h2>
-          <a
-            class="featured-card-launch"
-            href="experiments/symmetry_simple/index.html"
-            >Open →</a
-          >
-        </div>
-           <p class="featured-card-pitch">
-             A pixel canvas where symmetry doesn't just mirror your strokes —
-             it rewires the diffusion graph. Heat flows along symmetry orbits,
-             producing kaleidoscope dynamics on a quotient-like manifold.
-           </p>
-        <div class="readme-preview">
-          <p class="readme-loading">Loading description…</p>
-        </div>
-      </div>
+        <section class="hero">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Interactive experiments · runs entirely in the browser
+          </div>
+          <h1 class="hero-title">
+            <span class="hero-title-line">Mathematical</span>
+            <span class="hero-title-line hero-title-accent">Explorations</span>
+          </h1>
+          <p class="hero-lede">
+            A collection of original interactive experiments in geometry, number
+            theory, and dynamical systems — each lab is a small piece of
+            in-browser mathematical research, not a textbook visualization.
+          </p>
+          <p class="hero-tagline">
+            <span class="quote-mark">“</span>What happens if you poke a rigid
+            structure with one irrational?<span class="quote-mark">”</span>
+          </p>
+          <div class="hero-scroll" aria-hidden="true">
+            <span class="hero-scroll-line"></span>
+            <span class="hero-scroll-text">scroll</span>
+          </div>
+        </section>
 
-      <div
-        class="featured-card"
-        data-href="experiments/geometric-entropy/index.html"
-        data-readme="experiments/geometric-entropy/README.md"
-        tabindex="0"
-        role="button"
-      >
-        <div class="featured-card-header">
-          <div class="featured-card-icon" aria-hidden="true">GE</div>
-          <h2 class="featured-card-title">Geometric Entropy</h2>
-          <a
-            class="featured-card-launch"
-            href="experiments/geometric-entropy/index.html"
-            >Open →</a
-          >
+        <div class="intro-panel">
+          <div class="intro-panel-glow" aria-hidden="true"></div>
+          <h2>Start Here</h2>
+          <p>
+            Most of the labs below share a single recurring question:
+            <strong>what happens to a clean algebraic or geometric structure
+            when you introduce one carefully chosen twist?</strong>
+            A single irrational coordinate, a single symmetry edge in a
+            diffusion graph, a single causal direction in a knot — small
+            perturbations that produce surprisingly rich behavior.
+          </p>
+          <p>Three loose themes run through the featured labs:</p>
+          <ul class="theme-list">
+            <li>
+              <strong>Algebraic structure → emergent geometry.</strong>
+              <em>Pentagon Lattice</em> and <em>Irrational Lattice</em> both
+              start with a number field and watch geometry crystallize out
+              of it — fractional dimension, aperiodic moiré, spinor-like
+              holonomy.
+            </li>
+            <li>
+              <strong>Dynamics on symmetric or causal substrates.</strong>
+              <em>Space-Color Symmetry</em> and <em>Layered CA</em> wire
+              symmetry orbits or substrate colors into the dynamics; the
+              result is diffusion on a quotient manifold or three-layer
+              feedback between agents and a Conway-Life host.
+            </li>
+            <li>
+              <strong>New metrics on familiar objects.</strong>
+              <em>Geometric Entropy</em> recasts the Erdős distinct-distance
+              problem as a continuous entropy optimization;
+              <em>Spacelike Knots</em> equips a knot with a Minkowski metric
+              so crossings become causal inversions.
+            </li>
+          </ul>
+          <p class="intro-panel-footnote">
+            If you only have a few minutes, open
+            <strong>Pentagon Lattice Geometry</strong> or
+            <strong>Spacelike Knots</strong> — they're the most
+            self-contained, most novel, and the easiest to play with cold.
+          </p>
         </div>
-           <p class="featured-card-pitch">
-             A continuous analogue of the Erdős distinct-distance problem.
-             Points on a manifold are arranged to extremize the Shannon
-             entropy of their pairwise-distance distribution.
-           </p>
-        <div class="readme-preview">
-          <p class="readme-loading">Loading description…</p>
-        </div>
-      </div>
 
-      <div
-        class="featured-card"
-        data-href="experiments/spacelike-knots/index.html"
-        data-readme="experiments/spacelike-knots/README.md"
-        tabindex="0"
-        role="button"
-      >
-        <div class="featured-card-header">
-          <div class="featured-card-icon" aria-hidden="true">SK</div>
-          <h2 class="featured-card-title">Spacelike Knots</h2>
-          <a
-            class="featured-card-launch"
-            href="experiments/spacelike-knots/index.html"
-            >Open →</a
-          >
-        </div>
-           <p class="featured-card-pitch">
-             A knot equipped with a Minkowski metric, turning crossings into
-             causal inversions. The distance matrix becomes a causal diagram:
-             timelike, spacelike, and null separations color-coded across the
-             whole knot.
-           </p>
-        <div class="readme-preview">
-          <p class="readme-loading">Loading description…</p>
-        </div>
-      </div>
-
-      <div
-        class="featured-card"
-        data-href="experiments/layered_ca/index.html"
-        data-readme="experiments/layered_ca/README.md"
-        tabindex="0"
-        role="button"
-      >
-        <div class="featured-card-header">
-          <div class="featured-card-icon" aria-hidden="true">CA</div>
-          <h2 class="featured-card-title">Layered Cellular Automata</h2>
-          <a
-            class="featured-card-launch"
-            href="experiments/layered_ca/index.html"
-            >Open →</a
-          >
-        </div>
-           <p class="featured-card-pitch">
-             Langton's ants write a colored substrate that gates where
-             Conway's Life is allowed to live. Three feedback layers —
-             ants → substrate → life → substrate → ants — produce
-             highways, colonies, and fractal boundaries.
-           </p>
-        <div class="readme-preview">
-          <p class="readme-loading">Loading description…</p>
-        </div>
-      </div>
-
-      <div
-              class="featured-card"
-              data-href="experiments/fractal_learning/index.html"
-              data-readme="experiments/fractal_learning/idea.md"
-              tabindex="0"
-              role="button"
-      >
-        <div class="featured-card-header">
-          <div class="featured-card-icon" aria-hidden="true">FL</div>
-          <h2 class="featured-card-title">Fractal Learning</h2>
-          <a
-                  class="featured-card-launch"
-                  href="experiments/fractal_learning/index.html"
-          >Open →</a
-          >
-        </div>
-           <p class="featured-card-pitch">
-             Inverse iterated-function-system fitting: gradient-optimize a
-             small alphabet of affine maps so the depth-N orbit of the origin
-             matches a target point cloud under a Chamfer metric.
-           </p>
-        <div class="readme-preview">
-          <p class="readme-loading">Loading description…</p>
-        </div>
-      </div>
-      <div
-              class="featured-card"
-              data-href="experiments/irrational_lattice/index.html"
-              data-readme="experiments/irrational_lattice/idea.md"
-              tabindex="0"
-              role="button"
-      >
-        <div class="featured-card-header">
-          <div class="featured-card-icon" aria-hidden="true">IL</div>
-          <h2 class="featured-card-title">Irrational Lattice</h2>
-          <a
-                  class="featured-card-launch"
-                  href="experiments/irrational_lattice/index.html"
-          >Open →</a
-          >
-        </div>
-           <p class="featured-card-pitch">
-             A new primitive: deterministic, algebraic “colored noise” for
-             lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a
-             nearest-lattice map — provably aperiodic, spectrally tunable,
-             integer-arithmetic clean.
-           </p>
-        <div class="readme-preview">
-          <p class="readme-loading">Loading description…</p>
-        </div>
-      </div>
-    </div>
-
-    <p class="section-title">
-         Short Demonstrations <span>— classical concepts, concisely</span>
-    </p>
-    <p class="section-subtitle">
-         Compact, self-contained demonstrations of classical mathematical
-         concepts. These are warm-ups, not research — start here if you'd
-         rather see something familiar.
-    </p>
-
-    <div class="card-grid">
-      <a class="card" href="experiments/basic/mandelbrot.html">
-        <h2>Mandelbrot Set</h2>
-        <p>
-          Explore the fractal boundary defined by iteration of z ↦ z² + c in the
-          complex plane. Pan and zoom to examine its self-similar structure.
+        <p class="section-title">
+          <span class="section-title-num">01</span>
+          Featured Laboratories <span class="section-title-sub">— in-depth experiments</span>
         </p>
-        <span class="tag">Complex Numbers</span>
-      </a>
-
-      <a class="card" href="experiments/basic/primes.html">
-        <h2>Prime Number Sieve</h2>
-        <p>
-          A real-time visualization of the Sieve of Eratosthenes, illustrating
-          the elimination of composite numbers to isolate the primes.
+        <p class="section-subtitle">
+          Extended interactive studies, each accompanied by documentation describing
+          the underlying mathematics, motivation, and methods. Click a card to read
+          its full notes; use the Open button to launch the lab.
         </p>
-        <span class="tag">Number Theory</span>
-      </a>
 
-      <a class="card" href="experiments/basic/fourier.html">
-        <h2>Fourier Series</h2>
-        <p>
-          Construct periodic waveforms as sums of rotating phasors, illustrating
-          how harmonic components combine to approximate arbitrary signals.
+        <div class="featured-grid" id="featuredGrid">
+          <div
+            class="featured-card"
+            data-href="experiments/Pentagon_Lattice_Geometry/index.html"
+            data-readme="experiments/Pentagon_Lattice_Geometry/README.md"
+            tabindex="0"
+            role="button"
+          >
+            <div class="featured-card-header">
+              <div class="featured-card-icon" aria-hidden="true">PL</div>
+              <h2 class="featured-card-title">Pentagonal Lattice Geometry</h2>
+              <a
+                class="featured-card-launch"
+                href="experiments/Pentagon_Lattice_Geometry/index.html"
+                >Open <span class="arrow">→</span></a
+              >
+            </div>
+            <p class="featured-card-pitch">
+              A multi-sheeted covering construction in which the regular pentagon
+              develops fractional dimension (d ≈ 2.37) and spinor-like holonomy
+              — a discrete model where a single loop requires two passes to
+              return to identity.
+            </p>
+            <div class="readme-preview">
+              <p class="readme-loading">Loading description…</p>
+            </div>
+          </div>
+
+          <div
+            class="featured-card"
+            data-href="experiments/symmetry_simple/index.html"
+            data-readme="experiments/symmetry_simple/README.md"
+            tabindex="0"
+            role="button"
+          >
+            <div class="featured-card-header">
+              <div class="featured-card-icon" aria-hidden="true">SY</div>
+              <h2 class="featured-card-title">Space-Color Symmetry</h2>
+              <a
+                class="featured-card-launch"
+                href="experiments/symmetry_simple/index.html"
+                >Open <span class="arrow">→</span></a
+              >
+            </div>
+            <p class="featured-card-pitch">
+              A pixel canvas where symmetry doesn't just mirror your strokes —
+              it rewires the diffusion graph. Heat flows along symmetry orbits,
+              producing kaleidoscope dynamics on a quotient-like manifold.
+            </p>
+            <div class="readme-preview">
+              <p class="readme-loading">Loading description…</p>
+            </div>
+          </div>
+
+          <div
+            class="featured-card"
+            data-href="experiments/geometric-entropy/index.html"
+            data-readme="experiments/geometric-entropy/README.md"
+            tabindex="0"
+            role="button"
+          >
+            <div class="featured-card-header">
+              <div class="featured-card-icon" aria-hidden="true">GE</div>
+              <h2 class="featured-card-title">Geometric Entropy</h2>
+              <a
+                class="featured-card-launch"
+                href="experiments/geometric-entropy/index.html"
+                >Open <span class="arrow">→</span></a
+              >
+            </div>
+            <p class="featured-card-pitch">
+              A continuous analogue of the Erdős distinct-distance problem.
+              Points on a manifold are arranged to extremize the Shannon
+              entropy of their pairwise-distance distribution.
+            </p>
+            <div class="readme-preview">
+              <p class="readme-loading">Loading description…</p>
+            </div>
+          </div>
+
+          <div
+            class="featured-card"
+            data-href="experiments/spacelike-knots/index.html"
+            data-readme="experiments/spacelike-knots/README.md"
+            tabindex="0"
+            role="button"
+          >
+            <div class="featured-card-header">
+              <div class="featured-card-icon" aria-hidden="true">SK</div>
+              <h2 class="featured-card-title">Spacelike Knots</h2>
+              <a
+                class="featured-card-launch"
+                href="experiments/spacelike-knots/index.html"
+                >Open <span class="arrow">→</span></a
+              >
+            </div>
+            <p class="featured-card-pitch">
+              A knot equipped with a Minkowski metric, turning crossings into
+              causal inversions. The distance matrix becomes a causal diagram:
+              timelike, spacelike, and null separations color-coded across the
+              whole knot.
+            </p>
+            <div class="readme-preview">
+              <p class="readme-loading">Loading description…</p>
+            </div>
+          </div>
+
+          <div
+            class="featured-card"
+            data-href="experiments/layered_ca/index.html"
+            data-readme="experiments/layered_ca/README.md"
+            tabindex="0"
+            role="button"
+          >
+            <div class="featured-card-header">
+              <div class="featured-card-icon" aria-hidden="true">CA</div>
+              <h2 class="featured-card-title">Layered Cellular Automata</h2>
+              <a
+                class="featured-card-launch"
+                href="experiments/layered_ca/index.html"
+                >Open <span class="arrow">→</span></a
+              >
+            </div>
+            <p class="featured-card-pitch">
+              Langton's ants write a colored substrate that gates where
+              Conway's Life is allowed to live. Three feedback layers —
+              ants → substrate → life → substrate → ants — produce
+              highways, colonies, and fractal boundaries.
+            </p>
+            <div class="readme-preview">
+              <p class="readme-loading">Loading description…</p>
+            </div>
+          </div>
+
+          <div
+            class="featured-card"
+            data-href="experiments/fractal_learning/index.html"
+            data-readme="experiments/fractal_learning/idea.md"
+            tabindex="0"
+            role="button"
+          >
+            <div class="featured-card-header">
+              <div class="featured-card-icon" aria-hidden="true">FL</div>
+              <h2 class="featured-card-title">Fractal Learning</h2>
+              <a
+                class="featured-card-launch"
+                href="experiments/fractal_learning/index.html"
+                >Open <span class="arrow">→</span></a
+              >
+            </div>
+            <p class="featured-card-pitch">
+              Inverse iterated-function-system fitting: gradient-optimize a
+              small alphabet of affine maps so the depth-N orbit of the origin
+              matches a target point cloud under a Chamfer metric.
+            </p>
+            <div class="readme-preview">
+              <p class="readme-loading">Loading description…</p>
+            </div>
+          </div>
+
+          <div
+            class="featured-card"
+            data-href="experiments/irrational_lattice/index.html"
+            data-readme="experiments/irrational_lattice/idea.md"
+            tabindex="0"
+            role="button"
+          >
+            <div class="featured-card-header">
+              <div class="featured-card-icon" aria-hidden="true">IL</div>
+              <h2 class="featured-card-title">Irrational Lattice</h2>
+              <a
+                class="featured-card-launch"
+                href="experiments/irrational_lattice/index.html"
+                >Open <span class="arrow">→</span></a
+              >
+            </div>
+            <p class="featured-card-pitch">
+              A new primitive: deterministic, algebraic “colored noise” for
+              lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a
+              nearest-lattice map — provably aperiodic, spectrally tunable,
+              integer-arithmetic clean.
+            </p>
+            <div class="readme-preview">
+              <p class="readme-loading">Loading description…</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="section-title">
+          <span class="section-title-num">02</span>
+          Short Demonstrations <span class="section-title-sub">— classical concepts, concisely</span>
         </p>
-        <span class="tag">Calculus · Signals</span>
-      </a>
-
-      <a class="card" href="experiments/basic/collatz.html">
-        <h2>Collatz Conjecture</h2>
-        <p>
-          Trace the trajectory of any positive integer under the 3n + 1
-          iteration. Whether every sequence reaches 1 remains an open problem.
+        <p class="section-subtitle">
+          Compact, self-contained demonstrations of classical mathematical
+          concepts. These are warm-ups, not research — start here if you'd
+          rather see something familiar.
         </p>
-        <span class="tag">Open Problem</span>
-      </a>
-    </div>
 
-    <footer>
-      <p>
-        Implemented in plain HTML, CSS, and JavaScript &mdash;
-        <a
-          href="https://github.com/SimiaCryptus/Fun_With_Math"
-          target="_blank"
-          rel="noopener"
-          >view source on GitHub</a
+        <div class="card-grid">
+          <a class="card" href="experiments/basic/mandelbrot.html">
+            <div class="card-glyph" aria-hidden="true">M</div>
+            <h2>Mandelbrot Set</h2>
+            <p>
+              Explore the fractal boundary defined by iteration of z ↦ z² + c in the
+              complex plane. Pan and zoom to examine its self-similar structure.
+            </p>
+            <span class="tag">Complex Numbers</span>
+          </a>
+
+          <a class="card" href="experiments/basic/primes.html">
+            <div class="card-glyph" aria-hidden="true">P</div>
+            <h2>Prime Number Sieve</h2>
+            <p>
+              A real-time visualization of the Sieve of Eratosthenes, illustrating
+              the elimination of composite numbers to isolate the primes.
+            </p>
+            <span class="tag">Number Theory</span>
+          </a>
+
+          <a class="card" href="experiments/basic/fourier.html">
+            <div class="card-glyph" aria-hidden="true">ƒ</div>
+            <h2>Fourier Series</h2>
+            <p>
+              Construct periodic waveforms as sums of rotating phasors, illustrating
+              how harmonic components combine to approximate arbitrary signals.
+            </p>
+            <span class="tag">Calculus · Signals</span>
+          </a>
+
+          <a class="card" href="experiments/basic/collatz.html">
+            <div class="card-glyph" aria-hidden="true">3n</div>
+            <h2>Collatz Conjecture</h2>
+            <p>
+              Trace the trajectory of any positive integer under the 3n + 1
+              iteration. Whether every sequence reaches 1 remains an open problem.
+            </p>
+            <span class="tag">Open Problem</span>
+          </a>
+        </div>
+
+        <footer>
+          <div class="footer-divider" aria-hidden="true"></div>
+          <p>
+            Implemented in plain HTML, CSS, and JavaScript &mdash;
+            <a
+              href="https://github.com/SimiaCryptus/Fun_With_Math"
+              target="_blank"
+              rel="noopener"
+              >view source on GitHub</a
+            >
+            &middot; no build step, no dependencies beyond a couple of
+            CDN-loaded libraries
+          </p>
+          <p class="footer-mark">∑</p>
+        </footer>
+
+        <!-- Modal for expanded README view -->
+        <div
+          class="modal-overlay"
+          id="modalOverlay"
+          role="dialog"
+          aria-modal="true"
+          aria-hidden="true"
         >
-           &middot; no build step, no dependencies beyond a couple of
-           CDN-loaded libraries
-      </p>
-    </footer>
-    <!-- Modal for expanded README view -->
-    <div
-      class="modal-overlay"
-      id="modalOverlay"
-      role="dialog"
-      aria-modal="true"
-      aria-hidden="true"
-    >
-      <div class="modal-card" id="modalCard">
-        <div class="modal-header">
-          <div class="modal-icon" id="modalIcon" aria-hidden="true"></div>
-          <h2 class="modal-title" id="modalTitle"></h2>
-          <a class="modal-launch" id="modalLaunch" href="#">Open →</a>
-          <button class="modal-close" id="modalClose" aria-label="Close">
-            ✕
-          </button>
+          <div class="modal-card" id="modalCard">
+            <div class="modal-header">
+              <div class="modal-icon" id="modalIcon" aria-hidden="true"></div>
+              <h2 class="modal-title" id="modalTitle"></h2>
+              <a class="modal-launch" id="modalLaunch" href="#">Open <span class="arrow">→</span></a>
+              <button class="modal-close" id="modalClose" aria-label="Close">
+                ✕
+              </button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+          </div>
         </div>
-        <div class="modal-body" id="modalBody"></div>
-      </div>
-    </div>
 
-    <script>
-      // Configure marked for safety + nice rendering
-      if (window.marked) {
-        marked.setOptions({
-          gfm: true,
-          breaks: false,
-          headerIds: false,
-          mangle: false,
-        });
-         // Custom renderer: emit mermaid code blocks as <div class="mermaid">
-         // so the Mermaid library can find and render them. Other code blocks
-         // fall through to the default rendering path.
-         const mermaidRenderer = new marked.Renderer();
-         const defaultCodeRenderer = mermaidRenderer.code.bind(mermaidRenderer);
-         mermaidRenderer.code = function (code, infostring, escaped) {
-           const lang = (infostring || "").trim().split(/\s+/)[0];
-           if (lang === "mermaid") {
-             // Escape the closing tag just in case; otherwise pass raw.
-             return (
-               '<div class="mermaid tex2jax_ignore">' +
-               code +
-               "</div>"
-             );
-           }
-           return defaultCodeRenderer(code, infostring, escaped);
-         };
-         marked.use({ renderer: mermaidRenderer });
-      }
-       // Initialize Mermaid (manual run so we can re-render on demand)
-       if (window.mermaid) {
-         mermaid.initialize({
-           startOnLoad: false,
-           theme: "dark",
-           securityLevel: "loose",
-         });
-       }
-       // Counter to assign unique ids to mermaid diagrams across renders
-       let mermaidCounter = 0;
-       async function renderMathAndDiagrams(rootEl) {
-         if (!rootEl) return;
-         // Mermaid: find all .mermaid blocks under root and render them
-         if (window.mermaid) {
-           const blocks = rootEl.querySelectorAll(
-             ".mermaid:not([data-processed='true'])"
-           );
-           for (const el of blocks) {
-             const src = el.textContent;
-             const id = "mermaid-svg-" + ++mermaidCounter;
-             try {
-               const { svg, bindFunctions } = await mermaid.render(id, src);
-               el.innerHTML = svg;
-               if (bindFunctions) bindFunctions(el);
-               el.setAttribute("data-processed", "true");
-             } catch (err) {
-               el.innerHTML =
-                 '<pre style="color:#f97583">Mermaid render error: ' +
-                 (err && err.message ? err.message : String(err)) +
-                 "</pre>";
-               console.warn("Mermaid render failed:", err);
-             }
-           }
-         }
-         // MathJax: typeset the subtree
-         if (window.MathJax && window.MathJax.typesetPromise) {
-           try {
-             await window.MathJax.typesetPromise([rootEl]);
-           } catch (err) {
-             console.warn("MathJax typeset failed:", err);
-           }
-         }
-       }
-
-      // Rewrite relative links/images in rendered README so they resolve from the experiment dir
-      function rewriteRelative(html, baseDir) {
-        const tmp = document.createElement("div");
-        tmp.innerHTML = html;
-        tmp.querySelectorAll("img[src]").forEach((img) => {
-          const src = img.getAttribute("src");
-          if (
-            !/^([a-z]+:)?\/\//i.test(src) &&
-            !src.startsWith("/") &&
-            !src.startsWith("data:")
-          ) {
-            img.setAttribute("src", baseDir + src);
-          }
-          img.setAttribute("loading", "lazy");
-        });
-        tmp.querySelectorAll("a[href]").forEach((a) => {
-          const href = a.getAttribute("href");
-          if (
-            !/^([a-z]+:)?\/\//i.test(href) &&
-            !href.startsWith("#") &&
-            !href.startsWith("/")
-          ) {
-            a.setAttribute("href", baseDir + href);
-          }
-          // Prevent inner links from hijacking the card click
-          a.addEventListener("click", (e) => e.stopPropagation());
-        });
-        return tmp.innerHTML;
-      }
-      // Cache rendered README HTML per card to avoid refetching when modal opens
-      const readmeCache = new Map();
-
-      async function loadReadmes() {
-        const cards = document.querySelectorAll(".featured-card[data-readme]");
-        for (const card of cards) {
-          const path = card.dataset.readme;
-          const baseDir = path.substring(0, path.lastIndexOf("/") + 1);
-          const target = card.querySelector(".readme-preview");
-          try {
-            const res = await fetch(path);
-            if (!res.ok) throw new Error("HTTP " + res.status);
-            const md = await res.text();
-            const html = marked.parse(md);
-            const rendered = rewriteRelative(html, baseDir);
-            target.innerHTML = rendered;
-            readmeCache.set(path, rendered);
-           renderMathAndDiagrams(target);
-          } catch (err) {
-            target.innerHTML =
-              '<p class="readme-loading">Description unavailable. Click to launch the lab.</p>';
-            console.warn("Failed to load README:", path, err);
-          }
-        }
-      }
-
-      loadReadmes();
-      // Modal logic
-      const overlay = document.getElementById("modalOverlay");
-      const modalIcon = document.getElementById("modalIcon");
-      const modalTitle = document.getElementById("modalTitle");
-      const modalLaunch = document.getElementById("modalLaunch");
-      const modalBody = document.getElementById("modalBody");
-      const modalClose = document.getElementById("modalClose");
-      function openModal(card) {
-        const href = card.dataset.href;
-        const path = card.dataset.readme;
-        const baseDir = path.substring(0, path.lastIndexOf("/") + 1);
-        const icon =
-          card.querySelector(".featured-card-icon")?.textContent || "";
-        const title =
-          card.querySelector(".featured-card-title")?.textContent || "";
-        modalIcon.textContent = icon;
-        modalTitle.textContent = title;
-        modalLaunch.href = href;
-        if (readmeCache.has(path)) {
-          modalBody.innerHTML = readmeCache.get(path);
-         renderMathAndDiagrams(modalBody);
-        } else {
-          modalBody.innerHTML =
-            '<p class="readme-loading">Loading description…</p>';
-          fetch(path)
-            .then((r) => {
-              if (!r.ok) throw new Error("HTTP " + r.status);
-              return r.text();
-            })
-            .then((md) => {
-              const rendered = rewriteRelative(marked.parse(md), baseDir);
-              readmeCache.set(path, rendered);
-              modalBody.innerHTML = rendered;
-             renderMathAndDiagrams(modalBody);
-            })
-            .catch((err) => {
-              modalBody.innerHTML =
-                '<p class="readme-loading">Description unavailable.</p>';
-              console.warn("Failed to load README:", path, err);
-            });
-        }
-        overlay.classList.add("open");
-        overlay.setAttribute("aria-hidden", "false");
-        document.body.classList.add("modal-open");
-        overlay.scrollTop = 0;
-      }
-      function closeModal() {
-        overlay.classList.remove("open");
-        overlay.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("modal-open");
-      }
-      document
-        .querySelectorAll(".featured-card[data-readme]")
-        .forEach((card) => {
-          card.addEventListener("click", (e) => {
-            // Let the Launch button do its normal navigation
-            if (e.target.closest(".featured-card-launch")) return;
-            // Let any link inside the README preview navigate normally
-            if (
-              e.target.closest("a") &&
-              !e.target.closest(".featured-card-launch")
-            )
-              return;
-            e.preventDefault();
-            openModal(card);
-          });
-          card.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              openModal(card);
-            }
-          });
-        });
-      modalClose.addEventListener("click", closeModal);
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) closeModal();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && overlay.classList.contains("open"))
-          closeModal();
-      });
-    </script>
-  </body>
-</html>
+        <script src="js/home.js"></script>
+      </body>
+    </html>
