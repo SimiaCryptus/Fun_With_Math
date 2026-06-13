@@ -78,10 +78,21 @@
     // Compute a scalar field over a grid using the chosen mode.
     // Returns Float32Array of length size*size and {min, max}.
     export function computeField(opts) {
-      const { D, size, K, alphaScale, seed, mode, epsilon } = opts;
+     const { D, size, K, alphaScale, seed, mode, epsilon } = opts;
+     // Viewport: panX/panY in lattice units, zoom > 0 (lattice units per pixel).
+     const panX = opts.panX || 0;
+     const panY = opts.panY || 0;
+     const zoom = opts.zoom || 1;
+    const offsetX = opts.offsetX || 0;
+    const offsetY = opts.offsetY || 0;
+    const cmap2d = opts.cmap2d || "none";
       const field = new QuadField(D);
       const params = makeFrequencies(D, K, alphaScale, seed);
       const out = new Float32Array(size * size);
+     // Secondary channel for 2D colormaps (e.g. snap distance).
+     const useChannel2 = cmap2d && cmap2d !== "none";
+     const chan2 = useChannel2 ? new Float32Array(size * size) : null;
+     let min2 = Infinity, max2 = -Infinity;
 
       let minV = Infinity, maxV = -Infinity;
       let irrSumSq = 0, irrCount = 0;
@@ -89,9 +100,12 @@
       for (let j = 0; j < size; j++) {
         for (let i = 0; i < size; i++) {
           // Center the grid for symmetric viewing.
-          const x = i - size / 2;
-          const y = j - size / 2;
-          const e = etaAt(x, y, params, K);
+         // Apply pan (in lattice units) and zoom (lattice units per pixel).
+         const x = (i - size / 2) * zoom + panX;
+         const y = (j - size / 2) * zoom + panY;
+         const xo = x + offsetX;
+         const yo = y + offsetY;
+          const e = etaAt(xo, yo, params, K);
 
           // e = [ [a_x, b_x], [a_y, b_y] ]
           const ax = e[0][0], bx = e[0][1];
@@ -116,8 +130,8 @@
               break;
             case "snapped": {
               // Snap T_eps(x) = x + eps * eta(x) to nearest integer lattice.
-              const tx = x + epsilon * rx;
-              const ty = y + epsilon * ry;
+              const tx = xo + epsilon * rx;
+              const ty = yo + epsilon * ry;
               const sx = Math.round(tx);
               const sy = Math.round(ty);
               v = Math.hypot(tx - sx, ty - sy);
@@ -132,9 +146,32 @@
           out[j * size + i] = v;
           if (v < minV) minV = v;
           if (v > maxV) maxV = v;
+         if (useChannel2) {
+           let v2;
+           switch (cmap2d) {
+             case "rational_irrational":
+               v2 = Math.hypot(ax, ay);
+               break;
+             case "xy_phase": {
+               // Phase angle of the displacement, normalized to [0,1].
+               v2 = (Math.atan2(ry, rx) + Math.PI) / (2 * Math.PI);
+               break;
+             }
+             case "snap":
+             default: {
+               const tx = xo + epsilon * rx;
+               const ty = yo + epsilon * ry;
+               v2 = Math.hypot(tx - Math.round(tx), ty - Math.round(ty));
+               break;
+             }
+           }
+           chan2[j * size + i] = v2;
+           if (v2 < min2) min2 = v2;
+           if (v2 > max2) max2 = v2;
+         }
         }
       }
 
       const irrRMS = Math.sqrt(irrSumSq / irrCount);
-      return { data: out, min: minV, max: maxV, irrRMS };
+      return { data: out, min: minV, max: maxV, irrRMS, chan2, min2, max2 };
     }

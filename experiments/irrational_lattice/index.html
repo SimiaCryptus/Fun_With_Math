@@ -53,22 +53,25 @@
 
           <div class="control">
             <label>K frequencies: <output id="kOut">3</output></label>
-            <input type="range" id="K" min="1" max="6" value="3" step="1">
+           <input type="range" id="K" min="1" max="16" value="3" step="1">
+           <button class="sweep-btn" data-target="K" title="Sweep K">⟲ sweep</button>
           </div>
 
           <div class="control">
             <label>Frequency scale &alpha;: <output id="alphaOut">0.080</output></label>
-            <input type="range" id="alpha" min="0.01" max="0.30" value="0.08" step="0.005">
+           <input type="range" id="alpha" min="0.001" max="2.0" value="0.08" step="0.001">
+           <button class="sweep-btn" data-target="alpha" title="Sweep alpha">⟲ sweep</button>
           </div>
 
           <div class="control">
             <label>Amplitude &epsilon;: <output id="epsOut">0.30</output></label>
-            <input type="range" id="eps" min="0.0" max="1.0" value="0.30" step="0.01">
+           <input type="range" id="eps" min="0.0" max="5.0" value="0.30" step="0.01">
+           <button class="sweep-btn" data-target="eps" title="Sweep epsilon">⟲ sweep</button>
           </div>
 
           <div class="control">
             <label>Grid size: <output id="sizeOut">256</output></label>
-            <input type="range" id="size" min="64" max="512" value="256" step="32">
+           <input type="range" id="size" min="64" max="1024" value="256" step="32">
           </div>
 
           <div class="control">
@@ -78,15 +81,48 @@
               <option value="magma">magma</option>
               <option value="grayscale">grayscale</option>
               <option value="twilight">twilight</option>
+             <option value="rainbow">rainbow</option>
+             <option value="disco">disco</option>
+             <option value="neon">neon</option>
+             <option value="fire">fire</option>
+             <option value="ice">ice</option>
+             <option value="plasma">plasma</option>
             </select>
           </div>
+         <div class="control">
+           <label>2D color map (hue ⊗ value)</label>
+           <select id="cmap2d">
+             <option value="none">none (use 1D map)</option>
+             <option value="snap" selected>snap distance ⊗ field</option>
+             <option value="rational_irrational">rational ⊗ irrational</option>
+             <option value="xy_phase">xy phase ⊗ field</option>
+           </select>
+         </div>
+         <div class="control">
+           <label>Color cycling speed: <output id="cycleOut">0.00</output></label>
+           <input type="range" id="cycle" min="0.0" max="2.0" value="0.0" step="0.01">
+         </div>
+
 
           <div class="control">
             <label>Seed (phase offset): <output id="seedOut">0</output></label>
-            <input type="range" id="seed" min="0" max="100" value="0" step="1">
+           <input type="range" id="seed" min="0" max="1000" value="0" step="1">
+           <button class="sweep-btn" data-target="seed" title="Sweep seed">⟲ sweep</button>
           </div>
+         <div class="control">
+           <label>Integer offset: <output id="offsetOut">0, 0</output></label>
+           <div class="offset-buttons">
+             <button id="offsetXMinus">x-</button>
+             <button id="offsetXPlus">x+</button>
+             <button id="offsetYMinus">y-</button>
+             <button id="offsetYPlus">y+</button>
+           </div>
+         </div>
+
 
           <button id="regen">Regenerate</button>
+         <button id="resetView">Reset view</button>
+         <button id="exportPng">Export PNG</button>
 
           <div class="info">
             <h3>About</h3>
@@ -101,6 +137,10 @@
               Lower D values and small &alpha; yield long-range moir&eacute;-like
               interference reminiscent of Penrose patterns, constrained to the square lattice.
             </p>
+           <p>
+             <strong>Drag</strong> to pan and <strong>scroll</strong> to zoom into the
+             rational lattice. Use <em>Reset view</em> to return to the origin.
+           </p>
             <div class="stats" id="stats"></div>
           </div>
         </aside>

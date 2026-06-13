@@ -38,13 +38,62 @@
       [60, 78, 122], [97, 104, 165], [149, 137, 191],
       [196, 175, 208], [226, 217, 226],
     ];
+   const FIRE = [
+     [0, 0, 0], [60, 0, 0], [120, 10, 0],
+     [200, 40, 0], [240, 120, 0], [255, 200, 40],
+     [255, 255, 180], [255, 255, 255],
+   ];
+   const ICE = [
+     [0, 0, 20], [0, 20, 60], [0, 60, 120],
+     [20, 120, 200], [80, 180, 240], [160, 220, 250],
+     [220, 245, 255], [255, 255, 255],
+   ];
+   const PLASMA = [
+     [13, 8, 135], [75, 3, 161], [125, 3, 168],
+     [168, 34, 150], [203, 70, 121], [229, 107, 93],
+     [248, 148, 65], [253, 195, 40], [240, 249, 33],
+   ];
+   // HSV to RGB; h,s,v in [0,1], returns 0..255 triple.
+   function hsv2rgb(h, s, v) {
+     h = (h - Math.floor(h)) * 6;
+     const i = Math.floor(h);
+     const f = h - i;
+     const p = v * (1 - s);
+     const q = v * (1 - s * f);
+     const t = v * (1 - s * (1 - f));
+     let r, g, b;
+     switch (i % 6) {
+       case 0: r = v; g = t; b = p; break;
+       case 1: r = q; g = v; b = p; break;
+       case 2: r = p; g = v; b = t; break;
+       case 3: r = p; g = q; b = v; break;
+       case 4: r = t; g = p; b = v; break;
+       default: r = v; g = p; b = q; break;
+     }
+     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+   }
+
 
     export const colormaps = {
       viridis: (t) => sampleStops(VIRIDIS, t),
       magma: (t) => sampleStops(MAGMA, t),
+     fire: (t) => sampleStops(FIRE, t),
+     ice: (t) => sampleStops(ICE, t),
+     plasma: (t) => sampleStops(PLASMA, t),
       twilight: (t) => sampleStops(TWILIGHT, t),
       grayscale: (t) => {
         const v = Math.round(clamp01(t) * 255);
         return [v, v, v];
       },
+     // Cycling / disco maps take an optional phase argument.
+     rainbow: (t, phase = 0) => hsv2rgb(clamp01(t) + phase, 0.9, 1.0),
+     disco: (t, phase = 0) => hsv2rgb(clamp01(t) * 3 + phase, 1.0, 0.5 + 0.5 * Math.abs(Math.sin((t + phase) * Math.PI * 4))),
+     neon: (t, phase = 0) => hsv2rgb(clamp01(t) * 0.8 + 0.5 + phase, 1.0, clamp01(0.3 + 0.7 * t)),
     };
+   // 2D colormaps: map (u, v) in [0,1]^2 -> [r,g,b]. phase shifts hue.
+   export const colormaps2d = {
+     // u drives hue, v drives brightness.
+     snap: (u, v, phase = 0) => hsv2rgb(u + phase, 0.85, clamp01(0.15 + 0.85 * v)),
+     rational_irrational: (u, v, phase = 0) => hsv2rgb(0.6 * u + 0.15 + phase, clamp01(0.4 + 0.6 * v), clamp01(0.25 + 0.75 * v)),
+     xy_phase: (u, v, phase = 0) => hsv2rgb(u + phase, 0.7, clamp01(0.2 + 0.8 * v)),
+   };
