@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Algebraic Colored Lattice Field</title>
+      <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+      <header>
+        <h1>Algebraic Colored Lattice Field</h1>
+        <p class="subtitle">
+          Deterministic aperiodic perturbations from <span class="math">&#x211A;(&radic;D)</span>
+        </p>
+      </header>
+
+      <main>
+        <div class="canvas-wrap">
+          <canvas id="field" width="700" height="700"></canvas>
+          <div class="legend">
+            <span>min</span>
+            <div class="gradient"></div>
+            <span>max</span>
+          </div>
+        </div>
+
+        <aside class="controls">
+          <div class="control">
+            <label for="D">Square-free integer D</label>
+            <select id="D">
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="5" selected>5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="13">13</option>
+              <option value="17">17</option>
+              <option value="19">19</option>
+              <option value="23">23</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label for="mode">Field mode</label>
+            <select id="mode">
+              <option value="magnitude">|&eta;(x)|</option>
+              <option value="rational">Rational part |a(x)|</option>
+              <option value="irrational">Irrational part |b(x)|&radic;D</option>
+              <option value="snapped">Snap displacement</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label>K frequencies: <output id="kOut">3</output></label>
+            <input type="range" id="K" min="1" max="6" value="3" step="1">
+          </div>
+
+          <div class="control">
+            <label>Frequency scale &alpha;: <output id="alphaOut">0.080</output></label>
+            <input type="range" id="alpha" min="0.01" max="0.30" value="0.08" step="0.005">
+          </div>
+
+          <div class="control">
+            <label>Amplitude &epsilon;: <output id="epsOut">0.30</output></label>
+            <input type="range" id="eps" min="0.0" max="1.0" value="0.30" step="0.01">
+          </div>
+
+          <div class="control">
+            <label>Grid size: <output id="sizeOut">256</output></label>
+            <input type="range" id="size" min="64" max="512" value="256" step="32">
+          </div>
+
+          <div class="control">
+            <label>Color map</label>
+            <select id="cmap">
+              <option value="viridis" selected>viridis</option>
+              <option value="magma">magma</option>
+              <option value="grayscale">grayscale</option>
+              <option value="twilight">twilight</option>
+            </select>
+          </div>
+
+          <div class="control">
+            <label>Seed (phase offset): <output id="seedOut">0</output></label>
+            <input type="range" id="seed" min="0" max="100" value="0" step="1">
+          </div>
+
+          <button id="regen">Regenerate</button>
+
+          <div class="info">
+            <h3>About</h3>
+            <p>
+              Each lattice site <span class="math">x &isin; &#x2124;&sup2;</span> is assigned
+              an algebraic displacement
+              <span class="math">&eta;(x) = a(x) + b(x)&radic;D</span>
+              built from a sum of K incommensurate algebraic gratings.
+              The visualization shows the magnitude of this deterministic, aperiodic field.
+            </p>
+            <p>
+              Lower D values and small &alpha; yield long-range moir&eacute;-like
+              interference reminiscent of Penrose patterns, constrained to the square lattice.
+            </p>
+            <div class="stats" id="stats"></div>
+          </div>
+        </aside>
+      </main>
+
+      <script type="module" src="main.js"></script>
+    </body>
+    </html>
