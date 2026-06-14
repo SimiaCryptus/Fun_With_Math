@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tiny Heroes — Guide Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>🎲 Tiny Heroes — Guide Dashboard</h1>
+    <p class="subtitle">Track your heroes, hearts, rolls &amp; the adventure!</p>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT COLUMN: Heroes & scoreboard -->
+    <section class="col col-heroes">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>🦸 Heroes</h2>
+          <button class="btn-primary" id="addHeroBtn">+ Add Hero</button>
+        </div>
+        <div class="heroes" id="heroList">
+          <!-- hero cards injected by JS -->
+        </div>
+        <p class="empty-hint" id="emptyHint">No heroes yet. Add one to begin!</p>
+      </div>
+    </section>
+
+    <!-- MIDDLE COLUMN: Dice roller -->
+    <section class="col col-dice">
+      <div class="panel">
+
+         <h2>🎲 Resolve a Roll</h2>
+         <p class="hint">The Guide never rolls — <b>you</b> roll the real foam die, then type the number here!</p>
+
+         <div class="dice-display" id="diceDisplay">—</div>
+
+        <label class="field">
+          <span>Who's rolling?</span>
+          <select id="rollHero"></select>
+        </label>
+
+        <label class="field">
+          <span>Stat used</span>
+          <select id="rollStat">
+            <option value="Might">Might</option>
+            <option value="Magic">Magic</option>
+            <option value="Speed">Speed</option>
+            <option value="Heart">Heart</option>
+          </select>
+        </label>
+
+        <label class="field-check">
+          <input type="checkbox" id="rollHelp" />
+          <span>A friend Helps (+2)</span>
+        </label>
+
+        <label class="field">
+          <span>Difficulty (Target Number)</span>
+          <select id="rollTN">
+            <option value="5">Easy (5)</option>
+            <option value="10" selected>Medium (10)</option>
+            <option value="15">Hard (15)</option>
+          </select>
+        </label>
+
+         <label class="field">
+           <span>What did the foam die show? (1–20)</span>
+           <input type="number" id="rollValue" min="1" max="20" placeholder="Type your roll…" />
+         </label>
+
+         <button class="btn-roll" id="rollBtn">Check the roll! ✨</button>
+
+        <div class="roll-result" id="rollResult"></div>
+      </div>
+       <div class="panel">
+         <h2>🐉 Encounter</h2>
+         <p class="hint">A goofy challenge for the Heroes (never scary!).</p>
+         <div class="encounter" id="encounterBox">
+           <p class="empty-hint">No encounter yet. Spin one up!</p>
+         </div>
+         <button class="btn-ghost" id="encounterBtn">🎲 New Encounter</button>
+       </div>
+       <div class="panel">
+         <h2>🔀 Offer a Choice</h2>
+         <div class="choice" id="choiceBox">
+           <p class="empty-hint">No choice yet. Give the Heroes options!</p>
+         </div>
+         <button class="btn-ghost" id="choiceBtn">🔀 New Choice</button>
+       </div>
+    </section>
+
+    <!-- RIGHT COLUMN: Adventure log & controls -->
+    <section class="col col-log">
+      <div class="panel">
+        <div class="panel-head">
+          <h2>📜 Adventure Log</h2>
+          <button class="btn-ghost" id="clearLogBtn">Clear</button>
+        </div>
+        <ul class="log" id="logList"></ul>
+      </div>
+       <div class="panel">
+         <div class="panel-head">
+           <h2>🗺️ Basic Map</h2>
+           <button class="btn-ghost" id="mapAdvanceBtn">▶️ Advance</button>
+         </div>
+         <p class="hint">Heroes journey from 🏠 Home to ⭐ Goal.</p>
+         <pre class="map" id="mapDisplay"></pre>
+       </div>
+
+      <div class="panel">
+        <h2>⚙️ Game</h2>
+        <div class="game-actions">
+          <button class="btn-ghost" id="saveBtn">💾 Save</button>
+          <button class="btn-ghost" id="loadBtn">📂 Load</button>
+          <button class="btn-ghost" id="resetBtn">♻️ New Game</button>
+        </div>
+        <p class="hint" id="saveStatus"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add/Edit hero dialog -->
+  <dialog id="heroDialog">
+    <form method="dialog" class="hero-form" id="heroForm">
+      <h3 id="dialogTitle">Add a Hero</h3>
+
+      <label class="field">
+        <span>Hero Name</span>
+        <input type="text" id="formName" maxlength="20" placeholder="e.g. Sparkle the Brave" required />
+      </label>
+
+      <label class="field">
+        <span>Face</span>
+        <div class="faces" id="formFaces"></div>
+        <input type="hidden" id="formFace" />
+      </label>
+
+      <label class="field">
+        <span>Hero Type</span>
+        <select id="formType"></select>
+      </label>
+
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" id="cancelHeroBtn">Cancel</button>
+        <button type="submit" class="btn-primary" id="saveHeroBtn">Save Hero</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

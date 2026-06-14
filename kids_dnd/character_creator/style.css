@@ -1,0 +1,225 @@
+:root {
+      --bg: #fef6e4;
+      --card: #ffffff;
+      --ink: #2b2118;
+      --accent: #ff6b6b;
+      --accent2: #4ecdc4;
+      --gold: #ffd166;
+      --shadow: 0 6px 0 rgba(0,0,0,0.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", "Baloo", "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .topbar {
+      text-align: center;
+      padding: 20px 16px 8px;
+    }
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      color: var(--accent);
+      text-shadow: 2px 2px 0 var(--gold);
+    }
+    .subtitle {
+      margin: 4px 0 0;
+      font-size: 1.1rem;
+      color: #6b5d4f;
+    }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      max-width: 1000px;
+      margin: 16px auto;
+      padding: 0 16px 40px;
+    }
+
+    .builder { flex: 2 1 420px; }
+    .sheet   { flex: 1 1 280px; }
+
+    .step {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+    .step h2 {
+      margin: 0 0 12px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      background: var(--accent2);
+      color: #fff;
+      border-radius: 50%;
+      font-size: 1.1rem;
+    }
+    .hint, .trick {
+      margin: 6px 0;
+      color: #6b5d4f;
+    }
+
+    /* Hero type buttons */
+    .hero-types {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .hero-btn {
+      cursor: pointer;
+      border: 3px solid #eee;
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 12px;
+      text-align: center;
+      font: inherit;
+      transition: transform .1s ease, border-color .1s ease;
+    }
+    .hero-btn:hover { transform: translateY(-3px); }
+    .hero-btn .emoji { font-size: 2rem; display: block; }
+    .hero-btn .label { font-weight: bold; font-size: 1.1rem; }
+    .hero-btn .strong { font-size: .85rem; color: var(--accent); }
+    .hero-btn.selected {
+      border-color: var(--accent2);
+      background: #f0fdfb;
+      box-shadow: 0 0 0 4px rgba(78,205,196,0.25);
+    }
+
+    /* Stats */
+    .stats { display: grid; gap: 10px; }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff8ef;
+      border-radius: 12px;
+      padding: 10px 14px;
+    }
+    .stat-name { font-weight: bold; }
+    .stat-desc { font-size: .8rem; color: #8a7d6f; }
+    .stat-bonus {
+      font-size: 1.2rem;
+      font-weight: bold;
+      min-width: 44px;
+      text-align: center;
+      background: #eee;
+      border-radius: 10px;
+      padding: 4px 8px;
+    }
+    .stat-bonus.boosted { background: var(--gold); }
+
+    /* Name & faces */
+    .field { display: block; margin-bottom: 10px; }
+    .field span { display: block; font-weight: bold; margin-bottom: 4px; }
+    .field input {
+      width: 100%;
+      padding: 10px;
+      font: inherit;
+      border: 3px solid #eee;
+      border-radius: 12px;
+    }
+    .field input:focus { outline: none; border-color: var(--accent2); }
+
+    .faces {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .face-btn {
+      font-size: 1.8rem;
+      cursor: pointer;
+      border: 3px solid #eee;
+      background: #fff;
+      border-radius: 12px;
+      padding: 6px 8px;
+      line-height: 1;
+    }
+    .face-btn.selected {
+      border-color: var(--accent);
+      background: #fff0f0;
+    }
+
+    .hearts { font-size: 1.8rem; }
+
+    /* Actions */
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary, .btn-ghost {
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: var(--radius);
+      padding: 14px 22px;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: var(--shadow);
+      font-size: 1.2rem;
+    }
+    .btn-primary:active { transform: translateY(3px); box-shadow: none; }
+    .btn-ghost {
+      background: #fff;
+      border: 3px solid #eee;
+    }
+
+    /* Character sheet preview */
+    .sheet {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      align-self: flex-start;
+      position: sticky;
+      top: 16px;
+      text-align: center;
+    }
+    .sheet h2 { margin-top: 0; }
+    .sheet-face {
+      font-size: 4rem;
+      margin: 6px 0;
+    }
+    .sheet-name { font-size: 1.4rem; font-weight: bold; }
+    .sheet-type { color: var(--accent); font-weight: bold; margin-bottom: 12px; }
+    .sheet-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .sheet-stat {
+      background: #fff8ef;
+      border-radius: 10px;
+      padding: 8px;
+    }
+    .sheet-stat b { display: block; font-size: 1.1rem; }
+    .sheet-trick, .sheet-hearts {
+      margin-top: 10px;
+      font-size: .95rem;
+    }
+
+    /* Celebration banner */
+    .celebrate {
+      animation: pop .5s ease;
+    }
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
