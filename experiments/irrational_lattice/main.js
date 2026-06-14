@@ -18,6 +18,7 @@
       cmap2d: document.getElementById("cmap2d"),
       cycle: document.getElementById("cycle"),
       seed: document.getElementById("seed"),
+     zoomStep: document.getElementById("zoomStep"),
     };
 
     const outputs = {
@@ -28,6 +29,7 @@
       seed: document.getElementById("seedOut"),
       cycle: document.getElementById("cycleOut"),
       offset: document.getElementById("offsetOut"),
+     zoomStep: document.getElementById("zoomStepOut"),
     };
    // Viewport state for pan & zoom (rational lattice coordinates).
    const view = {
@@ -106,6 +108,7 @@
       outputs.seed.textContent = o.seed;
       outputs.cycle.textContent = parseFloat(controls.cycle.value).toFixed(2);
       outputs.offset.textContent = `${offset.x}, ${offset.y}`;
+     outputs.zoomStep.textContent = parseFloat(controls.zoomStep.value).toFixed(3);
     }
 
     function updateStats(o, result, elapsed) {
@@ -211,6 +214,24 @@
      for (const target of Object.keys(sweeping)) {
        if (!sweeping[target]) continue;
        any = true;
+      // Zoom sweep is special: zoom lives in `view`, not in a range control.
+      // Use the zoom granularity slider as a per-frame rate multiplier so the
+      // sweep speed respects the same control as manual wheel zooming.
+      if (target === "zoom") {
+        const zoomStep = parseFloat(controls.zoomStep.value) || 1.1;
+        // Per-frame multiplier derived from the granularity (gentler than a
+        // full wheel notch so the animation stays smooth).
+        const rate = 1 + (zoomStep - 1) * 0.25;
+        const zoomMin = 0.001;
+        const zoomMax = 1000;
+        // dir === 1 => zoom in (decrease lattice-units-per-pixel),
+        // dir === -1 => zoom out. Unlike other sweeps, zoom does not bounce;
+        // it holds the chosen direction and just clamps at the limits.
+        view.zoom *= sweeping[target].dir > 0 ? 1 / rate : rate;
+        if (view.zoom <= zoomMin) view.zoom = zoomMin;
+        if (view.zoom >= zoomMax) view.zoom = zoomMax;
+        continue;
+      }
        const input = controls[target];
        const min = parseFloat(input.min);
        const max = parseFloat(input.max);
@@ -229,13 +250,31 @@
    document.querySelectorAll(".sweep-btn").forEach((btn) => {
      btn.addEventListener("click", () => {
        const target = btn.dataset.target;
-       if (sweeping[target]) {
-         delete sweeping[target];
-         btn.classList.remove("active");
-       } else {
-         sweeping[target] = { dir: 1 };
-         btn.classList.add("active");
-       }
+      // Zoom has two buttons (in/out) sharing the "zoom" target. Each button
+      // selects a fixed direction; clicking the active one stops the sweep.
+      if (target === "zoom") {
+        const dir = btn.dataset.dir === "out" ? -1 : 1;
+        const alreadyActive =
+          sweeping[target] && sweeping[target].dir === dir;
+        // Clear any active zoom button state first.
+        document
+          .querySelectorAll('.sweep-btn[data-target="zoom"]')
+          .forEach((b) => b.classList.remove("active"));
+        if (alreadyActive) {
+          delete sweeping[target];
+        } else {
+          sweeping[target] = { dir };
+          btn.classList.add("active");
+        }
+        return;
+      }
+      if (sweeping[target]) {
+        delete sweeping[target];
+        btn.classList.remove("active");
+      } else {
+        sweeping[target] = { dir: 1 };
+        btn.classList.add("active");
+      }
      });
    });
 
@@ -322,7 +361,10 @@
      ev.preventDefault();
      const { fx, fy } = clientToFieldPixel(ev);
      const before = pixelToLattice(fx, fy);
-     const factor = ev.deltaY < 0 ? 1 / 1.1 : 1.1;
+     // Configurable zoom granularity: each wheel notch multiplies/divides
+     // the zoom by zoomStep. Values close to 1.0 give finer control.
+     const zoomStep = parseFloat(controls.zoomStep.value) || 1.1;
+     const factor = ev.deltaY < 0 ? 1 / zoomStep : zoomStep;
      view.zoom *= factor;
      // Clamp zoom to a reasonable range.
      view.zoom = Math.min(Math.max(view.zoom, 0.001), 1000);

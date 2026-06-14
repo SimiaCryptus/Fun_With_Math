@@ -89,6 +89,13 @@
             <label>Grid size: <output id="sizeOut">256</output></label>
            <input type="range" id="size" min="64" max="1024" value="256" step="32">
           </div>
+         <div class="control">
+           <label>Zoom granularity: <output id="zoomStepOut">1.100</output></label>
+           <input type="range" id="zoomStep" min="1.005" max="1.5" value="1.1" step="0.005">
+          <button class="sweep-btn" data-target="zoom" data-dir="in" title="Sweep zoom in">⟲ in</button>
+          <button class="sweep-btn" data-target="zoom" data-dir="out" title="Sweep zoom out">⟲ out</button>
+         </div>
+
 
           <div class="control">
             <label>Color map</label>
