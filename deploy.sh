@@ -1,3 +1,6 @@
+npm run build
+
+npm run validate
 
 aws s3 cp --recursive ./ s3://math.cognotik.com/ \
   --exclude "node_modules/*" \

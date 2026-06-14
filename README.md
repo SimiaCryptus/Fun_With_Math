@@ -1,6 +1,9 @@
 # Fun With Math
 
-A collection of interactive mathematical experiments—all running live in your browser with no installation required.
+A collection of original interactive mathematical experiments and essays—all running live in your browser with no
+installation required. Each lab is a small piece of in-browser mathematical research, not a textbook visualization.
+
+🔗 **Live site:** [math.cognotik.com](https://math.cognotik.com/)
 
 ## 🚀 Getting Started
 
@@ -12,12 +15,41 @@ npx serve .
 python -m http.server
 ```
 
-Then navigate to the URL shown in your terminal (e.g. `http://localhost:3000` for `serve`, `http://localhost:8000` for Python).
+Then navigate to the URL shown in your terminal (e.g. `http://localhost:3000` for `serve`, `http://localhost:8000` for
+Python).
 
-## 🧮 Experiments
+## 🧪 Featured Laboratories
 
-| Experiment                                           | Description                                   |
-| ---------------------------------------------------- | --------------------------------------------- |
+Extended interactive studies, each accompanied by documentation describing the underlying mathematics, motivation, and
+methods.
+
+| Laboratory                                                                      | Description                                                                                                              |
+|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| [Pentagonal Lattice Geometry](experiments/Pentagon_Lattice_Geometry/index.html) | Multi-sheeted covering construction where the pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy |
+| [Space-Color Symmetry](experiments/symmetry_simple/index.html)                  | A pixel canvas where symmetry rewires the diffusion graph, producing kaleidoscope dynamics on a quotient-like manifold   |
+| [Geometric Entropy](experiments/geometric-entropy/index.html)                   | A continuous analogue of the Erdős distinct-distance problem via Shannon entropy optimization                            |
+| [Spacelike Knots](experiments/spacelike-knots/index.html)                       | A knot equipped with a Minkowski metric, turning crossings into causal inversions                                        |
+| [Layered Cellular Automata](experiments/layered_ca/index.html)                  | Langton's ants write a colored substrate gating where Conway's Life can live — three feedback layers                     |
+| [Fractal Learning](experiments/fractal_learning/index.html)                     | Inverse iterated-function-system fitting via gradient optimization under a Chamfer metric                                |
+| [Irrational Lattice](experiments/irrational_lattice/index.html)                 | Deterministic, algebraic "colored noise" for lattices — provably aperiodic, spectrally tunable                           |
+
+## 📝 Essays
+
+Extended written investigations into the foundations of computational mathematics.
+
+| Essay                                                          | Description                                                                                        |
+|----------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| [Quadratic Quasi-Newton](essays/QQN/index.html)                | A new optimization algorithm interpolating between gradient descent and L-BFGS                     |
+| [Rational Certificate Complexity](essays/RCC/index.html)       | A computational taxonomy of mathematical constants, stratified by certificate cost                 |
+| [The Simplest Increment: x + sin(x)](essays/PI_RCC/index.html) | A cubic-convergent iteration for π built from the derivative structure of an analytic function     |
+| [Numbers as Machines](essays/NAM/index.html)                   | A generator-based numerics library where every number is a deterministic, forkable virtual machine |
+
+## 🧮 Short Demonstrations
+
+Compact, self-contained demonstrations of classical mathematical concepts.
+
+| Demonstration                                        | Description                                   |
+|------------------------------------------------------|-----------------------------------------------|
 | [Mandelbrot Set](experiments/basic/mandelbrot.html)  | Zoom and pan the iconic complex-plane fractal |
 | [Prime Number Sieve](experiments/basic/primes.html)  | Animated Sieve of Eratosthenes                |
 | [Fourier Series](experiments/basic/fourier.html)     | Build waveforms from rotating circles         |
@@ -29,12 +61,33 @@ Then navigate to the URL shown in your terminal (e.g. `http://localhost:3000` fo
 index.html              ← Landing page / experiment gallery
 css/
   style.css             ← Shared stylesheet
+  home.css              ← Landing page styles
+js/
+  home.js               ← Landing page logic (README previews, modals)
+  marked.min.js         ← Markdown renderer
+  optimizer-*.js        ← Shared QQN / Adam / L-BFGS optimizers
 experiments/
-  mandelbrot.html       ← Mandelbrot Set Explorer
-  primes.html           ← Prime Number Sieve
-  fourier.html          ← Fourier Series Visualizer
-  collatz.html          ← Collatz Conjecture
+  basic/                ← Short classical demonstrations
+  Pentagon_Lattice_Geometry/  ← Multi-sheeted polygon covers
+  symmetry_simple/      ← Space-Color Symmetry
+  geometric-entropy/    ← Continuous Erdős distinct-distance
+  spacelike-knots/      ← Minkowski-metric knots
+  layered_ca/           ← Langton's ants × Conway's Life
+  fractal_learning/     ← Inverse IFS fitting
+  irrational_lattice/   ← Algebraic colored-noise lattices
+essays/
+  QQN/                  ← Quadratic Quasi-Newton
+  RCC/                  ← Rational Certificate Complexity
+  PI_RCC/               ← The Simplest Increment: x + sin(x)
+  NAM/                  ← Numbers as Machines
+terraform/              ← Infrastructure for static hosting (S3 + CloudFront)
+scripts/                ← Sitemap and OG-image generation
 ```
+
+## 🛠 Implementation
+
+Implemented in plain HTML, CSS, and JavaScript — no build step, and no dependencies beyond a couple of CDN-loaded
+libraries (MathJax, Mermaid). Deployed as a static site to AWS S3 + CloudFront via Terraform.
 
 ## 📄 License
 
