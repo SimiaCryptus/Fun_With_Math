@@ -2,6 +2,7 @@
 
     import { computeField } from "./field.js";
     import { renderField } from "./render.js";
+   import { computeFFT2D, renderFFT3D } from "./fft.js";
 
     const canvas = document.getElementById("field");
     const statsEl = document.getElementById("stats");
@@ -40,6 +41,42 @@
 
    // Color cycling phase, advanced by an animation loop when cycle > 0.
    let colorPhase = 0;
+   // --- URL hash persistence (for sharable links) ---
+   // Serialize all control + view state into the location hash so the exact
+   // view can be restored or shared by copying the URL.
+   let restoringFromHash = false;
+   function stateToHash() {
+     if (restoringFromHash) return;
+     const params = new URLSearchParams();
+     for (const key of Object.keys(controls)) {
+       params.set(key, controls[key].value);
+     }
+     params.set("cycleSpeed", controls.cycle.value);
+     params.set("panX", view.panX.toFixed(3));
+     params.set("panY", view.panY.toFixed(3));
+     params.set("zoom", view.zoom.toFixed(5));
+     params.set("offsetX", offset.x);
+     params.set("offsetY", offset.y);
+     // Replace (not push) so we don't spam browser history during drags.
+     history.replaceState(null, "", "#" + params.toString());
+   }
+   function hashToState() {
+     const hash = window.location.hash.replace(/^#/, "");
+     if (!hash) return false;
+     const params = new URLSearchParams(hash);
+     restoringFromHash = true;
+     for (const key of Object.keys(controls)) {
+       if (params.has(key)) controls[key].value = params.get(key);
+     }
+     if (params.has("panX")) view.panX = parseFloat(params.get("panX"));
+     if (params.has("panY")) view.panY = parseFloat(params.get("panY"));
+     if (params.has("zoom")) view.zoom = parseFloat(params.get("zoom"));
+     if (params.has("offsetX")) offset.x = parseInt(params.get("offsetX"), 10);
+     if (params.has("offsetY")) offset.y = parseInt(params.get("offsetY"), 10);
+     restoringFromHash = false;
+     return true;
+   }
+
 
     function readOpts() {
       return {
@@ -95,6 +132,9 @@
     function regenerate() {
       const opts = readOpts();
       updateOutputs(opts);
+     // Persist the current state to the URL hash for sharing.
+     stateToHash();
+
 
       // Defer to next frame to keep slider drag responsive.
       if (pending) cancelAnimationFrame(pending);
@@ -107,6 +147,7 @@
         lastResult = result;
         lastOpts = opts;
         pending = null;
+       updateFFT();
       });
     }
 
@@ -292,8 +333,73 @@
      regenerate();
    }, { passive: false });
    canvas.style.cursor = "grab";
+   // --- 3D FFT floating subwindow ---
+   const fftWindow = document.getElementById("fftWindow");
+   const fftTitlebar = document.getElementById("fftTitlebar");
+   const fftBody = document.getElementById("fftBody");
+   const fftCanvas = document.getElementById("fftCanvas");
+   const fftCollapse = document.getElementById("fftCollapse");
+   const fftRefresh = document.getElementById("fftRefresh");
+   const fftRot = document.getElementById("fftRot");
+   const fftTilt = document.getElementById("fftTilt");
+   const fftScale = document.getElementById("fftScale");
+   let lastFFT = null;
+   function updateFFT() {
+     if (fftWindow.classList.contains("collapsed")) return;
+     if (!lastResult) return;
+     lastFFT = computeFFT2D(lastResult.data, lastOpts.size, 64);
+     drawFFT();
+   }
+   function drawFFT() {
+     if (!lastFFT) return;
+     renderFFT3D(fftCanvas, lastFFT, {
+       rot: parseFloat(fftRot.value),
+       tilt: parseFloat(fftTilt.value),
+       heightScale: parseFloat(fftScale.value),
+     });
+   }
+   for (const el of [fftRot, fftTilt, fftScale]) {
+     el.addEventListener("input", drawFFT);
+   }
+   fftRefresh.addEventListener("click", updateFFT);
+   fftCollapse.addEventListener("click", () => {
+     fftWindow.classList.toggle("collapsed");
+     fftCollapse.textContent = fftWindow.classList.contains("collapsed") ? "▸" : "▾";
+     updateFFT();
+   });
+   // Dragging the subwindow by its titlebar.
+   let fwDragging = false;
+   let fwStart = null;
+   let fwOrigin = null;
+   fftTitlebar.addEventListener("mousedown", (ev) => {
+     // Ignore drags that start on a button.
+     if (ev.target.closest("button")) return;
+     fwDragging = true;
+     const rect = fftWindow.getBoundingClientRect();
+     fwStart = { x: ev.clientX, y: ev.clientY };
+     fwOrigin = { x: rect.left, y: rect.top };
+     // Switch from right-anchored to left/top positioning.
+     fftWindow.style.left = rect.left + "px";
+     fftWindow.style.top = rect.top + "px";
+     fftWindow.style.right = "auto";
+     ev.preventDefault();
+   });
+   window.addEventListener("mousemove", (ev) => {
+     if (!fwDragging) return;
+     const dx = ev.clientX - fwStart.x;
+     const dy = ev.clientY - fwStart.y;
+     fftWindow.style.left = Math.max(0, fwOrigin.x + dx) + "px";
+     fftWindow.style.top = Math.max(0, fwOrigin.y + dy) + "px";
+   });
+   window.addEventListener("mouseup", () => { fwDragging = false; });
 
 
     // Initial render.
     fitCanvas();
+   hashToState();
     regenerate();
+   // Respond to external hash changes (shared link pasted, back/forward nav).
+   window.addEventListener("hashchange", () => {
+     if (restoringFromHash) return;
+     if (hashToState()) regenerate();
+   });

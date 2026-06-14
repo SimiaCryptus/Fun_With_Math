@@ -198,3 +198,71 @@
     }
 
     .stats div { display: flex; justify-content: space-between; }
+    /* --- Floating draggable subwindow --- */
+    .floating-window {
+      position: fixed;
+      top: 90px;
+      right: 40px;
+      width: 340px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      user-select: none;
+    }
+    .fw-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      cursor: move;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--border);
+      border-radius: 8px 8px 0 0;
+    }
+    .fw-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--fg);
+    }
+    .fw-buttons { display: flex; gap: 0.3rem; }
+    .fw-btn {
+      background: var(--panel);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.8rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .fw-body {
+      padding: 0.6rem 0.75rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .floating-window.collapsed .fw-body { display: none; }
+    .floating-window.collapsed { width: 220px; }
+    #fftCanvas {
+      width: 100%;
+      height: auto;
+      background: #05060a;
+      border-radius: 4px;
+      image-rendering: auto;
+      display: block;
+    }
+    .fw-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .fw-controls label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    .fw-controls input[type="range"] { flex: 1; }
