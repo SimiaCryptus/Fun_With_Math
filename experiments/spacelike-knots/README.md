@@ -3,7 +3,7 @@
 > **A knot equipped with a Minkowski metric, turning crossings into causal relationships.**
 > Each strand pair is classified as timelike (causally connected), spacelike (causally
 > disconnected), or lightlike (null) — recasting the over/under choice of a crossing as
-> a *causal inversion* in a relativistic embedding of the knot.
+> a _causal inversion_ in a relativistic embedding of the knot.
 
 An interactive 3D knot theory visualization tool that uses TensorFlow.js for physics-based optimization and distance
 matrix analysis. Explore classical knot types through the lens of Euclidean and Minkowski spacetime metrics.
@@ -27,7 +27,7 @@ classified as:
 Crossings in the Euclidean picture become **causal inversions** in the Minkowski
 picture: the strand that's "above" is also the strand that's in the causal future,
 and tugging the knot through itself flips the causal ordering of nearby strand
-pairs. The distance matrix becomes a *causal diagram* of the knot.
+pairs. The distance matrix becomes a _causal diagram_ of the knot.
 
 This is not a known invariant; it's a fresh visualization angle that makes
 knot topology look like a small relativistic spacetime.
@@ -92,7 +92,7 @@ Automatically rotates the knot in 3D to extremize its causal structure:
 ## Controls
 
 | Control          | Description                                                       |
-|------------------|-------------------------------------------------------------------|
+| ---------------- | ----------------------------------------------------------------- |
 | **Start / Stop** | Toggle continuous optimization                                    |
 | **Step**         | Run a single optimization step                                    |
 | **Reset**        | Reinitialize the knot                                             |
@@ -108,7 +108,7 @@ Automatically rotates the knot in 3D to extremize its causal structure:
 ## Parameters
 
 | Parameter                | Description                                               |
-|--------------------------|-----------------------------------------------------------|
+| ------------------------ | --------------------------------------------------------- |
 | **Points (N)**           | Number of points sampled along the knot curve             |
 | **Control Points**       | Number of Catmull-Rom control points (random spline only) |
 | **Target Edge Length**   | Rest length for the edge spring constraint                |

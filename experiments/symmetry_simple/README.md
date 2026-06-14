@@ -19,7 +19,7 @@ diffusion operator act on this field every frame.
 All symmetry modes can be combined freely.
 
 | Mode               | Effect                                            |
-|--------------------|---------------------------------------------------|
+| ------------------ | ------------------------------------------------- |
 | Translation X      | Wraps the canvas horizontally (toroidal)          |
 | Translation Y      | Wraps the canvas vertically (toroidal)            |
 | Mirror X           | Reflects strokes left ↔ right                     |
@@ -40,9 +40,9 @@ spreads along the symmetry axes as well as spatially.
   deviation are held constant so colours never wash out; at 0.0 the raw diffused values are used (colours will
   eventually converge to grey)
 - **Neighborhood** – which pixels count as neighbours:
-    - *4-connected* – up/down/left/right only
-    - *8-connected* – includes diagonals
-    - *12-radius* – also includes distance-2 axial neighbours
+  - _4-connected_ – up/down/left/right only
+  - _8-connected_ – includes diagonals
+  - _12-radius_ – also includes distance-2 axial neighbours
 - **Step** – advance the simulation by one frame manually
 - **Play / Stop** – run the simulation continuously
 - **Speed** – target frame rate, 1–120 fps

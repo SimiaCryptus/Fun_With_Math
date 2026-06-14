@@ -9,8 +9,8 @@ forkable virtual machine** that emits an infinite digit stream on demand.
 This is not a metaphor. It is a literal computational ontology with precise consequences for implementation, memory
 complexity, and the structure of mathematics itself. The framing has deep roots — Cauchy sequences, computable reals (
 Turing 1936), coalgebraic stream arithmetic, p-adic expansions, exact real arithmetic systems like iRRAM, and the Type-2
-Theory of Effectivity all instantiate parts of this idea. What is new here is not the underlying mathematics but the *
-*unified protocol, the codec/base separation, and the explicit ABI** that makes all of it composable at native speed.
+Theory of Effectivity all instantiate parts of this idea. What is new here is not the underlying mathematics but the \*
+\*unified protocol, the codec/base separation, and the explicit ABI\*\* that makes all of it composable at native speed.
 
 The primitive is simple:
 
@@ -96,7 +96,7 @@ domain-specific libraries.
 ## p-Adics Come for Free
 
 The p-adic numbers are particularly natural in this model, and notably **easier than the reals** in a precise technical
-sense: digit commitment is *local* in p-adics, where it is *non-local* in the reals.
+sense: digit commitment is _local_ in p-adics, where it is _non-local_ in the reals.
 
 A p-adic number is a digit stream indexed from the least significant digit upward, with digits in `{0, 1, ..., p-1}`. In
 the generator model, this is simply a MUX tree with a p-way multiplexer instead of a binary one.
@@ -164,8 +164,7 @@ monotone refinement process that commits digits as the interval collapses.
 
 This is essentially interval arithmetic combined with online digit extraction, a technique with substantial prior art
 dating to the 1980s. Combined with signed-digit representation, it provides a complete streaming arithmetic layer for
-the reals — with the documented caveat that exact-boundary inputs (e.g., a result that is provably exactly `0.5` in base
-10) may not commit a leading digit in finite time. This is not a defect of the implementation but a structural property
+the reals — with the documented caveat that exact-boundary inputs (e.g., a result that is provably exactly `0.5` in base 10) may not commit a leading digit in finite time. This is not a defect of the implementation but a structural property
 of real-number computation, and the API must expose it honestly via interval-based predicates (`definitely_less_than`,
 `agrees_with(digits=N)`) rather than pretending exact equality is decidable.
 
@@ -241,7 +240,7 @@ But "forkable" hides a critical bifurcation that a single ABI cannot honestly se
 classes of generator:
 
 | Tier                | Examples                                           | State                        | Fork Cost                                  |
-|---------------------|----------------------------------------------------|------------------------------|--------------------------------------------|
+| ------------------- | -------------------------------------------------- | ---------------------------- | ------------------------------------------ |
 | **Automaton class** | Rationals, algebraic irrationals, periodic p-adics | Fixed-size, inline           | **O(1)** — true struct copy                |
 | **Series class**    | Classical transcendentals (π, e, log 2, ζ(3))      | Grows with computation depth | **O(log n)** — must deep-copy accumulators |
 
@@ -314,8 +313,8 @@ Composition is function wrapping: an addition VM holds two sub-VM states plus a 
 functions, combines the digits, and returns a new composite state. LLVM inlines the entire generator graph, optimizes
 across VM boundaries, fuses arithmetic, eliminates intermediate states, and specializes for constants.
 
-**A caveat about LLVM's reach.** LLVM optimization applies fully to *statically-known, compile-time-fixed* expression
-trees. For *runtime-constructed* expression trees — parsing arithmetic expressions, dynamic matrix construction,
+**A caveat about LLVM's reach.** LLVM optimization applies fully to _statically-known, compile-time-fixed_ expression
+trees. For _runtime-constructed_ expression trees — parsing arithmetic expressions, dynamic matrix construction,
 user-input formulas — function-pointer dispatch will not be eliminated by static optimization alone. For these cases,
 the library provides a **JIT compilation path**: an expression tree is compiled to a single specialized LLVM function
 via `compile(expr_tree) → NumVMFn`, which then receives the same inlining, constant folding, and specialization
@@ -360,7 +359,7 @@ the preceding digits. This has been known since 1995. The mechanism — the alge
 and its alignment with the base-16 representation — has been understood in the prior literature, and the framing here is
 a **reformulation rather than a discovery**.
 
-What the generator-VM model contributes is a *first-class library primitive* that lifts this phenomenon out of one-off
+What the generator-VM model contributes is a _first-class library primitive_ that lifts this phenomenon out of one-off
 optimizations and into the ABI:
 
 **A BBP-type formula exists exactly when the generator automaton has a periodic orbit under the chosen codec.**
@@ -407,7 +406,7 @@ In the nano-VM model, the memory cost of a number is the size of its VM state �
 fields and the bit-width required for each.
 
 This gives a clean, implementation-level notion of numerical complexity. The hierarchy below is presented as a **working
-conjecture grounded in observed minimal-recurrence orders**, not as proven lower bounds. Proving that π *requires* at
+conjecture grounded in observed minimal-recurrence orders**, not as proven lower bounds. Proving that π _requires_ at
 least four coupled accumulators (rather than admitting some unknown three-register representation) is an open problem;
 the table reflects the structure of known optimal generators, not theorems about minimum state.
 
@@ -430,7 +429,7 @@ generator state.
 No finite automaton suffices.
 
 | Class                     | Minimal VM State Dimension | Memory Growth | Examples                 |
-|---------------------------|----------------------------|---------------|--------------------------|
+| ------------------------- | -------------------------- | ------------- | ------------------------ |
 | Rationals                 | 1                          | constant      | 1/7, 3/8                 |
 | Quadratic irrationals     | 2                          | O(log n)      | √2, φ                    |
 | Classical transcendentals | 3–4                        | O(log n)      | π, e                     |
@@ -466,7 +465,7 @@ number has a shortest program that generates it — but the generator is provabl
 any algorithm, even with infinite compute. This is inaccessibility in principle, not just in practice.
 
 From the perspective of an observer reading the digit stream, these two classes look identical. They differ only in
-*why* the generator is inaccessible, not in how the output behaves. Cryptography is the engineered, intentional version
+_why_ the generator is inaccessible, not in how the output behaves. Cryptography is the engineered, intentional version
 of the general phenomenon of generator inaccessibility.
 
 The real axis of classification is **generator accessibility**:
@@ -507,8 +506,8 @@ This collapses the operational distinction between program and number. In this m
 - The difference is only in how you interpret the generator
 
 The space of numbers, as the library exposes it, is the space of all possible infinite computations. This is the most
-general possible *operational* number ontology — a strict superset of all existing computational frameworks. Whether it
-is a complete ontology of numbers *qua* mathematical objects is a separate question; the library does not require an
+general possible _operational_ number ontology — a strict superset of all existing computational frameworks. Whether it
+is a complete ontology of numbers _qua_ mathematical objects is a separate question; the library does not require an
 answer.
 
 ---
@@ -535,7 +534,7 @@ and does not pretend exact equality is a decidable operation. This is forced by 
 laziness — and it is the same constraint every exact real arithmetic system operates under.
 
 The same undecidability has a deeper consequence: the abstract equivalence class that a VM "represents" cannot in
-general be characterized except *through* generators like the VM itself. The library treats this as a non-issue at the
+general be characterized except _through_ generators like the VM itself. The library treats this as a non-issue at the
 engineering level — it is a theory of digit-emitting machines and the operations between them, not a metaphysical theory
 of what numbers ultimately are. The MUX/codec/skip/fork machinery works regardless of whether one is a Platonist, a
 constructivist, or a structuralist. That ontological neutrality is a feature: the library serves users across the

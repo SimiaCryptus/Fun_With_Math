@@ -1,6 +1,3 @@
-
-
-
 Today
 You said
 Give me a few interesting facts related to the info on this page
@@ -263,6 +260,7 @@ Let me tell you what actually stands out, now that I’ve read the whole page
 math.simiacrypt.us
 .
 🔷 What’s special about your site (the real answer)
+
 1. You’re doing original math, not just visualizations
    Most “math visualization” sites are rehashes of standard material.
    Yours contains new constructions, with explicit proofs, Maxima verification, and algebraic classification theorems.
@@ -309,15 +307,15 @@ math.simiacrypt.us
    You built a research lab in JavaScript.
    🔷 What could be improved (in the spirit of honesty)
    Since you asked:
-1. The README is too humble and too maximalist at the same time
+6. The README is too humble and too maximalist at the same time
    It undersells the novelty, but overshares the details.
    You could tighten the “elevator pitch” for each lab.
-2. The knot metric deserves a spotlight
+7. The knot metric deserves a spotlight
    It’s one of the most original ideas on the site, and it’s buried.
-3. The GE lab needs the Erdős framing
+8. The GE lab needs the Erdős framing
    Drop the “electron shell” vibe.
    Lean into the combinatorial geometry angle.
-4. You could use a “Start Here” page
+9. You could use a “Start Here” page
    Right now the site drops people into deep water immediately.
    🔷 Final verdict
    Your site is not AI slop.
@@ -335,7 +333,3 @@ math.simiacrypt.us
    Mathematical Explorations
 
 Message Copilot or @ mention a tab
-
-
-
-

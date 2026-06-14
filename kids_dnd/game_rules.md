@@ -1,6 +1,6 @@
 # Tiny Heroes: A First Adventure Game
 
-*A simplified tabletop adventure for kids ~8 years old*
+_A simplified tabletop adventure for kids ~8 years old_
 
 ---
 
@@ -11,7 +11,7 @@ One player is the **Guide** (the grown-up or older kid who runs the story).
 Everyone else plays a **Hero** on a shared adventure.
 The Guide can also be an **AI Dungeon Master** (see Section 11). The AI
 narrates the story, presents encounters and choices, and tells Heroes
-*when* to roll — but the **Heroes always roll the real foam die** and
+_when_ to roll — but the **Heroes always roll the real foam die** and
 tell the AI the number.
 
 - **Players:** 2-5 (1 Guide + 1-4 Heroes)
@@ -39,7 +39,7 @@ a small bonus (see character stats). The Guide compares it to a
 **Target Number (TN)**:
 
 | Difficulty | Target Number |
-|------------|---------------|
+| ---------- | ------------- |
 | Easy       | 5             |
 | Medium     | 10            |
 | Hard       | 15            |
@@ -62,7 +62,7 @@ Each type has one stat that's a little stronger (+2 bonus to those rolls).
 All others get +0.
 
 | Hero Type | Strong At | Cool Trick                          |
-|-----------|-----------|-------------------------------------|
+| --------- | --------- | ----------------------------------- |
 | Knight    | Might     | Block an attack to protect a friend |
 | Wizard    | Magic     | Cast one "Sparkle Spell" per game   |
 | Scout     | Speed     | Move an extra space once per turn   |
@@ -105,13 +105,13 @@ The map is a printed/drawn paper board the Heroes move across.
 ### Suggested Space Types
 
 | Symbol | Space     | What Happens                   |
-|--------|-----------|--------------------------------|
+| ------ | --------- | ------------------------------ |
 | 🏠     | Home      | Starting space                 |
-| ❓      | Event     | Guide reads a short event card |
+| ❓     | Event     | Guide reads a short event card |
 | ⚔️     | Challenge | A monster or obstacle — roll!  |
 | 🧩     | Puzzle    | A riddle or task — roll!       |
 | 💎     | Treasure  | Find a helpful item            |
-| ⭐      | Goal      | Win the adventure!             |
+| ⭐     | Goal      | Win the adventure!             |
 
 ### Art Requirements
 
@@ -139,7 +139,7 @@ Any Hero can **Help** another Hero's roll. The helper describes how
 they pitch in, and the rolling Hero gets **+2** to their roll.
 (Teamwork is encouraged!)
 
- ---
+---
 
 ## 6. Challenges & Monsters
 
@@ -196,54 +196,69 @@ get knocked out, friends help them back up.
 2. Draft the character sheet template.
 3. Write 6-10 starter event/monster cards.
 4. Playtest with real 8-year-olds and adjust difficulty.
+
 ---
+
 ## 11. The AI Guide (Dungeon Master)
+
 The AI plays the **Guide**. It runs the story for the Heroes but **never
 rolls the dice itself** — rolling is the kids' favorite part!
+
 ### Golden Rules for the AI Guide
-1. **Never roll for the players.** When a roll is needed, say *who* rolls,
-    *which stat* to use, and the **Target Number**, then **ask for the
-    number** and wait.
-    > Example: "Pip the Scout, roll the foam die for **Speed**!
-    > You need a **10**. What did you get?"
+
+1. **Never roll for the players.** When a roll is needed, say _who_ rolls,
+   _which stat_ to use, and the **Target Number**, then **ask for the
+   number** and wait.
+   > Example: "Pip the Scout, roll the foam die for **Speed**!
+   > You need a **10**. What did you get?"
 2. **Wait for the kid's answer**, then add their bonus and compare to the TN.
 3. **Keep it short and silly.** A few friendly sentences at a time, simple
-    words, lots of sound effects (*BONK!*, *whoosh!*).
+   words, lots of sound effects (_BONK!_, _whoosh!_).
 4. **Lean toward success** (see Section 2 Guide tip). Close rolls succeed
-    "with a twist." A natural **20** is amazing; a **1** is a funny stumble,
-    never "you lose."
+   "with a twist." A natural **20** is amazing; a **1** is a funny stumble,
+   never "you lose."
 5. **No scary content.** Monsters are goofy, not frightening (pillow-throwing
-    goblins, grumpy mud puddles, ticklish dragons).
+   goblins, grumpy mud puddles, ticklish dragons).
 6. **Encourage teamwork.** Remind Heroes they can **Help** (+2) each other.
+
 ### What the AI Guide Presents
+
 - **Encounters / Conflicts** — a goofy monster or obstacle with a TN and the
-   stat(s) that can beat it (see Section 6).
+  stat(s) that can beat it (see Section 6).
 - **Choices** — offer 2-3 clear options and let the Heroes pick.
-   > "Do you (A) sneak past the snoring troll, (B) tickle it awake, or
-   > (C) build a pillow bridge?"
+  > "Do you (A) sneak past the snoring troll, (B) tickle it awake, or
+  > (C) build a pillow bridge?"
 - **Events** — short surprises from the ❓ spaces.
 - **A Basic Map** — a simple text/ASCII path so kids can see where they are.
+
 ### Drawing the Basic Map (text version)
+
 When no paper board is handy, the AI draws a simple line of spaces using the
 Section 4 symbols, and marks each Hero's position. Keep it short (about
 8-12 spaces from 🏠 to ⭐).
+
 ```
    🏠 -- ❓ -- ⚔️ -- 💎 -- 🧩 -- ❓ -- ⚔️ -- ⭐
    ^Pip
 ```
+
 - Use the legend from Section 4 (🏠 Home, ❓ Event, ⚔️ Challenge,
-   🧩 Puzzle, 💎 Treasure, ⭐ Goal).
+  🧩 Puzzle, 💎 Treasure, ⭐ Goal).
 - Show each Hero token under their current space (e.g. `^Pip`, `^Mira`).
 - Redraw the map whenever Heroes move so they always know where they are.
+
 ### Turn Flow with the AI Guide
+
 1. The AI shows the **map** and whose turn it is.
 2. The Hero says how far they **Move** (up to 3 spaces).
 3. The AI describes the space and any **encounter or choice**.
 4. If a roll is needed, the AI states **who / stat / Target Number**, then
-    **asks for the rolled number**.
+   **asks for the rolled number**.
 5. The Hero rolls the real die and tells the AI the value.
 6. The AI adds the bonus, compares to the TN, and narrates the (fun!) result.
 7. Repeat for each Hero, then describe what the world does next.
+
 ### Quick Start the AI Can Say
+
 > "Welcome, Tiny Heroes! First, tell me each Hero's **name**, **type**
 > (Knight, Wizard, Scout, or Healer), and we'll begin at 🏠 Home. Ready?"

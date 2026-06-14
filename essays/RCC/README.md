@@ -4,16 +4,16 @@
 
 There is a clean, rigorous, and surprisingly simple way to classify mathematical constants by computational hardness —
 one that sidesteps much of the metaphysical baggage of the real number system. The method is this: treat every
-convergence sequence as a *rational certificate engine*, measure the bit-length of the rational it produces as a
+convergence sequence as a _rational certificate engine_, measure the bit-length of the rational it produces as a
 function of demanded tolerance, and classify constants by the cheapest engine within a precisely specified class.
 
 This is not a new mathematical result. The pieces exist across numerical analysis, Diophantine approximation, and
 real-number complexity theory. But the synthesis — fixing a specific convergence engine, truncating it, and measuring
 the bit-length of the resulting rational as a function of ε — is unusually sharp, and it makes computationally precise a
-separation that is often argued abstractly: that the *natural* convergence engines for π and e live in a fundamentally
+separation that is often argued abstractly: that the _natural_ convergence engines for π and e live in a fundamentally
 harder cost regime than the natural engines for algebraic irrationals like √k.
 
-Two caveats sharpen this claim from the outset. First, the framework classifies *engines*, not constants in any absolute
+Two caveats sharpen this claim from the outset. First, the framework classifies _engines_, not constants in any absolute
 sense; the "hardness" of π depends on which engine you use, and sophisticated algorithms (AGM, Ramanujan series) can
 place π in the same low-cost class as √2. Second, the elimination of real-number metaphysics is partial rather than
 total: the framework replaces explicit appeals to Dedekind cuts with operational appeals to asymptotic structure, which
@@ -44,7 +44,7 @@ Concrete instances:
 - √3 = Σ C(2n,n)/4^n · (2/3)^n
 
 This is structurally minimal: a single binomial series with a rational parameter, converging to an irrational algebraic
-number. Crucially, this is a *hypergeometric* series — the ratio of consecutive terms is a rational function of n — and
+number. Crucially, this is a _hypergeometric_ series — the ratio of consecutive terms is a rational function of n — and
 this property will turn out to be the decisive feature.
 
 ### Classical Series and Products for π
@@ -76,7 +76,7 @@ Three canonical constructions for π, ordered by convergence rate:
 ### Setup
 
 Given a sequence (s_N) of rationals with limit α, fix a tolerance ε > 0 and pick the smallest N such that |s_N − α| < ε.
-The truncation s_N = p_N/q_N is the *rational certificate* for α at tolerance ε.
+The truncation s_N = p_N/q_N is the _rational certificate_ for α at tolerance ε.
 
 The cost model has two components:
 
@@ -85,16 +85,16 @@ The cost model has two components:
 
 Bit-length is defined as:
 
- ```
- bits(p/q) = log₂|p| + log₂|q|
- ```
+```
+bits(p/q) = log₂|p| + log₂|q|
+```
 
 This choice is not arbitrary. Bit-length corresponds to actual memory usage, determines the cost of arithmetic
-operations on the certificate, and connects directly to the classical notion of *height* in Diophantine approximation.
+operations on the certificate, and connects directly to the classical notion of _height_ in Diophantine approximation.
 It is the right metric because it tracks what a computer must actually do to store, transmit, and manipulate the
 certificate.
 
-The composed quantity — bit-length as a function of ε — is the *rational certificate complexity* of the sequence.
+The composed quantity — bit-length as a function of ε — is the _rational certificate complexity_ of the sequence.
 
 ### An Information-Theoretic Lower Bound
 
@@ -102,21 +102,21 @@ Before computing specific complexities, one observation establishes the floor: s
 tolerance ε requires at least log₂(1/ε) bits of information. Any rational certificate p/q with |p/q − α| < ε must
 therefore encode at least this much information, giving:
 
- ```
- bits(p_N/q_N) ≥ Ω(log(1/ε))
- ```
+```
+bits(p_N/q_N) ≥ Ω(log(1/ε))
+```
 
-This is the information-theoretic minimum. Any engine achieving Θ(log(1/ε)) bit-length is *information-theoretically
-optimal* — it spends no more bits than the problem fundamentally requires. This makes the logarithmic class not merely "
+This is the information-theoretic minimum. Any engine achieving Θ(log(1/ε)) bit-length is _information-theoretically
+optimal_ — it spends no more bits than the problem fundamentally requires. This makes the logarithmic class not merely "
 cheap" but provably tight.
 
 ### Analysis: Gregory–Leibniz for π
 
 The alternating series bound gives:
 
- ```
- |π − S_N| ≤ 4/(2N+3)
- ```
+```
+|π − S_N| ≤ 4/(2N+3)
+```
 
 So N(ε) = Θ(1/ε).
 
@@ -130,9 +130,9 @@ elementary: it depends on PNT-level results, a dependency we acknowledge rather 
 
 Term magnitude ~ C/k³, so the tail behaves like ∫_N^∞ dx/x³ = 1/(2N²), giving:
 
- ```
- |π − T_N| = O(1/N²),   N(ε) = Θ(ε^(−1/2))
- ```
+```
+|π − T_N| = O(1/N²),   N(ε) = Θ(ε^(−1/2))
+```
 
 The denominators are products of three consecutive integers (2k)(2k+1)(2k+2). Establishing that log lcm of these triple
 products is Θ(N) requires showing that the triples collectively cover a dense enough set of integers up to 2N+2 — this
@@ -145,19 +145,19 @@ explicit proof in a full treatment. Granting this, combined with the iteration c
 
 Each factor is (2k)²/[(2k−1)(2k+1)] = 1 + O(1/k²), so the log-error has a tail of O(1/N):
 
- ```
- |P_N − π| = O(1/N),   N(ε) = Θ(1/ε)
- ```
+```
+|P_N − π| = O(1/N),   N(ε) = Θ(1/ε)
+```
 
 The product denominator is Π(2k−1)(2k+1), so:
 
- ```
- log D_N = Σ O(log k) = O(N log N)
- ```
+```
+log D_N = Σ O(log k) = O(N log N)
+```
 
 **Bit-length vs tolerance: Θ((1/ε) · log(1/ε))**
 
-Wallis is actually *worse* than Gregory–Leibniz in representation cost, despite similar iteration counts. This is the
+Wallis is actually _worse_ than Gregory–Leibniz in representation cost, despite similar iteration counts. This is the
 kind of distinction the framework is built to surface: a result invisible to pure convergence analysis, which tracks
 only N(ε), but visible the moment one accounts for the bit-cost of the rational being produced.
 
@@ -165,44 +165,44 @@ only N(ε), but visible the moment one accounts for the bit-cost of the rational
 
 The n-th term is C(2n,n)/4^n · (1 − 1/k)^n. Since C(2n,n) ~ 4^n/√(πn), the term magnitude is:
 
- ```
- ~ (1 − 1/k)^n / √(πn)
- ```
+```
+~ (1 − 1/k)^n / √(πn)
+```
 
 This is a geometric tail with ratio ρ = 1 − 1/k ∈ (0,1):
 
- ```
- |√k − R_N| = O(ρ^N),   N(ε) = Θ(log(1/ε))
- ```
+```
+|√k − R_N| = O(ρ^N),   N(ε) = Θ(log(1/ε))
+```
 
 Each term has denominator 4^n · k^n, so a common denominator up to N is at most 4^N · k^N:
 
- ```
- log D_N = Θ(N)
- ```
+```
+log D_N = Θ(N)
+```
 
 Combined with N(ε) = Θ(log(1/ε)):
 
 **Bit-length vs tolerance: Θ(log(1/ε))**
 
-This matches the information-theoretic lower bound. The binomial series for √k is *optimal*: no rational certificate
+This matches the information-theoretic lower bound. The binomial series for √k is _optimal_: no rational certificate
 engine, however clever, can do better than logarithmic bit-cost, and this naïve construction already achieves it.
 
- ---
+---
 
 ## The Classification Table
 
 | Sequence               | N(ε)        | Bit-length vs ε           |
- |------------------------|-------------|---------------------------|
+| ---------------------- | ----------- | ------------------------- |
 | Gregory–Leibniz for π  | Θ(1/ε)      | Θ(1/ε)                    |
 | Nilakantha for π       | Θ(ε^(−1/2)) | Θ(ε^(−1/2))               |
 | Wallis product for π   | Θ(1/ε)      | Θ((1/ε)·log(1/ε))         |
 | Binomial series for √k | Θ(log(1/ε)) | **Θ(log(1/ε))** — optimal |
 
-The separation is stark. The binomial series for √k saturates the information-theoretic lower bound. Every *classical*
+The separation is stark. The binomial series for √k saturates the information-theoretic lower bound. Every _classical_
 construction for π sits in a polynomial-cost regime — or worse.
 
- ---
+---
 
 ## What the Framework Does and Does Not Settle
 
@@ -214,9 +214,9 @@ achieve the information-theoretically optimal logarithmic cost class, while the 
 achieve only polynomial cost. The separation between these engine families is genuine, measurable, and elementary in its
 derivation (modulo the PNT dependence noted above).
 
-**What is not shown**: That π is *intrinsically* harder than √2 as a constant. The AGM iteration computes π in
+**What is not shown**: That π is _intrinsically_ harder than √2 as a constant. The AGM iteration computes π in
 logarithmic bit-cost, placing it in the same optimal class as √2. So if we classify a constant by the cheapest engine
-over *all* regular engines, π and √2 land in the same class, and the separation collapses.
+over _all_ regular engines, π and √2 land in the same class, and the separation collapses.
 
 This raises an obvious question: why isn't the AGM the "natural" engine for π in the same sense that the binomial series
 is natural for √k? The honest answer is that "natural" is doing real work here, and we should formalize it rather than
@@ -224,7 +224,7 @@ rely on intuition.
 
 ### Formalizing "Natural": Hypergeometric Engines
 
-Define the class of **hypergeometric sequences** as those whose consecutive term ratio a_{n+1}/a_n is a rational
+Define the class of **hypergeometric sequences** as those whose consecutive term ratio a\_{n+1}/a_n is a rational
 function of n. This is a decidable, syntactically checkable property, and it captures all the classical series and
 products considered here:
 
@@ -237,8 +237,8 @@ products considered here:
 Restricting attention to hypergeometric engines, the framework's central claim becomes precise and defensible:
 
 > **Among hypergeometric convergence engines, the natural engines for algebraic irrationals achieve the
-information-theoretically optimal logarithmic cost class, while the classical hypergeometric engines for π and e achieve
-only polynomial cost.**
+> information-theoretically optimal logarithmic cost class, while the classical hypergeometric engines for π and e achieve
+> only polynomial cost.**
 
 This is the statement the framework actually establishes. It is weaker than "π is harder than √2 absolutely," but it is
 stronger than "some series for π is slow" — it identifies a structural property of an entire natural class of engines
@@ -251,12 +251,12 @@ arises as the value of a hypergeometric series at an algebraic argument. The sam
 for √k extends to all algebraic irrationals via their natural hypergeometric representations. The optimal logarithmic
 class is the home of the algebraic numbers, with respect to natural hypergeometric engines.
 
- ---
+---
 
 ## The Regularity Condition, Made Precise
 
 Not every program counts as a convergence engine for the purposes of this classification. The framework requires
-*regular* sequences, and we can now state this condition precisely rather than informally.
+_regular_ sequences, and we can now state this condition precisely rather than informally.
 
 A convergence sequence is **regular** if it is hypergeometric — equivalently, if the ratio of consecutive terms is a
 rational function of n. This single condition simultaneously:
@@ -287,13 +287,13 @@ classifications. A "number," within the framework, is treated as:
 
 > A regular convergence engine together with its cost profile.
 
-Two engines that produce the same limit are computing the same constant *for the purposes of this taxonomy*. There is no
+Two engines that produce the same limit are computing the same constant _for the purposes of this taxonomy_. There is no
 appeal to a Platonic continuum, no Dedekind cut, no equivalence class of Cauchy sequences. There is computation, data,
 and asymptotic analysis.
 
 Honesty requires acknowledging that this does not eliminate mathematical metaphysics entirely. The asymptotic notation
 Θ(·), the notion of "the same limit," and the regularity condition itself all carry mathematical commitments. What the
-framework eliminates is not metaphysics in general but the *specific* commitment to a completed uncountable continuum as
+framework eliminates is not metaphysics in general but the _specific_ commitment to a completed uncountable continuum as
 the foundation of computational claims. The framework is operationally precise, not ontologically empty.
 
 This is not a rejection of classical mathematics. It is a reinterpretation that stays closer to what computational
@@ -318,7 +318,7 @@ representation cost. The Wallis-vs-Gregory–Leibniz comparison — where Wallis
 iteration counts — is invisible to classical convergence analysis but immediate in the present framework.
 
 **Diophantine approximation** studies the size of numerators and denominators of rational approximations, the height of
-algebraic numbers, and the irrationality measure of constants like π and e. But it studies the *best possible* rational
+algebraic numbers, and the irrationality measure of constants like π and e. But it studies the _best possible_ rational
 approximations, not the approximations produced by a specific convergence engine.
 
 **Real-number complexity theory** (the Ko–Friedman model and related frameworks) defines a real number as "easy" if
@@ -326,9 +326,9 @@ there exists an algorithm that outputs a rational within ε in time polynomial i
 class. Transcendentals like π and e are also in this class via fast algorithms (AGM, Ramanujan series), but not via the
 naive classical series.
 
-The rational certificate framework is closest to the Ko–Friedman model, but applied to *specific* classes of convergence
+The rational certificate framework is closest to the Ko–Friedman model, but applied to _specific_ classes of convergence
 sequences rather than arbitrary algorithms. The question is not "does some algorithm exist that computes this constant
-cheaply?" but "what does *this particular family* of convergence engines cost?" This is a more operational and more
+cheaply?" but "what does _this particular family_ of convergence engines cost?" This is a more operational and more
 discriminating question, and it is what makes the framework useful as a benchmark for evaluating real algorithms (PSLQ,
 LLL, continued-fraction methods) against predicted difficulty.
 
@@ -358,7 +358,7 @@ Under the hypergeometric-engine classification:
 
 - **Algebraic irrationals are in RC₁** via their natural hypergeometric representations.
 - **The classical hypergeometric engines for π and e are in RC₂ or RC₃.**
-- **Whether π and e admit *any* hypergeometric engine in RC₁ is an open question** — and a genuinely interesting one. A
+- **Whether π and e admit _any_ hypergeometric engine in RC₁ is an open question** — and a genuinely interesting one. A
   positive answer would refine the framework; a negative answer would constitute a real lower bound separating algebraic
   and transcendental constants relative to hypergeometric engines.
 
@@ -413,7 +413,7 @@ measured bit-lengths at chosen tolerances. A formally verified catalog — imple
 instance — is a longer-term research goal that would force resolution of any remaining ambiguities in the regularity
 condition and the asymptotic claims.
 
- ---
+---
 
 ## Conclusion
 

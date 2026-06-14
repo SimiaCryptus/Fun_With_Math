@@ -3,9 +3,8 @@
 // so the optimizer interface is uniform.
 
 import { makeRng } from "./rng.js";
-   import { computeCommutativeOrbit } from "./orbit-commutative.js";
+import { computeCommutativeOrbit } from "./orbit-commutative.js";
 
-   
 export class IFSModel {
   /**
    * @param {number} K  number of transforms
@@ -243,12 +242,12 @@ export class IFSModel {
       return x;
     });
   }
-     /**
-      * Efficient commutative orbit via binary powers + DP (see algo.md).
-      * Returns [|P_N|, 2] tensor. Use this when the enumeration is commutative
-      * and N is the uniform word length.
-      */
-     computeCommutativeOrbit(N) {
-       return computeCommutativeOrbit(this, N, 2);
-     }
+  /**
+   * Efficient commutative orbit via binary powers + DP (see algo.md).
+   * Returns [|P_N|, 2] tensor. Use this when the enumeration is commutative
+   * and N is the uniform word length.
+   */
+  computeCommutativeOrbit(N) {
+    return computeCommutativeOrbit(this, N, 2);
+  }
 }

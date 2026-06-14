@@ -19,11 +19,11 @@ entropy derived from a Gaussian kernel density estimate over pairwise distances.
 
 ### The Erdős Connection
 
-The classical Erdős distinct-distance problem asks: how many *distinct* pairwise
+The classical Erdős distinct-distance problem asks: how many _distinct_ pairwise
 distances must $n$ points in the plane determine? It's a combinatorial counting
 problem with a discrete answer.
 
-This lab plays the *continuous* version of the same game. Instead of counting
+This lab plays the _continuous_ version of the same game. Instead of counting
 distinct distances, we treat the multiset of pairwise distances as a probability
 distribution (via a Gaussian kernel) and maximize its Shannon entropy. The
 result is the most "distance-diverse" configuration the manifold admits — a
@@ -44,7 +44,7 @@ H  = −Σ p · log(p)   (Shannon entropy)
 The optimizer minimizes a loss that is one of:
 
 | Mode             | Loss                           |
-|------------------|--------------------------------|
+| ---------------- | ------------------------------ |
 | Maximize Entropy | `−H`                           |
 | Minimize Entropy | `H`                            |
 | Match Target     | `(H − H*)²`                    |
@@ -58,7 +58,7 @@ potential** can be added on top.
 ## Geometries
 
 | Value         | Description                         |
-|---------------|-------------------------------------|
+| ------------- | ----------------------------------- |
 | `sphere`      | Unit sphere surface                 |
 | `shell`       | Spherical shell (inner–outer radii) |
 | `cube`        | Cube surface                        |
@@ -79,12 +79,12 @@ potential** can be added on top.
 ### Configuration
 
 | Control                 | Description                                                 |
-|-------------------------|-------------------------------------------------------------|
+| ----------------------- | ----------------------------------------------------------- |
 | **Geometry**            | Select the target manifold                                  |
 | **Shell Inner Radius**  | Inner boundary for shell geometries (0–0.99)                |
 | **Torus R / r**         | Major and minor radii for torus geometries                  |
 | **Optimization Target** | Maximize / Minimize / Match / Neutral                       |
-| **Target Entropy**      | Desired entropy value when using *Match* mode               |
+| **Target Entropy**      | Desired entropy value when using _Match_ mode               |
 | **Point Count (N)**     | Number of points (2–5000)                                   |
 | **Calc Neighbors (k)**  | Restrict entropy kernel to k nearest neighbours; 0 = global |
 
@@ -96,7 +96,7 @@ Available variables: `rho` (Nx1), `p` (Nx1x3), `q` (1xNx3), `D` (NxN dist²), `t
 ### Hyperparameters
 
 | Control                | Description                                      |
-|------------------------|--------------------------------------------------|
+| ---------------------- | ------------------------------------------------ |
 | **Optimizer**          | Adam · QQN · L-BFGS                              |
 | **Temperature (τ)**    | Kernel bandwidth — higher = smoother density     |
 | **Learning Rate**      | Gradient step size                               |
@@ -110,7 +110,7 @@ Available variables: `rho` (Nx1), `p` (Nx1x3), `q` (1xNx3), `D` (NxN dist²), `t
 ### Actions
 
 | Button                    | Action                                                |
-|---------------------------|-------------------------------------------------------|
+| ------------------------- | ----------------------------------------------------- |
 | **Start / Stop Training** | Toggle the optimisation loop                          |
 | **Reset**                 | Re-initialise random points and clear history         |
 | **Copy Coordinates**      | Copy current point array as JSON to clipboard         |
@@ -121,7 +121,7 @@ Available variables: `rho` (Nx1), `p` (Nx1x3), `q` (1xNx3), `D` (NxN dist²), `t
 ## Metrics
 
 | Metric                | Description                                         |
-|-----------------------|-----------------------------------------------------|
+| --------------------- | --------------------------------------------------- |
 | **Spherical Entropy** | Current Shannon entropy H of the point distribution |
 | **Interaction**       | Weighted interaction potential value                |
 | **Total Fitness**     | Raw loss value being minimised                      |
@@ -132,12 +132,13 @@ Available variables: `rho` (Nx1), `p` (Nx1x3), `q` (1xNx3), `D` (NxN dist²), `t
 ## Optimizers
 
 | Name       | Notes                                                    |
-|------------|----------------------------------------------------------|
+| ---------- | -------------------------------------------------------- |
 | **Adam**   | Adaptive moment estimation — robust default              |
 | **QQN**    | Quasi-Quasi-Newton — faster convergence on smooth losses |
 | **L-BFGS** | Limited-memory BFGS — best for small N, high precision   |
 
 ### The ln(N) Bound and Optimizer Fingerprinting
+
 For a kernel-density entropy of the form $H = -\sum p_i \log p_i$ over $N$
 points, the maximum possible value is $\log N$, attained when the induced
 distribution $p$ is uniform ($p_i = 1/N$ for all $i$). Equivalently, when every
@@ -158,7 +159,7 @@ geometry we have tried — sphere, torus, cube, saddle, or arbitrary STL.
 What makes this problem interesting (and a little strange) is that the
 condition for achieving $H = \ln N$ is **highly underdetermined**. The
 objective only requires that all $\rho_i$ be equal; it says nothing about
-*where* the points sit, only that each one must see the same total kernel mass
+_where_ the points sit, only that each one must see the same total kernel mass
 from its neighbours. On a curved or non-trivial manifold there are typically a
 continuous family — sometimes a high-dimensional manifold — of configurations
 satisfying this constraint.
@@ -170,8 +171,8 @@ than a single isolated minimum.
 
 #### Optimizer Fingerprinting
 
-Because the optimum is degenerate, the *path* an optimizer takes through
-configuration space determines *which* extremal configuration it lands on.
+Because the optimum is degenerate, the _path_ an optimizer takes through
+configuration space determines _which_ extremal configuration it lands on.
 Running the same problem with **Adam**, **QQN**, and **L-BFGS** — or even the
 same optimizer at different learning rates or temperatures $\tau$ — reliably
 produces visibly different point arrangements, each of which achieves the same
@@ -179,15 +180,15 @@ $H \approx \ln N$ value.
 
 - **Adam** tends to produce slightly noisy, isotropic, lattice-like packings.
 - **QQN** carves out smoother, more symmetric arrangements with visible
-   curvature-aligned structure.
+  curvature-aligned structure.
 - **L-BFGS** snaps quickly into crystalline, near-perfectly-regular
-   configurations, often with sharp symmetry groups.
+  configurations, often with sharp symmetry groups.
 
 The resulting geometry is, in effect, a **fingerprint** of the optimizer's
 internal dynamics — its preconditioner, momentum, and step-selection rules
 projected onto the manifold of entropy-maximal configurations. This is a
 previously unremarked-upon (and admittedly **useless**) property: the entropy
-value tells you nothing about which optimizer produced it, but the *shape* of
+value tells you nothing about which optimizer produced it, but the _shape_ of
 the resulting point cloud does. You can identify the optimizer by looking at
 the picture.
 
@@ -222,7 +223,7 @@ geometric-entropy/
 ## Dependencies (CDN)
 
 | Library                   | Purpose                                          |
-|---------------------------|--------------------------------------------------|
+| ------------------------- | ------------------------------------------------ |
 | `@tensorflow/tfjs` 4.15   | Automatic differentiation & GPU tensors          |
 | `d3-geo-voronoi` 2        | Spherical Delaunay triangulation                 |
 | `d3-delaunay` 6           | Planar Delaunay (used internally by geo-voronoi) |

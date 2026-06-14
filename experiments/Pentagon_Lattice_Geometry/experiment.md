@@ -2,10 +2,10 @@
 
 This document summarizes the computational experiments performed in
 `experiment.mac` (output recorded in `experiment.log`) for the paper
-*Emergent Fractional Dimensionality and Spinor-Like Holonomy in
-Multi-Sheeted Pentagon Tilings* (`idea.md`). While `analysis.mac`
-verifies the *symbolic identities* underpinning the construction,
-`experiment.mac` performs *constructive numerical experiments* on
+_Emergent Fractional Dimensionality and Spinor-Like Holonomy in
+Multi-Sheeted Pentagon Tilings_ (`idea.md`). While `analysis.mac`
+verifies the _symbolic identities_ underpinning the construction,
+`experiment.mac` performs _constructive numerical experiments_ on
 concrete instances of the multi-sheeted pentagon graph, built in
 exact $\mathbb{Q}(\sqrt{5})$ arithmetic.
 
@@ -24,7 +24,7 @@ primitives were validated symbolically. Starting from a single
 origin pentagon, a BFS expansion to depth 5 produced:
 
 | Quantity                   | Value                             |
-|----------------------------|-----------------------------------|
+| -------------------------- | --------------------------------- |
 | Cluster size $N$           | 712 cells                         |
 | Sheets occupied            | $\{0, 1, 2, 3, 4, 5\}$ (6 sheets) |
 | Min / mean / max degree    | 1 / 3.76 / 10                     |
@@ -42,9 +42,9 @@ multi-edge incidences at vortex sites).
 
 Cumulative BFS volumes $N(\le r)$ from the origin:
 
-| $r$        | 0 | 1 | 2  | 3   | 4   | 5   |
-|------------|---|---|----|-----|-----|-----|
-| $N(\le r)$ | 1 | 7 | 31 | 107 | 327 | 712 |
+| $r$        | 0   | 1   | 2   | 3   | 4   | 5   |
+| ---------- | --- | --- | --- | --- | --- | --- |
+| $N(\le r)$ | 1   | 7   | 31  | 107 | 327 | 712 |
 
 Log-log fits yield:
 
@@ -61,7 +61,7 @@ dimensionality** between 2D and 3D.
 20 000 walks of length 500 from the origin produced:
 
 | Quantity                                | Value                                     |
-|-----------------------------------------|-------------------------------------------|
+| --------------------------------------- | ----------------------------------------- |
 | MSD early-time slope                    | 1.365 ⇒ $d_w \approx 1.47$                |
 | MSD late-time slope                     | $\approx 0.01$ (boundary-saturated)       |
 | $P_0$ early-time slope                  | $-1.854$ ⇒ $d_{\text{spec}} \approx 3.71$ |
@@ -82,19 +82,19 @@ origin (16 short cycles, 2356 cycles up to length 8) showed
 **trivial holonomy** in every fiber group $\mathbb{Z}_n$ tested
 ($n \in \{2,3,4,5,6,10\}$). Cycle length distribution:
 
-| Length | 4  | 5 | 6   | 7   | 8    |
-|--------|----|---|-----|-----|------|
-| Count  | 12 | 4 | 142 | 206 | 1992 |
+| Length | 4   | 5   | 6   | 7   | 8    |
+| ------ | --- | --- | --- | --- | ---- |
+| Count  | 12  | 4   | 142 | 206 | 1992 |
 
 Per-sheet cell counts decay geometrically with sheet index
 (log-pop slope $\approx -0.64$, decay rate $r \approx 0.526$):
 
-| Sheet | 0   | 1   | 2   | 3   | 4  | 5 |
-|-------|-----|-----|-----|-----|----|---|
-| Cells | 196 | 194 | 165 | 110 | 41 | 6 |
+| Sheet | 0   | 1   | 2   | 3   | 4   | 5   |
+| ----- | --- | --- | --- | --- | --- | --- |
+| Cells | 196 | 194 | 165 | 110 | 41  | 6   |
 
 The absence of nontrivial holonomy at this scale indicates that the
-$+1$-only $\tau$-rule produces a *coherent* sheet structure: all
+$+1$-only $\tau$-rule produces a _coherent_ sheet structure: all
 cycles close on the same sheet. Nontrivial spinor/anyonic holonomy
 requires either signed $\tau$ (see Section 11) or the cut-and-project
 window (Section 17).
@@ -106,7 +106,7 @@ The default $B2/S12$ rule from a 3-cell seed quickly settles into a
 classifies behavior as:
 
 | Class      | Count |
-|------------|-------|
+| ---------- | ----- |
 | Extinct    | 5     |
 | Still life | 5     |
 | Periodic   | 2     |
@@ -124,7 +124,7 @@ nontrivial dynamical patterns exist on this pentagonal geometry.
 Eight vortex rules were compared on depth-3 clusters:
 
 | $\tau$-rule        | Cells   | Sheets | Vortex frac. | Mean deg. |
-|--------------------|---------|--------|--------------|-----------|
+| ------------------ | ------- | ------ | ------------ | --------- |
 | `none` (flat)      | 56      | 1      | 0            | 3.75      |
 | `every3` (default) | 87      | 4      | mod.         | 2.87      |
 | `every2`           | 97      | 4      | high         | 2.78      |
@@ -143,7 +143,7 @@ in larger clusters are needed to expose it.
 ## 7. Structural Patterns (Sections 13–14)
 
 | Quantity                    | Value |
-|-----------------------------|-------|
+| --------------------------- | ----- |
 | Triangle count              | 0     |
 | Mean clustering coefficient | 0.0   |
 | Girth through origin        | 4     |
@@ -170,11 +170,11 @@ absorbed by the cycle structure.
 ## 9. Cut-and-Project Acceptance Window (Section 17)
 
 Of the 712 cluster cells, **435 (61%)** fall inside the cut-and-project
-acceptance window. Building a depth-4 cluster *restricted* to
+acceptance window. Building a depth-4 cluster _restricted_ to
 acceptance-window cells yields:
 
 | Quantity                               | Value               |
-|----------------------------------------|---------------------|
+| -------------------------------------- | ------------------- |
 | Cap-window cluster size                | 126 cells, 5 sheets |
 | BFS volumes                            | 1, 6, 21, 56, 126   |
 | Interior $d_{\text{eff}}$ (cap-window) | **2.009**           |
@@ -191,7 +191,7 @@ $\mu_0 \approx 1.0$ (correct normalization) and well-behaved DOS
 estimates across the spectrum:
 
 | $\lambda$ | $\rho_{\text{KPM}}(\lambda)$ |
-|-----------|------------------------------|
+| --------- | ---------------------------- |
 | 0.5       | 2.339                        |
 | 2.0       | 1.127                        |
 | 5.0       | 0.602                        |
@@ -216,7 +216,7 @@ by boundary saturation).
 1000 intra-sheet walks of length 100:
 
 | Quantity                                 | Value                                     |
-|------------------------------------------|-------------------------------------------|
+| ---------------------------------------- | ----------------------------------------- |
 | Intra-sheet MSD slope                    | 1.278 ⇒ $d_w^{\text{intra}} \approx 1.56$ |
 | $d_w^{\text{intra}} / d_w^{\text{full}}$ | 1.068                                     |
 | Mean sheet crossings per 500-step walk   | 164.5 (0.329 per step)                    |
@@ -232,7 +232,7 @@ indicating that inter-sheet bottlenecks do retard transport.
 Depth-3 $d_{\text{eff}}$ by $\tau$-rule:
 
 | $\tau$-rule      | $d_{\text{eff}}$ |
-|------------------|------------------|
+| ---------------- | ---------------- |
 | `none` (flat)    | 1.81             |
 | `every3`         | 2.06             |
 | `every2`         | 2.17             |
@@ -252,7 +252,7 @@ baseline toward 3D; signed rules give the strongest pull.
 Commute-time estimates from origin to targets at BFS distance 1–4:
 
 | Distance | Commute time (avg) |
-|----------|--------------------|
+| -------- | ------------------ |
 | 1        | $\sim 290$         |
 | 2        | $\sim 385$         |
 | 3        | $\sim 412$         |
@@ -268,7 +268,7 @@ transport exponents this way.
 ## Summary of Dimensional Estimates
 
 | Quantity             | Method              | Value                     |
-|----------------------|---------------------|---------------------------|
+| -------------------- | ------------------- | ------------------------- |
 | $d_{\text{eff}}$     | BFS interior        | **2.724**                 |
 | $d_{\text{eff}}$     | BFS full            | 2.880                     |
 | $d_{\text{eff}}$     | Cap-window, depth 4 | 2.009                     |

@@ -9,7 +9,7 @@ import { OptimizerQQN } from "./optimizer-qqn.js";
 import { PRESETS, presetCircle } from "./presets.js";
 import { View } from "./view.js";
 import { TransformsPanel } from "./ui-transforms.js";
-   import { commutativeOrbitSize } from "./orbit-commutative.js";
+import { commutativeOrbitSize } from "./orbit-commutative.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -30,12 +30,12 @@ const state = {
   K: 2,
   N: 7,
   enumeration: "commutative",
-   // `targetSource` is the user-provided target (drawn or preset). `target` is
-   // a resampled version of length == orbit size, which is what the loss and
-   // renderer actually consume. Keeping the source lets us re-resample when N
-   // or K changes the orbit size.
-   targetSource: presetCircle(150),
-   target: presetCircle(150),
+  // `targetSource` is the user-provided target (drawn or preset). `target` is
+  // a resampled version of length == orbit size, which is what the loss and
+  // renderer actually consume. Keeping the source lets us re-resample when N
+  // or K changes the orbit size.
+  targetSource: presetCircle(150),
+  target: presetCircle(150),
   model: null,
   optimizer: null,
   optimizerName: "adam",
@@ -58,40 +58,39 @@ let panel = null;
 //   - n  > len     -> repeat with even spacing (wrap-around)
 // This preserves shape/order without random jitter.
 function resampleTo(src, n) {
-   if (n <= 0 || src.length === 0) return [];
-   const out = new Array(n);
-   for (let i = 0; i < n; i++) {
-     const idx = Math.floor((i * src.length) / n) % src.length;
-     const p = src[idx];
-     out[i] = [p[0], p[1]];
-   }
-   return out;
+  if (n <= 0 || src.length === 0) return [];
+  const out = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const idx = Math.floor((i * src.length) / n) % src.length;
+    const p = src[idx];
+    out[i] = [p[0], p[1]];
+  }
+  return out;
 }
 function rebuildResampledTarget() {
-   const want = state.orbitSize || 0;
-   state.target = resampleTo(state.targetSource, want);
-   invalidateLossFn();
+  const want = state.orbitSize || 0;
+  state.target = resampleTo(state.targetSource, want);
+  invalidateLossFn();
 }
-
 
 // ---------- words cache ----------
 function getWords() {
   const key = `${state.K}|${state.N}|${state.enumeration}`;
   if (key !== state.wordsKey) {
-       // Fast path: commutative enumeration uses the binary-power DP
-       // (algo.md). We don't need the explicit word list at all; we mark
-       // state.words = null and just track the orbit size for the HUD.
-       if (state.enumeration === "commutative") {
-         state.words = null;
-         state.orbitSize = commutativeOrbitSize(state.K, state.N);
-       } else {
-         state.words = enumerate(state.K, state.N, state.enumeration);
-         state.orbitSize = state.words.length;
-       }
+    // Fast path: commutative enumeration uses the binary-power DP
+    // (algo.md). We don't need the explicit word list at all; we mark
+    // state.words = null and just track the orbit size for the HUD.
+    if (state.enumeration === "commutative") {
+      state.words = null;
+      state.orbitSize = commutativeOrbitSize(state.K, state.N);
+    } else {
+      state.words = enumerate(state.K, state.N, state.enumeration);
+      state.orbitSize = state.words.length;
+    }
     state.wordsKey = key;
-     // Orbit size changed -> resample target to match, which also invalidates
-     // the loss closure (since Q changes).
-     rebuildResampledTarget();
+    // Orbit size changed -> resample target to match, which also invalidates
+    // the loss closure (since Q changes).
+    rebuildResampledTarget();
   }
   return state.words;
 }
@@ -104,7 +103,7 @@ function readHparams() {
     lamb: parseFloat($("lamb").value) || 0,
     lamC: parseFloat($("lamC").value) || 0,
     eps: parseFloat($("eps").value) || 0,
-       N: state.N,
+    N: state.N,
   };
 }
 
@@ -115,7 +114,7 @@ function invalidateLossFn() {
 
 function ensureLossFn() {
   const hp = readHparams();
-     const sig = `${state.target.length}|${state.wordsKey}|${state.N}|${JSON.stringify(hp)}`;
+  const sig = `${state.target.length}|${state.wordsKey}|${state.N}|${JSON.stringify(hp)}`;
   if (state.lossFn && sig === state.lossHparamSig) return state.lossFn;
   invalidateLossFn();
   const words = getWords();
@@ -143,10 +142,10 @@ function buildOptimizer() {
 // ---------- forward/render only ----------
 function forwardRender() {
   const words = getWords();
-     const orbitT =
-       words === null
-         ? state.model.computeCommutativeOrbit(state.N)
-         : state.model.computeOrbit(words);
+  const orbitT =
+    words === null
+      ? state.model.computeCommutativeOrbit(state.N)
+      : state.model.computeOrbit(words);
   const orbit = orbitT.arraySync();
   orbitT.dispose();
   return orbit;
@@ -167,25 +166,26 @@ function trainStep() {
 function draw() {
   const orbit = forwardRender();
   view.drawGrid();
-   const dpr = window.devicePixelRatio || 1;
-   view.drawPoints(state.target, "#3fb950", 2.0 * dpr);
-   view.drawPoints(orbit, "#58a6ff", 2.6 * dpr);
+  const dpr = window.devicePixelRatio || 1;
+  view.drawPoints(state.target, "#3fb950", 2.0 * dpr);
+  view.drawPoints(orbit, "#58a6ff", 2.6 * dpr);
   view.drawFixedPoints(state.model.readTransforms());
   view.drawLossCurve(state.lossHistory);
   updateHUD(orbit.length);
 }
 
 function updateHUD(orbitN) {
-     const words = getWords();
-     const orbSize = words === null ? state.orbitSize : words.length;
+  const words = getWords();
+  const orbSize = words === null ? state.orbitSize : words.length;
   $("targCount").textContent = state.target.length;
-     $("orbitCount").textContent = orbitN ?? orbSize;
+  $("orbitCount").textContent = orbitN ?? orbSize;
   $("iterVal").textContent = state.iter;
   $("lossVal").textContent =
     state.lastLoss == null ? "—" : state.lastLoss.toExponential(3);
   $("activeCount").textContent = state.model.activeCount();
   $("totalCount").textContent = state.model.K;
-     $("orbitSize").textContent = `orbit size: ${orbSize} words${words === null ? " (DP)" : ""}`;
+  $("orbitSize").textContent =
+    `orbit size: ${orbSize} words${words === null ? " (DP)" : ""}`;
 }
 
 // ---------- UI wiring ----------
@@ -299,16 +299,16 @@ function bindUI() {
 
   // Target
   $("targetClear").addEventListener("click", () => {
-     state.targetSource = [];
-     state.target = [];
+    state.targetSource = [];
+    state.target = [];
     invalidateLossFn();
     draw();
   });
   $("loadPreset").addEventListener("click", () => {
     const v = $("targetPreset").value;
     if (!v) return;
-     state.targetSource = PRESETS[v]();
-     rebuildResampledTarget();
+    state.targetSource = PRESETS[v]();
+    rebuildResampledTarget();
     draw();
   });
 
@@ -331,14 +331,14 @@ function bindUI() {
     const sx = (e.clientX - rect.left) * dpr;
     const sy = (e.clientY - rect.top) * dpr;
     const [wx, wy] = view.s2w(sx, sy);
-     const src = state.targetSource;
-     const last = src[src.length - 1];
+    const src = state.targetSource;
+    const last = src[src.length - 1];
     if (last) {
       const d = Math.hypot(wx - last[0], wy - last[1]);
       if (d < 0.015) return;
     }
-     src.push([wx, wy]);
-     rebuildResampledTarget();
+    src.push([wx, wy]);
+    rebuildResampledTarget();
     draw();
   }
 

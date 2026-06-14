@@ -19,29 +19,30 @@ All four perspectives affirm that the two-component cost model — tail bound f(
 ### 2. The Specific Series Analyses Are Largely Correct
 
 The mathematical and CS perspectives both confirm the correctness of the four main results:
+
 - Gregory–Leibniz: RC₂, C(ε) = Θ(1/ε)
-- Nilakantha: RC₂, C(ε) = Θ(ε⁻¹/²) *(with a caveat about the denominator proof)*
+- Nilakantha: RC₂, C(ε) = Θ(ε⁻¹/²) _(with a caveat about the denominator proof)_
 - Wallis product: RC₃, C(ε) = Θ((1/ε)·log(1/ε))
 - Binomial series for √k: RC₁, C(ε) = Θ(log(1/ε))
 
-The Wallis product analysis is specifically highlighted by both the mathematical and CS perspectives as a non-obvious and practically valuable result — the framework reveals that Wallis has *worse* representation complexity than Gregory–Leibniz despite similar iteration counts, a finding that pure convergence analysis would miss.
+The Wallis product analysis is specifically highlighted by both the mathematical and CS perspectives as a non-obvious and practically valuable result — the framework reveals that Wallis has _worse_ representation complexity than Gregory–Leibniz despite similar iteration counts, a finding that pure convergence analysis would miss.
 
 ### 3. The Central Claim Is Overstated
 
 This is the most emphatic point of agreement across all four perspectives. The claim that the framework "settles the argument" about π being harder than algebraic irrationals is rejected by every analyst, though for overlapping reasons:
 
 - **Mathematical perspective**: The framework classifies engines, not constants. Under the paper's own minimax definition, π ∈ RC₁ via AGM, collapsing the separation.
-- **CS perspective**: No lower bound is proven on the RC complexity of *all* regular engines for π. The framework demonstrates a difference in specific engines, not in the constants themselves.
+- **CS perspective**: No lower bound is proven on the RC complexity of _all_ regular engines for π. The framework demonstrates a difference in specific engines, not in the constants themselves.
 - **Philosophy perspective**: The "cheapest engine" quantification requires non-constructive universal quantification over all regular engines, which is not constructively valid.
 - **Software engineering perspective**: The AGM exception creates a classification ambiguity that the data model does not resolve.
 
-The consensus recommendation is to reframe the claim: the framework demonstrates that *natural hypergeometric engines* for algebraic irrationals achieve RC₁ while *classical series* for π achieve RC₂ or RC₃. This is true, interesting, and defensible — but it is weaker than "settling the argument."
+The consensus recommendation is to reframe the claim: the framework demonstrates that _natural hypergeometric engines_ for algebraic irrationals achieve RC₁ while _classical series_ for π achieve RC₂ or RC₃. This is true, interesting, and defensible — but it is weaker than "settling the argument."
 
 ### 4. The "Natural Engine" Concept Requires Formalization
 
 Three of four perspectives independently identify the undefined notion of "natural" or "canonical" engine as a critical gap. The mathematical perspective notes it introduces a philosophically loaded criterion without formal definition. The CS perspective proposes formalizing it as the class of hypergeometric sequences (ratio of consecutive terms is a rational function of n), which is well-defined, decidable, and covers all examples in the paper. The philosophy perspective notes that without this formalization, the framework's central philosophical claim reduces to an assertion about cultural mathematical practice rather than a mathematical theorem. The software engineering perspective notes this creates scope ambiguity in the implementation.
 
-**Consensus recommendation**: Adopt hypergeometric sequences as the formal definition of "natural engine." Under this definition, the main result becomes: *"For hypergeometric convergence engines, algebraic irrationals achieve RC₁ while the classical series for π and e achieve RC₂ or RC₃."* This is a precise, provable, and interesting statement.
+**Consensus recommendation**: Adopt hypergeometric sequences as the formal definition of "natural engine." Under this definition, the main result becomes: _"For hypergeometric convergence engines, algebraic irrationals achieve RC₁ while the classical series for π and e achieve RC₂ or RC₃."_ This is a precise, provable, and interesting statement.
 
 ### 5. The Framework Has Genuine Practical Value
 
@@ -87,7 +88,7 @@ The software engineering perspective raises a question that the other perspectiv
 
 ### Tension 4: The Information-Theoretic Lower Bound
 
-The CS perspective identifies an important argument that the other perspectives do not develop: since specifying α to within ε requires at least log₂(1/ε) bits of information, any rational certificate must encode at least this much, giving a lower bound of Ω(log(1/ε)) on bit-length. This would show that RC₁ is *optimal* and that the binomial series for √k is information-theoretically efficient. The mathematical perspective does not mention this argument; the philosophy perspective does not engage with it; the software engineering perspective does not address it.
+The CS perspective identifies an important argument that the other perspectives do not develop: since specifying α to within ε requires at least log₂(1/ε) bits of information, any rational certificate must encode at least this much, giving a lower bound of Ω(log(1/ε)) on bit-length. This would show that RC₁ is _optimal_ and that the binomial series for √k is information-theoretically efficient. The mathematical perspective does not mention this argument; the philosophy perspective does not engage with it; the software engineering perspective does not address it.
 
 **Resolution**: This is a genuine strengthening of the framework that should be incorporated. If the information-theoretic lower bound argument is correct (and it appears to be), it provides a principled reason why RC₁ is the "best possible" class, making the binomial series result more significant than the paper currently presents it.
 
@@ -160,4 +161,3 @@ The CS perspective identifies an important argument that the other perspectives 
 The RCC framework is a genuine and interesting contribution to the computational study of mathematical constants. Its core technical results — the classification of specific convergence engines by their bit-length cost profiles — are correct and valuable. Its philosophical ambitions outrun its technical achievements, but the gap is bridgeable with the modifications recommended above. The framework is best understood not as a resolution of the deep question of whether π is "harder" than √2, but as a precise and operationally useful tool for comparing the computational cost of specific approximation strategies — a tool that, when properly scoped, illuminates the algebraic/transcendental distinction in a new and productive way.
 
 The path forward is clear: formalize the regularity condition using hypergeometric sequences, reframe the central claim as a result about natural engine families rather than constants themselves, add the information-theoretic lower bound to establish RC₁ optimality, extend the algebraic result to all algebraic irrationals, and build a prototype implementation that validates the architecture before committing to a full catalog. These changes would transform a philosophically overreaching but technically interesting paper into a rigorous and significant contribution.
-

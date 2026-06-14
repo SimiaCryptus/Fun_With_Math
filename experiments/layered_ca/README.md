@@ -14,7 +14,7 @@ The system layers three interacting subsystems:
 2. **Binary-Coded Ants** — Langton-style ants whose turn behavior (Left/Right) is encoded as a binary string indexed by
    the substrate color underneath them.
 3. **Selective Conway's Life** — a Game-of-Life layer that only evolves on cells whose substrate color is enabled by an
-   *activation mask*, with positive/negative modes that create or inhibit life.
+   _activation mask_, with positive/negative modes that create or inhibit life.
 
 The interplay between these layers produces highway structures, fractal boundaries, and emergent life colonies tuned to
 specific color patterns.
@@ -37,7 +37,7 @@ A second binary string — the **Activation Mask** — determines which substrat
 color also has an **Activation Mode**:
 
 - **Positive (+)**: ant presence spawns life and clears inhibition
-- **Negative (−)**: ant presence kills life and creates an *inhibition zone* that suppresses spawning (decays at ~
+- **Negative (−)**: ant presence kills life and creates an _inhibition zone_ that suppresses spawning (decays at ~
   10%/generation)
 
 ### Conway's Life Layer
@@ -58,14 +58,14 @@ Up to 8 ants can run simultaneously with configurable:
 
 - **Spawn modes**: `center`, `corners`, `edges`, `random`, `grid`
 - **Synchronization**:
-    - `synchronized` — all ants share the same rule and mask
-    - `independent` — each ant gets a randomized rule/mask
-    - `offset` — each ant uses a rotated version of the base rule
+  - `synchronized` — all ants share the same rule and mask
+  - `independent` — each ant gets a randomized rule/mask
+  - `offset` — each ant uses a rotated version of the base rule
 
 ## Controls
 
 | Control                                 | Description                                       |
-|-----------------------------------------|---------------------------------------------------|
+| --------------------------------------- | ------------------------------------------------- |
 | **Simulation Speed**                    | Delay between generations (1–2000 ms)             |
 | **Number of Substrate Colors**          | 2–8 colors (sets rule/mask length)                |
 | **Number of Ants**                      | 1–8 simultaneous ants                             |

@@ -46,12 +46,12 @@ The document cannot simultaneously claim "forking is a struct copy" and have `pa
 
 The document's own complexity table shows:
 
-| Class | State Dimension |
-|---|---|
-| Rationals | 1 field |
-| Quadratic irrationals | 2 fields |
-| Classical transcendentals | 3-4 fields |
-| Higher transcendentals | 4-6+ fields |
+| Class                     | State Dimension |
+| ------------------------- | --------------- |
+| Rationals                 | 1 field         |
+| Quadratic irrationals     | 2 fields        |
+| Classical transcendentals | 3-4 fields      |
+| Higher transcendentals    | 4-6+ fields     |
 
 A single `{i32, i32, i8*}` struct cannot represent all of these uniformly without the `payload` pointer carrying the variable-complexity state — which reintroduces the aliasing problem above.
 
@@ -135,17 +135,20 @@ memo(generator) → generator'
 But provides no implementation strategy. This is non-trivial:
 
 **Option 1: Cache by (VM identity, digit index)**
+
 - Requires a global hash table
 - Destroys the "no hidden global state" property
 - Thread safety becomes a concern
 - Cache invalidation is undefined (generators are infinite)
 
 **Option 2: Cache by structural identity (hash-consing)**
+
 - Two generators with identical step functions and states share cache entries
 - Requires a canonical representation — the document doesn't specify one
 - Works well for the finite-automaton class, poorly for series class
 
 **Option 3: No memoization, rely on LLVM to CSE**
+
 - Works only when the same generator is referenced multiple times in the same expression
 - Fails for the common case: computing digit k, then digit k+1 of the same number in separate calls
 
@@ -173,6 +176,7 @@ static inline struct NumVMState num_vm_fork(struct NumVMState s) {
 ```
 
 This works correctly only for the finite-automaton class. For series-class numbers, the "state" includes:
+
 - Current series index
 - Partial sum accumulators (arbitrary precision)
 - Error bound state
@@ -284,11 +288,11 @@ This is a known technique in exact real arithmetic (used in iRRAM, MPFR-style sy
 
 ```llvm
 ; Mark step functions as pure for CSE
-define %NumVMStep @rational_step(%NumVMState %s) 
+define %NumVMStep @rational_step(%NumVMState %s)
     nounwind readnone { ... }
 
 ; Mark fork as trivially copyable
-define %NumVMState @num_vm_fork(%NumVMState %s) 
+define %NumVMState @num_vm_fork(%NumVMState %s)
     nounwind readnone alwaysinline { ... }
 ```
 
@@ -310,14 +314,14 @@ This gives structural sharing without hidden global state — the registry is ex
 
 ## Risk Assessment
 
-| Risk | Severity | Likelihood | Mitigation |
-|---|---|---|---|
-| ABI aliasing bugs from void* payload | High | High | Two-tier ABI with explicit copy semantics |
-| Carry propagation making digit commitment O(n) | High | Medium | Signed-digit representation |
-| LLVM inlining limits on deep VM composition | Medium | High | Explicit fusion pass, depth limits |
-| Memoization introducing global state | Medium | High | Explicit registry parameter |
-| Tail bound oracle requiring per-constant proofs | High | Certain | Accept as a library authorship cost |
-| Skip-ahead not composable across arithmetic | Medium | High | Document limitation, provide workarounds |
+| Risk                                            | Severity | Likelihood | Mitigation                                |
+| ----------------------------------------------- | -------- | ---------- | ----------------------------------------- |
+| ABI aliasing bugs from void\* payload           | High     | High       | Two-tier ABI with explicit copy semantics |
+| Carry propagation making digit commitment O(n)  | High     | Medium     | Signed-digit representation               |
+| LLVM inlining limits on deep VM composition     | Medium   | High       | Explicit fusion pass, depth limits        |
+| Memoization introducing global state            | Medium   | High       | Explicit registry parameter               |
+| Tail bound oracle requiring per-constant proofs | High     | Certain    | Accept as a library authorship cost       |
+| Skip-ahead not composable across arithmetic     | Medium   | High       | Document limitation, provide workarounds  |
 
 ---
 
@@ -355,9 +359,9 @@ The product automaton construction for p-adic metrics is also correct in princip
 
 ### Significant Gaps
 
-**The p-adic integers $\mathbb{Z}_p$ are not just periodic machines.** The proposal conflates p-adic *rationals* (periodic) with p-adic *integers* in general. A general element of $\mathbb{Z}_p$ is an arbitrary sequence in $\{0,\ldots,p-1\}^{\mathbb{N}}$ — most are not periodic, not computable, and require unbounded state. The proposal's table places rationals at "constant state" but doesn't address the full $\mathbb{Z}_p$.
+**The p-adic integers $\mathbb{Z}_p$ are not just periodic machines.** The proposal conflates p-adic _rationals_ (periodic) with p-adic _integers_ in general. A general element of $\mathbb{Z}_p$ is an arbitrary sequence in $\{0,\ldots,p-1\}^{\mathbb{N}}$ — most are not periodic, not computable, and require unbounded state. The proposal's table places rationals at "constant state" but doesn't address the full $\mathbb{Z}_p$.
 
-**The ultrametric structure creates genuine computational difficulties.** The p-adic metric satisfies $|x+y|_p \leq \max(|x|_p, |y|_p)$, which means carry propagation works *upward* (toward higher-order digits) rather than downward. This is actually *easier* for digit-by-digit computation than real arithmetic — a genuine advantage the proposal underutilizes. Low-order p-adic digits are determined by finitely many terms, making the "valuation extractor" primitive well-founded in a way the real-number interval refinement is not.
+**The ultrametric structure creates genuine computational difficulties.** The p-adic metric satisfies $|x+y|_p \leq \max(|x|_p, |y|_p)$, which means carry propagation works _upward_ (toward higher-order digits) rather than downward. This is actually _easier_ for digit-by-digit computation than real arithmetic — a genuine advantage the proposal underutilizes. Low-order p-adic digits are determined by finitely many terms, making the "valuation extractor" primitive well-founded in a way the real-number interval refinement is not.
 
 **Missing: Hensel's Lemma as a computational primitive.** The most powerful tool in p-adic computation is Hensel lifting — iteratively refining approximate roots. This is precisely a generator-style computation and would be a natural fit for this framework, but it's absent.
 
@@ -367,11 +371,11 @@ The product automaton construction for p-adic metrics is also correct in princip
 
 ### The Digit Commitment Problem
 
-The proposal acknowledges the "tail bound oracle" but significantly understates how severe this problem is. Consider computing $\pi - \pi$: both generators produce digits of $\pi$, but determining that the result is exactly $0$ requires reading *infinitely many* digits. More concretely:
+The proposal acknowledges the "tail bound oracle" but significantly understates how severe this problem is. Consider computing $\pi - \pi$: both generators produce digits of $\pi$, but determining that the result is exactly $0$ requires reading _infinitely many_ digits. More concretely:
 
 **Theorem (Specker, 1949):** There exist computable sequences of rationals that converge to a non-computable real. Equivalently, there is no general algorithm that, given a convergent generator, extracts digits of the limit with guaranteed correctness.
 
-The "tail bound oracle" is not a primitive you can implement generically — it requires *problem-specific* convergence proofs. The proposal treats this as an engineering concern ("compiled convergence proof") when it is actually a fundamental mathematical barrier. For many important functions, tight tail bounds are open research problems.
+The "tail bound oracle" is not a primitive you can implement generically — it requires _problem-specific_ convergence proofs. The proposal treats this as an engineering concern ("compiled convergence proof") when it is actually a fundamental mathematical barrier. For many important functions, tight tail bounds are open research problems.
 
 ### The Non-Computability of Digit Extraction
 
@@ -393,7 +397,7 @@ The qualitative ordering (rationals < quadratic irrationals < transcendentals) r
 
 ### What the Table Gets Wrong
 
-**"O(log n) bit-width growth" for transcendentals is not uniformly correct.** For $\pi$ computed via the Machin formula or BBP, the intermediate values grow as $O(\log n)$ bits for the $n$-th digit — this is correct. But for $\zeta(3)$ via Apéry's formula, the coefficients in the recurrence grow exponentially, requiring $O(n)$ bits in intermediate computations even though the final digit requires only $O(\log n)$ bits. The distinction between *state size* and *intermediate computation size* is elided.
+**"O(log n) bit-width growth" for transcendentals is not uniformly correct.** For $\pi$ computed via the Machin formula or BBP, the intermediate values grow as $O(\log n)$ bits for the $n$-th digit — this is correct. But for $\zeta(3)$ via Apéry's formula, the coefficients in the recurrence grow exponentially, requiring $O(n)$ bits in intermediate computations even though the final digit requires only $O(\log n)$ bits. The distinction between _state size_ and _intermediate computation size_ is elided.
 
 **The complexity classes are not as clean as presented.** The proposal implies a well-ordered hierarchy:
 $$\text{Rationals} \prec \text{Quadratic} \prec \text{Classical Transcendentals} \prec \text{Higher Transcendentals}$$
@@ -401,8 +405,9 @@ $$\text{Rationals} \prec \text{Quadratic} \prec \text{Classical Transcendentals}
 But this is not a theorem — it's a conjecture. We don't know the minimal automaton complexity of $\pi$ vs. $e$ vs. $\log 2$. Whether $\pi$ and $e$ are in the same complexity class is an open problem. The table presents conjectured structure as established fact.
 
 **The "inaccessible generators" row conflates two distinct classes:**
+
 - Computably random reals (Martin-Löf random): require $O(n)$ state by definition
-- Cryptographically hidden generators: have *small* state, just inaccessible
+- Cryptographically hidden generators: have _small_ state, just inaccessible
 
 These have completely different complexity profiles. A ChaCha20 stream has 512-bit state — constant, not $O(n)$.
 
@@ -422,13 +427,13 @@ The $16^k = 2^{4k}$ factor creates a geometric series that can be evaluated modu
 
 **The explanation is not mechanistic enough to be predictive.** The proposal says BBP formulas exist "exactly when the generator automaton has a periodic orbit under the chosen codec." But:
 
-1. This doesn't explain *why* $\pi$ has such a formula in base 16 but not base 10
-2. It doesn't provide a method for *finding* BBP formulas for new constants
+1. This doesn't explain _why_ $\pi$ has such a formula in base 16 but not base 10
+2. It doesn't provide a method for _finding_ BBP formulas for new constants
 3. The connection to the PSLQ algorithm (how BBP was actually discovered) is absent
 
 The actual reason base 16 works for $\pi$ is that the BBP formula involves $\log(2)$ and $\arctan(1/\sqrt{2})$ evaluated at algebraic points, and these have known series with geometric factors that are powers of 2. This is a number-theoretic fact about specific series representations, not a general automaton-theoretic principle.
 
-**The claim that this is the "first mechanistic explanation" is false.** The mechanism has been understood since Bailey, Borwein, and Plouffe's original 1997 paper and subsequent work by Borwein and Crandall. The generator-VM framing is a *restatement* of known results, not a new explanation.
+**The claim that this is the "first mechanistic explanation" is false.** The mechanism has been understood since Bailey, Borwein, and Plouffe's original 1997 paper and subsequent work by Borwein and Crandall. The generator-VM framing is a _restatement_ of known results, not a new explanation.
 
 ---
 
@@ -444,9 +449,9 @@ The connection to **stream transducers** in formal language theory is real and w
 
 **No treatment of equality.** In exact real arithmetic, equality is not decidable. Two generators may produce identical digit streams without this being verifiable in finite time. The proposal needs a formal treatment of observational equivalence for generators.
 
-**No treatment of convergence rates.** The "tail bound oracle" needs to specify *how fast* bounds tighten. A generator that requires $2^{2^n}$ steps to emit the $n$-th digit is technically correct but practically useless. Complexity-theoretic digit extraction (polynomial-time computable reals) is a well-developed field that should be referenced.
+**No treatment of convergence rates.** The "tail bound oracle" needs to specify _how fast_ bounds tighten. A generator that requires $2^{2^n}$ steps to emit the $n$-th digit is technically correct but practically useless. Complexity-theoretic digit extraction (polynomial-time computable reals) is a well-developed field that should be referenced.
 
-**The structural sharing claim needs qualification.** Structural sharing works for *algebraic* combinations of generators but breaks down for transcendental operations. Computing $\sin(\pi/4)$ and $\cos(\pi/4)$ from the same $\pi$-generator does not automatically share state in any obvious way.
+**The structural sharing claim needs qualification.** Structural sharing works for _algebraic_ combinations of generators but breaks down for transcendental operations. Computing $\sin(\pi/4)$ and $\cos(\pi/4)$ from the same $\pi$-generator does not automatically share state in any obvious way.
 
 ---
 
@@ -466,9 +471,9 @@ This is a **philosophical position**, not a mathematical theorem. It conflates:
 
 3. **Cryptographic pseudorandomness**: computationally indistinguishable from random under complexity-theoretic assumptions.
 
-The claim that "every number has a seed" is trivially true (every number is its own seed) but misleading. The meaningful question is whether the seed is *shorter* than the output — i.e., whether the number is compressible. Martin-Löf random reals are not compressible; their "seed" is no shorter than the number itself.
+The claim that "every number has a seed" is trivially true (every number is its own seed) but misleading. The meaningful question is whether the seed is _shorter_ than the output — i.e., whether the number is compressible. Martin-Löf random reals are not compressible; their "seed" is no shorter than the number itself.
 
-The framing "randomness is encrypted determinism" is evocative but conflates the *existence* of a generator with the *accessibility* of that generator. The mathematical content here is just: "every real number is generated by some (possibly non-computable) program" — which is trivially true and not novel.
+The framing "randomness is encrypted determinism" is evocative but conflates the _existence_ of a generator with the _accessibility_ of that generator. The mathematical content here is just: "every real number is generated by some (possibly non-computable) program" — which is trivially true and not novel.
 
 ---
 
@@ -488,22 +493,22 @@ The proposal's "periodic automata" for algebraic numbers connects directly to **
 
 ### Continued Fractions as Natural Generators
 
-The proposal uses base-$b$ digit streams throughout, but **continued fractions** are arguably more natural generators for real numbers: they have better approximation properties, the Euclidean algorithm is a natural generator, and quadratic irrationals are *exactly* the eventually periodic continued fractions (Lagrange's theorem). This is a missed opportunity.
+The proposal uses base-$b$ digit streams throughout, but **continued fractions** are arguably more natural generators for real numbers: they have better approximation properties, the Euclidean algorithm is a natural generator, and quadratic irrationals are _exactly_ the eventually periodic continued fractions (Lagrange's theorem). This is a missed opportunity.
 
 ---
 
 ## 8. Confidence Assessment and Summary
 
-| Claim | Mathematical Status | Confidence |
-|---|---|---|
-| p-adic rationals as periodic automata | Correct theorem | High |
-| Tail bound oracle as convergence proof | Correct but understated difficulty | Medium |
-| BBP as automaton-codec resonance | Correct restatement, not new explanation | Medium |
-| Complexity hierarchy table | Qualitatively correct, quantitatively conjectural | Low-Medium |
-| Digit extraction always terminates | False for reals near digit boundaries | Incorrect |
-| Randomness as encrypted determinism | Philosophical position, not theorem | Low |
-| MUX trees as coalgebraic foundation | Mathematically sound | High |
-| "First mechanistic explanation" of BBP | False — prior art exists | Incorrect |
+| Claim                                  | Mathematical Status                               | Confidence |
+| -------------------------------------- | ------------------------------------------------- | ---------- |
+| p-adic rationals as periodic automata  | Correct theorem                                   | High       |
+| Tail bound oracle as convergence proof | Correct but understated difficulty                | Medium     |
+| BBP as automaton-codec resonance       | Correct restatement, not new explanation          | Medium     |
+| Complexity hierarchy table             | Qualitatively correct, quantitatively conjectural | Low-Medium |
+| Digit extraction always terminates     | False for reals near digit boundaries             | Incorrect  |
+| Randomness as encrypted determinism    | Philosophical position, not theorem               | Low        |
+| MUX trees as coalgebraic foundation    | Mathematically sound                              | High       |
+| "First mechanistic explanation" of BBP | False — prior art exists                          | Incorrect  |
 
 ---
 
@@ -532,6 +537,7 @@ The mathematical core of the proposal — coinductive digit generators, p-adic a
 ## Software Engineering & API Design (Composability, Lazy Evaluation, Ergonomics) Perspective
 
 # Software Engineering & API Design Analysis
+
 ## Numbers as Machines: A Generator-Based Numerics Library
 
 ---
@@ -561,7 +567,7 @@ The uniformity means combinators compose without impedance mismatch. Addition, m
 
 ### Weaknesses and Risks
 
-**Composability breaks down at carry propagation.** The paper glosses over the most difficult composability problem: carry propagation in addition is *not* a local operation. Computing digit `k` of `a + b` may require knowing carry from digit `k-1`, which may require carry from `k-2`, and so on. For numbers like `0.999...` vs `1.000...`, this creates unbounded lookahead. This is the fundamental problem of exact real arithmetic, and the paper's treatment of it as "a carry propagator combinator" understates the difficulty significantly.
+**Composability breaks down at carry propagation.** The paper glosses over the most difficult composability problem: carry propagation in addition is _not_ a local operation. Computing digit `k` of `a + b` may require knowing carry from digit `k-1`, which may require carry from `k-2`, and so on. For numbers like `0.999...` vs `1.000...`, this creates unbounded lookahead. This is the fundamental problem of exact real arithmetic, and the paper's treatment of it as "a carry propagator combinator" understates the difficulty significantly.
 
 ```
 // This is NOT straightforward to implement correctly:
@@ -588,13 +594,15 @@ compose(add, generator_a, generator_b) → ???
 ### Weaknesses and Risks
 
 **Lazy evaluation and LLVM optimization are in tension.** LLVM excels at optimizing eager, statically-shaped computations. Lazy generator graphs with dynamic demand patterns are harder for LLVM to optimize because:
+
 - The call graph is data-dependent
 - Loop bounds are unknown at compile time
 - Inlining depth is unbounded for recursive generators
 
-The paper claims "LLVM handles inlining, specialization, and optimization" but this is optimistic. LLVM will inline *fixed-depth* generator compositions well, but dynamically-deep compositions will require runtime dispatch that LLVM cannot optimize across.
+The paper claims "LLVM handles inlining, specialization, and optimization" but this is optimistic. LLVM will inline _fixed-depth_ generator compositions well, but dynamically-deep compositions will require runtime dispatch that LLVM cannot optimize across.
 
 **The memoization requirement creates a space/time tradeoff that isn't addressed.** The paper says "repeated digit queries must not recompute" but doesn't specify the memoization policy:
+
 - Full memoization: O(n) space for n digits — defeats the "memory bounded to what's needed" claim
 - No memoization: O(1) space but O(n²) time for sequential access
 - Partial memoization: requires a cache eviction policy that interacts with forking
@@ -616,6 +624,7 @@ struct NumVMState { uint32_t mode; uint32_t flags; void *payload; };
 ```
 
 This is an implementation detail, not a user-facing API. A real numerics library needs:
+
 - Operator overloading or equivalent
 - Implicit precision management
 - Comparison semantics (how do you compare two generators for equality?)
@@ -703,14 +712,14 @@ The paper should explicitly adopt a **signed digit representation** (digits in `
 
 ## 5. Comparison to Existing Systems
 
-| System | Composability | Lazy | Ergonomics | Unbounded Precision |
-|--------|--------------|------|------------|---------------------|
-| **This proposal** | Excellent (theory) | Yes | Poor (unaddressed) | Yes |
-| MPFR | Poor | No | Good | Yes (fixed per-op) |
-| iRRAM | Good | Partial | Moderate | Yes |
-| Haskell `Data.Number.CReal` | Good | Yes | Moderate | Yes |
-| Mathematica | Excellent | Partial | Excellent | Yes |
-| Python `mpmath` | Moderate | No | Excellent | Yes |
+| System                      | Composability      | Lazy    | Ergonomics         | Unbounded Precision |
+| --------------------------- | ------------------ | ------- | ------------------ | ------------------- |
+| **This proposal**           | Excellent (theory) | Yes     | Poor (unaddressed) | Yes                 |
+| MPFR                        | Poor               | No      | Good               | Yes (fixed per-op)  |
+| iRRAM                       | Good               | Partial | Moderate           | Yes                 |
+| Haskell `Data.Number.CReal` | Good               | Yes     | Moderate           | Yes                 |
+| Mathematica                 | Excellent          | Partial | Excellent          | Yes                 |
+| Python `mpmath`             | Moderate           | No      | Excellent          | Yes                 |
 
 The proposal's composability model is genuinely superior to all existing systems. Its ergonomics are currently the worst because they're unaddressed.
 
@@ -718,14 +727,14 @@ The proposal's composability model is genuinely superior to all existing systems
 
 ## 6. Implementation Risk Assessment
 
-| Risk | Severity | Likelihood | Mitigation |
-|------|----------|------------|------------|
-| Carry propagation non-locality | Critical | Certain | Signed digit representation |
-| Comparison undecidability | High | Certain | Interval predicates |
-| Memoization/forking interaction | High | Likely | Explicit policy stratification |
-| LLVM optimization limits | Medium | Likely | Profile-guided specialization |
-| User ergonomics barrier | High | Certain | Stratified API design |
-| Exponential state blowup in deep composition | Medium | Possible | Bounded composition depth |
+| Risk                                         | Severity | Likelihood | Mitigation                     |
+| -------------------------------------------- | -------- | ---------- | ------------------------------ |
+| Carry propagation non-locality               | Critical | Certain    | Signed digit representation    |
+| Comparison undecidability                    | High     | Certain    | Interval predicates            |
+| Memoization/forking interaction              | High     | Likely     | Explicit policy stratification |
+| LLVM optimization limits                     | Medium   | Likely     | Profile-guided specialization  |
+| User ergonomics barrier                      | High     | Certain    | Stratified API design          |
+| Exponential state blowup in deep composition | Medium   | Possible   | Bounded composition depth      |
 
 ---
 
@@ -758,6 +767,7 @@ The theoretical analysis is high-confidence. The ergonomics assessment is high-c
 ## Performance & Hardware Alignment (Memory Complexity, CPU Cache, JIT/Inlining) Perspective
 
 # Performance & Hardware Alignment Analysis
+
 ## Numbers as Machines: A Generator-Based Numerics Library
 
 ---
@@ -774,11 +784,11 @@ The generator-VM model presents a genuinely novel computational substrate with c
 
 The paper's table of VM state dimensions is theoretically clean:
 
-| Class | Claimed State Dimension |
-|---|---|
-| Rationals | 1 field |
-| Quadratic irrationals | 2 fields |
-| Classical transcendentals | 3–4 fields |
+| Class                     | Claimed State Dimension |
+| ------------------------- | ----------------------- |
+| Rationals                 | 1 field                 |
+| Quadratic irrationals     | 2 fields                |
+| Classical transcendentals | 3–4 fields              |
 
 **In practice, this is optimistic.** Consider the actual state required for a carry-propagating addition VM over two transcendental sub-VMs:
 
@@ -797,13 +807,13 @@ A composed expression like `π + e * √2` nests three levels of VM state. The s
 
 ### 1.2 Memory Growth Patterns and Cache Behavior
 
-The paper claims O(log n) memory growth for algebraic and classical transcendental numbers. This is correct for the *bit-width* of individual accumulators, but ignores:
+The paper claims O(log n) memory growth for algebraic and classical transcendental numbers. This is correct for the _bit-width_ of individual accumulators, but ignores:
 
 **Memoization table growth**: The `memo(generator)` primitive requires a lookup structure. For a digit stream queried at positions `{k₁, k₂, ..., kₙ}`, the memo table grows with the number of distinct positions accessed. In a computation that queries multiple numbers at many positions, this table becomes the dominant memory consumer — potentially O(n) in the number of digit queries.
 
 **Cache line utilization**: A `NumVMState` at 16 bytes fits 4 per cache line (64 bytes). A composed `AddVM` at 40 bytes fits 1.6 per cache line — wasting ~37% of cache bandwidth on padding/alignment. Deeply nested VMs will exhibit poor spatial locality because each step function call touches a different region of the struct.
 
-**The void* payload problem**: Payload pointers scatter constant data across the heap. For a computation involving 1000 rational numbers (e.g., a matrix of rationals), each `NumVMState` holds a pointer to its period/numerator/denominator data. These 1000 allocations are scattered across the heap, producing 1000 cache misses on first access — exactly the pattern that destroys modern CPU performance.
+**The void\* payload problem**: Payload pointers scatter constant data across the heap. For a computation involving 1000 rational numbers (e.g., a matrix of rationals), each `NumVMState` holds a pointer to its period/numerator/denominator data. These 1000 allocations are scattered across the heap, producing 1000 cache misses on first access — exactly the pattern that destroys modern CPU performance.
 
 ### 1.3 Structural Sharing vs. Cache Locality Tension
 
@@ -815,7 +825,7 @@ The paper correctly identifies structural sharing as essential for memory effici
 
 For a shared subtree accessed from two parent VMs, the first access loads the subtree into cache. If the two parents are computed in sequence, the second access may hit cache. If they are computed far apart in time (e.g., in a large matrix computation), the subtree will have been evicted. The sharing saves memory but does not save cache misses in the general case.
 
-**Recommendation**: Distinguish between *structural sharing for memory deduplication* (good) and *structural sharing as a performance primitive* (unreliable). The implementation should support both shared and copied subtrees, choosing based on access pattern analysis.
+**Recommendation**: Distinguish between _structural sharing for memory deduplication_ (good) and _structural sharing as a performance primitive_ (unreliable). The implementation should support both shared and copied subtrees, choosing based on access pattern analysis.
 
 ---
 
@@ -830,6 +840,7 @@ typedef struct NumVMStep (*NumVMFn)(struct NumVMState);
 ```
 
 On x86-64 with the System V ABI:
+
 - `NumVMState` (16 bytes): passed in registers (rdi, rsi, rdx) — **good**
 - `NumVMStep` (20 bytes): returned via hidden pointer — **bad**
 
@@ -846,13 +857,15 @@ This makes the memory traffic explicit and allows the compiler to optimize the o
 ### 2.2 Function Pointer Dispatch
 
 The ABI uses `NumVMFn` — a function pointer. Function pointer calls:
+
 - **Prevent static branch prediction** (indirect branch)
 - **Pollute the indirect branch predictor** (BTB entries)
 - **Block inlining** unless the pointer is statically known
 
 For a computation involving 10 different VM types (rational, sqrt, pi, e, add, mul, etc.), the step function dispatch will produce 10 different indirect branch targets. Modern CPUs handle this reasonably well with the BTB, but it is strictly worse than direct calls.
 
-**The LLVM inlining claim requires scrutiny**: The paper states "LLVM inlines the entire generator graph." This is true *only* when:
+**The LLVM inlining claim requires scrutiny**: The paper states "LLVM inlines the entire generator graph." This is true _only_ when:
+
 1. The VM type is statically known at the call site
 2. The function pointer is a compile-time constant
 3. The expression tree is fixed at compile time (not runtime-constructed)
@@ -874,7 +887,7 @@ For 1000 digits, this is 2000 step function calls with good temporal locality �
 
 Now consider computing one digit each of 1000 different numbers (e.g., evaluating a 1000-element vector). Each number has its own VM state. After computing digit 1 of number 1, the VM state for number 1 is evicted before we return to compute digit 2 of number 1. **This is the worst case** — O(n) cache misses for n elements, regardless of structural sharing.
 
-**Recommendation**: The implementation should support *batched digit computation* — computing k digits of all n numbers before moving to the next batch. This amortizes cache miss cost and enables SIMD vectorization across the batch dimension.
+**Recommendation**: The implementation should support _batched digit computation_ — computing k digits of all n numbers before moving to the next batch. This amortizes cache miss cost and enables SIMD vectorization across the batch dimension.
 
 ---
 
@@ -885,6 +898,7 @@ Now consider computing one digit each of 1000 different numbers (e.g., evaluatin
 The paper's LLVM claims are accurate for the static case and overstated for the dynamic case. Let's be precise:
 
 **LLVM CAN:**
+
 - Inline a statically-known chain of step functions into a single optimized loop
 - Constant-fold VM states that are compile-time constants (e.g., the rational 1/7)
 - Eliminate dead fields in composed VM states via scalar replacement of aggregates (SROA)
@@ -892,6 +906,7 @@ The paper's LLVM claims are accurate for the static case and overstated for the 
 - Specialize a generic VM for a specific base via template instantiation or PGO
 
 **LLVM CANNOT (without additional infrastructure):**
+
 - Inline across runtime function pointers
 - Optimize a dynamically-constructed expression tree
 - Eliminate carry state that is genuinely data-dependent
@@ -918,6 +933,7 @@ state' = skip(n, state);  // O(log n) for periodic automata
 ```
 
 For a periodic automaton with period P, `skip(n, state)` is matrix exponentiation over the transition monoid — computable in O(log n) multiplications. LLVM can:
+
 - Unroll the exponentiation loop for small n
 - Constant-fold the entire skip for compile-time-known n
 - Vectorize the matrix multiplication for large period automata
@@ -933,6 +949,7 @@ add(mul(pi, e), div(sqrt2, add(phi, rational(1,7))))
 ```
 
 Fully inlined, this requires simultaneously live:
+
 - 5 VM states (each with 3 fields = 15 registers minimum)
 - 4 carry values
 - Intermediate digit values
@@ -1026,15 +1043,15 @@ The batched API enables SIMD vectorization and amortizes function call overhead 
 
 ## 5. Risk Assessment
 
-| Risk | Severity | Likelihood | Mitigation |
-|---|---|---|---|
-| `void*` payload breaks fork semantics | High | Certain | Inline small payloads; use COW for large |
-| Function pointer dispatch blocks inlining | High | High (dynamic case) | Expression-tree JIT compilation |
-| Deep nesting causes register spill | Medium | High (>4 levels) | Limit inline depth; use JIT |
-| Memoization table unbounded growth | High | Medium | Bounded LRU cache |
-| Cache thrashing in vector operations | High | High | SoA layout + batched API |
-| ABI return value via hidden pointer | Medium | Certain (20-byte struct) | Pad to 32 bytes or restructure |
-| Payload pointer scatter in heap | Medium | High | Pool allocator for VM states |
+| Risk                                      | Severity | Likelihood               | Mitigation                               |
+| ----------------------------------------- | -------- | ------------------------ | ---------------------------------------- |
+| `void*` payload breaks fork semantics     | High     | Certain                  | Inline small payloads; use COW for large |
+| Function pointer dispatch blocks inlining | High     | High (dynamic case)      | Expression-tree JIT compilation          |
+| Deep nesting causes register spill        | Medium   | High (>4 levels)         | Limit inline depth; use JIT              |
+| Memoization table unbounded growth        | High     | Medium                   | Bounded LRU cache                        |
+| Cache thrashing in vector operations      | High     | High                     | SoA layout + batched API                 |
+| ABI return value via hidden pointer       | Medium   | Certain (20-byte struct) | Pad to 32 bytes or restructure           |
+| Payload pointer scatter in heap           | Medium   | High                     | Pool allocator for VM states             |
 
 ---
 
@@ -1080,10 +1097,10 @@ All four perspectives affirm that the fundamental primitive — `step : State �
 
 Every perspective independently arrives at a fundamental bifurcation:
 
-| Tier | Examples | State Properties | Fork Cost |
-|---|---|---|---|
-| **Automaton class** | Rationals, algebraic irrationals | Fixed-size, inline | O(1) — true struct copy |
-| **Series class** | Transcendentals (π, e, ζ(3)) | Grows with computation depth | O(log n) — must deep-copy accumulators |
+| Tier                | Examples                         | State Properties             | Fork Cost                              |
+| ------------------- | -------------------------------- | ---------------------------- | -------------------------------------- |
+| **Automaton class** | Rationals, algebraic irrationals | Fixed-size, inline           | O(1) — true struct copy                |
+| **Series class**    | Transcendentals (π, e, ζ(3))     | Grows with computation depth | O(log n) — must deep-copy accumulators |
 
 The technical perspective proposes explicit `FiniteNumVM` and `SeriesNumVM` structs. The mathematical perspective notes that p-adic rationals are strictly easier than real transcendentals (digit commitment is local in p-adics, non-local in reals). The performance perspective shows that the `void *payload` pointer breaks value semantics for the series class. The software engineering perspective identifies this as the source of the memoization/forking interaction problem.
 
@@ -1099,7 +1116,7 @@ All three converge on the same solution: **signed-digit (redundant) representati
 
 ### 4. The BBP/Skip-Ahead Primitive Is Valuable but Overstated
 
-The mathematical and technical perspectives both affirm that the BBP formula explanation is a valid *restatement* of known results, not a new mechanistic explanation. The original mechanism has been understood since Bailey-Borwein-Plouffe (1997). The performance perspective identifies `skip(n, state)` as the most JIT-friendly operation in the model. The software engineering perspective calls it "novel and useful" as a library primitive.
+The mathematical and technical perspectives both affirm that the BBP formula explanation is a valid _restatement_ of known results, not a new mechanistic explanation. The original mechanism has been understood since Bailey-Borwein-Plouffe (1997). The performance perspective identifies `skip(n, state)` as the most JIT-friendly operation in the model. The software engineering perspective calls it "novel and useful" as a library primitive.
 
 **Consensus conclusion:** The `skip` primitive is a genuine contribution to the library API. The theoretical framing as "automaton-codec resonance" is insightful but should be presented as a reformulation, not a discovery. The skip function cannot be derived automatically — it requires per-constant manual implementation.
 
@@ -1130,13 +1147,14 @@ The software engineering and performance perspectives are in partial conflict ab
 - **Performance:** "LLVM excels at optimizing eager, statically-shaped computations. Lazy generator graphs with dynamic demand patterns are harder."
 - **Technical:** "LLVM's claims are largely correct for the finite-automaton case" but "overstated" for series class.
 
-**Resolution:** Both are correct for different regimes. LLVM optimization applies to *statically-known, compile-time-fixed* expression trees. For *runtime-constructed* expression trees (parsing, dynamic matrix construction), a JIT compilation step (expression-tree compilation to a single LLVM function) is required. The proposal should specify which regime it targets and provide the JIT path for the dynamic case.
+**Resolution:** Both are correct for different regimes. LLVM optimization applies to _statically-known, compile-time-fixed_ expression trees. For _runtime-constructed_ expression trees (parsing, dynamic matrix construction), a JIT compilation step (expression-tree compilation to a single LLVM function) is required. The proposal should specify which regime it targets and provide the JIT path for the dynamic case.
 
 ### Tension 3: Memoization Policy
 
 The software engineering perspective identifies three incompatible memoization strategies (full, none, partial) without a clear recommendation. The technical perspective proposes an explicit `MemoVM` wrapper. The performance perspective recommends a bounded LRU cache sized to L2/L3 capacity.
 
 **Resolution:** These are compatible at different layers. The correct architecture is:
+
 1. **No implicit global memoization** (avoids hidden state)
 2. **Explicit `MemoVM` wrapper** with configurable cache size (technical perspective)
 3. **Bounded LRU implementation** sized to hardware cache (performance perspective)
@@ -1146,7 +1164,7 @@ The software engineering perspective identifies three incompatible memoization s
 
 The mathematical perspective rates several claims as "incorrect" (digit extraction always terminates, "first mechanistic explanation" of BBP) while the technical perspective rates the overall framework at 0.72 confidence and calls it "worth building." The software engineering perspective rates ergonomics as "essentially absent" while still identifying genuine innovations.
 
-**Resolution:** These are not in conflict — they address different questions. The mathematical critique targets *claims*, not the *framework*. The technical and engineering critiques target *implementation gaps*, not the *concept*. The synthesis is: the concept is sound, several specific claims are wrong or overstated, and the implementation gaps are real but addressable.
+**Resolution:** These are not in conflict — they address different questions. The mathematical critique targets _claims_, not the _framework_. The technical and engineering critiques target _implementation gaps_, not the _concept_. The synthesis is: the concept is sound, several specific claims are wrong or overstated, and the implementation gaps are real but addressable.
 
 ---
 
@@ -1155,21 +1173,27 @@ The mathematical perspective rates several claims as "incorrect" (digit extracti
 Ranked by severity (all four perspectives contributing):
 
 ### Gap 1 (Critical): Digit Commitment and Non-Termination
+
 The interval refinement engine will fail to terminate for inputs near digit boundaries. This is not an edge case — it affects any computation whose result is near a representable boundary. **Required:** Formal treatment of when digit commitment is guaranteed, adoption of signed-digit representation to make addition local, and explicit documentation of the non-termination cases.
 
 ### Gap 2 (Critical): ABI Aliasing from `void *payload`
+
 The current `NumVMState` struct creates aliased mutable state on fork. **Required:** Two-tier ABI with inline state for automaton class and explicit deep-copy semantics for series class.
 
 ### Gap 3 (High): Comparison Semantics
+
 Equality of real numbers is undecidable. The proposal does not address this. **Required:** Interval-based predicate API (`definitely_less_than`, `agrees_with(digits=N)`) rather than exact equality.
 
 ### Gap 4 (High): Tail Bound Oracle Implementation
+
 The convergence bound requirement places mathematical sophistication demands on library users. **Required:** Built-in tail bound oracles for all standard constants and functions, with a documented (not hidden) interface for user-defined constants.
 
 ### Gap 5 (Medium): Carry Propagation Locality
+
 Without signed-digit representation, addition is not a well-defined local combinator. **Required:** Adopt Avizienis signed-digit representation as the internal arithmetic layer.
 
 ### Gap 6 (Medium): User-Facing API
+
 The proposal describes an execution substrate, not a usable library. **Required:** Stratified API design (primitive / combinator / user layers) with operator overloading, precision contexts, and explicit memoization policy.
 
 ---
@@ -1253,15 +1277,15 @@ x, y = pi.fork()  # Documents O(log n) cost
 
 ## VI. Claims Requiring Correction
 
-| Original Claim | Corrected Status |
-|---|---|
-| "Forking is a struct copy" | True for automaton tier only; O(log n) for series tier |
-| "LLVM handles inlining across the generator graph" | True for static, compile-time-known trees; requires JIT for dynamic trees |
-| "First mechanistic explanation of BBP" | False — prior art in Bailey-Borwein-Plouffe (1997) and subsequent work |
-| "Digit extraction always terminates" | False for reals near digit boundaries — a fundamental non-termination case |
-| "Randomness is encrypted determinism" | Philosophical position, not mathematical theorem; conflates distinct concepts |
-| Complexity hierarchy table as established fact | Should be presented as conjectures; quantitative claims (e.g., "3-4 fields" for π) lack formal proof |
-| "Tail bound oracle" as an engineering concern | It is a mathematical barrier requiring per-constant convergence proofs |
+| Original Claim                                     | Corrected Status                                                                                     |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| "Forking is a struct copy"                         | True for automaton tier only; O(log n) for series tier                                               |
+| "LLVM handles inlining across the generator graph" | True for static, compile-time-known trees; requires JIT for dynamic trees                            |
+| "First mechanistic explanation of BBP"             | False — prior art in Bailey-Borwein-Plouffe (1997) and subsequent work                               |
+| "Digit extraction always terminates"               | False for reals near digit boundaries — a fundamental non-termination case                           |
+| "Randomness is encrypted determinism"              | Philosophical position, not mathematical theorem; conflates distinct concepts                        |
+| Complexity hierarchy table as established fact     | Should be presented as conjectures; quantitative claims (e.g., "3-4 fields" for π) lack formal proof |
+| "Tail bound oracle" as an engineering concern      | It is a mathematical barrier requiring per-constant convergence proofs                               |
 
 ---
 
@@ -1271,9 +1295,8 @@ x, y = pi.fork()  # Documents O(log n) cost
 
 The proposal describes a theoretically sound and genuinely useful framework. The automaton tier is ready to build with high confidence. The series tier has fundamental tensions that require resolution — particularly carry propagation, fork semantics, and digit commitment — before it can be called a production system. The user-facing API is essentially absent and must be designed before the library can achieve adoption.
 
-The framework's most important contribution is the *unified protocol* that allows rationals, algebraic numbers, p-adic numbers, and transcendentals to compose through the same interface. This is a real advance over existing systems (MPFR, iRRAM, mpmath) which treat these as separate domains.
+The framework's most important contribution is the _unified protocol_ that allows rationals, algebraic numbers, p-adic numbers, and transcendentals to compose through the same interface. This is a real advance over existing systems (MPFR, iRRAM, mpmath) which treat these as separate domains.
 
 The path from compelling research prototype to production numerics library requires: (1) honest two-tier ABI, (2) signed-digit arithmetic for carry locality, (3) interval-based comparison semantics, (4) stratified user API, and (5) engagement with the computable analysis literature that provides the mathematical foundations already developed for exactly this problem domain.
 
 **Build it. Fix the ABI. Engage the prior art. Scope the claims accurately.**
-

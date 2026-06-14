@@ -1,497 +1,502 @@
 <!doctype html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta
-          name="description"
-          content="Mathematical Explorations — original mathematical experiments and visualizations. Multi-sheeted polygon covers, algebraic noise lattices, causal knot metrics, and other browser-native math research."
-        />
-        <title>Mathematical Explorations</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
-        <link rel="stylesheet" href="css/style.css" />
-        <link rel="stylesheet" href="css/home.css" />
-        <script src="js/marked.min.js"></script>
-        <!-- MathJax configuration must be set before the library loads -->
-        <script>
-          window.MathJax = {
-            tex: {
-              inlineMath: [
-                ["$", "$"],
-                ["\\(", "\\)"],
-              ],
-              displayMath: [
-                ["$$", "$$"],
-                ["\\[", "\\]"],
-              ],
-              processEscapes: true,
-              processEnvironments: true,
-            },
-            options: {
-              skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"],
-              ignoreHtmlClass: "tex2jax_ignore",
-              processHtmlClass: "tex2jax_process",
-            },
-            svg: { fontCache: "global" },
-            startup: {
-              typeset: false,
-            },
-          };
-        </script>
-        <script
-          id="MathJax-script"
-          async
-          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-        ></script>
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-      </head>
-      <body>
-        <canvas id="bgCanvas" aria-hidden="true"></canvas>
-        <div class="aurora" aria-hidden="true">
-          <div class="aurora-blob aurora-blob-1"></div>
-          <div class="aurora-blob aurora-blob-2"></div>
-          <div class="aurora-blob aurora-blob-3"></div>
-        </div>
-        <div class="grid-overlay" aria-hidden="true"></div>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Mathematical Explorations — original mathematical experiments and visualizations. Multi-sheeted polygon covers, algebraic noise lattices, causal knot metrics, and other browser-native math research."
+    />
+    <title>Mathematical Explorations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/home.css" />
+    <script src="js/marked.min.js"></script>
+    <!-- MathJax configuration must be set before the library loads -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+          processEscapes: true,
+          processEnvironments: true,
+        },
+        options: {
+          skipHtmlTags: [
+            "script",
+            "noscript",
+            "style",
+            "textarea",
+            "pre",
+            "code",
+          ],
+          ignoreHtmlClass: "tex2jax_ignore",
+          processHtmlClass: "tex2jax_process",
+        },
+        svg: { fontCache: "global" },
+        startup: {
+          typeset: false,
+        },
+      };
+    </script>
+    <script
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  </head>
+  <body>
+    <canvas id="bgCanvas" aria-hidden="true"></canvas>
+    <div class="aurora" aria-hidden="true">
+      <div class="aurora-blob aurora-blob-1"></div>
+      <div class="aurora-blob aurora-blob-2"></div>
+      <div class="aurora-blob aurora-blob-3"></div>
+    </div>
+    <div class="grid-overlay" aria-hidden="true"></div>
 
-        <nav>
-          <a class="brand" href="index.html">
-            <span class="brand-glyph">∑</span>
-            <span class="brand-text">Mathematical Explorations</span>
-          </a>
-          <span class="spacer"></span>
-          <a
-            class="nav-link"
-            href="https://github.com/SimiaCryptus/Fun_With_Math"
-            target="_blank"
-            rel="noopener"
-            >GitHub <span class="arrow">↗</span></a
-          >
-        </nav>
+    <nav>
+      <a class="brand" href="index.html">
+        <span class="brand-glyph">∑</span>
+        <span class="brand-text">Mathematical Explorations</span>
+      </a>
+      <span class="spacer"></span>
+      <a
+        class="nav-link"
+        href="https://github.com/SimiaCryptus/Fun_With_Math"
+        target="_blank"
+        rel="noopener"
+        >GitHub <span class="arrow">↗</span></a
+      >
+    </nav>
 
-        <section class="hero">
-          <div class="hero-badge">
-            <span class="hero-badge-dot"></span>
-            Interactive experiments · runs entirely in the browser
-          </div>
-          <h1 class="hero-title">
-            <span class="hero-title-line">Mathematical</span>
-            <span class="hero-title-line hero-title-accent">Explorations</span>
-          </h1>
-          <p class="hero-lede">
-            A collection of original interactive experiments in geometry, number
-            theory, and dynamical systems — each lab is a small piece of
-            in-browser mathematical research, not a textbook visualization.
-          </p>
-          <p class="hero-tagline">
-            <span class="quote-mark">“</span>What happens if you poke a rigid
-            structure with one irrational?<span class="quote-mark">”</span>
-          </p>
-          <div class="hero-scroll" aria-hidden="true">
-            <span class="hero-scroll-line"></span>
-            <span class="hero-scroll-text">scroll</span>
-          </div>
-        </section>
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Interactive experiments · runs entirely in the browser
+      </div>
+      <h1 class="hero-title">
+        <span class="hero-title-line">Mathematical</span>
+        <span class="hero-title-line hero-title-accent">Explorations</span>
+      </h1>
+      <p class="hero-lede">
+        A collection of original interactive experiments in geometry, number
+        theory, and dynamical systems — each lab is a small piece of in-browser
+        mathematical research, not a textbook visualization.
+      </p>
+      <p class="hero-tagline">
+        <span class="quote-mark">“</span>What happens if you poke a rigid
+        structure with one irrational?<span class="quote-mark">”</span>
+      </p>
+      <div class="hero-scroll" aria-hidden="true">
+        <span class="hero-scroll-line"></span>
+        <span class="hero-scroll-text">scroll</span>
+      </div>
+    </section>
 
-        <div class="intro-panel">
-          <div class="intro-panel-glow" aria-hidden="true"></div>
-          <h2>Start Here</h2>
-          <p>
-            Most of the labs below share a single recurring question:
-            <strong>what happens to a clean algebraic or geometric structure
-            when you introduce one carefully chosen twist?</strong>
-            A single irrational coordinate, a single symmetry edge in a
-            diffusion graph, a single causal direction in a knot — small
-            perturbations that produce surprisingly rich behavior.
-          </p>
-          <p>Three loose themes run through the featured labs:</p>
-          <ul class="theme-list">
-            <li>
-              <strong>Algebraic structure → emergent geometry.</strong>
-              <em>Pentagon Lattice</em> and <em>Irrational Lattice</em> both
-              start with a number field and watch geometry crystallize out
-              of it — fractional dimension, aperiodic moiré, spinor-like
-              holonomy.
-            </li>
-            <li>
-              <strong>Dynamics on symmetric or causal substrates.</strong>
-              <em>Space-Color Symmetry</em> and <em>Layered CA</em> wire
-              symmetry orbits or substrate colors into the dynamics; the
-              result is diffusion on a quotient manifold or three-layer
-              feedback between agents and a Conway-Life host.
-            </li>
-            <li>
-              <strong>New metrics on familiar objects.</strong>
-              <em>Geometric Entropy</em> recasts the Erdős distinct-distance
-              problem as a continuous entropy optimization;
-              <em>Spacelike Knots</em> equips a knot with a Minkowski metric
-              so crossings become causal inversions.
-            </li>
-          </ul>
-          <p class="intro-panel-footnote">
-            If you only have a few minutes, open
-            <strong>Pentagon Lattice Geometry</strong> or
-            <strong>Spacelike Knots</strong> — they're the most
-            self-contained, most novel, and the easiest to play with cold.
-          </p>
-        </div>
-
-        <p class="section-title">
-          <span class="section-title-num">01</span>
-          Featured Laboratories <span class="section-title-sub">— in-depth experiments</span>
-        </p>
-        <p class="section-subtitle">
-          Extended interactive studies, each accompanied by documentation describing
-          the underlying mathematics, motivation, and methods. Click a card to read
-          its full notes; use the Open button to launch the lab.
-        </p>
-
-        <div class="featured-grid" id="featuredGrid">
-          <div
-            class="featured-card"
-            data-href="experiments/Pentagon_Lattice_Geometry/index.html"
-            data-readme="experiments/Pentagon_Lattice_Geometry/README.md"
-            tabindex="0"
-            role="button"
-          >
-            <div class="featured-card-header">
-              <div class="featured-card-icon" aria-hidden="true">PL</div>
-              <h2 class="featured-card-title">Pentagonal Lattice Geometry</h2>
-              <a
-                class="featured-card-launch"
-                href="experiments/Pentagon_Lattice_Geometry/index.html"
-                >Open <span class="arrow">→</span></a
-              >
-            </div>
-            <p class="featured-card-pitch">
-              A multi-sheeted covering construction in which the regular pentagon
-              develops fractional dimension (d ≈ 2.37) and spinor-like holonomy
-              — a discrete model where a single loop requires two passes to
-              return to identity.
-            </p>
-            <div class="readme-preview">
-              <p class="readme-loading">Loading description…</p>
-            </div>
-          </div>
-
-          <div
-            class="featured-card"
-            data-href="experiments/symmetry_simple/index.html"
-            data-readme="experiments/symmetry_simple/README.md"
-            tabindex="0"
-            role="button"
-          >
-            <div class="featured-card-header">
-              <div class="featured-card-icon" aria-hidden="true">SY</div>
-              <h2 class="featured-card-title">Space-Color Symmetry</h2>
-              <a
-                class="featured-card-launch"
-                href="experiments/symmetry_simple/index.html"
-                >Open <span class="arrow">→</span></a
-              >
-            </div>
-            <p class="featured-card-pitch">
-              A pixel canvas where symmetry doesn't just mirror your strokes —
-              it rewires the diffusion graph. Heat flows along symmetry orbits,
-              producing kaleidoscope dynamics on a quotient-like manifold.
-            </p>
-            <div class="readme-preview">
-              <p class="readme-loading">Loading description…</p>
-            </div>
-          </div>
-
-          <div
-            class="featured-card"
-            data-href="experiments/geometric-entropy/index.html"
-            data-readme="experiments/geometric-entropy/README.md"
-            tabindex="0"
-            role="button"
-          >
-            <div class="featured-card-header">
-              <div class="featured-card-icon" aria-hidden="true">GE</div>
-              <h2 class="featured-card-title">Geometric Entropy</h2>
-              <a
-                class="featured-card-launch"
-                href="experiments/geometric-entropy/index.html"
-                >Open <span class="arrow">→</span></a
-              >
-            </div>
-            <p class="featured-card-pitch">
-              A continuous analogue of the Erdős distinct-distance problem.
-              Points on a manifold are arranged to extremize the Shannon
-              entropy of their pairwise-distance distribution.
-            </p>
-            <div class="readme-preview">
-              <p class="readme-loading">Loading description…</p>
-            </div>
-          </div>
-
-          <div
-            class="featured-card"
-            data-href="experiments/spacelike-knots/index.html"
-            data-readme="experiments/spacelike-knots/README.md"
-            tabindex="0"
-            role="button"
-          >
-            <div class="featured-card-header">
-              <div class="featured-card-icon" aria-hidden="true">SK</div>
-              <h2 class="featured-card-title">Spacelike Knots</h2>
-              <a
-                class="featured-card-launch"
-                href="experiments/spacelike-knots/index.html"
-                >Open <span class="arrow">→</span></a
-              >
-            </div>
-            <p class="featured-card-pitch">
-              A knot equipped with a Minkowski metric, turning crossings into
-              causal inversions. The distance matrix becomes a causal diagram:
-              timelike, spacelike, and null separations color-coded across the
-              whole knot.
-            </p>
-            <div class="readme-preview">
-              <p class="readme-loading">Loading description…</p>
-            </div>
-          </div>
-
-          <div
-            class="featured-card"
-            data-href="experiments/layered_ca/index.html"
-            data-readme="experiments/layered_ca/README.md"
-            tabindex="0"
-            role="button"
-          >
-            <div class="featured-card-header">
-              <div class="featured-card-icon" aria-hidden="true">CA</div>
-              <h2 class="featured-card-title">Layered Cellular Automata</h2>
-              <a
-                class="featured-card-launch"
-                href="experiments/layered_ca/index.html"
-                >Open <span class="arrow">→</span></a
-              >
-            </div>
-            <p class="featured-card-pitch">
-              Langton's ants write a colored substrate that gates where
-              Conway's Life is allowed to live. Three feedback layers —
-              ants → substrate → life → substrate → ants — produce
-              highways, colonies, and fractal boundaries.
-            </p>
-            <div class="readme-preview">
-              <p class="readme-loading">Loading description…</p>
-            </div>
-          </div>
-
-          <div
-            class="featured-card"
-            data-href="experiments/fractal_learning/index.html"
-            data-readme="experiments/fractal_learning/idea.md"
-            tabindex="0"
-            role="button"
-          >
-            <div class="featured-card-header">
-              <div class="featured-card-icon" aria-hidden="true">FL</div>
-              <h2 class="featured-card-title">Fractal Learning</h2>
-              <a
-                class="featured-card-launch"
-                href="experiments/fractal_learning/index.html"
-                >Open <span class="arrow">→</span></a
-              >
-            </div>
-            <p class="featured-card-pitch">
-              Inverse iterated-function-system fitting: gradient-optimize a
-              small alphabet of affine maps so the depth-N orbit of the origin
-              matches a target point cloud under a Chamfer metric.
-            </p>
-            <div class="readme-preview">
-              <p class="readme-loading">Loading description…</p>
-            </div>
-          </div>
-
-          <div
-            class="featured-card"
-            data-href="experiments/irrational_lattice/index.html"
-            data-readme="experiments/irrational_lattice/idea.md"
-            tabindex="0"
-            role="button"
-          >
-            <div class="featured-card-header">
-              <div class="featured-card-icon" aria-hidden="true">IL</div>
-              <h2 class="featured-card-title">Irrational Lattice</h2>
-              <a
-                class="featured-card-launch"
-                href="experiments/irrational_lattice/index.html"
-                >Open <span class="arrow">→</span></a
-              >
-            </div>
-            <p class="featured-card-pitch">
-              A new primitive: deterministic, algebraic “colored noise” for
-              lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a
-              nearest-lattice map — provably aperiodic, spectrally tunable,
-              integer-arithmetic clean.
-            </p>
-            <div class="readme-preview">
-              <p class="readme-loading">Loading description…</p>
-            </div>
-          </div>
-        </div>
-
-        <p class="section-title">
-          <span class="section-title-num">02</span>
-          Short Demonstrations <span class="section-title-sub">— classical concepts, concisely</span>
-        </p>
-        <p class="section-subtitle">
-          Compact, self-contained demonstrations of classical mathematical
-          concepts. These are warm-ups, not research — start here if you'd
-          rather see something familiar.
-        </p>
-
-        <div class="card-grid">
-          <a class="card" href="experiments/basic/mandelbrot.html">
-            <div class="card-glyph" aria-hidden="true">M</div>
-            <h2>Mandelbrot Set</h2>
-            <p>
-              Explore the fractal boundary defined by iteration of z ↦ z² + c in the
-              complex plane. Pan and zoom to examine its self-similar structure.
-            </p>
-            <span class="tag">Complex Numbers</span>
-          </a>
-
-          <a class="card" href="experiments/basic/primes.html">
-            <div class="card-glyph" aria-hidden="true">P</div>
-            <h2>Prime Number Sieve</h2>
-            <p>
-              A real-time visualization of the Sieve of Eratosthenes, illustrating
-              the elimination of composite numbers to isolate the primes.
-            </p>
-            <span class="tag">Number Theory</span>
-          </a>
-
-          <a class="card" href="experiments/basic/fourier.html">
-            <div class="card-glyph" aria-hidden="true">ƒ</div>
-            <h2>Fourier Series</h2>
-            <p>
-              Construct periodic waveforms as sums of rotating phasors, illustrating
-              how harmonic components combine to approximate arbitrary signals.
-            </p>
-            <span class="tag">Calculus · Signals</span>
-          </a>
-
-          <a class="card" href="experiments/basic/collatz.html">
-            <div class="card-glyph" aria-hidden="true">3n</div>
-            <h2>Collatz Conjecture</h2>
-            <p>
-              Trace the trajectory of any positive integer under the 3n + 1
-              iteration. Whether every sequence reaches 1 remains an open problem.
-            </p>
-            <span class="tag">Open Problem</span>
-          </a>
-        </div>
-       <p class="section-title">
-         <span class="section-title-num">03</span>
-         Essays <span class="section-title-sub">— long-form explorations</span>
-       </p>
-       <p class="section-subtitle">
-         Extended written investigations into the foundations of computational
-         mathematics. Click a card to read the essay inline; use the Open button
-         to launch its dedicated reading view.
-       </p>
-       <div class="featured-grid" id="essaysGrid">
-         <div
-           class="featured-card"
-           data-href="essays/NAM/index.html"
-           data-readme="essays/NAM/README.md"
-           tabindex="0"
-           role="button"
-         >
-           <div class="featured-card-header">
-             <div class="featured-card-icon" aria-hidden="true">NAM</div>
-             <h2 class="featured-card-title">Numbers as Machines</h2>
-             <a
-               class="featured-card-launch"
-               href="essays/NAM/index.html"
-               >Open <span class="arrow">→</span></a
-             >
-           </div>
-           <p class="featured-card-pitch">
-             A generator-based numerics library where every number is a
-             deterministic, forkable virtual machine emitting an infinite digit
-             stream — MUX trees, signed-digit arithmetic, p-adics for free, and
-             a two-tier ABI compiled by LLVM.
-           </p>
-           <div class="readme-preview">
-             <p class="readme-loading">Loading description…</p>
-           </div>
-         </div>
-         <div
-           class="featured-card"
-           data-href="essays/RCC/index.html"
-           data-readme="essays/RCC/README.md"
-           tabindex="0"
-           role="button"
-         >
-           <div class="featured-card-header">
-             <div class="featured-card-icon" aria-hidden="true">RCC</div>
-             <h2 class="featured-card-title">Rational Certificate Complexity</h2>
-             <a
-               class="featured-card-launch"
-               href="essays/RCC/index.html"
-               >Open <span class="arrow">→</span></a
-             >
-           </div>
-           <p class="featured-card-pitch">
-             A computational taxonomy of mathematical constants: treat each
-             convergence sequence as a rational certificate engine, measure its
-             bit-length versus tolerance, and stratify constants by cost —
-             sidestepping real-number metaphysics.
-           </p>
-           <div class="readme-preview">
-             <p class="readme-loading">Loading description…</p>
-           </div>
-         </div>
-       </div>
-
-
-        <footer>
-          <div class="footer-divider" aria-hidden="true"></div>
-          <p>
-            Implemented in plain HTML, CSS, and JavaScript &mdash;
-            <a
-              href="https://github.com/SimiaCryptus/Fun_With_Math"
-              target="_blank"
-              rel="noopener"
-              >view source on GitHub</a
-            >
-            &middot; no build step, no dependencies beyond a couple of
-            CDN-loaded libraries
-          </p>
-          <p class="footer-mark">∑</p>
-        </footer>
-
-        <!-- Modal for expanded README view -->
-        <div
-          class="modal-overlay"
-          id="modalOverlay"
-          role="dialog"
-          aria-modal="true"
-          aria-hidden="true"
+    <div class="intro-panel">
+      <div class="intro-panel-glow" aria-hidden="true"></div>
+      <h2>Start Here</h2>
+      <p>
+        Most of the labs below share a single recurring question:
+        <strong
+          >what happens to a clean algebraic or geometric structure when you
+          introduce one carefully chosen twist?</strong
         >
-          <div class="modal-card" id="modalCard">
-            <div class="modal-header">
-              <div class="modal-icon" id="modalIcon" aria-hidden="true"></div>
-              <h2 class="modal-title" id="modalTitle"></h2>
-              <a class="modal-launch" id="modalLaunch" href="#">Open <span class="arrow">→</span></a>
-              <button class="modal-close" id="modalClose" aria-label="Close">
-                ✕
-              </button>
-            </div>
-            <div class="modal-body" id="modalBody"></div>
-          </div>
-        </div>
+        A single irrational coordinate, a single symmetry edge in a diffusion
+        graph, a single causal direction in a knot — small perturbations that
+        produce surprisingly rich behavior.
+      </p>
+      <p>Three loose themes run through the featured labs:</p>
+      <ul class="theme-list">
+        <li>
+          <strong>Algebraic structure → emergent geometry.</strong>
+          <em>Pentagon Lattice</em> and <em>Irrational Lattice</em> both start
+          with a number field and watch geometry crystallize out of it —
+          fractional dimension, aperiodic moiré, spinor-like holonomy.
+        </li>
+        <li>
+          <strong>Dynamics on symmetric or causal substrates.</strong>
+          <em>Space-Color Symmetry</em> and <em>Layered CA</em> wire symmetry
+          orbits or substrate colors into the dynamics; the result is diffusion
+          on a quotient manifold or three-layer feedback between agents and a
+          Conway-Life host.
+        </li>
+        <li>
+          <strong>New metrics on familiar objects.</strong>
+          <em>Geometric Entropy</em> recasts the Erdős distinct-distance problem
+          as a continuous entropy optimization; <em>Spacelike Knots</em> equips
+          a knot with a Minkowski metric so crossings become causal inversions.
+        </li>
+      </ul>
+      <p class="intro-panel-footnote">
+        If you only have a few minutes, open
+        <strong>Pentagon Lattice Geometry</strong> or
+        <strong>Spacelike Knots</strong> — they're the most self-contained, most
+        novel, and the easiest to play with cold.
+      </p>
+    </div>
 
-        <script src="js/home.js"></script>
-      </body>
-    </html>
+    <p class="section-title">
+      <span class="section-title-num">01</span>
+      Featured Laboratories
+      <span class="section-title-sub">— in-depth experiments</span>
+    </p>
+    <p class="section-subtitle">
+      Extended interactive studies, each accompanied by documentation describing
+      the underlying mathematics, motivation, and methods. Click a card to read
+      its full notes; use the Open button to launch the lab.
+    </p>
+
+    <div class="featured-grid" id="featuredGrid">
+      <div
+        class="featured-card"
+        data-href="experiments/Pentagon_Lattice_Geometry/index.html"
+        data-readme="experiments/Pentagon_Lattice_Geometry/README.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">PL</div>
+          <h2 class="featured-card-title">Pentagonal Lattice Geometry</h2>
+          <a
+            class="featured-card-launch"
+            href="experiments/Pentagon_Lattice_Geometry/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          A multi-sheeted covering construction in which the regular pentagon
+          develops fractional dimension (d ≈ 2.37) and spinor-like holonomy — a
+          discrete model where a single loop requires two passes to return to
+          identity.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+
+      <div
+        class="featured-card"
+        data-href="experiments/symmetry_simple/index.html"
+        data-readme="experiments/symmetry_simple/README.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">SY</div>
+          <h2 class="featured-card-title">Space-Color Symmetry</h2>
+          <a
+            class="featured-card-launch"
+            href="experiments/symmetry_simple/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          A pixel canvas where symmetry doesn't just mirror your strokes — it
+          rewires the diffusion graph. Heat flows along symmetry orbits,
+          producing kaleidoscope dynamics on a quotient-like manifold.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+
+      <div
+        class="featured-card"
+        data-href="experiments/geometric-entropy/index.html"
+        data-readme="experiments/geometric-entropy/README.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">GE</div>
+          <h2 class="featured-card-title">Geometric Entropy</h2>
+          <a
+            class="featured-card-launch"
+            href="experiments/geometric-entropy/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          A continuous analogue of the Erdős distinct-distance problem. Points
+          on a manifold are arranged to extremize the Shannon entropy of their
+          pairwise-distance distribution.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+
+      <div
+        class="featured-card"
+        data-href="experiments/spacelike-knots/index.html"
+        data-readme="experiments/spacelike-knots/README.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">SK</div>
+          <h2 class="featured-card-title">Spacelike Knots</h2>
+          <a
+            class="featured-card-launch"
+            href="experiments/spacelike-knots/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          A knot equipped with a Minkowski metric, turning crossings into causal
+          inversions. The distance matrix becomes a causal diagram: timelike,
+          spacelike, and null separations color-coded across the whole knot.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+
+      <div
+        class="featured-card"
+        data-href="experiments/layered_ca/index.html"
+        data-readme="experiments/layered_ca/README.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">CA</div>
+          <h2 class="featured-card-title">Layered Cellular Automata</h2>
+          <a
+            class="featured-card-launch"
+            href="experiments/layered_ca/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          Langton's ants write a colored substrate that gates where Conway's
+          Life is allowed to live. Three feedback layers — ants → substrate →
+          life → substrate → ants — produce highways, colonies, and fractal
+          boundaries.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+
+      <div
+        class="featured-card"
+        data-href="experiments/fractal_learning/index.html"
+        data-readme="experiments/fractal_learning/idea.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">FL</div>
+          <h2 class="featured-card-title">Fractal Learning</h2>
+          <a
+            class="featured-card-launch"
+            href="experiments/fractal_learning/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          Inverse iterated-function-system fitting: gradient-optimize a small
+          alphabet of affine maps so the depth-N orbit of the origin matches a
+          target point cloud under a Chamfer metric.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+
+      <div
+        class="featured-card"
+        data-href="experiments/irrational_lattice/index.html"
+        data-readme="experiments/irrational_lattice/idea.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">IL</div>
+          <h2 class="featured-card-title">Irrational Lattice</h2>
+          <a
+            class="featured-card-launch"
+            href="experiments/irrational_lattice/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          A new primitive: deterministic, algebraic “colored noise” for
+          lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a
+          nearest-lattice map — provably aperiodic, spectrally tunable,
+          integer-arithmetic clean.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-title">
+      <span class="section-title-num">02</span>
+      Short Demonstrations
+      <span class="section-title-sub">— classical concepts, concisely</span>
+    </p>
+    <p class="section-subtitle">
+      Compact, self-contained demonstrations of classical mathematical concepts.
+      These are warm-ups, not research — start here if you'd rather see
+      something familiar.
+    </p>
+
+    <div class="card-grid">
+      <a class="card" href="experiments/basic/mandelbrot.html">
+        <div class="card-glyph" aria-hidden="true">M</div>
+        <h2>Mandelbrot Set</h2>
+        <p>
+          Explore the fractal boundary defined by iteration of z ↦ z² + c in the
+          complex plane. Pan and zoom to examine its self-similar structure.
+        </p>
+        <span class="tag">Complex Numbers</span>
+      </a>
+
+      <a class="card" href="experiments/basic/primes.html">
+        <div class="card-glyph" aria-hidden="true">P</div>
+        <h2>Prime Number Sieve</h2>
+        <p>
+          A real-time visualization of the Sieve of Eratosthenes, illustrating
+          the elimination of composite numbers to isolate the primes.
+        </p>
+        <span class="tag">Number Theory</span>
+      </a>
+
+      <a class="card" href="experiments/basic/fourier.html">
+        <div class="card-glyph" aria-hidden="true">ƒ</div>
+        <h2>Fourier Series</h2>
+        <p>
+          Construct periodic waveforms as sums of rotating phasors, illustrating
+          how harmonic components combine to approximate arbitrary signals.
+        </p>
+        <span class="tag">Calculus · Signals</span>
+      </a>
+
+      <a class="card" href="experiments/basic/collatz.html">
+        <div class="card-glyph" aria-hidden="true">3n</div>
+        <h2>Collatz Conjecture</h2>
+        <p>
+          Trace the trajectory of any positive integer under the 3n + 1
+          iteration. Whether every sequence reaches 1 remains an open problem.
+        </p>
+        <span class="tag">Open Problem</span>
+      </a>
+    </div>
+    <p class="section-title">
+      <span class="section-title-num">03</span>
+      Essays <span class="section-title-sub">— long-form explorations</span>
+    </p>
+    <p class="section-subtitle">
+      Extended written investigations into the foundations of computational
+      mathematics. Click a card to read the essay inline; use the Open button to
+      launch its dedicated reading view.
+    </p>
+    <div class="featured-grid" id="essaysGrid">
+      <div
+        class="featured-card"
+        data-href="essays/NAM/index.html"
+        data-readme="essays/NAM/README.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">NAM</div>
+          <h2 class="featured-card-title">Numbers as Machines</h2>
+          <a class="featured-card-launch" href="essays/NAM/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          A generator-based numerics library where every number is a
+          deterministic, forkable virtual machine emitting an infinite digit
+          stream — MUX trees, signed-digit arithmetic, p-adics for free, and a
+          two-tier ABI compiled by LLVM.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+      <div
+        class="featured-card"
+        data-href="essays/RCC/index.html"
+        data-readme="essays/RCC/README.md"
+        tabindex="0"
+        role="button"
+      >
+        <div class="featured-card-header">
+          <div class="featured-card-icon" aria-hidden="true">RCC</div>
+          <h2 class="featured-card-title">Rational Certificate Complexity</h2>
+          <a class="featured-card-launch" href="essays/RCC/index.html"
+            >Open <span class="arrow">→</span></a
+          >
+        </div>
+        <p class="featured-card-pitch">
+          A computational taxonomy of mathematical constants: treat each
+          convergence sequence as a rational certificate engine, measure its
+          bit-length versus tolerance, and stratify constants by cost —
+          sidestepping real-number metaphysics.
+        </p>
+        <div class="readme-preview">
+          <p class="readme-loading">Loading description…</p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-divider" aria-hidden="true"></div>
+      <p>
+        Implemented in plain HTML, CSS, and JavaScript &mdash;
+        <a
+          href="https://github.com/SimiaCryptus/Fun_With_Math"
+          target="_blank"
+          rel="noopener"
+          >view source on GitHub</a
+        >
+        &middot; no build step, no dependencies beyond a couple of CDN-loaded
+        libraries
+      </p>
+      <p class="footer-mark">∑</p>
+    </footer>
+
+    <!-- Modal for expanded README view -->
+    <div
+      class="modal-overlay"
+      id="modalOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-hidden="true"
+    >
+      <div class="modal-card" id="modalCard">
+        <div class="modal-header">
+          <div class="modal-icon" id="modalIcon" aria-hidden="true"></div>
+          <h2 class="modal-title" id="modalTitle"></h2>
+          <a class="modal-launch" id="modalLaunch" href="#"
+            >Open <span class="arrow">→</span></a
+          >
+          <button class="modal-close" id="modalClose" aria-label="Close">
+            ✕
+          </button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+    <script src="js/home.js"></script>
+  </body>
+</html>

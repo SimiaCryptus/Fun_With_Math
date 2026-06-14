@@ -10,6 +10,7 @@ transport. The core insight is that polygons whose interior angles do not divide
 reconnective expansion families — but only by lifting to a higher-dimensional fiber bundle.
 
 The result is a family of graphs with:
+
 - **Effective dimension** `d_eff ∈ (2, 3)` (fractional, not integer)
 - **Spectral dimension** `d_spec ≈ 1.0–1.2` (strictly less than `d_eff`, confirming sub-diffusion)
 - **Walk dimension** `d_w > 2` (anomalous sub-diffusive transport)
@@ -25,14 +26,14 @@ The result is a family of graphs with:
 Among all regular n-gons, **n = 5 (the pentagon) uniquely occupies the center of the
 fractional-dimension window** `d_eff ∈ (2, 3)`:
 
-| n  | d_eff (BFS interior) | In (2,3) window? |
-|----|----------------------|------------------|
-| 3  | 1.70                 | No (below)       |
-| 4  | 2.07                 | Yes (lower edge) |
-| **5**  | **2.37**         | **Yes (center)** |
-| 6  | 2.62                 | Yes              |
-| 7  | 2.83                 | Yes (upper edge) |
-| 8  | 3.02                 | No (above)       |
+| n     | d_eff (BFS interior) | In (2,3) window? |
+| ----- | -------------------- | ---------------- |
+| 3     | 1.70                 | No (below)       |
+| 4     | 2.07                 | Yes (lower edge) |
+| **5** | **2.37**             | **Yes (center)** |
+| 6     | 2.62                 | Yes              |
+| 7     | 2.83                 | Yes (upper edge) |
+| 8     | 3.02                 | No (above)       |
 
 The pentagon's special status is not accidental: it is the **smallest polygon whose
 angular deficit (36°) forces a non-trivial multi-sheeted cover**, and whose coordinate
@@ -55,6 +56,7 @@ The polygon controls the geometry; the rule controls the dynamics.
 ### 3. Sub-Diffusivity is Universal
 
 For every polygon in the sweep:
+
 - `d_w > 2` (anomalous sub-diffusion confirmed by MSD random walks)
 - `d_spec < d_eff` (Alexander–Orbach sub-diffusive ordering confirmed by KPM)
 - Vortex edge fraction = **exactly 2/3** under the `signed3` rule (an arithmetic constant
@@ -68,23 +70,24 @@ families:
 - **Criterion 1 (Orientation Closure)**: The rotation angles introduced by edge generators
   must all be rational multiples of π (equivalently, the orientation group must be finite).
 - **Criterion 2 (Single Irrational Base)**: All tile coordinates must live in a field
-  `Q(α)` for a *single* algebraic number α — no independent scaling parameters.
+  `Q(α)` for a _single_ algebraic number α — no independent scaling parameters.
 
 Polygons satisfying both criteria reconnect into periodic tilings, quasicrystals, or
 multi-sheeted covering spaces. All others produce infinite non-reconnective trees.
 
-| Polygon           | Field                      | Result                      |
-|-------------------|----------------------------|-----------------------------|
-| Square            | Q                          | Periodic lattice (d = 2)    |
-| Equilateral △     | Q(√3)                      | Periodic lattice (d = 2)    |
-| Regular pentagon  | Q(√5)                      | Multi-sheeted (2 < d < 3)   |
-| Regular 15-gon    | Q(√3, √5)  ← two irrationals | Non-reconnective tree      |
-| Sierpiński △      | Q(√3)                      | Fractal (d ≈ 1.585)         |
+| Polygon          | Field                       | Result                    |
+| ---------------- | --------------------------- | ------------------------- |
+| Square           | Q                           | Periodic lattice (d = 2)  |
+| Equilateral △    | Q(√3)                       | Periodic lattice (d = 2)  |
+| Regular pentagon | Q(√5)                       | Multi-sheeted (2 < d < 3) |
+| Regular 15-gon   | Q(√3, √5) ← two irrationals | Non-reconnective tree     |
+| Sierpiński △     | Q(√3)                       | Fractal (d ≈ 1.585)       |
 
 ### 5. Spinor-Like Holonomy from Discrete Geometry
 
 The sheet-transition structure of the multi-sheeted cover realizes a **discrete analogue
 of spinor holonomy**:
+
 - A single loop around a pentagonal vertex accumulates a sheet shift of **−1** (not 0).
 - A **double loop** is required to return to the identity sheet.
 - This is the exact discrete counterpart of a spin-1/2 particle requiring a 4π rotation
@@ -136,6 +139,7 @@ physics. The universality is broken only by changing the vortex rule, not the po
 ### Finding 2: The Pentagon Sits at a Unique Algebraic-Geometric Crossroads
 
 The regular pentagon is simultaneously:
+
 - The **smallest polygon** with a non-trivial multi-sheeted cover (n = 3, 4, 6 tile flatly)
 - The **only polygon** whose coordinate field Q(√5) is tied to the golden ratio φ, giving
   exact Fibonacci-based arithmetic for all geometric computations
@@ -151,6 +155,7 @@ structure).
 ### Finding 3: Cellular Automaton Phase Transition at n = 5/6
 
 The default-rule CA behavior undergoes a sharp transition:
+
 - n ≤ 4: seeds grow and saturate (too-low birth threshold)
 - n = 5, 6, 7: seeds form stable still-lifes (balanced threshold)
 - n ≥ 8: seeds extinguish immediately (too-high birth threshold)
@@ -170,18 +175,21 @@ alone — a result with direct analogues in lattice gauge theory and topological
 ## Potential Applications and Implications
 
 ### Quasicrystal Physics
+
 The multi-sheeted pentagon construction provides a **graph-theoretic model of Penrose
 tilings** with computable spectral properties. The KPM-based spectral dimension measurement
 could be applied to real quasicrystal diffraction data to test whether physical
 quasicrystals exhibit the predicted `d_spec ≈ 1.1` universality.
 
 ### Topological Quantum Computing
+
 The spinor-like holonomy of the pentagon cover — where a single loop returns a phase of
 −1 — is structurally identical to the **non-Abelian anyonic statistics** proposed as the
 basis for topological quantum computation. The discrete, graph-theoretic realization here
 offers a computationally tractable model for studying braiding statistics.
 
 ### Fractal Antenna and Metamaterial Design
+
 The fractional dimension `d_eff ∈ (2, 3)` of the multi-sheeted pentagon graph places it
 in the same dimensional class as **fractal antennas** (e.g., Sierpiński gasket antennas),
 which exhibit multi-band resonance due to their self-similar structure. Pentagon-based
@@ -189,12 +197,14 @@ metamaterials could exhibit similar multi-band behavior with the added feature o
 quasicrystalline long-range order.
 
 ### Network Science and Anomalous Diffusion
+
 The universal sub-diffusivity (`d_w > 2`, `d_spec < d_eff`) of multi-sheeted n-gon graphs
 makes them natural models for **anomalous diffusion in complex networks** — e.g., diffusion
 on protein interaction networks, neural connectomes, or financial correlation graphs, all
 of which exhibit sub-diffusive transport without obvious geometric explanation.
 
 ### Number-Theoretic Cryptography
+
 The algebraic field classification (Section 2 of `affine.md`) provides a new
 **hardness criterion** for lattice-based cryptographic problems: problems defined over
 multi-sheeted pentagon graphs inherit the algebraic complexity of Q(√5) while exhibiting
@@ -202,6 +212,7 @@ the geometric complexity of a fractional-dimension space — potentially combini
 advantages of both algebraic and geometric hardness assumptions.
 
 ### Causal Dynamical Triangulations (CDT) and Quantum Gravity
+
 The **dimensional flow** observed in the spectral dimension — smoothly interpolating
 between UV dimension ~2.5 and IR dimension ~1.7 as a function of diffusion time — is
 qualitatively identical to the dimensional reduction predicted by CDT models of quantum
@@ -212,14 +223,14 @@ solvable toy model** of CDT-style dimensional reduction.
 
 ## Repository Structure
 
-| File               | Contents                                                                 |
-|--------------------|--------------------------------------------------------------------------|
-| `idea.md`          | Core theoretical construction: multi-sheeted covers, holonomy, dimensions |
-| `analysis.md`      | Summary of symbolic/numerical verification (`analysis.mac` / `.log`)     |
-| `experiment.mac`   | Full computational pipeline: geometry → graph → spectra → CA → KPM       |
-| `sweep_ngon.md`    | Cross-polygon sweep results (n = 3..12) and universal observations        |
-| `affine.md`    | Generalization to irregular polygons; algebraic classification framework  |
-| `README.md`        | This file                                                                 |
+| File             | Contents                                                                  |
+| ---------------- | ------------------------------------------------------------------------- |
+| `idea.md`        | Core theoretical construction: multi-sheeted covers, holonomy, dimensions |
+| `analysis.md`    | Summary of symbolic/numerical verification (`analysis.mac` / `.log`)      |
+| `experiment.mac` | Full computational pipeline: geometry → graph → spectra → CA → KPM        |
+| `sweep_ngon.md`  | Cross-polygon sweep results (n = 3..12) and universal observations        |
+| `affine.md`      | Generalization to irregular polygons; algebraic classification framework  |
+| `README.md`      | This file                                                                 |
 
 ---
 
@@ -234,17 +245,17 @@ sweep_ngon.mac: done  (8 polygons × full pipeline, status = OK for every row)
 
 Key verified claims:
 
-| Claim                                          | Verification                                              |
-|------------------------------------------------|-----------------------------------------------------------|
-| Pentagon angular deficit = 36°                 | Exact symbolic: (3 × 108°) − 360° = −36°                 |
-| Q(√5) exact arithmetic                         | φ² − φ − 1 = 0, Z[φ] multiplication, N(φⁿ) = (−1)ⁿ      |
-| Loop closure: 10 pentagons / 3 turns           | k_close = 2×5/gcd(10,3) = 10, turns = 3                  |
-| d_eff ∈ (2,3) for n ∈ {4,5,6,7}               | BFS sweep: 2.07, 2.37, 2.62, 2.83                        |
-| d_spec < d_eff (sub-diffusion) for all n       | KPM: d_spec ≈ 1.1 < d_eff for every polygon              |
-| d_w > 2 (anomalous diffusion) for all n        | MSD walks: d_w ∈ [6.3, 9.4] across n = 3..12             |
-| Spinor holonomy: single loop → sheet shift −1  | Z₂ cover: order = 2, single-loop holonomy = 1 (τ = −1)   |
-| Vortex fraction = 2/3 under signed3 rule       | Arithmetic constant: (i+k) mod 3 ≠ 0 for 2/3 of pairs   |
-| Spectral gap ∝ 1/n                             | Cycle Laplacian: 2 − 2cos(2π/n) ≈ (2π/n)² for large n   |
+| Claim                                         | Verification                                           |
+| --------------------------------------------- | ------------------------------------------------------ |
+| Pentagon angular deficit = 36°                | Exact symbolic: (3 × 108°) − 360° = −36°               |
+| Q(√5) exact arithmetic                        | φ² − φ − 1 = 0, Z[φ] multiplication, N(φⁿ) = (−1)ⁿ     |
+| Loop closure: 10 pentagons / 3 turns          | k_close = 2×5/gcd(10,3) = 10, turns = 3                |
+| d_eff ∈ (2,3) for n ∈ {4,5,6,7}               | BFS sweep: 2.07, 2.37, 2.62, 2.83                      |
+| d_spec < d_eff (sub-diffusion) for all n      | KPM: d_spec ≈ 1.1 < d_eff for every polygon            |
+| d_w > 2 (anomalous diffusion) for all n       | MSD walks: d_w ∈ [6.3, 9.4] across n = 3..12           |
+| Spinor holonomy: single loop → sheet shift −1 | Z₂ cover: order = 2, single-loop holonomy = 1 (τ = −1) |
+| Vortex fraction = 2/3 under signed3 rule      | Arithmetic constant: (i+k) mod 3 ≠ 0 for 2/3 of pairs  |
+| Spectral gap ∝ 1/n                            | Cycle Laplacian: 2 − 2cos(2π/n) ≈ (2π/n)² for large n  |
 
 ---
 

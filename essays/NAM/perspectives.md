@@ -20,10 +20,10 @@ All four perspectives affirm that the fundamental primitive — `step : State �
 
 Every perspective independently arrives at a fundamental bifurcation:
 
-| Tier | Examples | State Properties | Fork Cost |
-|---|---|---|---|
-| **Automaton class** | Rationals, algebraic irrationals | Fixed-size, inline | O(1) — true struct copy |
-| **Series class** | Transcendentals (π, e, ζ(3)) | Grows with computation depth | O(log n) — must deep-copy accumulators |
+| Tier                | Examples                         | State Properties             | Fork Cost                              |
+| ------------------- | -------------------------------- | ---------------------------- | -------------------------------------- |
+| **Automaton class** | Rationals, algebraic irrationals | Fixed-size, inline           | O(1) — true struct copy                |
+| **Series class**    | Transcendentals (π, e, ζ(3))     | Grows with computation depth | O(log n) — must deep-copy accumulators |
 
 The technical perspective proposes explicit `FiniteNumVM` and `SeriesNumVM` structs. The mathematical perspective notes that p-adic rationals are strictly easier than real transcendentals (digit commitment is local in p-adics, non-local in reals). The performance perspective shows that the `void *payload` pointer breaks value semantics for the series class. The software engineering perspective identifies this as the source of the memoization/forking interaction problem.
 
@@ -39,7 +39,7 @@ All three converge on the same solution: **signed-digit (redundant) representati
 
 ### 4. The BBP/Skip-Ahead Primitive Is Valuable but Overstated
 
-The mathematical and technical perspectives both affirm that the BBP formula explanation is a valid *restatement* of known results, not a new mechanistic explanation. The original mechanism has been understood since Bailey-Borwein-Plouffe (1997). The performance perspective identifies `skip(n, state)` as the most JIT-friendly operation in the model. The software engineering perspective calls it "novel and useful" as a library primitive.
+The mathematical and technical perspectives both affirm that the BBP formula explanation is a valid _restatement_ of known results, not a new mechanistic explanation. The original mechanism has been understood since Bailey-Borwein-Plouffe (1997). The performance perspective identifies `skip(n, state)` as the most JIT-friendly operation in the model. The software engineering perspective calls it "novel and useful" as a library primitive.
 
 **Consensus conclusion:** The `skip` primitive is a genuine contribution to the library API. The theoretical framing as "automaton-codec resonance" is insightful but should be presented as a reformulation, not a discovery. The skip function cannot be derived automatically — it requires per-constant manual implementation.
 
@@ -70,13 +70,14 @@ The software engineering and performance perspectives are in partial conflict ab
 - **Performance:** "LLVM excels at optimizing eager, statically-shaped computations. Lazy generator graphs with dynamic demand patterns are harder."
 - **Technical:** "LLVM's claims are largely correct for the finite-automaton case" but "overstated" for series class.
 
-**Resolution:** Both are correct for different regimes. LLVM optimization applies to *statically-known, compile-time-fixed* expression trees. For *runtime-constructed* expression trees (parsing, dynamic matrix construction), a JIT compilation step (expression-tree compilation to a single LLVM function) is required. The proposal should specify which regime it targets and provide the JIT path for the dynamic case.
+**Resolution:** Both are correct for different regimes. LLVM optimization applies to _statically-known, compile-time-fixed_ expression trees. For _runtime-constructed_ expression trees (parsing, dynamic matrix construction), a JIT compilation step (expression-tree compilation to a single LLVM function) is required. The proposal should specify which regime it targets and provide the JIT path for the dynamic case.
 
 ### Tension 3: Memoization Policy
 
 The software engineering perspective identifies three incompatible memoization strategies (full, none, partial) without a clear recommendation. The technical perspective proposes an explicit `MemoVM` wrapper. The performance perspective recommends a bounded LRU cache sized to L2/L3 capacity.
 
 **Resolution:** These are compatible at different layers. The correct architecture is:
+
 1. **No implicit global memoization** (avoids hidden state)
 2. **Explicit `MemoVM` wrapper** with configurable cache size (technical perspective)
 3. **Bounded LRU implementation** sized to hardware cache (performance perspective)
@@ -86,7 +87,7 @@ The software engineering perspective identifies three incompatible memoization s
 
 The mathematical perspective rates several claims as "incorrect" (digit extraction always terminates, "first mechanistic explanation" of BBP) while the technical perspective rates the overall framework at 0.72 confidence and calls it "worth building." The software engineering perspective rates ergonomics as "essentially absent" while still identifying genuine innovations.
 
-**Resolution:** These are not in conflict — they address different questions. The mathematical critique targets *claims*, not the *framework*. The technical and engineering critiques target *implementation gaps*, not the *concept*. The synthesis is: the concept is sound, several specific claims are wrong or overstated, and the implementation gaps are real but addressable.
+**Resolution:** These are not in conflict — they address different questions. The mathematical critique targets _claims_, not the _framework_. The technical and engineering critiques target _implementation gaps_, not the _concept_. The synthesis is: the concept is sound, several specific claims are wrong or overstated, and the implementation gaps are real but addressable.
 
 ---
 
@@ -95,21 +96,27 @@ The mathematical perspective rates several claims as "incorrect" (digit extracti
 Ranked by severity (all four perspectives contributing):
 
 ### Gap 1 (Critical): Digit Commitment and Non-Termination
+
 The interval refinement engine will fail to terminate for inputs near digit boundaries. This is not an edge case — it affects any computation whose result is near a representable boundary. **Required:** Formal treatment of when digit commitment is guaranteed, adoption of signed-digit representation to make addition local, and explicit documentation of the non-termination cases.
 
 ### Gap 2 (Critical): ABI Aliasing from `void *payload`
+
 The current `NumVMState` struct creates aliased mutable state on fork. **Required:** Two-tier ABI with inline state for automaton class and explicit deep-copy semantics for series class.
 
 ### Gap 3 (High): Comparison Semantics
+
 Equality of real numbers is undecidable. The proposal does not address this. **Required:** Interval-based predicate API (`definitely_less_than`, `agrees_with(digits=N)`) rather than exact equality.
 
 ### Gap 4 (High): Tail Bound Oracle Implementation
+
 The convergence bound requirement places mathematical sophistication demands on library users. **Required:** Built-in tail bound oracles for all standard constants and functions, with a documented (not hidden) interface for user-defined constants.
 
 ### Gap 5 (Medium): Carry Propagation Locality
+
 Without signed-digit representation, addition is not a well-defined local combinator. **Required:** Adopt Avizienis signed-digit representation as the internal arithmetic layer.
 
 ### Gap 6 (Medium): User-Facing API
+
 The proposal describes an execution substrate, not a usable library. **Required:** Stratified API design (primitive / combinator / user layers) with operator overloading, precision contexts, and explicit memoization policy.
 
 ---
@@ -193,15 +200,15 @@ x, y = pi.fork()  # Documents O(log n) cost
 
 ## VI. Claims Requiring Correction
 
-| Original Claim | Corrected Status |
-|---|---|
-| "Forking is a struct copy" | True for automaton tier only; O(log n) for series tier |
-| "LLVM handles inlining across the generator graph" | True for static, compile-time-known trees; requires JIT for dynamic trees |
-| "First mechanistic explanation of BBP" | False — prior art in Bailey-Borwein-Plouffe (1997) and subsequent work |
-| "Digit extraction always terminates" | False for reals near digit boundaries — a fundamental non-termination case |
-| "Randomness is encrypted determinism" | Philosophical position, not mathematical theorem; conflates distinct concepts |
-| Complexity hierarchy table as established fact | Should be presented as conjectures; quantitative claims (e.g., "3-4 fields" for π) lack formal proof |
-| "Tail bound oracle" as an engineering concern | It is a mathematical barrier requiring per-constant convergence proofs |
+| Original Claim                                     | Corrected Status                                                                                     |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| "Forking is a struct copy"                         | True for automaton tier only; O(log n) for series tier                                               |
+| "LLVM handles inlining across the generator graph" | True for static, compile-time-known trees; requires JIT for dynamic trees                            |
+| "First mechanistic explanation of BBP"             | False — prior art in Bailey-Borwein-Plouffe (1997) and subsequent work                               |
+| "Digit extraction always terminates"               | False for reals near digit boundaries — a fundamental non-termination case                           |
+| "Randomness is encrypted determinism"              | Philosophical position, not mathematical theorem; conflates distinct concepts                        |
+| Complexity hierarchy table as established fact     | Should be presented as conjectures; quantitative claims (e.g., "3-4 fields" for π) lack formal proof |
+| "Tail bound oracle" as an engineering concern      | It is a mathematical barrier requiring per-constant convergence proofs                               |
 
 ---
 
@@ -211,9 +218,8 @@ x, y = pi.fork()  # Documents O(log n) cost
 
 The proposal describes a theoretically sound and genuinely useful framework. The automaton tier is ready to build with high confidence. The series tier has fundamental tensions that require resolution — particularly carry propagation, fork semantics, and digit commitment — before it can be called a production system. The user-facing API is essentially absent and must be designed before the library can achieve adoption.
 
-The framework's most important contribution is the *unified protocol* that allows rationals, algebraic numbers, p-adic numbers, and transcendentals to compose through the same interface. This is a real advance over existing systems (MPFR, iRRAM, mpmath) which treat these as separate domains.
+The framework's most important contribution is the _unified protocol_ that allows rationals, algebraic numbers, p-adic numbers, and transcendentals to compose through the same interface. This is a real advance over existing systems (MPFR, iRRAM, mpmath) which treat these as separate domains.
 
 The path from compelling research prototype to production numerics library requires: (1) honest two-tier ABI, (2) signed-digit arithmetic for carry locality, (3) interval-based comparison semantics, (4) stratified user API, and (5) engagement with the computable analysis literature that provides the mathematical foundations already developed for exactly this problem domain.
 
 **Build it. Fix the ABI. Engage the prior art. Scope the claims accurately.**
-

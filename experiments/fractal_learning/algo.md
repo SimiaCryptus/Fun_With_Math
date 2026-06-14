@@ -18,7 +18,7 @@ T_1^{n_1} \circ T_2^{n_2} \circ \cdots \circ T_M^{n_M}
 $$
 
 is independent of the order in which the $T_k$ are applied, and
-depends only on the *exponent multiset* $(n_1, \dots, n_M)$.
+depends only on the _exponent multiset_ $(n_1, \dots, n_M)$.
 
 Fix a total depth $K \in \mathbb{N}$. The point set of interest is the
 orbit of the origin under all length-$K$ commutative words:
@@ -207,10 +207,10 @@ usually no faster than 3.1 in practice.
 
 Every step above is a composition of:
 
-* matrix multiplications $A_{k,r+1} = A_{k,r}^2$,
-* matrix–vector products $A x$,
-* vector additions $A b + b$,
-* a final application $U(0) = b_{\text{total}}$.
+- matrix multiplications $A_{k,r+1} = A_{k,r}^2$,
+- matrix–vector products $A x$,
+- vector additions $A b + b$,
+- a final application $U(0) = b_{\text{total}}$.
 
 All are smooth in $\theta = \{(A_k, b_k)\}_{k=1}^{M}$, so the whole
 orbit $\mathcal{P}_K(\theta)$ is a differentiable function of
@@ -225,12 +225,12 @@ and backprop. Memory cost is the dominant concern:
 materializing all $\binom{K+M-1}{M-1}$ points plus their autograd
 tape can be large. Mitigations:
 
-* **Checkpoint** the DP layers $\mathcal{S}_{k,\cdot}$ and recompute
+- **Checkpoint** the DP layers $\mathcal{S}_{k,\cdot}$ and recompute
   on backward.
-* **Mini-batch words.** Each step, sample a subset
+- **Mini-batch words.** Each step, sample a subset
   $\mathcal{W}_t \subset \mathcal{W}$ and evaluate the loss on
   $\{P_n : n \in \mathcal{W}_t\}$.
-* **Anneal $K$.** Start with small $K$ (cheap, smooth landscape),
+- **Anneal $K$.** Start with small $K$ (cheap, smooth landscape),
   grow as training proceeds.
 
 ---
@@ -239,12 +239,12 @@ tape can be large. Mitigations:
 
 Let $S = \binom{K+M-1}{M-1}$ be the orbit size.
 
-| Stage                           | Time                          | Space        |
-|---------------------------------|-------------------------------|--------------|
-| Binary powers $U_{k,r}$         | $O(M \log K \cdot d^3)$       | $O(M \log K \cdot d^2)$ |
-| DP over multisets (maps, §3.1)  | $O(M\, S \cdot d^3)$          | $O(M\, S \cdot d^2)$    |
-| DP over multisets (points, §3.2)| $O(M\, S \cdot d^2)$          | $O(M\, S \cdot d)$      |
-| Chamfer loss vs $|\mathcal{Q}|=Q$| $O(S \cdot Q \cdot d)$       | $O(S + Q)$              |
+| Stage                            | Time                    | Space                   |
+| -------------------------------- | ----------------------- | ----------------------- | ---------------------- | ---------- |
+| Binary powers $U_{k,r}$          | $O(M \log K \cdot d^3)$ | $O(M \log K \cdot d^2)$ |
+| DP over multisets (maps, §3.1)   | $O(M\, S \cdot d^3)$    | $O(M\, S \cdot d^2)$    |
+| DP over multisets (points, §3.2) | $O(M\, S \cdot d^2)$    | $O(M\, S \cdot d)$      |
+| Chamfer loss vs $                | \mathcal{Q}             | =Q$                     | $O(S \cdot Q \cdot d)$ | $O(S + Q)$ |
 
 Compared with the naive "compose each word from scratch" approach
 ($O(S \cdot M \log K \cdot d^3)$), the DP saves a factor of
@@ -305,12 +305,12 @@ return P_K
 
 Notes:
 
-* `power_map` can itself be memoized; in the DP loop $n_k$ ranges
+- `power_map` can itself be memoized; in the DP loop $n_k$ ranges
   over $0..s$, so caching `power_map(k, n)` for each $(k,n)$ used is
   cheap.
-* For autograd: keep all tensors (`Akr`, `bkr`, points in `S`) as
+- For autograd: keep all tensors (`Akr`, `bkr`, points in `S`) as
   leaves of the computation graph rooted at $\theta$; do not detach.
-* For the map-valued variant (§3.1), replace points by
+- For the map-valued variant (§3.1), replace points by
   `(A_acc, b_acc)` pairs and propagate via
   $(A', b') \circ (A, b) = (A' A,\; A' b + b')$.
 
@@ -318,15 +318,15 @@ Notes:
 
 ## 7. Sanity checks
 
-* **$M = 1$:** only one transform. Then $S = 1$ (single multiset
+- **$M = 1$:** only one transform. Then $S = 1$ (single multiset
   $(K)$), and the algorithm reduces to computing $T_1^K(0)$ via
   binary exponentiation — the standard $O(\log K)$ method.
-* **All $T_k$ pure translations** ($A_k = I$): then
+- **All $T_k$ pure translations** ($A_k = I$): then
   $T_1^{n_1}\cdots T_M^{n_M}(0) = \sum_k n_k b_k$, and the orbit is
   the set of lattice points $\sum n_k b_k$ on the simplex
   $\sum n_k = K$. Commutativity is exact; the DP collapses to summing
   precomputed $n_k b_k$.
-* **Simultaneously diagonalizable $A_k = V D_k V^{-1}$:** transform
+- **Simultaneously diagonalizable $A_k = V D_k V^{-1}$:** transform
   to the eigenbasis once; in that basis each $A_k$ is diagonal and
   everything reduces to per-coordinate scalar IFS.
 
@@ -336,7 +336,7 @@ Notes:
 
 For generic affine $T_k$, the DP in §3.1 still runs but its output
 depends on the chosen application order ($T_1$ innermost, then
-$T_2$, ...). It then represents a *canonicalized* orbit indexed by
+$T_2$, ...). It then represents a _canonicalized_ orbit indexed by
 multisets, not the true non-commutative orbit. This is the modeling
 choice flagged in `idea.md §5`. To recover the full non-commutative
 orbit one must enumerate ordered words ($K^M \to M^K$ in our

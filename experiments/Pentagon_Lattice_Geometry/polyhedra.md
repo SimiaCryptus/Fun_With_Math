@@ -39,7 +39,7 @@ The algebraic field $\mathbb{F}$ is now determined by the vertex coordinates of 
 $\mathbb{R}^3$:
 
 | Polyhedron           | Field $\mathbb{F}$                               | Notes                                       |
-|----------------------|--------------------------------------------------|---------------------------------------------|
+| -------------------- | ------------------------------------------------ | ------------------------------------------- |
 | Cube                 | $\mathbb{Q}$                                     | All rational; tiles $\mathbb{Z}^3$          |
 | Tetrahedron          | $\mathbb{Q}(\sqrt{2})$ or $\mathbb{Q}(\sqrt{3})$ | Depends on embedding                        |
 | Octahedron           | $\mathbb{Q}$                                     | Dual to cube; same field                    |
@@ -64,7 +64,7 @@ interior angle condition $\frac{2\pi}{\theta} \in \mathbb{Z}$.
 The dihedral angles of the five Platonic solids are:
 
 | Polyhedron   | Dihedral Angle $\alpha$                     | $2\pi/\alpha$  | Tiles $\mathbb{R}^3$? |
-|--------------|---------------------------------------------|----------------|-----------------------|
+| ------------ | ------------------------------------------- | -------------- | --------------------- |
 | Tetrahedron  | $\arccos(1/3) \approx 70.53^\circ$          | $\approx 5.10$ | No                    |
 | Cube         | $90^\circ = \pi/2$                          | $4$            | **Yes**               |
 | Octahedron   | $\arccos(-1/3) \approx 109.47^\circ$        | $\approx 3.29$ | No (alone)            |
@@ -197,17 +197,17 @@ The dihedral angles satisfy:
 
 ### 3.2 The 3D Taxonomy Table
 
-| Polyhedron                  | $\mathbb{F}$           | $\Gamma_3$ | C1 | C2 | C3 | Result                        |
-|-----------------------------|------------------------|------------|----|----|----|-------------------------------|
-| Cube                        | $\mathbb{Q}$           | $O_h$      | ✓  | ✓  | ✓  | Cubic lattice ($d=3$)         |
-| Truncated octahedron        | $\mathbb{Q}$           | $O_h$      | ✓  | ✓  | ✓  | Kelvin honeycomb ($d=3$)      |
-| Rhombic dodecahedron        | $\mathbb{Q}$           | $O_h$      | ✓  | ✓  | ✓  | FCC Voronoi lattice ($d=3$)   |
-| Tetrahedron + Octahedron    | $\mathbb{Q}(\sqrt{2})$ | $O_h$      | ✓  | ✓  | ✓  | Pyrochlore lattice ($d=3$)    |
-| Regular tetrahedron (alone) | $\mathbb{Q}(\sqrt{2})$ | $T_d$      | ✓  | ✓  | ✗  | Multi-sheeted ($2 < d < 3$)       |
-| Regular dodecahedron        | $\mathbb{Q}(\sqrt{5})$ | $I_h$      | ✓  | ✓  | ✗  | Multi-sheeted ($2 < d < 4$)       |
-| Regular icosahedron         | $\mathbb{Q}(\sqrt{5})$ | $I_h$      | ✓  | ✓  | ✗  | Multi-sheeted ($2 < d < 4$)       |
-| Regular octahedron (alone)  | $\mathbb{Q}$           | $O_h$      | ✓  | ✓  | ✗  | Multi-sheeted (gaps at edges) |
-| Generic irregular           | High degree            | Infinite   | ✗  | ✗  | ✗  | Non-reconnective tree         |
+| Polyhedron                  | $\mathbb{F}$           | $\Gamma_3$ | C1  | C2  | C3  | Result                        |
+| --------------------------- | ---------------------- | ---------- | --- | --- | --- | ----------------------------- |
+| Cube                        | $\mathbb{Q}$           | $O_h$      | ✓   | ✓   | ✓   | Cubic lattice ($d=3$)         |
+| Truncated octahedron        | $\mathbb{Q}$           | $O_h$      | ✓   | ✓   | ✓   | Kelvin honeycomb ($d=3$)      |
+| Rhombic dodecahedron        | $\mathbb{Q}$           | $O_h$      | ✓   | ✓   | ✓   | FCC Voronoi lattice ($d=3$)   |
+| Tetrahedron + Octahedron    | $\mathbb{Q}(\sqrt{2})$ | $O_h$      | ✓   | ✓   | ✓   | Pyrochlore lattice ($d=3$)    |
+| Regular tetrahedron (alone) | $\mathbb{Q}(\sqrt{2})$ | $T_d$      | ✓   | ✓   | ✗   | Multi-sheeted ($2 < d < 3$)   |
+| Regular dodecahedron        | $\mathbb{Q}(\sqrt{5})$ | $I_h$      | ✓   | ✓   | ✗   | Multi-sheeted ($2 < d < 4$)   |
+| Regular icosahedron         | $\mathbb{Q}(\sqrt{5})$ | $I_h$      | ✓   | ✓   | ✗   | Multi-sheeted ($2 < d < 4$)   |
+| Regular octahedron (alone)  | $\mathbb{Q}$           | $O_h$      | ✓   | ✓   | ✗   | Multi-sheeted (gaps at edges) |
+| Generic irregular           | High degree            | Infinite   | ✗   | ✗   | ✗   | Non-reconnective tree         |
 
 ---
 
@@ -329,7 +329,7 @@ is analogous to the relationship between the Penrose tiling and the pentagonal
 multi-sheeted construction:
 
 | 2D                         | 3D                          |
-|----------------------------|-----------------------------|
+| -------------------------- | --------------------------- |
 | Regular pentagon           | Regular dodecahedron        |
 | $\mathbb{Q}(\sqrt{5})$     | $\mathbb{Q}(\sqrt{5})$      |
 | 5D ambient lattice         | 6D ambient lattice          |
@@ -402,7 +402,7 @@ surface rather than a fractal volume.
 ### 6.4 The 3D Fractal Taxonomy
 
 | Structure                | $\mathbb{F}$           | $\Gamma_3$ | $d_{\text{eff}}$               | Type                  |
-|--------------------------|------------------------|------------|--------------------------------|-----------------------|
+| ------------------------ | ---------------------- | ---------- | ------------------------------ | --------------------- |
 | Menger sponge            | $\mathbb{Q}$           | $O_h$      | $\log 20/\log 3 \approx 2.727$ | 3D fractal volume     |
 | Sierpiński tetrahedron   | $\mathbb{Q}(\sqrt{2})$ | $T_d$      | $\log 4/\log 2 = 2$            | Fractal surface in 3D |
 | Koch tetrahedron         | $\mathbb{Q}(\sqrt{2})$ | $T_d$      | $\log 6/\log 3 \approx 1.631$  | Fractal surface       |
@@ -531,7 +531,7 @@ to a smaller IR value dominated by the icosahedral vortex bottlenecks.
 ### 9.1 Summary Table: 2D vs. 3D
 
 | Property                | 2D (Pentagon)                      | 3D (Dodecahedron)                  |
-|-------------------------|------------------------------------|------------------------------------|
+| ----------------------- | ---------------------------------- | ---------------------------------- |
 | Base polygon/polyhedron | Regular pentagon                   | Regular dodecahedron               |
 | Algebraic field         | $\mathbb{Q}(\sqrt{5})$             | $\mathbb{Q}(\sqrt{5})$             |
 | Frustration angle       | $36^\circ$ deficit                 | $\approx 10.3^\circ$ deficit       |
