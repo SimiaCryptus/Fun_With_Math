@@ -64,7 +64,7 @@ The pentagonal lattice generates distances that fall into five algebraic classes
 corresponding to the five symmetry directions of the pentagon:
 
 | Class | Representative distance | Squared value        | Algebraic form          |
-| ----- | ----------------------- | -------------------- | ----------------------- |
+|-------|-------------------------|----------------------|-------------------------|
 | 0     | Edge length $s = 1$     | $1$                  | $1 \in \mathbb{Q}$      |
 | 1     | Short diagonal          | $\phi^2 = \phi + 1$  | $\frac{3+\sqrt{5}}{2}$  |
 | 2     | Long diagonal           | $\phi^4 = 3\phi + 2$ | $\frac{7+3\sqrt{5}}{2}$ |
@@ -75,6 +75,75 @@ Each class is closed under the $D_5$ dihedral symmetry group of the pentagon, so
 distance appears with multiplicity that is a multiple of 5 (or 10 for generic directions).
 This is the first source of **forced degeneracy**: the 5-fold symmetry guarantees that
 every distance in the lattice appears at least 5 times among the neighbors of any vertex.
+**Illustration: The five fundamental distance classes around a central vertex.**
+Each colored set of segments emanates from the central vertex; the $D_5$ symmetry
+forces each distance to appear with multiplicity 5 (or 10 for generic directions).
+
+<svg viewBox="-200 -200 400 400" xmlns="http://www.w3.org/2000/svg" width="420" height="420">
+<defs>
+<style>
+.lbl { font: 11px sans-serif; fill: #222; }
+.ttl { font: 13px sans-serif; fill: #111; font-weight: bold; }
+</style>
+</defs>
+   <!-- background rings (decorative) -->
+   <circle cx="0" cy="0" r="60"  fill="none" stroke="#eee" stroke-dasharray="3,3"/>
+   <circle cx="0" cy="0" r="97"  fill="none" stroke="#eee" stroke-dasharray="3,3"/>
+   <circle cx="0" cy="0" r="115" fill="none" stroke="#eee" stroke-dasharray="3,3"/>
+   <circle cx="0" cy="0" r="157" fill="none" stroke="#eee" stroke-dasharray="3,3"/>
+   <!-- Class 0: edge length r=60 (5 segments) -->
+   <g stroke="#1f77b4" stroke-width="2" fill="none">
+     <line x1="0" y1="0" x2="60.00"  y2="0.00"/>
+     <line x1="0" y1="0" x2="18.54"  y2="-57.06"/>
+     <line x1="0" y1="0" x2="-48.54" y2="-35.27"/>
+     <line x1="0" y1="0" x2="-48.54" y2="35.27"/>
+     <line x1="0" y1="0" x2="18.54"  y2="57.06"/>
+   </g>
+   <!-- Class 1: short diagonal phi (r=97) -->
+   <g stroke="#ff7f0e" stroke-width="2" fill="none">
+     <line x1="0" y1="0" x2="97.00"  y2="0.00"/>
+     <line x1="0" y1="0" x2="29.98"  y2="-92.26"/>
+     <line x1="0" y1="0" x2="-78.48" y2="-57.02"/>
+     <line x1="0" y1="0" x2="-78.48" y2="57.02"/>
+     <line x1="0" y1="0" x2="29.98"  y2="92.26"/>
+   </g>
+   <!-- Class 3: second-shell r=115 (10 segments, offset angles) -->
+   <g stroke="#2ca02c" stroke-width="1.5" fill="none" stroke-dasharray="4,2">
+     <line x1="0" y1="0" x2="109.41" y2="35.55"/>
+     <line x1="0" y1="0" x2="35.55"  y2="109.41"/>
+     <line x1="0" y1="0" x2="-67.51" y2="93.05"/>
+     <line x1="0" y1="0" x2="-113.32" y2="19.66"/>
+     <line x1="0" y1="0" x2="-93.05" y2="-67.51"/>
+     <line x1="0" y1="0" x2="-19.66" y2="-113.32"/>
+     <line x1="0" y1="0" x2="67.51"  y2="-93.05"/>
+     <line x1="0" y1="0" x2="113.32" y2="-19.66"/>
+     <line x1="0" y1="0" x2="93.05"  y2="67.51"/>
+     <line x1="0" y1="0" x2="19.66"  y2="113.32"/>
+   </g>
+   <!-- Class 2: long diagonal phi^2 (r=157) -->
+   <g stroke="#d62728" stroke-width="2" fill="none">
+     <line x1="0" y1="0" x2="157.00" y2="0.00"/>
+     <line x1="0" y1="0" x2="48.51"  y2="-149.32"/>
+     <line x1="0" y1="0" x2="-127.01" y2="-92.27"/>
+     <line x1="0" y1="0" x2="-127.01" y2="92.27"/>
+     <line x1="0" y1="0" x2="48.51"  y2="149.32"/>
+   </g>
+   <!-- endpoint dots -->
+   <g fill="#1f77b4"><circle cx="60"    cy="0"     r="3"/><circle cx="18.54" cy="-57.06" r="3"/><circle cx="-48.54" cy="-35.27" r="3"/><circle cx="-48.54" cy="35.27" r="3"/><circle cx="18.54" cy="57.06" r="3"/></g>
+   <g fill="#ff7f0e"><circle cx="97"    cy="0"     r="3"/><circle cx="29.98" cy="-92.26" r="3"/><circle cx="-78.48" cy="-57.02" r="3"/><circle cx="-78.48" cy="57.02" r="3"/><circle cx="29.98" cy="92.26" r="3"/></g>
+   <g fill="#d62728"><circle cx="157"   cy="0"     r="3"/><circle cx="48.51" cy="-149.32" r="3"/><circle cx="-127.01" cy="-92.27" r="3"/><circle cx="-127.01" cy="92.27" r="3"/><circle cx="48.51" cy="149.32" r="3"/></g>
+   <!-- center -->
+   <circle cx="0" cy="0" r="4" fill="#111"/>
+   <text x="6" y="-6" class="lbl">O</text>
+   <!-- legend -->
+   <g transform="translate(-195,-195)">
+     <text class="ttl" x="0" y="10">Five distance classes (D₅ orbit)</text>
+     <g transform="translate(0,22)"><line x1="0" y1="0" x2="20" y2="0" stroke="#1f77b4" stroke-width="2"/><text x="26" y="4" class="lbl">edge  s=1   (mult 5)</text></g>
+     <g transform="translate(0,38)"><line x1="0" y1="0" x2="20" y2="0" stroke="#ff7f0e" stroke-width="2"/><text x="26" y="4" class="lbl">short diag φ (mult 5)</text></g>
+     <g transform="translate(0,54)"><line x1="0" y1="0" x2="20" y2="0" stroke="#2ca02c" stroke-width="1.5" stroke-dasharray="4,2"/><text x="26" y="4" class="lbl">2nd shell 2+φ (mult 10)</text></g>
+     <g transform="translate(0,70)"><line x1="0" y1="0" x2="20" y2="0" stroke="#d62728" stroke-width="2"/><text x="26" y="4" class="lbl">long diag φ² (mult 5)</text></g>
+   </g>
+</svg>
 
 ### 1.3 The Galois Conjugate Pairing
 
@@ -91,6 +160,64 @@ every distance $d > 1$ has a Galois partner $d' = \sigma(d) < 1$ (in the interna
 and the product $d \cdot d' = |N(d^2)|^{1/2}$ is a rational number. This is the algebraic
 shadow of the cut-and-project construction: the physical distances and the internal-space
 distances are Galois conjugates of each other.
+**Illustration: Galois conjugate pairing.** Each large distance $\phi^k$ in the
+physical space (left) is matched by a small distance $\phi^{-k}$ in the internal
+space (right), with product equal to 1.
+
+<svg viewBox="0 0 600 260" xmlns="http://www.w3.org/2000/svg" width="600" height="260">
+   <defs>
+     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+       <path d="M0,0 L10,5 L0,10 z" fill="#555"/>
+     </marker>
+     <style>
+       .lbl { font: 11px sans-serif; fill: #222; }
+       .ttl { font: 13px sans-serif; fill: #111; font-weight: bold; }
+       .axis { stroke: #888; }
+     </style>
+   </defs>
+   <!-- Physical space (left) -->
+   <text class="ttl" x="80" y="20">Physical space</text>
+   <circle cx="140" cy="140" r="4" fill="#111"/>
+   <text x="146" y="156" class="lbl">O</text>
+   <!-- concentric rings phi^0, phi^1, phi^2 -->
+   <circle cx="140" cy="140" r="22" fill="none" stroke="#1f77b4" stroke-dasharray="3,3"/>
+   <circle cx="140" cy="140" r="36" fill="none" stroke="#ff7f0e" stroke-dasharray="3,3"/>
+   <circle cx="140" cy="140" r="58" fill="none" stroke="#d62728" stroke-dasharray="3,3"/>
+   <circle cx="140" cy="140" r="94" fill="none" stroke="#9467bd" stroke-dasharray="3,3"/>
+   <!-- points -->
+   <circle cx="162" cy="140" r="3" fill="#1f77b4"/>
+   <circle cx="176" cy="140" r="3" fill="#ff7f0e"/>
+   <circle cx="198" cy="140" r="3" fill="#d62728"/>
+   <circle cx="234" cy="140" r="3" fill="#9467bd"/>
+   <text x="160" y="132" class="lbl">1</text>
+   <text x="174" y="132" class="lbl">φ</text>
+   <text x="196" y="132" class="lbl">φ²</text>
+   <text x="232" y="132" class="lbl">φ³</text>
+   <!-- arrow sigma -->
+   <path d="M 270 80 C 320 50, 360 50, 410 80" fill="none" stroke="#555" marker-end="url(#arr)"/>
+   <text x="320" y="55" class="lbl">σ : √5 ↦ −√5</text>
+   <!-- Internal space (right) -->
+   <text class="ttl" x="430" y="20">Internal space</text>
+   <circle cx="460" cy="140" r="4" fill="#111"/>
+   <text x="466" y="156" class="lbl">O'</text>
+   <!-- inverted radii: phi^{-k} -->
+   <circle cx="460" cy="140" r="94" fill="none" stroke="#1f77b4" stroke-dasharray="3,3"/>
+   <circle cx="460" cy="140" r="58" fill="none" stroke="#ff7f0e" stroke-dasharray="3,3"/>
+   <circle cx="460" cy="140" r="36" fill="none" stroke="#d62728" stroke-dasharray="3,3"/>
+   <circle cx="460" cy="140" r="22" fill="none" stroke="#9467bd" stroke-dasharray="3,3"/>
+   <circle cx="554" cy="140" r="3" fill="#1f77b4"/>
+   <circle cx="518" cy="140" r="3" fill="#ff7f0e"/>
+   <circle cx="496" cy="140" r="3" fill="#d62728"/>
+   <circle cx="482" cy="140" r="3" fill="#9467bd"/>
+   <text x="552" y="132" class="lbl">1</text>
+   <text x="516" y="132" class="lbl">φ⁻¹</text>
+   <text x="494" y="132" class="lbl">φ⁻²</text>
+   <text x="480" y="132" class="lbl">φ⁻³</text>
+   <!-- product table -->
+   <g transform="translate(80,210)">
+     <text class="lbl" x="0" y="0">d · σ(d) = 1   for each Galois-paired ring</text>
+   </g>
+</svg>
 
 ---
 
@@ -125,6 +252,51 @@ $$\frac{\delta_{k+1}}{\delta_k} \to \phi^2 = \phi + 1 \approx 2.618 \quad \text{
 
 This is in sharp contrast to the integer lattice, where ring radii grow as $\sqrt{n}$ for
 integers $n$ representable as sums of two squares, with no fixed ratio.
+**Illustration: Fibonacci spacing of distance rings.** Ring radii grow geometrically
+with ratio $\phi^2 \approx 2.618$, producing only $O(\log R)$ distinct distances
+inside a ball of radius $R$ — versus $\Theta(R^2/\sqrt{\log R})$ for $\mathbb{Z}^2$.
+
+<svg viewBox="-220 -220 440 440" xmlns="http://www.w3.org/2000/svg" width="440" height="440">
+   <defs>
+     <style>
+       .lbl { font: 11px sans-serif; fill: #222; }
+       .ttl { font: 13px sans-serif; fill: #111; font-weight: bold; }
+     </style>
+   </defs>
+   <!-- Concentric rings at radii 12, 19.4, 31.4, 50.8, 82.2, 133, 215 (×phi each step roughly) -->
+   <circle cx="0" cy="0" r="12"  fill="none" stroke="#1f77b4"/>
+   <circle cx="0" cy="0" r="19"  fill="none" stroke="#ff7f0e"/>
+   <circle cx="0" cy="0" r="31"  fill="none" stroke="#2ca02c"/>
+   <circle cx="0" cy="0" r="51"  fill="none" stroke="#d62728"/>
+   <circle cx="0" cy="0" r="82"  fill="none" stroke="#9467bd"/>
+   <circle cx="0" cy="0" r="133" fill="none" stroke="#8c564b"/>
+   <circle cx="0" cy="0" r="215" fill="none" stroke="#e377c2"/>
+   <!-- radial labels along +x -->
+   <line x1="0" y1="0" x2="215" y2="0" stroke="#aaa" stroke-dasharray="2,2"/>
+   <g fill="#111">
+     <circle cx="12" cy="0" r="2.5"/><circle cx="19" cy="0" r="2.5"/>
+     <circle cx="31" cy="0" r="2.5"/><circle cx="51" cy="0" r="2.5"/>
+     <circle cx="82" cy="0" r="2.5"/><circle cx="133" cy="0" r="2.5"/>
+     <circle cx="215" cy="0" r="2.5"/>
+   </g>
+   <text x="12"  y="-6" class="lbl">δ₁</text>
+   <text x="19"  y="14" class="lbl">δ₂</text>
+   <text x="31"  y="-6" class="lbl">δ₃</text>
+   <text x="51"  y="14" class="lbl">δ₄</text>
+   <text x="82"  y="-6" class="lbl">δ₅</text>
+   <text x="133" y="14" class="lbl">δ₆</text>
+   <text x="215" y="-6" class="lbl">δ₇</text>
+   <!-- example points scattered on rings (D5 symmetric) -->
+   <g fill="#333">
+     <!-- ring 1 (r=12): 5 pts -->
+     <circle cx="12" cy="0" r="2"/><circle cx="3.71" cy="-11.41" r="2"/><circle cx="-9.71" cy="-7.05" r="2"/><circle cx="-9.71" cy="7.05" r="2"/><circle cx="3.71" cy="11.41" r="2"/>
+     <!-- ring 3 (r=31): 10 pts offset -->
+     <circle cx="29.49" cy="9.58" r="2"/><circle cx="9.58" cy="29.49" r="2"/><circle cx="-18.20" cy="25.08" r="2"/><circle cx="-30.55" cy="5.30" r="2"/><circle cx="-25.08" cy="-18.20" r="2"/>
+     <circle cx="-5.30" cy="-30.55" r="2"/><circle cx="18.20" cy="-25.08" r="2"/><circle cx="30.55" cy="-5.30" r="2"/><circle cx="25.08" cy="18.20" r="2"/><circle cx="5.30" cy="30.55" r="2"/>
+   </g>
+   <circle cx="0" cy="0" r="3" fill="#000"/>
+   <text class="ttl" x="-210" y="-200">Distance rings (ratio → φ² ≈ 2.618)</text>
+</svg>
 
 ### 2.3 Multiplicity of Distance Rings
 
@@ -170,6 +342,60 @@ Key properties of pentagonal distance webs:
    intersect (share an edge) if and only if there exist three collinear lattice points
    $A, B, C$ with $|AB| = d_1$ and $|BC| = d_2$. The intersection pattern encodes
    additive relations among distances in the lattice.
+   **Illustration: Two overlapping distance webs.** Blue edges form the unit-distance
+   web $\mathcal{W}_1$ (the pentagonal adjacency graph); orange edges form the
+   short-diagonal web $\mathcal{W}_\phi$.
+
+4. <svg viewBox="-180 -180 360 360" xmlns="http://www.w3.org/2000/svg" width="380" height="380">
+   <defs>
+     <style>
+       .lbl { font: 10px sans-serif; fill: #333; }
+       .ttl { font: 13px sans-serif; fill: #111; font-weight: bold; }
+     </style>
+   </defs>
+   <!-- Pentagon vertices (radius 60) -->
+   <g id="pts" fill="#111">
+     <circle id="p0" cx="60"     cy="0"      r="3.5"/>
+     <circle id="p1" cx="18.54"  cy="-57.06" r="3.5"/>
+     <circle id="p2" cx="-48.54" cy="-35.27" r="3.5"/>
+     <circle id="p3" cx="-48.54" cy="35.27"  r="3.5"/>
+     <circle id="p4" cx="18.54"  cy="57.06"  r="3.5"/>
+   </g>
+   <!-- Outer pentagon (second shell at r ≈ 97 with rotation) -->
+   <g fill="#444">
+     <circle cx="113.36" cy="-36.83" r="3"/>
+     <circle cx="0"      cy="-119.13" r="3"/>
+     <circle cx="-113.36" cy="-36.83" r="3"/>
+     <circle cx="-70.04" cy="96.42"  r="3"/>
+     <circle cx="70.04"  cy="96.42"  r="3"/>
+   </g>
+   <!-- W_1: edges of inner pentagon (unit edges) -->
+   <g stroke="#1f77b4" stroke-width="2.5" fill="none">
+     <line x1="60"     y1="0"      x2="18.54"  y2="-57.06"/>
+     <line x1="18.54"  y1="-57.06" x2="-48.54" y2="-35.27"/>
+     <line x1="-48.54" y1="-35.27" x2="-48.54" y2="35.27"/>
+     <line x1="-48.54" y1="35.27"  x2="18.54"  y2="57.06"/>
+     <line x1="18.54"  y1="57.06"  x2="60"     y2="0"/>
+   </g>
+   <!-- W_phi: short diagonals of pentagon -->
+   <g stroke="#ff7f0e" stroke-width="1.6" fill="none" stroke-dasharray="5,3">
+     <line x1="60"     y1="0"      x2="-48.54" y2="-35.27"/>
+     <line x1="60"     y1="0"      x2="-48.54" y2="35.27"/>
+     <line x1="18.54"  y1="-57.06" x2="-48.54" y2="35.27"/>
+     <line x1="18.54"  y1="-57.06" x2="18.54"  y2="57.06"/>
+     <line x1="-48.54" y1="-35.27" x2="18.54"  y2="57.06"/>
+   </g>
+   <!-- center -->
+   <circle cx="0" cy="0" r="3" fill="#888"/>
+   <text class="ttl" x="-175" y="-160">Distance webs 𝒲₁ (blue) and 𝒲_φ (orange)</text>
+   <g transform="translate(-175,-140)">
+     <line x1="0" y1="0" x2="22" y2="0" stroke="#1f77b4" stroke-width="2.5"/>
+     <text x="28" y="4" class="lbl">𝒲₁  : edge length 1</text>
+     <line x1="0" y1="14" x2="22" y2="14" stroke="#ff7f0e" stroke-width="1.6" stroke-dasharray="5,3"/>
+     <text x="28" y="18" class="lbl">𝒲_φ : short diagonal φ</text>
+   </g>
+
+</svg>
 
 ---
 
@@ -243,6 +469,54 @@ $\arg(\phi^k v)$ become dense in $[0, 2\pi)$.
 achieves the **maximum possible number of distinct directions** for each distance, while
 simultaneously achieving the minimum possible number of distinct distances. This is a
 unique combination not seen in the integer lattice or in generic point sets.
+**Illustration: The pinwheel phenomenon.** For a fixed distance $d$, all lattice
+vectors of length $d$ point in many different directions, becoming dense in
+$[0,2\pi)$ as the cluster grows. Contrast: $\mathbb{Z}^2$ admits only a finite
+number of directions per distance.
+
+<svg viewBox="-180 -180 360 360" xmlns="http://www.w3.org/2000/svg" width="380" height="380">
+   <defs>
+     <style>
+       .lbl { font: 11px sans-serif; fill: #222; }
+       .ttl { font: 13px sans-serif; fill: #111; font-weight: bold; }
+     </style>
+   </defs>
+   <circle cx="0" cy="0" r="140" fill="none" stroke="#bbb" stroke-dasharray="3,3"/>
+   <!-- 40 spokes at irrational angle increments (multiples of 360/phi approx 222.49 deg, mod 360) -->
+   <g stroke="#d62728" stroke-width="1.2">
+     <line x1="0" y1="0" x2="140.00" y2="0.00"/>
+     <line x1="0" y1="0" x2="-103.31" y2="94.43"/>
+     <line x1="0" y1="0" x2="-39.99" y2="-134.16"/>
+     <line x1="0" y1="0" x2="135.62" y2="34.86"/>
+     <line x1="0" y1="0" x2="-129.40" y2="53.59"/>
+     <line x1="0" y1="0" x2="14.06"  y2="-139.29"/>
+     <line x1="0" y1="0" x2="124.59" y2="63.69"/>
+     <line x1="0" y1="0" x2="-138.85" y2="18.04"/>
+     <line x1="0" y1="0" x2="65.36"  y2="-123.78"/>
+     <line x1="0" y1="0" x2="93.91"  y2="103.79"/>
+     <line x1="0" y1="0" x2="-126.74" y2="-59.49"/>
+     <line x1="0" y1="0" x2="111.62" y2="-84.66"/>
+     <line x1="0" y1="0" x2="36.47"  y2="135.16"/>
+     <line x1="0" y1="0" x2="-83.25" y2="-112.46"/>
+     <line x1="0" y1="0" x2="139.04" y2="-16.20"/>
+     <line x1="0" y1="0" x2="-119.65" y2="72.81"/>
+     <line x1="0" y1="0" x2="-21.81" y2="-138.29"/>
+     <line x1="0" y1="0" x2="131.65" y2="47.94"/>
+     <line x1="0" y1="0" x2="-136.04" y2="33.12"/>
+     <line x1="0" y1="0" x2="-4.40"  y2="-139.93"/>
+     <line x1="0" y1="0" x2="120.18" y2="71.79"/>
+     <line x1="0" y1="0" x2="-140.00" y2="-0.42"/>
+     <line x1="0" y1="0" x2="76.31"  y2="-117.32"/>
+     <line x1="0" y1="0" x2="81.94"  y2="113.43"/>
+     <line x1="0" y1="0" x2="-115.79" y2="-78.62"/>
+     <line x1="0" y1="0" x2="120.27" y2="-71.64"/>
+     <line x1="0" y1="0" x2="23.94"  y2="137.94"/>
+     <line x1="0" y1="0" x2="-93.05" y2="-104.62"/>
+     <line x1="0" y1="0" x2="137.55" y2="-26.20"/>
+   </g>
+   <circle cx="0" cy="0" r="3" fill="#000"/>
+   <text class="ttl" x="-175" y="-160">Pinwheel: lattice vectors of length d at many angles</text>
+</svg>
 
 ---
 
@@ -271,16 +545,16 @@ computation (implementable as an extension of `experiment.mac`):
 Based on the geometry of the pentagonal lattice and the $\mathbb{Q}(\sqrt{5})$ norm form,
 the first several distance rings are predicted to be:
 
-| Ring $k$ | $\delta_k$ (exact)    | $\delta_k$ (decimal) | $   | \mathcal{R}\_k         | $   | Notes |
-| -------- | --------------------- | -------------------- | --- | ---------------------- | --- | ----- |
-| 1        | $1$                   | 1.000                | 5   | Edge length (unit)     |
-| 2        | $\phi^2 = \phi + 1$   | 2.618                | 5   | Short diagonal         |
-| 3        | $2 + \phi$            | 3.618                | 10  | Second-shell edge      |
-| 4        | $\phi^4 = 3\phi + 2$  | 6.854                | 5   | Long diagonal          |
-| 5        | $4 + \phi$            | 5.618                | 10  | Mixed shell            |
-| 6        | $2\phi^2 = 2\phi + 2$ | 5.236                | 10  | Double short diagonal  |
-| 7        | $\phi^6 = 8\phi + 5$  | 17.944               | 5   | Third-order diagonal   |
-| 8        | $3 + 2\phi$           | 6.236                | 20  | High-multiplicity ring |
+| Ring $k$ | $\delta_k$ (exact)          | $\delta_k$ (decimal) | $|\mathcal{R}_k|$ | Notes |
+|----------|-----------------------------|----------------------|-------------------|------------------------------|
+| 1 | $1$                         | 1.000 | 5 | Edge length (unit)           |
+| 2 | $\phi^2 = \phi + 1$         | 2.618 | 5 | Short diagonal |
+| 3 | $2 + \phi$                  | 3.618 | 10 | Second-shell edge |
+| 4 | $\phi^4 = 3\phi + 2$        | 6.854 | 5 | Long diagonal |
+| 5 | $4 + \phi$                  | 5.618 | 10 | Mixed shell |
+| 6 | $2\phi^2 = 2\phi + 2$       | 5.236 | 10 | Double short diagonal |
+| 7 | $\phi^6 = 8\phi + 5$        | 17.944 | 5 | Third-order diagonal |
+| 8 | $3 + 2\phi$                 | 6.236 | 20 | High-multiplicity ring |
 
 The high-multiplicity ring at $k = 8$ ($|\mathcal{R}_8| = 20$) is a signature of the
 norm-multiplicativity: the value $3 + 2\phi$ factors as $(\phi^2)^2 \cdot \phi^{-2}$ in
@@ -309,6 +583,68 @@ follows:
 The **union** of these three webs covers all edges of the Penrose tiling (in the
 appropriate projection), providing a direct link between the distance structure of the
 pentagonal lattice and the combinatorial structure of Penrose tilings.
+**Illustration: Ring multiplicities as a histogram.** Decimal squared distance
+$\delta_k$ on the x-axis; ring size $|\mathcal{R}_k|$ on the y-axis. Note the
+anomalous height-20 ring at $\delta_8 = 3+2\phi$, a signature of norm
+multiplicativity in $\mathbb{Z}[\phi]$.
+
+<svg viewBox="0 0 520 260" xmlns="http://www.w3.org/2000/svg" width="520" height="260">
+   <defs>
+     <style>
+       .lbl  { font: 10px sans-serif; fill: #222; }
+       .ttl  { font: 13px sans-serif; fill: #111; font-weight: bold; }
+       .ax   { stroke: #444; }
+       .gd   { stroke: #eee; }
+       .bar  { fill: #4c78a8; }
+       .barH { fill: #d62728; }
+     </style>
+   </defs>
+   <text class="ttl" x="20" y="20">Ring multiplicities |𝓡_k|</text>
+   <!-- axes -->
+   <line class="ax" x1="50" y1="220" x2="500" y2="220"/>
+   <line class="ax" x1="50" y1="40"  x2="50"  y2="220"/>
+   <!-- y-axis ticks: 5,10,15,20 → y = 220 - 8*val -->
+   <g class="lbl">
+     <line class="gd" x1="50" y1="180" x2="500" y2="180"/>
+     <line class="gd" x1="50" y1="140" x2="500" y2="140"/>
+     <line class="gd" x1="50" y1="100" x2="500" y2="100"/>
+     <line class="gd" x1="50" y1="60"  x2="500" y2="60"/>
+     <text x="30" y="223">0</text>
+     <text x="30" y="183">5</text>
+     <text x="30" y="143">10</text>
+     <text x="30" y="103">15</text>
+     <text x="30" y="63">20</text>
+   </g>
+   <!-- Bars: x maps δ ∈ [1, 18] linearly: x = 50 + (δ-1)/17 * 440 -->
+   <!-- k=1 δ=1.000  m=5  -->
+   <rect class="bar"  x="48"  y="180" width="14" height="40"/>
+   <text class="lbl" x="44"  y="235">1.00</text>
+   <!-- k=2 δ=2.618 m=5  x = 50 + 1.618/17*440 = 50 + 41.87 = 91.87 -->
+   <rect class="bar"  x="84"  y="180" width="14" height="40"/>
+   <text class="lbl" x="80"  y="235">2.62</text>
+   <!-- k=6 δ=5.236 m=10 x = 50 + 4.236/17*440 = 50 + 109.6 = 159.6 -->
+   <rect class="bar"  x="152" y="140" width="14" height="80"/>
+   <text class="lbl" x="148" y="235">5.24</text>
+   <!-- k=5 δ=5.618 m=10 x = 50 + 4.618/17*440 = 50 + 119.5 = 169.5 -->
+   <rect class="bar"  x="172" y="140" width="14" height="80"/>
+   <text class="lbl" x="168" y="235">5.62</text>
+   <!-- k=3 δ=3.618 m=10 x = 50 + 2.618/17*440 = 50 + 67.74 = 117.7 -->
+   <rect class="bar"  x="110" y="140" width="14" height="80"/>
+   <text class="lbl" x="106" y="235">3.62</text>
+   <!-- k=8 δ=6.236 m=20 x = 50 + 5.236/17*440 = 50 + 135.5 = 185.5 -->
+   <rect class="barH" x="188" y="60"  width="14" height="160"/>
+   <text class="lbl" x="184" y="235">6.24</text>
+   <!-- k=4 δ=6.854 m=5 x = 50 + 5.854/17*440 = 50 + 151.5 = 201.5 -->
+   <rect class="bar"  x="204" y="180" width="14" height="40"/>
+   <text class="lbl" x="200" y="235">6.85</text>
+   <!-- k=7 δ=17.944 m=5  x = 50 + 16.944/17*440 = 50 + 438.6 = 488.6 -->
+   <rect class="bar"  x="481" y="180" width="14" height="40"/>
+   <text class="lbl" x="475" y="235">17.94</text>
+   <text class="lbl" x="240" y="252">squared distance δ_k</text>
+   <!-- annotation arrow to anomaly -->
+   <line x1="260" y1="80" x2="205" y2="65" stroke="#d62728" stroke-width="1"/>
+   <text class="lbl" x="262" y="84" fill="#d62728">norm-multiplicativity anomaly (|𝓡₈|=20)</text>
+</svg>
 
 ---
 
@@ -341,7 +677,7 @@ The comparison between the pentagonal and integer lattices for the Erdős proble
 summarized in the following table:
 
 | Property                          | Integer lattice $\mathbb{Z}^2$      | Pentagonal lattice $\mathcal{L}_5$ |
-| --------------------------------- | ----------------------------------- | ---------------------------------- |
+|-----------------------------------|-------------------------------------|------------------------------------|
 | Coordinate field                  | $\mathbb{Q}$                        | $\mathbb{Q}(\sqrt{5})$             |
 | Symmetry group                    | $D_4$ (4-fold)                      | $D_5$ (5-fold)                     |
 | Ring radius growth                | $\sqrt{n}$ (sum of two squares)     | $\phi^k$ (Fibonacci geometric)     |
@@ -421,6 +757,52 @@ $\|P\| = \phi^k$ and their Galois conjugates $\sigma(P)$ with $\|\sigma(P)\| = \
 are all at the same distance from the origin (in their respective spaces). The
 **cross-space equidistant family** at scale $\phi^k$ has size $\Theta(\phi^k)$, growing
 exponentially with $k$.
+**Illustration: Cross-sheet equidistant pairs.** Two sheets (red and blue) project to
+the same plane. Solid same-sheet pairs and dashed cross-sheet pairs share the same
+projected distance $d$, multiplying the equidistant family.
+
+<svg viewBox="0 0 480 280" xmlns="http://www.w3.org/2000/svg" width="480" height="280">
+   <defs>
+     <style>
+       .lbl { font: 11px sans-serif; fill: #222; }
+       .ttl { font: 13px sans-serif; fill: #111; font-weight: bold; }
+     </style>
+   </defs>
+   <text class="ttl" x="20" y="20">Cross-sheet equidistant pairs</text>
+   <!-- sheet 0 plane (parallelogram) -->
+   <polygon points="40,180 320,180 380,120 100,120" fill="#1f77b4" fill-opacity="0.07" stroke="#1f77b4"/>
+   <text class="lbl" x="50" y="175" fill="#1f77b4">sheet s = 0</text>
+   <!-- sheet 1 plane offset -->
+   <polygon points="40,250 320,250 380,190 100,190" fill="#d62728" fill-opacity="0.07" stroke="#d62728"/>
+   <text class="lbl" x="50" y="245" fill="#d62728">sheet s = 1</text>
+   <!-- sheet 0 points -->
+   <g fill="#1f77b4">
+     <circle cx="140" cy="155" r="4"/>
+     <circle cx="240" cy="155" r="4"/>
+     <circle cx="190" cy="135" r="4"/>
+   </g>
+   <text class="lbl" x="130" y="148">A₀</text>
+   <text class="lbl" x="244" y="148">B₀</text>
+   <text class="lbl" x="194" y="128">C₀</text>
+   <!-- sheet 1 points (same projected positions, offset down) -->
+   <g fill="#d62728">
+     <circle cx="140" cy="225" r="4"/>
+     <circle cx="240" cy="225" r="4"/>
+   </g>
+   <text class="lbl" x="130" y="218">A₁</text>
+   <text class="lbl" x="244" y="218">B₁</text>
+   <!-- same-sheet pair (solid) -->
+   <line x1="140" y1="155" x2="240" y2="155" stroke="#1f77b4" stroke-width="2"/>
+   <text class="lbl" x="180" y="148" fill="#1f77b4">d</text>
+   <!-- cross-sheet pair (dashed) - same projected length -->
+   <line x1="140" y1="155" x2="240" y2="225" stroke="#666" stroke-width="1.6" stroke-dasharray="5,3"/>
+   <text class="lbl" x="180" y="200" fill="#444">d (projected)</text>
+   <!-- another cross-sheet pair -->
+   <line x1="240" y1="155" x2="140" y2="225" stroke="#666" stroke-width="1.6" stroke-dasharray="5,3"/>
+   <!-- sheet 1 same-sheet pair -->
+   <line x1="140" y1="225" x2="240" y2="225" stroke="#d62728" stroke-width="2"/>
+   <text class="lbl" x="20" y="270">Each projected distance d acquires extra multiplicity from cross-sheet pairs (≈ 2/3 of all edges carry sheet shifts).</text>
+</svg>
 
 ### 6.3 Implications for the Erdős Problem
 
@@ -576,7 +958,7 @@ prevents complete collapse.
 The main findings are:
 
 | Feature                                     | Consequence for Erdős problem                                |
-| ------------------------------------------- | ------------------------------------------------------------ |
+|---------------------------------------------|--------------------------------------------------------------|
 | $\mathbb{Q}(\sqrt{5})$ field                | Distances are algebraically paired by Galois conjugation     |
 | Fibonacci ring spacing ($\phi^2$)           | $O(\log n)$ distinct distances in a ball of $n$ points       |
 | $D_5$ symmetry                              | Every distance has multiplicity $\geq 5$                     |

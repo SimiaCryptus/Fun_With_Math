@@ -22,7 +22,7 @@ export function K(a = 0, b = 0, c = 0, d = 0) {
 }
 
 export const ZERO = K(0, 0, 0, 0);
-export const ONE = K(1, 0, 0, 0);
+export const ONE  = K(1, 0, 0, 0);
 export const SQRT5 = K(0, 1, 0, 0);
 // S = sqrt(10 + 2*sqrt(5)) = 4*sin(72 deg)
 export const S_SYM = K(0, 0, 1, 0);
@@ -130,9 +130,7 @@ function fmtTerm(coef, sym) {
 }
 export function toAlg(x) {
   const parts = [];
-  const add = (t) => {
-    if (t !== "") parts.push(t);
-  };
+  const add = (t) => { if (t !== "") parts.push(t); };
   add(fmtTerm(x.a, ""));
   add(fmtTerm(x.b, "√5"));
   add(fmtTerm(x.c, "S"));

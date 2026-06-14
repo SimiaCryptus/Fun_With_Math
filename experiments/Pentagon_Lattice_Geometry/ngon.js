@@ -18,8 +18,7 @@ export function mod(a, n) {
 
 // Rotate a 2D point by angle (radians) around origin.
 export function rot2(x, y, angle) {
-  const c = Math.cos(angle),
-    s = Math.sin(angle);
+  const c = Math.cos(angle), s = Math.sin(angle);
   return [c * x - s * y, s * x + c * y];
 }
 
@@ -53,7 +52,7 @@ export function ngonVertices(cx, cy, n, orient, sigma) {
   const baseAngle = sigma === 0 ? Math.PI / 2 : -Math.PI / 2;
   const verts = [];
   for (let k = 0; k < n; k++) {
-    const angle = baseAngle + (orient + k) * ((2 * Math.PI) / n);
+    const angle = baseAngle + (orient + k) * (2 * Math.PI / n);
     verts.push([cx + R * Math.cos(angle), cy + R * Math.sin(angle)]);
   }
   return verts;
@@ -90,7 +89,7 @@ export function ngonNeighbour(cx, cy, n, orient, sigma, k) {
 
   // For odd n, sigma must flip for the shared edge to match.
   // For even n, a pure rotation by π about the midpoint works.
-  const newSigma = n % 2 === 1 ? 1 - sigma : sigma;
+  const newSigma = (n % 2 === 1) ? 1 - sigma : sigma;
 
   // Find orient shift: try all n values and pick the one where
   // the neighbour's edge kk shares the same midpoint as edge k of self.
@@ -161,16 +160,16 @@ export function buildSierpinski(depth) {
   const byId = new Map();
 
   function triVerts(bx, by, s) {
-    const h = (s * SQRT3) / 2;
+    const h = s * SQRT3 / 2;
     return [
-      [bx, by],
-      [bx + s, by],
-      [bx + s / 2, by + h],
+      [bx,           by    ],
+      [bx + s,       by    ],
+      [bx + s / 2,   by + h],
     ];
   }
 
   function triCentroid(bx, by, s) {
-    const h = (s * SQRT3) / 2;
+    const h = s * SQRT3 / 2;
     return [bx + s / 2, by + h / 3];
   }
 
@@ -196,16 +195,14 @@ export function buildSierpinski(depth) {
       centroidF: [cx, cy],
       orient: 0,
       sigma: 0,
-      sheet: d % 5, // use depth mod 5 for color variety
+      sheet: d % 5,   // use depth mod 5 for color variety
       depth: d,
       verts,
       vertsF: verts,
       neighbors: [null, null, null],
       neighborSheetDeltas: [0, 0, 0],
       // Sierpinski-specific
-      bx,
-      by,
-      s,
+      bx, by, s,
       isSierpinski: true,
       n: 3,
     };
@@ -219,12 +216,12 @@ export function buildSierpinski(depth) {
     const idx = expand(bx, by, s, d, -1, -1);
     if (d >= depth) return idx;
 
-    const h = (s * SQRT3) / 2;
+    const h = s * SQRT3 / 2;
     const ns = s / 2;
     const children = [
-      [bx, by, ns],
-      [bx + ns, by, ns],
-      [bx + ns / 2, by + h / 2, ns],
+      [bx,           by,       ns],
+      [bx + ns,      by,       ns],
+      [bx + ns / 2,  by + h / 2, ns],
     ];
 
     for (let k = 0; k < 3; k++) {
@@ -241,14 +238,7 @@ export function buildSierpinski(depth) {
   // For simplicity we leave sibling links as null; the CA will still
   // work using parent→child links.
 
-  return {
-    tiles,
-    byId,
-    groupOrder: 5,
-    radius: depth,
-    isSierpinski: true,
-    n: 3,
-  };
+  return { tiles, byId, groupOrder: 5, radius: depth, isSierpinski: true, n: 3 };
 }
 
 // ── Lattice builder for regular n-gons ───────────────────────────────────────
@@ -293,14 +283,7 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
     for (let k = 0; k < n; k++) {
       if (t.neighbors[k] !== null) continue;
 
-      const nb = ngonNeighbour(
-        t.centroid[0],
-        t.centroid[1],
-        n,
-        t.orient,
-        t.sigma,
-        k,
-      );
+      const nb = ngonNeighbour(t.centroid[0], t.centroid[1], n, t.orient, t.sigma, k);
       const delta = k % groupOrder;
       const newSheet = mod(t.sheet + delta, groupOrder);
       const [ncx, ncy] = nb.centroid;
@@ -335,36 +318,225 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
 
 export function fieldInfoForN(n) {
   const fields = {
-    3: { field: "ℚ(√3)", group: "ℤ₆", result: "Periodic lattice (d=2)" },
-    4: { field: "ℚ", group: "ℤ₄", result: "Periodic lattice (d=2)" },
-    5: { field: "ℚ(√5)", group: "ℤ₅", result: "Multi-sheeted (2<d<3)" },
-    6: { field: "ℚ(√3)", group: "ℤ₆", result: "Periodic lattice (d=2)" },
-    7: { field: "ℚ(cos 2π/7)", group: "ℤ₇", result: "Non-reconnective (tree)" },
-    8: { field: "ℚ(√2)", group: "ℤ₈", result: "Quasicrystal / multi-sheeted" },
-    9: { field: "ℚ(cos 2π/9)", group: "ℤ₉", result: "Non-reconnective (tree)" },
-    10: {
-      field: "ℚ(√5)",
-      group: "ℤ₁₀",
-      result: "Quasicrystal / multi-sheeted",
-    },
-    12: { field: "ℚ(√3)", group: "ℤ₁₂", result: "Periodic lattice (d=2)" },
+    3:  { field: "ℚ(√3)",        group: "ℤ₆",  result: "Periodic lattice (d=2)" },
+    4:  { field: "ℚ",            group: "ℤ₄",  result: "Periodic lattice (d=2)" },
+    5:  { field: "ℚ(√5)",        group: "ℤ₅",  result: "Multi-sheeted (2<d<3)" },
+    6:  { field: "ℚ(√3)",        group: "ℤ₆",  result: "Periodic lattice (d=2)" },
+    7:  { field: "ℚ(cos 2π/7)",  group: "ℤ₇",  result: "Non-reconnective (tree)" },
+    8:  { field: "ℚ(√2)",        group: "ℤ₈",  result: "Quasicrystal / multi-sheeted" },
+    9:  { field: "ℚ(cos 2π/9)",  group: "ℤ₉",  result: "Non-reconnective (tree)" },
+    10: { field: "ℚ(√5)",        group: "ℤ₁₀", result: "Quasicrystal / multi-sheeted" },
+    12: { field: "ℚ(√3)",        group: "ℤ₁₂", result: "Periodic lattice (d=2)" },
   };
-  return (
-    fields[n] || {
-      field: `ℚ(cos 2π/${n})`,
-      group: `ℤ${n}`,
-      result: "Non-reconnective (tree)",
-    }
-  );
+  return fields[n] || {
+    field: `ℚ(cos 2π/${n})`,
+    group: `ℤ${n}`,
+    result: "Non-reconnective (tree)",
+  };
 }
 
 export const POLY_PRESETS = {
-  triangle: { n: 3, label: "Equilateral Triangle" },
-  square: { n: 4, label: "Square" },
-  pentagon: { n: 5, label: "Regular Pentagon" },
-  hexagon: { n: 6, label: "Regular Hexagon" },
-  heptagon: { n: 7, label: "Regular Heptagon" },
-  octagon: { n: 8, label: "Regular Octagon" },
-  decagon: { n: 10, label: "Regular Decagon" },
-  dodecagon: { n: 12, label: "Regular Dodecagon" },
+  triangle:   { n: 3,  label: "Equilateral Triangle" },
+  square:     { n: 4,  label: "Square" },
+  pentagon:   { n: 5,  label: "Regular Pentagon" },
+  hexagon:    { n: 6,  label: "Regular Hexagon" },
+  heptagon:   { n: 7,  label: "Regular Heptagon" },
+  octagon:    { n: 8,  label: "Regular Octagon" },
+  decagon:    { n: 10, label: "Regular Decagon" },
+  dodecagon:  { n: 12, label: "Regular Dodecagon" },
 };
+// ── Pinwheel tile (rectangle + corner right-triangle) ────────────────────────
+//
+// The base tile (one "blade") is a single 5-sided polygon formed by gluing:
+//   * a rectangle of size a × b, with one corner at the rotation origin
+//   * a right triangle (legs a and c) attached along the rectangle's
+//     OUTER edge (the edge opposite the origin corner), with the
+//     triangle's right-angle vertex at one end of that outer edge.
+//
+// Four copies of this blade rotated by 0°, 90°, 180°, 270° around the
+// origin form the windmill / pinwheel motif (ℤ₄ chiral symmetry).
+//
+// Vertex layout (CCW), origin at the inner corner of the rectangle:
+//
+//   v4 (0, b) ─────────── v3 (a, b+c)   <- triangle apex (free tip)
+//      │              ╱
+//      │           ╱   hypotenuse (free edge)  [edge 3, INACTIVE]
+//      │        ╱
+//      │     ╱
+//      │  v2 (a, b)
+//      │     │
+//      │     │   edge 1 (right side of rect, length b)  ACTIVE
+//      │     │
+//      v0 ─── v1
+//   (0,0)   (a,0)
+//
+// The triangle is attached along the rectangle's TOP edge (v4→v2 of
+// length a). Its right-angle corner sits at v2 = (a,b), and one leg of
+// length c goes straight up from v2 to the apex v3 = (a, b+c). The
+// hypotenuse runs from v3 down-left to v4 = (0, b). The top edge of
+// the rectangle is interior to the blade, so it does not appear in the
+// boundary at all.
+//
+// Concretely, the 5 boundary vertices in CCW order are:
+//   v0 = (0,    0  )   inner corner (sits at rotation origin)
+//   v1 = (a,    0  )   bottom-right of rectangle
+//   v2 = (a,    b  )   right-angle corner of triangle
+//   v3 = (a,    b+c)   triangle apex (free tip)
+//   v4 = (0,    b  )   top-left of rectangle
+//
+// Edges (CCW, edge k connects v_k → v_{k+1 mod 5}):
+//   edge 0: v0→v1  bottom of rectangle             length a   ACTIVE
+//   edge 1: v1→v2  right of rectangle              length b   ACTIVE
+//   edge 2: v2→v3  vertical leg of triangle        length c   ACTIVE
+//   edge 3: v3→v4  HYPOTENUSE (free)               √(a²+c²)   INACTIVE
+//   edge 4: v4→v0  left of rectangle               length b   ACTIVE
+//
+// When this blade is rotated by k·90° about the origin for k=0..3, the
+// four bottom edges (edge 0) tile around the origin to form a small
+// central square of side a, and the four hypotenuses (edge 3) form the
+// characteristic outward-curling pinwheel blades.
+//
+// The full pinwheel motif is 4 copies of this shape rotated by 0°, 90°,
+// 180°, 270° about the origin (ℤ₄ / windmill symmetry).
+function _rotPoint(x, y, k) {
+   // Rotate (x,y) by k * 90° CCW about origin (exact integer-style ops).
+   k = ((k % 4) + 4) % 4;
+   switch (k) {
+     case 0: return [ x,  y];
+     case 1: return [-y,  x];
+     case 2: return [-x, -y];
+     case 3: return [ y, -x];
+   }
+}
+function _pinwheelBaseVerts(a, b, c) {
+   // CCW vertex list for one blade, as described above.
+   return [
+     [0, 0],
+     [a, 0],
+     [a, b],
+     [a, b + c],
+     [0, b],
+   ];
+}
+/**
+  * Build a single pinwheel "flower": one central pinwheel made of 4 blades
+  * around the origin. If radius > 0 we also add neighbor pinwheels in a
+  * simple square ring pattern so users can see the lattice nature.
+  *
+  * Each blade is a 5-gon (rectangle + triangle), with edge 3 (the
+  * hypotenuse) marked inactive via tile.activeEdges.
+  *
+  * Adjacency between blades is established along their shared rectangle
+  * edges (the rectangle "bottom" of blade k touches the rectangle "left"
+  * of blade k+1 by construction, since each blade is rotated 90° about
+  * the origin and they share the edge along the rotated axis).
+  */
+export function buildPinwheel({ radius = 0, a = 2, b = 1, c = 1,
+                                  hypotenuseSheets = false } = {}) {
+   const tiles = [];
+   const byId = new Map();
+   const baseVerts = _pinwheelBaseVerts(a, b, c);
+   // activeEdges array (length 5): true if the edge participates in
+   // tile-to-tile adjacency. Edge index 3 is the hypotenuse → inactive.
+   const ACTIVE = [true, true, true, false, true];
+   function addBlade(ox, oy, kRot, sheet) {
+     // ox, oy: world-space origin of this pinwheel's center.
+     // kRot ∈ {0,1,2,3}: which blade of the windmill.
+     const verts = baseVerts.map(([x, y]) => {
+       const [rx, ry] = _rotPoint(x, y, kRot);
+       return [ox + rx, oy + ry];
+     });
+     // Centroid = average of vertices (good enough for picking/labels).
+     let cx = 0, cy = 0;
+     for (const [x, y] of verts) { cx += x; cy += y; }
+     cx /= verts.length; cy /= verts.length;
+     const id = `pw|${ox.toFixed(6)},${oy.toFixed(6)}|k${kRot}|sh${sheet}`;
+     if (byId.has(id)) return byId.get(id);
+     const idx = tiles.length;
+     const tile = {
+       index: idx,
+       id,
+       centroid: [cx, cy],
+       centroidF: [cx, cy],
+       orient: kRot,         // Z₄ orientation
+       sigma: 0,
+       sheet,
+       depth: 0,             // filled in later for non-origin pinwheels
+       verts,
+       vertsF: verts,
+       neighbors: [null, null, null, null, null],
+       neighborSheetDeltas: [0, 0, 0, 0, 0],
+       activeEdges: ACTIVE.slice(),
+       n: 5,
+       isPinwheel: true,
+       isSierpinski: false,
+       pinwheelCenter: [ox, oy],
+       pinwheelBlade: kRot,
+     };
+     tiles.push(tile);
+     byId.set(id, idx);
+     return idx;
+   }
+   // ── Build one full pinwheel (4 blades) at a given center ───────────────
+   function addPinwheel(ox, oy, sheet, depth) {
+     const idxs = [];
+     for (let k = 0; k < 4; k++) {
+       const i = addBlade(ox, oy, k, sheet);
+       tiles[i].depth = depth;
+       idxs.push(i);
+     }
+     // Inside one pinwheel, blade k and blade (k+1) mod 4 share an edge
+     // at the rectangle's left side of blade k (== rectangle's bottom of
+     // blade k+1, after rotation). Concretely:
+     //   blade k, edge 4 (rectangle left, v4→v0)  <->
+     //   blade (k+1) mod 4, edge 0 (rectangle bottom, v0→v1)
+     // This is because rotating by 90° CCW maps the +x axis to the +y
+     // axis, so the bottom edge of blade k+1 lands on the left edge of
+     // blade k.
+     for (let k = 0; k < 4; k++) {
+       const i = idxs[k];
+       const j = idxs[(k + 1) % 4];
+       tiles[i].neighbors[4] = j;
+       tiles[j].neighbors[0] = i;
+       // No sheet shift between blades of the same pinwheel.
+       tiles[i].neighborSheetDeltas[4] = 0;
+       tiles[j].neighborSheetDeltas[0] = 0;
+     }
+     // Optional: visualise hypotenuse sheet transitions by giving each
+     // blade's hypotenuse a +1 sheet delta (but no neighbour — it's a
+     // free edge). We still leave activeEdges[3]=false.
+     if (hypotenuseSheets) {
+       for (let k = 0; k < 4; k++) {
+         tiles[idxs[k]].neighborSheetDeltas[3] = 1;
+       }
+     }
+     return idxs;
+   }
+   // Central pinwheel at origin.
+   addPinwheel(0, 0, 0, 0);
+   // For radius > 0, add neighbouring pinwheels in a simple square lattice
+   // pattern so the user sees more than one motif. The pinwheel's bounding
+   // box has width 2*max(a, b+c) in each axis (due to ℤ₄ symmetry).
+   if (radius > 0) {
+     const span = 2 * Math.max(a, b + c);
+     const groupOrder = 4;
+     for (let dx = -radius; dx <= radius; dx++) {
+       for (let dy = -radius; dy <= radius; dy++) {
+         if (dx === 0 && dy === 0) continue;
+         if (Math.abs(dx) + Math.abs(dy) > radius) continue;
+         const sheet = mod(dx + dy, groupOrder);
+         const depth = Math.abs(dx) + Math.abs(dy);
+         addPinwheel(dx * span, dy * span, sheet, depth);
+       }
+     }
+   }
+   return {
+     tiles,
+     byId,
+     groupOrder: 4,
+     radius,
+     n: 5,
+     isSierpinski: false,
+     isPinwheel: true,
+   };
+}

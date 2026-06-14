@@ -27,7 +27,7 @@ Among all regular n-gons, **n = 5 (the pentagon) uniquely occupies the center of
 fractional-dimension window** `d_eff ∈ (2, 3)`:
 
 | n     | d_eff (BFS interior) | In (2,3) window? |
-| ----- | -------------------- | ---------------- |
+|-------|----------------------|------------------|
 | 3     | 1.70                 | No (below)       |
 | 4     | 2.07                 | Yes (lower edge) |
 | **5** | **2.37**             | **Yes (center)** |
@@ -70,18 +70,18 @@ families:
 - **Criterion 1 (Orientation Closure)**: The rotation angles introduced by edge generators
   must all be rational multiples of π (equivalently, the orientation group must be finite).
 - **Criterion 2 (Single Irrational Base)**: All tile coordinates must live in a field
-  `Q(α)` for a _single_ algebraic number α — no independent scaling parameters.
+  `Q(α)` for a *single* algebraic number α — no independent scaling parameters.
 
 Polygons satisfying both criteria reconnect into periodic tilings, quasicrystals, or
 multi-sheeted covering spaces. All others produce infinite non-reconnective trees.
 
-| Polygon          | Field                       | Result                    |
-| ---------------- | --------------------------- | ------------------------- |
-| Square           | Q                           | Periodic lattice (d = 2)  |
-| Equilateral △    | Q(√3)                       | Periodic lattice (d = 2)  |
-| Regular pentagon | Q(√5)                       | Multi-sheeted (2 < d < 3) |
-| Regular 15-gon   | Q(√3, √5) ← two irrationals | Non-reconnective tree     |
-| Sierpiński △     | Q(√3)                       | Fractal (d ≈ 1.585)       |
+| Polygon          | Field                        | Result                    |
+|------------------|------------------------------|---------------------------|
+| Square           | Q                            | Periodic lattice (d = 2)  |
+| Equilateral △    | Q(√3)                        | Periodic lattice (d = 2)  |
+| Regular pentagon | Q(√5)                        | Multi-sheeted (2 < d < 3) |
+| Regular 15-gon   | Q(√3, √5)  ← two irrationals | Non-reconnective tree     |
+| Sierpiński △     | Q(√3)                        | Fractal (d ≈ 1.585)       |
 
 ### 5. Spinor-Like Holonomy from Discrete Geometry
 
@@ -224,7 +224,7 @@ solvable toy model** of CDT-style dimensional reduction.
 ## Repository Structure
 
 | File             | Contents                                                                  |
-| ---------------- | ------------------------------------------------------------------------- |
+|------------------|---------------------------------------------------------------------------|
 | `idea.md`        | Core theoretical construction: multi-sheeted covers, holonomy, dimensions |
 | `analysis.md`    | Summary of symbolic/numerical verification (`analysis.mac` / `.log`)      |
 | `experiment.mac` | Full computational pipeline: geometry → graph → spectra → CA → KPM        |
@@ -246,7 +246,7 @@ sweep_ngon.mac: done  (8 polygons × full pipeline, status = OK for every row)
 Key verified claims:
 
 | Claim                                         | Verification                                           |
-| --------------------------------------------- | ------------------------------------------------------ |
+|-----------------------------------------------|--------------------------------------------------------|
 | Pentagon angular deficit = 36°                | Exact symbolic: (3 × 108°) − 360° = −36°               |
 | Q(√5) exact arithmetic                        | φ² − φ − 1 = 0, Z[φ] multiplication, N(φⁿ) = (−1)ⁿ     |
 | Loop closure: 10 pentagons / 3 turns          | k_close = 2×5/gcd(10,3) = 10, turns = 3                |

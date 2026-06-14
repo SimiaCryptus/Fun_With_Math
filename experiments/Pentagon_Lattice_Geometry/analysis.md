@@ -36,7 +36,7 @@ Pentagon-specific identities are proved exactly to ensure the n = 5 substrate of
 footing:
 
 | Identity                                       | Status |
-| ---------------------------------------------- | ------ |
+|------------------------------------------------|--------|
 | φ² − (φ + 1) = 0                               | ✓      |
 | 1/φ − (φ − 1) = 0                              | ✓      |
 | φ(φ − 1) − 1 = 0                               | ✓      |
@@ -91,7 +91,7 @@ For each n in the sweep, `analysis.mac` computes:
 Highlights from the sweep:
 
 | n     | θ (deg) | k_flat | deficit (deg) | k_close | turns |
-| ----- | ------- | ------ | ------------- | ------- | ----- |
+|-------|---------|--------|---------------|---------|-------|
 | 3     | 60      | 6      | 0             | 6       | 1     |
 | 4     | 90      | 4      | 0             | 4       | 1     |
 | **5** | **108** | **3**  | **36**        | **10**  | **3** |
@@ -102,7 +102,7 @@ Highlights from the sweep:
 
 For n ∈ {3, 4, 6} the deficit is 0 (Euclidean tilings: triangle, square, hexagon). For all other n, the nonzero
 deficit/excess is the precise source of the **geometric frustration** discussed in §2.1 of `idea.md`, and `k_close` is
-the minimum loop length needed to return the sheet index to identity in the natural Z\_{k_close} fiber.
+the minimum loop length needed to return the sheet index to identity in the natural Z_{k_close} fiber.
 
 ---
 
@@ -245,9 +245,9 @@ For each n, the cyclic shift matrix C_n is constructed and verified to satisfy:
 - C_n is orthogonal: C_n · C_n^T = I_n (verified)
 - Diagonal vector (1,…,1)^T is an eigenvector with eigenvalue 1 (verified)
 - Projectors P_diag = (1/n) J_n and P_perp = I_n − P_diag are:
-  - Idempotent (verified)
-  - Mutually orthogonal (verified)
-  - Sum to I_n (verified)
+    - Idempotent (verified)
+    - Mutually orthogonal (verified)
+    - Sum to I_n (verified)
 - rank(P_perp) = n − 1 (verified)
 
 The real-invariant **2D subspaces** V_k (k = 1..⌊(n−1)/2⌋) are enumerated with explicit cos/sin eigenbases. For even n,
@@ -257,8 +257,8 @@ the alternating-sign eigenvector (eigenvalue −1) is also identified. The recom
 The norm verification `‖π_perp(e_1)‖² = (n−1)/n` confirms the projector geometry used by the acceptance window of §2.4
 of `idea.md`.
 
-For n = 5, this realizes the **5D hypercubic embedding** explicitly invoked by `idea.md`: V*1 = physical 2D plane, V_2 =
-2D "internal" plane, plus the diagonal — exactly the cut-and-project decomposition Z^5 = E*∥ ⊕ E_⊥ that prevents the
+For n = 5, this realizes the **5D hypercubic embedding** explicitly invoked by `idea.md`: V_1 = physical 2D plane, V_2 =
+2D "internal" plane, plus the diagonal — exactly the cut-and-project decomposition Z^5 = E_∥ ⊕ E_⊥ that prevents the
 cyclotomic density trap.
 
 ---
@@ -268,7 +268,7 @@ cyclotomic density trap.
 The 5-regular outer-totalistic rule family conjectured in §5.1 of `idea.md` is verified:
 
 | Rule family             | Formula     | n = 5    | n = 8   |
-| ----------------------- | ----------- | -------- | ------- |
+|-------------------------|-------------|----------|---------|
 | Binary outer-totalistic | 2^(2(n+1))  | **4096** | 262 144 |
 | Binary fully totalistic | 2^(n+2)     | 128      | 1 024   |
 | Binary fully general    | 2^(2^(n+1)) | 2^64     | 2^512   |
@@ -306,8 +306,8 @@ For each n:
 - Dihedral relation **S R S = R⁻¹** verified symbolically (S R S − R⁻¹ = 0) and numerically (< 1e-10)
 - |D_n| = 2n
 - Conjugacy class count and irrep dimension-squared sum verified for both parities:
-  - n odd: 2 + 2(n−1) = 2n
-  - n even: 4 + 2(n−2) = 2n
+    - n odd: 2 + 2(n−1) = 2n
+    - n even: 4 + 2(n−2) = 2n
 
 This confirms that **D_n is the full isometry group** of each tile and supplies the structural ingredient for the
 discrete principal G-bundle of §2.2 of `idea.md`.
@@ -318,7 +318,7 @@ discrete principal G-bundle of §2.2 of `idea.md`.
 
 Two reference graphs are analyzed at each n:
 
-### 12.1 Star K\_{1,n}
+### 12.1 Star K_{1,n}
 
 - L = D − A constructed
 - L · (1,…,1)^T = 0 (verified)
@@ -372,14 +372,14 @@ in §5 of `idea.md`.
 For each n, post-loop number-theoretic data are collected:
 
 - Partial **Riemann ζ(2), ζ(3)** sums (ZETA_TERMS = 40 terms) vs. exact π²/6 and Apéry's constant.
-- Partial **Dedekind zeta** ζ\_{Q(√5)}(s) at s = 2, 3 via the Euler product up to primes ≤ 30 (split / inert / ramified
+- Partial **Dedekind zeta** ζ_{Q(√5)}(s) at s = 2, 3 via the Euler product up to primes ≤ 30 (split / inert / ramified
   by Legendre(5/p)).
-- Ratio ζ\_{Q(√5)}(2) / ζ(2)² ≈ 0.439 (matches the expected class-number/regulator factor).
+- Ratio ζ_{Q(√5)}(2) / ζ(2)² ≈ 0.439 (matches the expected class-number/regulator factor).
 - Partial **Dirichlet L(s, χ_5)** at s = 2, 3 (ZETA_TERMS = 40); printed alongside the exact L(2, χ_5) = π²/(5√5).
 - A **functional-equation spot check** at s = 0.7 vs. 1 − s = 0.3.
-- **Spectral zeta** ζ*L(s) of the cycle C_n at s = 1, 2, 3, computed as Σ*{λ > 0} λ^(−s).
+- **Spectral zeta** ζ_L(s) of the cycle C_n at s = 1, 2, 3, computed as Σ_{λ > 0} λ^(−s).
 
-The spectral zeta values grow monotonically with n (e.g. ζ\_{C_n}(2): 0.22 at n=3 → 30.78 at n=12), as expected for
+The spectral zeta values grow monotonically with n (e.g. ζ_{C_n}(2): 0.22 at n=3 → 30.78 at n=12), as expected for
 denser-packing low-frequency modes — the discrete analogue of the heat-trace divergence used in §6.4 of `idea.md`.
 
 ---
@@ -389,11 +389,11 @@ denser-packing low-frequency modes — the discrete analogue of the heat-trace d
 At each n, the heat trace Tr(e^{−tL}) is computed for both:
 
 - **Cycle C_n** via λ_k = 2 − 2 cos(2πk/n)
-- **Star K\_{1,n}** via the closed-form spectrum {0, 1 (× n), n + 1}
+- **Star K_{1,n}** via the closed-form spectrum {0, 1 (× n), n + 1}
 
 at HEAT_TIMES = {0.01, 0.1, 0.5, 1, 2, 5, 10, 50}. Three derived quantities are reported:
 
-- **Effective spectral dimension** d*s(t_i, t*{i+1}) from the log-log slope of Tr(e^{−tL}) — exhibits the expected
+- **Effective spectral dimension** d_s(t_i, t_{i+1}) from the log-log slope of Tr(e^{−tL}) — exhibits the expected
   crossover from short-time Weyl behaviour to long-time saturation at 1 (the kernel of L).
 - **2D Weyl leading term** (4πt)^{−1} for short-time comparison.
 - **2D Gaussian heat kernel** K_t(x) at x ∈ {0, 1, 2} for t ∈ {0.1, 1, 10}.
@@ -408,7 +408,7 @@ The spectral zeta of C_n at s = 1, 2, 3 is reprinted here as a Mellin-transform 
 ## 16. Acceptance-Window Geometry (Section 18)
 
 For each n, the acceptance window is taken to be a regular n-gon of inradius ρ in perp space, with unit-cell area
-A*cell = Area*{n-gon}(side 1). Each iteration logs:
+A_cell = Area_{n-gon}(side 1). Each iteration logs:
 
 - **Window vertices** at angles 2πk/n on a circle of radius ρ = 1.
 - **Acceptance density** A_window(ρ)/A_cell at ρ ∈ {0.5, 1, 1.5, 2} (quadratic in ρ).
@@ -426,9 +426,9 @@ underlies §2.4 of `idea.md`.
 For each n, the loop generates symbolic-dynamics objects relevant to substitution tilings:
 
 - **Fibonacci word** under a → ab, b → a, iterated to depth INFLATION_DEPTH:
-  - Length(depth k) = F\_{k+1}, verified through depth 8.
-  - At depth 6: |a| = 13, |b| = 8, ratio |a|/|b| = 1.625 → φ.
-  - Sturmian property (complexity p(n) = n + 1) noted.
+    - Length(depth k) = F_{k+1}, verified through depth 8.
+    - At depth 6: |a| = 13, |b| = 8, ratio |a|/|b| = 1.625 → φ.
+    - Sturmian property (complexity p(n) = n + 1) noted.
 - **Thue–Morse sequence** (first 16 terms) — relevant for n = 4 square-lattice substitution.
 - **Rudin–Shapiro sequence** (first 16 terms) — paperfolding/automatic sequence baseline.
 - **Fibonacci substitution matrix** [[1, 1], [1, 0]] with `charpoly = x² − x − 1` (verified) and PF eigenvalue = φ
@@ -476,7 +476,7 @@ directly supporting the unified narrative of §4 and §6 of `idea.md`.
 ## 19. Summary of Verified Claims Supporting `idea.md`
 
 | Claim in `idea.md`                              | Verification in `analysis.mac`                                   |
-| ----------------------------------------------- | ---------------------------------------------------------------- |
+|-------------------------------------------------|------------------------------------------------------------------|
 | Pentagon angular deficit 36° (§2.1)             | Section 2 sweep: n = 5 ⇒ deficit = π/5 = 36°                     |
 | Multi-sheeted cover loop closure (§2.2, §3.1)   | k_close = 2n/gcd(2n, n−2); n = 5 ⇒ 10 pentagons / 3 turns        |
 | Exact Q(√5) substrate (§2.3)                    | Sections 1, 10, 10b: φ identities, Z[φ] arithmetic, prime splits |

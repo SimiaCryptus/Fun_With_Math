@@ -35,7 +35,7 @@ export class LatticeView {
       showNeighborLinks: true,
       glowStrength: 14,
       caOverlay: true,
-      caDeadAlphaSel: 0.2,
+      caDeadAlphaSel: 0.20,
       caDeadAlphaOther: 0.06,
       caLiveBoost: 1.0,
     };
@@ -85,10 +85,8 @@ export class LatticeView {
 
   fit() {
     if (!this.lattice) return;
-    let xmin = +Infinity,
-      xmax = -Infinity;
-    let ymin = +Infinity,
-      ymax = -Infinity;
+    let xmin = +Infinity, xmax = -Infinity;
+    let ymin = +Infinity, ymax = -Infinity;
     for (const t of this.lattice.tiles) {
       for (const [vx, vy] of t.vertsF) {
         if (vx < xmin) xmin = vx;
@@ -110,14 +108,13 @@ export class LatticeView {
   }
 
   worldToScreen(wx, wy) {
-    return [wx * this.scale + this.offset.x, -wy * this.scale + this.offset.y];
+    return [wx * this.scale + this.offset.x,
+            -wy * this.scale + this.offset.y];
   }
 
   screenToWorld(sx, sy) {
-    return [
-      (sx - this.offset.x) / this.scale,
-      -(sy - this.offset.y) / this.scale,
-    ];
+    return [(sx - this.offset.x) / this.scale,
+            -(sy - this.offset.y) / this.scale];
   }
 
   eventToCanvas(ev) {
@@ -133,8 +130,8 @@ export class LatticeView {
   pickTile(sx, sy) {
     if (!this.lattice) return null;
     const [wx, wy] = this.screenToWorld(sx, sy);
-    const sel =
-      this.selectedIdx !== null ? this.lattice.tiles[this.selectedIdx] : null;
+    const sel = this.selectedIdx !== null
+      ? this.lattice.tiles[this.selectedIdx] : null;
     const selSheet = sel ? sel.sheet : 0;
     let fallback = null;
     for (const t of this.lattice.tiles) {
@@ -170,12 +167,8 @@ export class LatticeView {
     const ctx = this.ctx;
     if (this.options.bgGradient) {
       const g = ctx.createRadialGradient(
-        this._w / 2,
-        this._h / 2,
-        0,
-        this._w / 2,
-        this._h / 2,
-        Math.max(this._w, this._h) * 0.7,
+        this._w / 2, this._h / 2, 0,
+        this._w / 2, this._h / 2, Math.max(this._w, this._h) * 0.7
       );
       g.addColorStop(0, "#11141c");
       g.addColorStop(1, "#07090d");
@@ -188,8 +181,8 @@ export class LatticeView {
 
     if (this.options.originGuide) this._drawOriginGuide();
 
-    const sel =
-      this.selectedIdx !== null ? this.lattice.tiles[this.selectedIdx] : null;
+    const sel = this.selectedIdx !== null
+      ? this.lattice.tiles[this.selectedIdx] : null;
     const selSheet = sel ? sel.sheet : 0;
 
     // For Sierpiński, draw back-to-front by depth (largest first).
@@ -216,9 +209,7 @@ export class LatticeView {
     for (const sh of sheets) {
       const isSel = sh === selSheet;
       if (this.options.onlySelSheet && !isSel) continue;
-      const alpha = isSel
-        ? this.options.alphaSelected
-        : this.options.alphaOther;
+      const alpha = isSel ? this.options.alphaSelected : this.options.alphaOther;
       for (const t of bySheet.get(sh)) this._drawTile(t, alpha, isSel);
     }
 
@@ -232,10 +223,8 @@ export class LatticeView {
     ctx.strokeStyle = "rgba(255,255,255,0.04)";
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(0, oy);
-    ctx.lineTo(this._w, oy);
-    ctx.moveTo(ox, 0);
-    ctx.lineTo(ox, this._h);
+    ctx.moveTo(0, oy); ctx.lineTo(this._w, oy);
+    ctx.moveTo(ox, 0); ctx.lineTo(ox, this._h);
     ctx.stroke();
     ctx.restore();
   }
@@ -271,17 +260,49 @@ export class LatticeView {
       ctx.fill();
     }
     if (opts.strokeTiles) {
-      ctx.strokeStyle = isSelSheet
-        ? "rgba(255,255,255,0.18)"
-        : "rgba(255,255,255,0.08)";
-      ctx.lineWidth = isSelSheet
-        ? opts.borderWidth
-        : Math.max(0.4, opts.borderWidth * 0.6);
-      ctx.stroke();
+       // If this tile has an activeEdges restriction (pinwheel), draw
+       // active edges solid and inactive edges with a dashed, dim style.
+       if (t.activeEdges) {
+         const n = t.vertsF.length;
+         for (let k = 0; k < n; k++) {
+           const [sx0, sy0] = this.worldToScreen(...t.vertsF[k]);
+           const [sx1, sy1] = this.worldToScreen(...t.vertsF[(k + 1) % n]);
+           ctx.beginPath();
+           ctx.moveTo(sx0, sy0);
+           ctx.lineTo(sx1, sy1);
+           if (t.activeEdges[k]) {
+             ctx.strokeStyle = isSelSheet
+               ? "rgba(255,255,255,0.30)"
+               : "rgba(255,255,255,0.14)";
+             ctx.lineWidth = isSelSheet
+               ? opts.borderWidth * 1.3
+               : Math.max(0.4, opts.borderWidth * 0.7);
+             ctx.setLineDash([]);
+           } else {
+             ctx.strokeStyle = isSelSheet
+               ? "rgba(255, 90, 90, 0.55)"
+               : "rgba(255, 90, 90, 0.28)";
+             ctx.lineWidth = isSelSheet
+               ? opts.borderWidth
+               : Math.max(0.4, opts.borderWidth * 0.5);
+             ctx.setLineDash([4, 3]);
+           }
+           ctx.stroke();
+         }
+         ctx.setLineDash([]);
+       } else {
+         ctx.strokeStyle = isSelSheet
+           ? "rgba(255,255,255,0.18)"
+           : "rgba(255,255,255,0.08)";
+         ctx.lineWidth = isSelSheet
+           ? opts.borderWidth
+           : Math.max(0.4, opts.borderWidth * 0.6);
+         ctx.stroke();
+       }
     }
 
     const drawLabels = isSelSheet || opts.labelsAllSheets;
-    if (drawLabels && !t.isSierpinski) {
+     if (drawLabels && !t.isSierpinski && !t.isPinwheel) {
       const [cx, cy] = this.worldToScreen(...t.centroidF);
       const sz = opts.labelSize;
       ctx.font = `600 ${sz}px ui-monospace, 'JetBrains Mono', monospace`;
@@ -339,23 +360,12 @@ export class LatticeView {
       const v = this.ca.state[t.index] | 0;
       const ns = this.ca.numStates;
       if (v === 0) {
-        return paletteColor(
-          t.sheet,
+        return paletteColor(t.sheet,
           Math.max(this.lattice.groupOrder, 1),
-          "mono",
-          20,
-          30,
-          isSelSheet,
-        );
+          "mono", 20, 30, isSelSheet);
       }
-      return caStateColor(
-        v,
-        ns,
-        opts.palette,
-        opts.saturation,
-        opts.lightness,
-        isSelSheet,
-      );
+      return caStateColor(v, ns, opts.palette,
+        opts.saturation, opts.lightness, isSelSheet);
     }
 
     if (opts.colorMode === "flat") {
@@ -367,7 +377,7 @@ export class LatticeView {
       val = t.sheet;
       modulus = Math.max(this.lattice.groupOrder, 1);
     } else if (opts.colorMode === "orient") {
-      val = t.sigma !== undefined ? t.sigma : t.orient % 2;
+      val = t.sigma !== undefined ? t.sigma : (t.orient % 2);
       modulus = 2;
     } else if (opts.colorMode === "depth") {
       val = t.depth;
@@ -376,14 +386,8 @@ export class LatticeView {
       val = t.sheet;
       modulus = Math.max(this.lattice.groupOrder, 1);
     }
-    return paletteColor(
-      val,
-      modulus,
-      opts.palette,
-      opts.saturation,
-      opts.lightness,
-      isSelSheet,
-    );
+    return paletteColor(val, modulus, opts.palette,
+                        opts.saturation, opts.lightness, isSelSheet);
   }
 
   _drawSelection(t) {
@@ -433,14 +437,15 @@ function pointInPoly(x, y, poly) {
     const [xi, yi] = poly[i];
     const [xj, yj] = poly[j];
     const intersect =
-      yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-30) + xi;
+      (yi > y) !== (yj > y) &&
+      x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-30) + xi;
     if (intersect) inside = !inside;
   }
   return inside;
 }
 
 function paletteColor(val, modulus, palette, sat, light, vivid) {
-  const t = ((val % modulus) + modulus) % modulus;
+  const t = (val % modulus + modulus) % modulus;
   const frac = t / Math.max(modulus, 1);
   const s = vivid ? sat : Math.max(0, sat - 15);
   const l = vivid ? light : Math.max(0, light - 8);

@@ -1,0 +1,115 @@
+/* =====================================================================
+   sweep_ngon.mac
+
+   Sweep experiment.mac across a range of n-gon values, collecting
+   the headline dimensional and structural quantities into a single
+   comparison table.
+
+   Usage:
+     maxima -b sweep_ngon.mac
+
+   Configuration: edit SWEEP_NS, SWEEP_PRESET, SWEEP_TAU below.
+   Each run re-batches experiment.mac with N_GON / EXPERIMENT_PRESET /
+   TAU_MODE forcibly overridden by re-defining them BEFORE the batch.
+   ===================================================================== */
+
+if not(?boundp('display2d)) then display2d : false$
+
+/* ---------------------------------------------------------------
+   Sweep configuration
+   --------------------------------------------------------------- */
+SWEEP_NS     : [3, 4, 5, 6, 7, 8, 10, 12] $
+SWEEP_PRESET : "medium" $   /* tiny/small/medium/large/huge/xhuge */
+SWEEP_TAU    : "signed3" $ /* every3/signed3/cap/signedn/everyn */
+
+print("============================================================")$
+print("sweep_ngon.mac : n-gon parameter sweep")$
+print("============================================================")$
+print("  N values        :", SWEEP_NS)$
+print("  Preset          :", SWEEP_PRESET)$
+print("  TAU_MODE        :", SWEEP_TAU)$
+print("============================================================")$
+
+sweep_results : [] $
+
+for nval in SWEEP_NS do block(
+    [row, err_flag : false, status],
+    print(""),
+    print("************************************************************"),
+    print("*** Sweep iteration:  N_GON =", nval),
+    print("************************************************************"),
+
+    /* Force the parameters that experiment.mac would otherwise pick
+       from its own defaults.  Because experiment.mac assigns these
+       with `:` at top level, we just shadow them here BEFORE the
+       batch -- but experiment.mac will overwrite them.  Workaround:
+       we patch them via a one-shot script written to a temp file. */
+    status : errcatch(
+        /* Override by pre-binding global names; experiment.mac's
+           own `N_GON : 5 $` etc. will clobber these, so we instead
+           post-process by re-running specific sections.  The clean
+           approach: write a small wrapper file that sets the
+           globals AFTER batching experiment.mac would not work
+           because experiment.mac runs its body at load time.
+           Practical solution: textually rewrite experiment.mac on
+           the fly is heavy.  Simplest robust approach used here:
+           we batch experiment.mac, then RE-READ the results from
+           the symbols it leaves behind.  Before batching we set
+           three "override" globals that experiment.mac is patched
+           to honor (see experiment.mac SECTION 0 override block). */
+        EXPERIMENT_N_GON_OVERRIDE   : nval,
+        EXPERIMENT_PRESET_OVERRIDE  : SWEEP_PRESET,
+        EXPERIMENT_TAU_OVERRIDE     : SWEEP_TAU,
+         batchload("experiment.mac"),
+        0),
+
+    if status = false then (
+        print("*** ERROR running experiment.mac for N_GON =", nval),
+        err_flag : true),
+
+    row : [
+        nval,
+        if ?boundp('N)              then N              else 0,
+        if ?boundp('deg_mean)       then deg_mean       else 0,
+        if ?boundp('d_eff_est)      then d_eff_est      else 0,
+        if ?boundp('d_eff_full)     then d_eff_full     else 0,
+        if ?boundp('d_w_value)      then d_w_value      else 0,
+        if ?boundp('d_spec_value)   then d_spec_value   else 0,
+        if ?boundp('d_spec_kpm)     then d_spec_kpm     else 0,
+        if ?boundp('d_spec_kpm_cdf) then d_spec_kpm_cdf else 0,
+        if ?boundp('n_vortex_edges_in_cluster)
+            then n_vortex_edges_in_cluster else 0,
+        if ?boundp('triangle_count) then triangle_count else 0,
+        if ?boundp('girth_origin)   then girth_origin   else 0,
+        if ?boundp('final_pop)      then final_pop      else 0,
+        if err_flag then "ERR" else "OK"
+    ],
+    sweep_results : endcons(row, sweep_results),
+    print("*** Result row:", row)) $
+
+print("")$
+print("============================================================")$
+print("Sweep summary table")$
+print("============================================================")$
+print("Columns: [n, N, meanDeg, d_eff, d_eff_full, d_w,")$
+print("          d_spec_P0, d_spec_KPM, d_spec_KPM_CDF,")$
+print("          vortexEdges, triangles, girth, CAfinalPop, status]")$
+print("")$
+for row in sweep_results do print("  ", row)$
+
+/* Compact CSV-ish dump for downstream tooling. */
+print("")$
+print("--- CSV ---")$
+print("n,N,meanDeg,d_eff,d_eff_full,d_w,d_spec_P0,d_spec_KPM,d_spec_KPM_CDF,vortexEdges,triangles,girth,CAfinalPop,status")$
+for row in sweep_results do
+    print(apply(sconcat,
+        [row[1],  ",", row[2],  ",", row[3],  ",", row[4],
+         ",",     row[5],  ",", row[6],  ",", row[7],
+         ",",     row[8],  ",", row[9],  ",", row[10],
+         ",",     row[11], ",", row[12], ",", row[13],
+         ",",     row[14]])) $
+
+print("")$
+print("============================================================")$
+print("sweep_ngon.mac : done.")$
+print("============================================================")$

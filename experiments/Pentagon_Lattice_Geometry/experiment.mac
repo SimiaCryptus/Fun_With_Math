@@ -1,0 +1,3329 @@
+/* =====================================================================
+   experiment.mac
+
+   Computational experiments for:
+   "Emergent Fractional Dimensionality and Spinor-Like Holonomy
+    in Multi-Sheeted Pentagon Tilings"
+
+   Where analysis.mac verifies the *symbolic identities* underlying the
+   construction (phi-arithmetic, cyclotomic structure, Alexander-Orbach
+   relation, etc.), this file performs *constructive numerical
+   experiments* on small instances of the multi-sheeted pentagon graph.
+
+   The experiments are designed to:
+     (1) Build a concrete multi-sheeted pentagon adjacency graph in
+         exact Q(sqrt(5)) arithmetic.
+     (2) Compute the graph Laplacian and its eigenspectrum.
+     (3) Estimate the connectivity dimension d_eff from BFS volume
+         growth N(r) ~ r^d_eff.
+     (4) Simulate random walks to estimate the walk dimension d_w
+         from <Delta x^2(t)> ~ t^(2/d_w) and the spectral dimension
+         d_spec from P_0(t) ~ t^(-d_spec/2).
+     (5) Cross-check d_spec via the Alexander-Orbach relation
+         d_spec = 2 d_eff / d_w.
+     (6) Demonstrate holonomy accumulation around a vortex defect
+         for fiber groups G = Z_2 (spinor) and G = Z_5 (anyonic).
+     (7) Run a small Pentagonal-Life-like cellular automaton on the
+         constructed graph and observe glider/cluster behavior.
+
+   Sections:
+      1. Setup and Q(sqrt(5)) machinery
+      2. Pentagon geometry in Q(sqrt(5))
+      3. Multi-sheeted adjacency graph construction
+      4. Graph Laplacian and spectral analysis
+      5. BFS volume growth: connectivity dimension d_eff
+      6. Random-walk simulation: d_w and d_spec
+      7. Alexander-Orbach cross-check
+      8. Holonomy experiments (Z_2 and Z_5 fibers)
+      9. Cellular automaton dynamics
+      10. Extended ruleset survey (B/S families)
+      11. Alternative tau-rules: holonomy and structure comparison
+      12. Extended holonomy: Z_3, Z_4, Z_6, Z_10 fiber groups
+      13. Structural pattern analysis: clustering, girth, sheet flow
+      14. Per-sheet sub-graph analysis
+      15. Glider/oscillator hunt under multiple seeds
+      16. Long-loop holonomy enumeration (length 6-8)
+      17. Cut-and-project acceptance window experiment
+      18. KPM-based spectral density approximation
+      19. Per-sheet random walk diagnostics
+      20. Cross-tau dimensional comparison
+      21. Resistance distance and commute time
+      22. Summary report
+   ===================================================================== */
+
+if not(?boundp('display2d)) then display2d : false$
+
+print("============================================================")$
+print("experiment.mac : Multi-Sheeted N-Gon Tiling Experiments")$
+print("============================================================")$
+
+/* Make pseudo-random results reproducible. */
+/* set_random_state signature varies between Maxima builds; guard it. */
+if ?fboundp('make_random_state) then
+     set_random_state(make_random_state(20250101))
+else
+     print("(note: make_random_state unavailable; using default RNG seed)")$
+   /* Load string-processing package for pad_right used in summary tables. */
+   if not(?fboundp('pad_right)) then errcatch(load("stringproc"))$
+   /* Fallback pad_right if package unavailable. */
+   if not(?fboundp('pad_right)) then
+       pad_right(s, n) := block(
+           [str : if stringp(s) then s else string(s),
+            len, pad],
+           len : slength(str),
+           if len >= n then str
+           else (
+               pad : apply(sconcat, makelist(" ", k, 1, n - len)),
+               sconcat(str, pad)))$
+
+/* =====================================================================
+      SECTION 0b.  GLOBAL UTILITY FUNCTIONS
+      ---------------------------------------------------------------------
+      Defined before any section uses them.  Includes exact Q(sqrt(5))
+      arithmetic helpers, sorting comparators, and the squared-distance
+      function used by the Erdos catalog (Section 23).
+    ===================================================================== */
+/* Exact squared Euclidean distance between two [x,y] points in Q(sqrt(5)). */
+sq_dist_exact(p, q) := block(
+      [dx : qcanon(p[1] - q[1]),
+       dy : qcanon(p[2] - q[2])],
+       qs5_decompose(qcanon(dx^2 + dy^2))) $
+/* Decompose an element of Q(sqrt(5)) into [r, s] where value = r + s*sqrt(5).
+    Works on ratsimp'd expressions. */
+qs5_decompose(z) := block(
+         [zz : ratsimp(expand(z)), r, s, has_sqrt],
+         /* If z is a plain rational (no sqrt(5)), s = 0. */
+      r : ratsimp(subst(0, sqrt(5), zz)),
+         has_sqrt : freeof(sqrt(5), zz),
+         s : if has_sqrt then 0
+             else ratsimp((zz - r) / sqrt(5)),
+      [r, s]) $
+/* Floating-point value of r + s*sqrt(5). */
+qs5_float(rs) := float(rs[1] + rs[2] * sqrt(5)) $
+/* Norm N(a + b*sqrt(5)) = a^2 - 5*b^2 in Z[sqrt(5)]. */
+qs5_norm(rs) := ratsimp(rs[1]^2 - 5 * rs[2]^2) $
+/* Galois conjugate: sqrt(5) -> -sqrt(5). */
+qs5_conjugate(z) := ratsimp(subst(-sqrt(5), sqrt(5), z)) $
+/* Lexicographic comparator on [r,s] pairs for sorting distance classes.
+    Primary key: float value r + s*sqrt(5); tie-break on r then s. */
+qs5_lt(a, b) := block(
+      [fa : qs5_float(a), fb : qs5_float(b)],
+      if abs(fa - fb) > 1e-9 then is(fa < fb)
+      else if a[1] # b[1] then is(a[1] < b[1])
+      else is(a[2] < b[2])) $
+/* Insert x into a sorted list (ascending by qs5_lt on first element
+    if x is a list, else by float value). */
+sorted_insert(x, lst) := block(
+      [result : [], inserted : false, el],
+      for el in lst do (
+          if not inserted and
+             (if listp(x) then qs5_lt(x[1], el[1])
+              else is(float(x) < float(el))) then (
+              result : endcons(x, result),
+              inserted : true),
+          result : endcons(el, result)),
+      if not inserted then result : endcons(x, result),
+      result) $
+/* Check whether two [r,s] pairs represent the same Q(sqrt(5)) element. */
+qs5_eq(a, b) := is(ratsimp(a[1] - b[1]) = 0 and ratsimp(a[2] - b[2]) = 0) $
+/* Fibonacci number F_n (0-indexed: F_0=0, F_1=1, F_2=1, ...). */
+fib(n) := block(
+      [a : 0, b : 1, k, tmp],
+      if n = 0 then return(0),
+      for k : 1 thru n - 1 do (tmp : a + b, a : b, b : tmp),
+      b) $
+/* Check if a rational number r is a perfect square in Q.
+    Returns [true, sqrt(r)] or [false, 0]. */
+is_rat_square(r) := block(
+      [rr : ratsimp(r), num, den, sn, sd],
+      if rr < 0 then return([false, 0]),
+      if rr = 0 then return([true, 0]),
+      num : num(rr), den : denom(rr),
+      sn : isqrt(num), sd : isqrt(den),
+      if sn^2 = num and sd^2 = den then [true, sn/sd]
+      else [false, 0]) $
+/* Check if z = r + s*sqrt(5) is a perfect square in Q(sqrt(5)).
+    z = (a + b*sqrt(5))^2  iff  a^2 + 5b^2 = r  and  2ab = s.
+    Returns [true, a, b] or [false, 0, 0]. */
+is_qs5_square(rs) := block(
+      [r : rs[1], s : rs[2], a, b, disc, sq_check],
+      /* From 2ab = s and a^2 + 5b^2 = r:
+         a^2 - r*a + 5*s^2/4 = 0  (if s != 0)
+         disc = r^2 - 5*s^2 = (a^2 - 5b^2)^2 >= 0 */
+      disc : ratsimp(r^2 - 5*s^2),
+      if disc < 0 then return([false, 0, 0]),
+      sq_check : is_rat_square(disc),
+      if not sq_check[1] then return([false, 0, 0]),
+      /* a^2 = (r + sqrt(disc))/2 */
+      block(
+          [a2 : ratsimp((r + sq_check[2])/2)],
+          sq_check : is_rat_square(a2),
+          if not sq_check[1] then return([false, 0, 0]),
+          a : sq_check[2],
+          b : if a # 0 then ratsimp(s / (2*a)) else 0,
+          if ratsimp(a^2 + 5*b^2 - r) = 0 and ratsimp(2*a*b - s) = 0
+          then [true, a, b]
+          else [false, 0, 0])) $
+/* Detect whether a squared distance rs = [r,s] matches a Fibonacci pattern.
+    Returns [true, m] if rs ~ F_{2m} + F_{2m-1}*sqrt(5), else [false, 0]. */
+detect_fibonacci_distance(rs) := block(
+      [r : float(rs[1]), s : float(rs[2]), m, fr, fs, tol : 1e-6],
+      for m : 1 thru 20 do (
+          fr : float(fib(2*m)),
+          fs : float(fib(2*m - 1)),
+          if abs(r - fr) < tol and abs(s - fs) < tol then
+              return([true, m])),
+      [false, 0]) $
+/* =====================================================================
+     SECTION 0.  PARAMETERIZATION
+     ---------------------------------------------------------------------
+     N_GON controls the polygon type for all geometry, holonomy, and CA
+     experiments.  Set it here; everything else follows automatically.
+       n = 3  : equilateral triangle
+       n = 4  : square
+       n = 5  : regular pentagon  (original paper)
+       n = 6  : regular hexagon
+       n = 7  : regular heptagon
+       n = 8  : regular octagon
+       n = 12 : regular dodecagon
+     Note: for n in {3, 4, 6} the tiling closes flat (deficit = 0) so
+     the sheet-transition mechanism is trivial unless a non-zero tau
+     rule is forced.  The most interesting fractional-dimension regime
+     arises for n = 5 (and other n where the angular deficit is an
+     irrational multiple of 2*pi).
+     ===================================================================== */
+N_GON : 5 $   /* <-- change this to study other n-gons */
+/* Sweep override: sweep_ngon.mac may set EXPERIMENT_N_GON_OVERRIDE
+   before batching this file.  Honor it if present. */
+if ?boundp('EXPERIMENT_N_GON_OVERRIDE) then
+    N_GON : EXPERIMENT_N_GON_OVERRIDE $
+if not integerp(N_GON) or N_GON < 3
+    then error("N_GON must be an integer >= 3; got", N_GON)$
+n_int : N_GON $
+print("------------------------------------------------------------")$
+print("PARAMETERIZATION:  N_GON =", N_GON)$
+print("------------------------------------------------------------")$
+/* Derived angular constants. */
+theta_int_n : (n_int - 2)*%pi / n_int $   /* interior angle */
+theta_ext_n : 2*%pi / n_int $             /* exterior / central angle */
+k_flat_n    : floor(2*%pi / theta_int_n) $  /* n-gons around a flat vertex */
+deficit_n   : ratsimp(2*%pi - k_flat_n * theta_int_n) $
+k_loop_close_n : 2*n_int / gcd(2*n_int, n_int - 2) $
+print("  Interior angle =", float(theta_int_n * 180 / %pi), "deg")$
+print("  Flat-vertex count k_flat =", k_flat_n)$
+print("  Angular deficit =", float(deficit_n * 180 / %pi), "deg")$
+print("  Loop-closure index k_loop =", k_loop_close_n)$
+/* Natural fiber group order for this n-gon. */
+FIBER_ORDER_N : k_loop_close_n $
+print("  Natural fiber group order =", FIBER_ORDER_N)$
+/* Holonomy fiber groups to survey (always include 2, n_int, and the
+    natural fiber order; deduplicate and sort). */
+FIBER_GROUPS_DEFAULT : sort(listify(setify(
+     append([2, n_int, FIBER_ORDER_N],
+            if n_int <= 12 then [3, 4, 5, 6, 10] else [])))) $
+print("  Fiber groups for holonomy survey:", FIBER_GROUPS_DEFAULT)$
+
+/* ---------------------------------------------------------------------
+     Shared utility: least-squares slope/intercept of (xs, ys) lists.
+    Defined early so every section can use it.
+    --------------------------------------------------------------------- */
+log_log_fit_basic(xs, ys) := block(
+     [n : length(xs), sx, sy, sxx, sxy, slope, intercept],
+      if n < 2 then return([0.0, 0.0]),
+     sx : apply("+", xs),
+     sy : apply("+", ys),
+     sxx : apply("+", xs*xs),
+     sxy : apply("+", xs*ys),
+      block(
+          [denom : n * sxx - sx^2],
+          if abs(float(denom)) < 1e-15 then return([0.0, float(sy/n)]),
+          slope : (n * sxy - sx*sy) / denom),
+     intercept : (sy - slope * sx) / n,
+     [float(slope), float(intercept)]) $
+/* =====================================================================
+    CONFIGURATION PARAMETERS
+    ---------------------------------------------------------------------
+    These parameters control the computational cost of the experiment.
+    Adjust them to trade off runtime vs. statistical/spectral quality.
+    Presets (set EXPERIMENT_PRESET below to one of these strings):
+       "tiny"    -- smoke test; runs in a few seconds. Cluster ~ 10-30
+                    cells, very short walks. Useful for syntax checking.
+       "small"   -- default; runs in well under a minute on a laptop.
+                    Cluster ~ 30-80 cells, ~200 walks of length 20.
+                    Indicative dimension fits; matches the original
+                    behaviour of this script.
+       "medium"  -- runs in a few minutes. Cluster ~ 200-500 cells,
+                    ~1000 walks of length 60. Better dimension fits,
+                    LAPACK eigenvalues still tractable.
+       "large"   -- runs in tens of minutes to an hour. Cluster ~
+                    1000-3000 cells, ~5000 walks of length 200.
+                    Eigenvalue step is the bottleneck (O(N^3)).
+       "huge"    -- research-grade run; may take hours and a lot of
+                    memory. Eigenvalues may be skipped if SKIP_EIG
+                    is true (see below).
+      "xhuge"   -- extra-large run: BFS depth 6, longer walks,
+                   more KPM moments. Intended for the upgraded
+                   pipeline (signed/cap tau-rule + KPM spectral
+                   analysis). Hours of runtime; eigenvalues skipped.
+       "custom"  -- ignore the preset and use whatever individual
+                    parameter values are set below.
+    Individual parameters (override after preset block if desired):
+       BFS_DEPTH      -- BFS expansion depth for cluster construction.
+                         Cluster size grows roughly like 5^BFS_DEPTH.
+       M_WALKS        -- number of random walks for d_w / d_spec fits.
+       T_STEPS        -- length of each random walk.
+       T_CA           -- number of cellular-automaton time steps.
+       SKIP_EIG       -- if true, skip the Laplacian eigendecomposition
+                         (Section 4). Useful for very large clusters
+                         where O(N^3) LAPACK is too slow.
+       EIG_MAX_N      -- safety cap: auto-skip eigendecomposition if
+                         cluster size exceeds this value, regardless
+                         of SKIP_EIG.
+      TAU_MODE       -- selects the default vortex rule used in the
+                        main BFS expansion (Section 3) and downstream
+                        analyses.  Values:
+                          "every3"  -- the original didactic rule
+                                       tau(i,k) = [(i+k) ≡ 0 mod 3],
+                                       always +1.
+                          "signed3" -- the signed-3 rule from the
+                                       tau-survey: tau in {-1,0,+1}.
+                                       Produces the largest clusters
+                                       and the most sheets, and gives
+                                       d_eff closest to the predicted
+                                       midpoint 2.5.
+                          "cap"     -- the cut-and-project acceptance
+                                       window rule of Section 17:
+                                       shift +1 iff exactly one
+                                       endpoint lies inside the
+                                       pentagonal acceptance window.
+                                       This is the rigorous regime of
+                                       idea.md §2.4.
+    ===================================================================== */
+EXPERIMENT_PRESET : "huge" $
+if ?boundp('EXPERIMENT_PRESET_OVERRIDE) then
+    EXPERIMENT_PRESET : EXPERIMENT_PRESET_OVERRIDE $
+/* Default vortex rule for the main cluster.  Set to "signed3" or
+    "cap" to use the upgraded rules instead of the didactic every3. */
+TAU_MODE : "signed3" $
+if ?boundp('EXPERIMENT_TAU_OVERRIDE) then
+    TAU_MODE : EXPERIMENT_TAU_OVERRIDE $
+if EXPERIMENT_PRESET = "tiny" then (
+     BFS_DEPTH : 1,
+     M_WALKS   : 50,
+     T_STEPS   : 10,
+     T_CA      : 4,
+     SKIP_EIG  : false,
+     EIG_MAX_N : 1500,
+     KPM_MOMENTS : 64,
+     KPM_SAMPLES : 8,
+     LONG_LOOP_MAX : 6
+) elseif EXPERIMENT_PRESET = "small" then (
+     BFS_DEPTH : 2,
+     M_WALKS   : 200,
+     T_STEPS   : 20,
+     T_CA      : 8,
+     SKIP_EIG  : false,
+     EIG_MAX_N : 1500,
+     KPM_MOMENTS : 96,
+     KPM_SAMPLES : 12,
+     LONG_LOOP_MAX : 6
+) elseif EXPERIMENT_PRESET = "medium" then (
+     BFS_DEPTH : 3,
+     M_WALKS   : 1000,
+     T_STEPS   : 60,
+     T_CA      : 16,
+     SKIP_EIG  : false,
+     EIG_MAX_N : 1500,
+     KPM_MOMENTS : 128,
+     KPM_SAMPLES : 16,
+     LONG_LOOP_MAX : 7
+) elseif EXPERIMENT_PRESET = "large" then (
+     BFS_DEPTH : 4,
+     M_WALKS   : 5000,
+     T_STEPS   : 200,
+     T_CA      : 32,
+     SKIP_EIG  : false,
+     EIG_MAX_N : 2500,
+     KPM_MOMENTS : 192,
+     KPM_SAMPLES : 20,
+     LONG_LOOP_MAX : 7
+) elseif EXPERIMENT_PRESET = "huge" then (
+     BFS_DEPTH : 5,
+     M_WALKS   : 20000,
+     T_STEPS   : 500,
+     T_CA      : 64,
+     SKIP_EIG  : true,
+     EIG_MAX_N : 3000,
+     KPM_MOMENTS : 256,
+     KPM_SAMPLES : 24,
+     LONG_LOOP_MAX : 8
+) elseif EXPERIMENT_PRESET = "xhuge" then (
+     BFS_DEPTH : 6,
+     M_WALKS   : 40000,
+     T_STEPS   : 800,
+     T_CA      : 96,
+     SKIP_EIG  : true,
+     EIG_MAX_N : 3000,
+     KPM_MOMENTS : 384,
+     KPM_SAMPLES : 32,
+     LONG_LOOP_MAX : 8
+) elseif EXPERIMENT_PRESET = "custom" then (
+     /* Edit these directly for hand-tuned runs. */
+     BFS_DEPTH : 2,
+     M_WALKS   : 200,
+     T_STEPS   : 20,
+     T_CA      : 8,
+     SKIP_EIG  : false,
+     EIG_MAX_N : 1500,
+     KPM_MOMENTS : 96,
+     KPM_SAMPLES : 12,
+     LONG_LOOP_MAX : 6
+) else
+     error("Unknown EXPERIMENT_PRESET: ", EXPERIMENT_PRESET) $
+/* Early-time MSD fitting window: we want the genuine sub-diffusive
+    regime, not the boundary-saturated plateau.  The cluster diameter
+    is ~ 2*BFS_DEPTH, so we cap the fit at half that. */
+MSD_FIT_LO : 2 $
+MSD_FIT_HI : max(4, min(T_STEPS, BFS_DEPTH)) $
+/* P_0 fit window: same idea, even t only. */
+P0_FIT_LO  : 2 $
+P0_FIT_HI  : max(4, min(T_STEPS, 2*BFS_DEPTH)) $
+print("Configuration:")$
+print("  preset    =", EXPERIMENT_PRESET)$
+print("  TAU_MODE  =", TAU_MODE)$
+print("  BFS_DEPTH =", BFS_DEPTH)$
+print("  M_WALKS   =", M_WALKS)$
+print("  T_STEPS   =", T_STEPS)$
+print("  T_CA      =", T_CA)$
+print("  SKIP_EIG  =", SKIP_EIG)$
+print("  EIG_MAX_N =", EIG_MAX_N)$
+print("  MSD fit window t in [", MSD_FIT_LO, ",", MSD_FIT_HI, "]")$
+print("  P_0 fit window t in [", P0_FIT_LO,  ",", P0_FIT_HI,  "] (even t)")$
+print("  KPM_MOMENTS =", KPM_MOMENTS)$
+print("  KPM_SAMPLES =", KPM_SAMPLES)$
+print("  LONG_LOOP_MAX =", LONG_LOOP_MAX)$
+print("  N_GON =", N_GON)$
+
+/* ---------------------------------------------------------------------
+    SECTION 1.  Setup and field arithmetic machinery
+   --------------------------------------------------------------------- */
+
+/* Canonicalize an algebraic number for hashable equality. */
+qcanon(z) := ratsimp(expand(z)) $
+
+/* Test two algebraic numbers for exact equality in Q(sqrt(5)). */
+qeq(a, b) := is(qcanon(a - b) = 0) $
+
+/* Pentagon-specific golden-ratio constants (kept for n=5 compatibility
+    and for use in the cut-and-project window of Section 17). */
+phi : (1 + sqrt(5))/2 $
+psi : (1 - sqrt(5))/2 $
+if N_GON = 5 then (
+     c72  : (sqrt(5) - 1)/4,
+     s72  : sqrt(10 + 2*sqrt(5))/4,
+     c144 : -(sqrt(5) + 1)/4,
+     s144 : sqrt(10 - 2*sqrt(5))/4,
+     if not qeq(phi^2, phi + 1) then error("phi^2 != phi + 1"),
+     if not qeq(c72^2 + s72^2, 1) then error("cos^2(72)+sin^2(72) != 1"),
+     if not qeq(c144^2 + s144^2, 1) then error("cos^2(144)+sin^2(144) != 1"),
+     print("Section 1: Q(sqrt(5)) arithmetic primitives OK.")
+) else
+     print("Section 1: generic field arithmetic (N_GON =", N_GON, ").")$
+/* Phi-based norm form: N(a + b*phi) = a^2 + a*b - b^2 (discriminant 5).
+    Used in Section 23 for ring-multiplicity analysis. */
+phi_norm(a, b) := ratsimp(a^2 + a*b - b^2) $
+/* Express a Q(sqrt(5)) element in the Z[phi] basis {1, phi}.
+    a + b*sqrt(5) = (a - b) + 2b*phi  since sqrt(5) = 2*phi - 1. */
+to_zphi_basis(rs) := block(
+      [r : rs[1], s : rs[2]],
+      [ratsimp(r - s), ratsimp(2*s)]) $
+
+/* ---------------------------------------------------------------------
+    SECTION 2.  N-gon geometry
+   ---------------------------------------------------------------------
+
+    A regular n-gon is described by:
+      centroid    : [cx, cy]  in Q(sqrt(5))^2
+      chirality   : c in {0, 1}   (orientation class under D_n action)
+      sheet       : s in Z  (or Z_n)
+
+    Circumradius for unit edge: R = 1/(2 sin(pi/n)).
+    We use R as a free symbolic constant; it never appears in equality
+    comparisons -- only differences of centroids do.  For pure adjacency
+    tests we work with the *edge midpoint* normalized form.
+
+    Orientation:  rotating a regular n-gon by 2*pi/n maps it to itself,
+    so multiples-of-2*pi/n rotations are NOT distinguishing labels and
+    must not appear in the cell-identity tuple.  What is distinguishing
+    is *chirality* (handedness), because reflecting across an edge flips
+    the orientation class.
+
+        - For odd n (n = 3, 5, 7, ...): the n-gon has no edge-midpoint
+          symmetry axis, so reflection across an edge does NOT lie in
+          the rotation subgroup of D_n.  The dual graph is bipartite:
+          every edge connects "up" cells (chirality 0) to "down" cells
+          (chirality 1).  Every closed walk on the tiling has even
+          length on the chirality bigraph.
+
+        - For even n (n = 4, 6, 8, ...): the n-gon has an edge-midpoint
+          axis through every edge, so reflection across an edge is
+          realized by a rotation in D_n.  Chirality collapses to a
+          single class.  We carry chirality = 0 trivially.
+
+    The chirality bit also resolves the previous code's silent
+    absorption of the orientation flip into the sheet index, which
+    was conflating two distinct degrees of freedom (geometric
+    handedness and physical sheet monodromy).
+   --------------------------------------------------------------------- */
+
+/* Parity-dependent chirality use:
+    For odd n the bigraph is non-trivial; for even n chirality is
+    a constant 0 and we never enumerate it. */
+CHIRAL_ACTIVE : oddp(n_int) $
+
+/* Flip chirality across an edge: for odd n the reflection takes
+    "up" to "down"; for even n it stays the same. */
+flip_chir(c) := if CHIRAL_ACTIVE then mod(c + 1, 2) else 0 $
+
+/* Rotation table: rot_cs[k+1] = [cos(k * 2*pi/n), sin(k * 2*pi/n)]
+    for k = 0 .. n_int-1.  Stored as exact symbolic expressions so that
+    equality comparisons on centroids remain exact. */
+rot_cs : makelist(
+     [qcanon(cos(k * 2*%pi / n_int)),
+      qcanon(sin(k * 2*%pi / n_int))],
+     k, 0, n_int - 1) $
+
+/* Apply rotation by k*(2*pi/n) to a 2-vector. */
+rot_ngon(v, k) := block(
+     [cs : rot_cs[mod(k, n_int) + 1], c, s],
+    c : cs[1], s : cs[2],
+    [c*v[1] - s*v[2], s*v[1] + c*v[2]]) $
+
+/* The n unit vectors from n-gon center to its vertices, with vertex
+    0 pointing in the +x direction.  These are the "spoke" directions. */
+spoke(k) := rot_ngon([1, 0], k) $
+
+/* Edge midpoints (relative to center) for orientation = 0:
+    midpoint of edge k is halfway between vertex k and vertex k+1. */
+edge_mid_rel(k) := block(
+    [v1 : spoke(k), v2 : spoke(k+1)],
+    [(v1[1] + v2[1])/2, (v1[2] + v2[2])/2]) $
+
+
+/* Canonical edge midpoint for a cell at (cx, cy) with chirality chir.
+    Up-cells (chir = 0) use the base orientation; down-cells (chir = 1)
+    are reflected across the x-axis, which is one realization of the
+    chirality-flipping reflection.  For even n, chir is always 0 and
+    we just use the base orientation. */
+edge_midpoint(cx, cy, chir, k) := block(
+     [m : edge_mid_rel(k), mx, my],
+     mx : m[1],
+     my : if chir = 1 then -m[2] else m[2],
+     [qcanon(cx + mx), qcanon(cy + my)]) $
+
+/* (kept for backward-compatible call sites in tau_rule_cap stub) */
+edge_normal_rel(chir, k) := block(
+     [m : edge_mid_rel(k)],
+     if chir = 1 then [m[1], -m[2]] else m) $
+/* cell_orient is a legacy alias kept for any call-sites that still
+    reference it.  It always returns 0 (the canonical orientation) since
+    the chirality bit now carries the geometric handedness information. */
+cell_orient : [] $   /* populated lazily below after cluster is built */
+
+
+/* When two n-gons share an edge, the neighbor's center is the
+    reflection of the current center across that edge midpoint:
+       neighbor center = 2 * edge_mid - my_center
+    Chirality flips across each edge for odd n (bipartite dual graph),
+    and is constant for even n.  The genuine angular deficit, when
+    nonzero, is absorbed into the sheet index via tau_rule.             */
+
+print("Section 2: N-gon geometry primitives OK (N_GON =", N_GON, ").")$
+print("  CHIRAL_ACTIVE =", CHIRAL_ACTIVE,
+       if CHIRAL_ACTIVE then " (odd n: bipartite orientation bigraph)"
+                        else " (even n: single orientation class)")$
+
+/* ---------------------------------------------------------------------
+   SECTION 3.  Multi-sheeted adjacency graph construction
+   ---------------------------------------------------------------------
+
+    We construct a multi-sheeted n-gon adjacency graph by BFS from an
+    origin n-gon.  Each n-gon has n edges; the tau rule determines which
+    edges carry a sheet transition.
+
+    Nodes are identified by integer IDs 1..N.  We store:
+      cell_center[i]  -- exact [cx, cy] in Q(sqrt(5))
+       cell_chir[i]    -- chirality bit in {0, 1}; constantly 0 for even n
+      cell_sheet[i]   -- integer (Z) or residue (Z_n)
+   and the adjacency list nbrs[i] -- list of neighbor IDs.
+    Note: the previous version of this code stored a 5-valued
+    `cell_orient` field representing multiples of 2*pi/n.  That field
+    was geometrically meaningless because rotating a regular n-gon by
+    2*pi/n maps it to itself, so identity should not depend on it.
+    Worse, on a same-orientation tiling the reflection across an edge
+    flips chirality for odd n, but the old code kept orientation fixed,
+    silently absorbing the flip into the sheet index.  The chirality
+    bit below now tracks that geometric degree of freedom explicitly.
+
+    The cluster is generated by BFS from the origin n-gon, materializing
+    neighbors lazily.
+   --------------------------------------------------------------------- */
+
+/* Storage: associative arrays keyed by integer ID. */
+cell_center : [] $
+cell_chir   : [] $
+cell_sheet  : [] $
+cell_count  : 0 $
+nbrs        : [] $
+/* Hash index: maps a float fingerprint -> list of candidate cell IDs.
+   This turns find_cell from O(N) into O(1) amortized.  We use a
+   Maxima hash array; collisions are resolved by exact qeq check. */
+cell_hash   : 0 $
+cell_hash   : ?make\-hash\-table() $
+/* Float fingerprint of a (center, chirality, sheet) tuple.  Rounded to
+   a fixed grid so exact-equal centers always hash the same. */
+cell_fingerprint(c, chir, s) := block(
+    [fx : float(ratsimp(expand(c[1]))),
+     fy : float(ratsimp(expand(c[2])))],
+    [round(fx * 1048576), round(fy * 1048576), mod(chir, 2), s]) $
+
+
+/* Add a cell and return its ID.  The middle argument is chirality. */
+add_cell(c, chir, s) := block(
+    [id, fp],
+    cell_count : cell_count + 1,
+    id : cell_count,
+    cell_center : endcons([qcanon(c[1]), qcanon(c[2])], cell_center),
+    cell_chir   : endcons(mod(chir, 2), cell_chir),
+    cell_sheet  : endcons(s, cell_sheet),
+    nbrs        : endcons([], nbrs),
+    fp : cell_fingerprint(c, chir, s),
+    block([prev : ?gethash(fp, cell_hash, [])],
+          ?puthash(fp, cell_hash, endcons(id, prev))),
+    id) $
+
+/* Look up a cell with given (center, chirality, sheet); returns 0 if absent.
+   Uses exact Q(sqrt(5)) comparisons. */
+find_cell(c, chir, s) := block(
+    [fp : cell_fingerprint(c, chir, s),
+     cx, cy, cm : mod(chir, 2), candidates, i, ce, result : 0],
+    candidates : ?gethash(fp, cell_hash, []),
+    if length(candidates) = 0 then return(0),
+    cx : qcanon(c[1]),
+    cy : qcanon(c[2]),
+    for i in candidates do (
+        ce : cell_center[i],
+        if qeq(ce[1], cx) and qeq(ce[2], cy)
+           and cell_chir[i] = cm
+           and cell_sheet[i] = s
+        then (result : i, return(result))),
+    result) $
+
+/* Find-or-create. */
+get_cell(c, chir, s) := block(
+    [id : find_cell(c, chir, s)],
+    if id = 0 then add_cell(c, chir, s) else id) $
+
+/* Add an undirected edge. */
+add_edge(i, j) := block(
+    [],
+    if not member(j, nbrs[i]) then
+        nbrs[i] : endcons(j, nbrs[i]),
+    if not member(i, nbrs[j]) then
+        nbrs[j] : endcons(i, nbrs[j])) $
+
+/* Reflection of n-gon A's center across the midpoint of its k-th edge
+    gives the center of the neighbor sharing that edge.  The neighbor's
+    chirality is the flip of A's chirality (for odd n; identical for
+    even n).  This function returns just the center. */
+reflected_neighbor_center(cx, cy, chir, k) := block(
+    [m : edge_midpoint(cx, cy, chir, k)],
+    [qcanon(2*m[1] - cx), qcanon(2*m[2] - cy)]) $
+
+/* Generate the neighbor of cell i across its k-th edge, with sheet
+    transition tau (an integer added to the current sheet index).
+    The transition rule tau_rule(i, k) is a parameter of the experiment. */
+
+/* Default transition rule: every (n_int)-th edge (by index parity) is a
+    vortex edge contributing +1 to the sheet index; others contribute 0.
+    For n=5 this reproduces the original "every3" didactic rule when
+    combined with the (i+k) mod 3 test.  For general n we use a
+    period-n_int rule: tau = 1 iff (i+k) mod n_int = 0. */
+tau_rule_every3(i, k) :=
+     if mod(i + k, 3) = 0 then 1 else 0 $
+/* General period-n rule (replaces every3 for n != 5). */
+tau_rule_everyn(i, k) :=
+      if mod(i + k, n_int) = 0 then 1 else 0 $
+tau_rule_signed3(i, k) :=
+     if mod(i + k, 3) = 0 then 1
+     elseif mod(i + k, 3) = 1 then -1
+     else 0 $
+/* General signed-n rule. */
+tau_rule_signedn(i, k) :=
+      if mod(i + k, n_int) = 0 then 1
+      elseif mod(i + k, n_int) = 1 then -1
+      else 0 $
+/* The cap-window rule needs `cell_center`, `cell_orient` and the
+    `reflected_neighbor_center` / `in_cap_window` helpers; we define
+    it as a forward declaration here and bind its body after Section 17
+    has defined `in_cap_window`. */
+tau_rule_cap(i, k) := tau_rule_every3(i, k) $   /* placeholder */
+/* Live dispatcher.  Always reads TAU_MODE so it can be retargeted.
+    For n != 5 the "every3" and "signed3" modes fall back to the
+    general period-n variants so the cluster is non-trivial. */
+tau_rule(i, k) :=
+     if TAU_MODE = "signed3" then tau_rule_signed3(i, k)
+      elseif TAU_MODE = "signedn" then tau_rule_signedn(i, k)
+     elseif TAU_MODE = "cap"  then tau_rule_cap(i, k)
+      elseif TAU_MODE = "everyn" then tau_rule_everyn(i, k)
+      else (if n_int = 5 then tau_rule_every3(i, k)
+            else tau_rule_everyn(i, k)) $
+
+/* Build a neighbor of cell i across edge k, returning its ID. */
+add_neighbor(i, k) := block(
+    [c : cell_center[i], chir : cell_chir[i], s : cell_sheet[i],
+     nc, ds, ns, nb_id, nchir],
+    nc : reflected_neighbor_center(c[1], c[2], chir, k),
+    nchir : flip_chir(chir),
+    ds : tau_rule(i, k),
+    ns : s + ds,
+    nb_id : get_cell(nc, nchir, ns),
+    add_edge(i, nb_id),
+    nb_id) $
+
+/* BFS-expand a cluster up to a given depth. */
+expand_cluster(depth) := block(
+    [frontier, next_frontier, d, i, k, _nb],
+    frontier : makelist(ii, ii, 1, cell_count),
+    for d : 1 thru depth do (
+        next_frontier : [],
+        for i in frontier do
+             for k : 0 thru n_int - 1 do (
+                _nb : add_neighbor(i, k),
+                if not member(_nb, next_frontier)
+                   and not member(_nb, frontier)
+                then next_frontier : endcons(_nb, next_frontier)),
+        frontier : next_frontier)) $
+
+/* Initialize with the origin pentagon. */
+origin_id : add_cell([0, 0], 0, 0) $
+print("Section 3: created origin", N_GON, "-gon, id =", origin_id,
+        "  (TAU_MODE =", TAU_MODE, ")")$
+
+/* If TAU_MODE = "cap", we cannot expand yet because the acceptance
+    window predicate `in_cap_window` is only defined in Section 17.
+    We forward-define a minimal version here so the main cluster can
+    be built up front; Section 17 will override it identically. */
+if TAU_MODE = "cap" then (
+     qfloat_pre(z) := float(ratsimp(expand(z))),
+     frac_part_pre(x) := x - floor(x),
+     phantom_proj_pre(c) := block(
+          /* Use phi for n=5; for other n use 2*cos(2*pi/n) as the
+             irrational projection constant. */
+          [proj_const : if n_int = 5 then float(phi)
+                        else float(2*cos(2*%pi/n_int)),
+           px : frac_part_pre(qfloat_pre(c[1]) * proj_const),
+           py : frac_part_pre(qfloat_pre(c[2]) * proj_const)],
+         [px, py]),
+     cap_window_threshold_pre : 0.30,
+     in_cap_window_pre(c) := block(
+         [p : phantom_proj_pre(c), dx, dy, r2, theta_cos],
+         dx : p[1] - 0.5,
+         dy : p[2] - 0.5,
+         r2 : dx^2 + dy^2,
+         if r2 < 1e-12 then return(true),
+         theta_cos : (dx^2 - dy^2)/r2,
+         is(5 * theta_cos^2 - 4 > -cap_window_threshold_pre * 4)),
+     /* Rebind cap rule body to use the pre-versions. */
+     tau_rule_cap(i, k) := block(
+         [c1 : cell_center[i],
+             c2 : reflected_neighbor_center(c1[1], c1[2],
+                                            if length(cell_chir) >= i
+                                              then cell_chir[i] else 0,
+                                            k),
+          a, b],
+         a : in_cap_window_pre(c1),
+         b : in_cap_window_pre(c2),
+         if a # b then 1 else 0)
+) $
+
+/* Expand to a cluster.  Depth 2 already produces ~30-40 cells;
+    higher depths grow roughly geometrically. */
+expand_cluster(BFS_DEPTH)$
+/* Populate the legacy cell_orient alias (always 0). */
+cell_orient : makelist(0, ii, 1, cell_count) $
+
+print("Section 3: after BFS depth", BFS_DEPTH,
+        ", cell_count =", cell_count,
+        "  (N_GON =", N_GON, ")")$
+
+/* Quick sanity dump of the first few cells. */
+print("First 5 cells (id, chirality, sheet, #neighbors):")$
+for i : 1 thru min(5, cell_count) do
+    print("  ", i, " chir=", cell_chir[i],
+           " sheet=", cell_sheet[i],
+           " deg=", length(nbrs[i]),
+           " (interior target:", n_int, ")") $
+
+/* Bipartiteness sanity-check for odd n: every edge should connect
+    chir=0 to chir=1.  For even n, all chir=0. */
+block(
+     [bipartite_violation : 0, mono_violation : 0, i, j],
+     for i : 1 thru cell_count do
+         for j in nbrs[i] do
+             if i < j then (
+                 if CHIRAL_ACTIVE then (
+                     if cell_chir[i] = cell_chir[j] then
+                         bipartite_violation : bipartite_violation + 1)
+                 else (
+                     if cell_chir[i] # 0 or cell_chir[j] # 0 then
+                         mono_violation : mono_violation + 1)),
+     if CHIRAL_ACTIVE then
+         print("Bipartite check (odd n): same-chirality edges =",
+               bipartite_violation, " (should be 0)")
+     else
+         print("Mono-chirality check (even n): non-zero chir =",
+               mono_violation, " (should be 0)"))$
+
+/* Degree statistics. */
+deg_list : makelist(length(nbrs[i]), i, 1, cell_count) $
+deg_mean : float(apply("+", deg_list) / cell_count) $
+deg_max  : apply(max, deg_list) $
+deg_min  : apply(min, deg_list) $
+print("Degree stats: min =", deg_min, ", mean =", deg_mean,
+       ", max =", deg_max,
+       " (interior", N_GON, "-gons should have deg", n_int, ")")$
+
+/* Per-chirality cell counts. */
+if CHIRAL_ACTIVE then block(
+     [c0 : 0, c1 : 0, i],
+     for i : 1 thru cell_count do
+         if cell_chir[i] = 0 then c0 : c0 + 1 else c1 : c1 + 1,
+     print("Chirality distribution: up =", c0, ", down =", c1,
+           " (bipartite ratio ~ 1 expected at large depth)"))$
+
+/* Sheet distribution. */
+sheet_set : sort(listify(setify(cell_sheet))) $
+print("Sheets present in cluster:", sheet_set)$
+/* =====================================================================
+      SECTION 3b.  DISTANCE RING CATALOG (Erdős pre-computation)
+      ---------------------------------------------------------------------
+      Compute all pairwise squared distances in the cluster using exact
+      Q(sqrt(5)) arithmetic, group them into distance classes, and build
+      the ring table used by Sections 23-25.
+      This is done once here so later sections can reuse the results
+      without recomputing O(N^2) pairs.
+    ===================================================================== */
+print("------------------------------------------------------------")$
+print("SECTION 3b: Distance ring pre-computation")$
+print("------------------------------------------------------------")$
+/* Maximum number of point pairs to process.  For large clusters the
+     full O(N^2) computation is expensive; we cap it and warn.
+     NOTE: N is assigned later in Section 4; use cell_count here. */
+DIST_PAIR_CAP : 200000 $
+/* dist_class_table: association list mapping [r,s] -> [count, [pair_ids]].
+    We store only the first few pair IDs per class to keep memory bounded. */
+dist_class_table : [] $   /* list of [[r,s], count, sample_pairs] */
+dist_class_keys  : [] $   /* sorted list of [r,s] keys */
+/* Hash for fast lookup: float fingerprint -> index in dist_class_table. */
+dist_hash : ?make\-hash\-table() $
+dist_fp(rs) := [round(float(rs[1]) * 1048576),
+                 round(float(rs[2]) * 1048576)] $
+find_dist_class(rs) := block(
+      [fp : dist_fp(rs), candidates, k, entry, result : 0],
+      candidates : ?gethash(fp, dist_hash, []),
+      for k in candidates do (
+          entry : dist_class_table[k],
+          if qs5_eq(entry[1], rs) then (result : k, return(result))),
+      result) $
+add_dist_class(rs, i, j) := block(
+      [fp : dist_fp(rs), idx, prev],
+       /* Guard: skip degenerate zero-distance (same geometric position,
+          different sheets) and any non-list result from sq_dist_exact. */
+       if not listp(rs) then return(false),
+         /* Use float threshold; exact zero check misses near-zero residuals
+            from Q(sqrt(5)) arithmetic that round to ~1e-16. */
+         if abs(float(rs[1])) < 1e-12 and abs(float(rs[2])) < 1e-12
+             then return(false),
+      idx : find_dist_class(rs),
+      if idx = 0 then (
+          dist_class_table : endcons([rs, 0, []], dist_class_table),
+          idx : length(dist_class_table),
+          prev : ?gethash(fp, dist_hash, []),
+          ?puthash(fp, dist_hash, endcons(idx, prev))),
+      /* increment count */
+      dist_class_table[idx][2] : dist_class_table[idx][2] + 1,
+      /* store up to 10 sample pairs */
+      if length(dist_class_table[idx][3]) < 10 then
+          dist_class_table[idx][3] :
+              endcons([i, j], dist_class_table[idx][3])) $
+/* Compute pairwise distances from origin only (ring catalog).
+    Full pairwise is O(N^2); we do origin-to-all first (O(N)), then
+    all-pairs up to the cap. */
+print("Computing origin-to-all squared distances (N =", cell_count, ")...")$
+/* Track which dist_class_table index each origin-to-i distance maps to,
+    so we can compute origin_ring_sizes without a second O(N * n_classes)
+    scan after the table is sorted. */
+origin_dist_idx : makelist(0, ii, 1, cell_count) $
+for i : 2 thru cell_count do
+       block([rs : sq_dist_exact(cell_center[1], cell_center[i])],
+              if listp(rs) then (
+                  add_dist_class(rs, 1, i),
+                  origin_dist_idx[i] : find_dist_class(rs))) $
+/* All-pairs (capped). */
+dist_pair_count : 0 $
+dist_pair_capped : false $
+print("Computing all-pairs squared distances (cap =", DIST_PAIR_CAP, ")...")$
+for i : 1 thru cell_count do (
+      if dist_pair_capped then return(0),
+       for j : i + 1 thru cell_count do (
+          if dist_pair_count >= DIST_PAIR_CAP then (
+              dist_pair_capped : true,
+              return(0)),
+           block([rs : sq_dist_exact(cell_center[i], cell_center[j])],
+                 if listp(rs) then add_dist_class(rs, i, j)),
+          dist_pair_count : dist_pair_count + 1)) $
+if dist_pair_capped then
+      print("WARNING: distance pair computation capped at", DIST_PAIR_CAP,
+            "pairs.  Increase DIST_PAIR_CAP for complete catalog.")
+else
+      print("All-pairs computation complete:", dist_pair_count, "pairs.") $
+print("Sorting distance classes...")$
+/* Sort distance classes by ascending float value.
+    PERFORMANCE: pre-compute float keys once per class so sort
+    comparisons are O(1) float compares instead of repeated
+    ratsimp(expand(...)) evaluations.  For ~10^4-10^5 classes the
+    naive symbolic sort can hang for hours. */
+block(
+       [n_classes : length(dist_class_table),
+        keyed : [], entry, fkey, k],
+       print("  (pre-computing float keys for", n_classes, "classes...)"),
+       for k : 1 thru n_classes do (
+           entry : dist_class_table[k],
+           fkey  : float(entry[1][1] + entry[1][2] * 2.2360679774997896),
+           keyed : cons([fkey, entry], keyed)),
+       print("  (sorting", n_classes, "classes by float key...)"),
+       keyed : sort(keyed, lambda([a, b], a[1] < b[1])),
+       dist_class_sorted : map(lambda([p], p[2]), keyed)) $
+n_dist_classes : length(dist_class_sorted) $
+print("Distinct squared distances found:", n_dist_classes)$
+/* Build a mapping from unsorted dist_class_table index -> sorted index,
+    so we can avoid an O(N * n_dist_classes) qs5_eq scan below. */
+print("Building sorted-index map...")$
+unsorted_to_sorted : makelist(0, k, 1, length(dist_class_table)) $
+/* O(N) approach: build a hash from fingerprint -> sorted index,
+    then look up each unsorted entry's fingerprint in the hash.
+    This replaces the previous O(n_dist_classes^2 * ratsimp) scan
+    that stalled for large clusters. */
+block(
+        [fp_to_sorted : ?make\-hash\-table(), k_sorted, k_unsorted,
+         fp, rs_sorted, sidx],
+        for k_sorted : 1 thru n_dist_classes do (
+            rs_sorted : dist_class_sorted[k_sorted][1],
+            fp : dist_fp(rs_sorted),
+            ?puthash(fp, fp_to_sorted, k_sorted)),
+        for k_unsorted : 1 thru length(dist_class_table) do (
+            fp : dist_fp(dist_class_table[k_unsorted][1]),
+            sidx : ?gethash(fp, fp_to_sorted, 0),
+            unsorted_to_sorted[k_unsorted] : sidx)) $
+/* Build ring table: for each class, record the number of points at
+    that distance from the origin (ring size). */
+/* origin_ring_sizes[k] = number of cells at squared distance
+    dist_class_sorted[k][1] from the origin. */
+print("Building origin ring-size table...")$
+origin_ring_sizes : makelist(0, k, 1, n_dist_classes) $
+block([progress_step : max(1, floor(cell_count / 10)), i],
+for i : 2 thru cell_count do (
+         if mod(i, progress_step) = 0 then
+             print("  ring-table progress: i =", i, "/", cell_count),
+         block(
+        [idx_unsorted : origin_dist_idx[i], pos],
+        if idx_unsorted > 0 then (
+            pos : unsorted_to_sorted[idx_unsorted],
+            if pos > 0 then
+                 origin_ring_sizes[pos] : origin_ring_sizes[pos] + 1)))) $
+print("Distance ring table (first 15 rings from origin):")$
+print("  k  |  sq_dist (r,s)  |  float  |  ring_size  |  total_pairs  |  notes")$
+for k : 1 thru min(15, n_dist_classes) do block(
+      [rs : dist_class_sorted[k][1],
+       cnt : dist_class_sorted[k][2],
+       rsize : origin_ring_sizes[k],
+       fval, fib_check, sq_check, norm_val, notes : ""],
+      fval : qs5_float(rs),
+        /* Skip near-zero degenerate distances in the display. */
+        if abs(float(fval)) < 1e-9 then return(0),
+      fib_check : detect_fibonacci_distance(rs),
+       /* is_qs5_square calls isqrt on large numerators; skip for big r */
+       sq_check : if abs(float(rs[1])) < 1e6 then is_qs5_square(rs)
+                  else [false, 0, 0],
+      norm_val : qs5_norm(rs),
+      if fib_check[1] then
+          notes : concat(notes, " Fib(m=", fib_check[2], ")"),
+      if sq_check[1] then
+          notes : concat(notes, " perfect-sq"),
+      if ratsimp(rs[2]) = 0 then
+          notes : concat(notes, " rational"),
+      print("  ", k, "  [", float(rs[1]), ",", float(rs[2]), "]",
+            "  ~", float(fval),
+            "  ring=", rsize,
+            "  pairs=", cnt,
+            "  norm=", float(norm_val),
+            notes)) $
+
+/* ---------------------------------------------------------------------
+   SECTION 4.  Graph Laplacian and spectral analysis
+   ---------------------------------------------------------------------
+
+   Build the adjacency matrix A and degree matrix D, then L = D - A.
+   Compute eigenvalues numerically (the matrix is moderate sized, and
+   entries are integers, so floating-point Jacobi/eig is fine).
+   --------------------------------------------------------------------- */
+
+N : cell_count $
+
+/* Decide whether to run the eigendecomposition.  It is O(N^3) and
+    can dominate the runtime for large clusters. */
+eig_skipped : SKIP_EIG or N > EIG_MAX_N $
+spec_gap : 0 $
+
+if eig_skipped then (
+     print("Section 4: skipping eigendecomposition",
+           "(SKIP_EIG =", SKIP_EIG, ", N =", N,
+           ", EIG_MAX_N =", EIG_MAX_N, ")")
+) else (
+     /* Load lapack for fast numerical eigenvalues. */
+      errcatch(load("lapack")),
+
+     /* Build adjacency matrix as a numerical matrix for eigenvalue work. */
+     build_adjacency() := block(
+         [A : zeromatrix(N, N), i, j],
+         for i : 1 thru N do
+             for j in nbrs[i] do
+                 A[i, j] : 1,
+         A),
+
+     A_mat : build_adjacency(),
+     D_diag : makelist(length(nbrs[i]), i, 1, N),
+     D_mat  : apply(diag_matrix, D_diag),
+     L_mat  : D_mat - A_mat,
+
+     /* Check symmetry. */
+     sym_err : lmax(flatten(args(L_mat - transpose(L_mat)))),
+     print("Section 4: Laplacian symmetry residual =", sym_err),
+     if sym_err # 0 then error("Laplacian not symmetric!"),
+
+     /* Row sums of L should be zero (kernel contains all-ones). */
+     rowsums : makelist(apply("+", L_mat[i]), i, 1, N),
+     rs_max : lmax(map(abs, rowsums)),
+     print("Laplacian row-sum max |.| =", rs_max, " (should be 0)"),
+     if rs_max # 0 then error("Laplacian rows do not sum to 0"),
+
+     /* Numerical eigenvalues. */
+     L_float : float(L_mat),
+
+     /* Use LAPACK dgeev for fast numerical eigenvalues; fall back to
+        symbolic eigenvalues() if dgeev is unavailable. */
+     eig_flat : [],
+     if ?fboundp('dgeev) then block(
+         [res, evs],
+         res : dgeev(L_float),
+         evs : res[1],
+         /* evs is a list of (possibly complex) eigenvalues; take real parts. */
+         eig_flat : sort(map(lambda([z], float(realpart(z))), evs)))
+     else block(
+         [eigs, eig_vals, eig_mults, k, m],
+         eigs : eigenvalues(L_float),
+         eig_vals : eigs[1],
+         eig_mults : eigs[2],
+         for k : 1 thru length(eig_vals) do
+             for m : 1 thru eig_mults[k] do
+                 eig_flat : endcons(float(eig_vals[k]), eig_flat),
+         eig_flat : sort(eig_flat)),
+
+     print("Number of eigenvalues:", length(eig_flat),
+           " (expected N =", N, ")"),
+     print("Smallest 5 eigenvalues:",
+           makelist(eig_flat[k], k, 1, min(5, length(eig_flat)))),
+     print("Largest 3 eigenvalues:",
+           makelist(eig_flat[length(eig_flat) - k + 1], k, 1,
+                    min(3, length(eig_flat)))),
+
+     /* Spectral gap = smallest positive eigenvalue. */
+     for lam in eig_flat do
+         if spec_gap = 0 and lam > 1e-9 then spec_gap : lam,
+     print("Spectral gap (algebraic connectivity) =", spec_gap),
+
+     /* Crude DOS-based spectral dimension estimate:
+        count eigenvalues in [0, lambda_max * frac] and fit log-log.
+        rho(lambda) ~ lambda^(d_spec/2 - 1) means
+        N(<=lambda) ~ lambda^(d_spec/2).                              */
+     lam_max : last(eig_flat),
+     fractions : [0.05, 0.10, 0.20, 0.30, 0.40],
+     cdf_data : [],
+     for f in fractions do block(
+         [thr : f * lam_max, cnt : 0],
+         for lam in eig_flat do if lam <= thr then cnt : cnt + 1,
+         cdf_data : endcons([thr, cnt], cdf_data)),
+     print("Spectral CDF samples [lambda, N(<=lambda)]:"),
+     for pt in cdf_data do print("  ", pt),
+
+      /* Least-squares log-log fit over ALL CDF samples (more robust
+         than a 2-point slope). */
+      if length(cdf_data) >= 2 then block(
+          [xs : [], ys : [], pt, slope_pair, slope, intercept],
+          for pt in cdf_data do
+              if first(pt) > 0 and second(pt) > 0 then (
+                  xs : endcons(float(log(first(pt))),  xs),
+                  ys : endcons(float(log(second(pt))), ys)),
+          if length(xs) >= 2 then (
+              slope_pair : log_log_fit_basic(xs, ys),
+              slope     : slope_pair[1],
+              intercept : slope_pair[2],
+              print("Spectral-CDF least-squares slope ~", slope,
+                    "  => d_spec_estimate (DOS) ~", 2*slope,
+                    "  (log-C =", intercept, ")"),
+              d_spec_dos : 2*slope)
+          else print("Spectral CDF too sparse for slope fit."))
+     else
+         print("Spectral CDF too sparse for a slope fit (small cluster).")
+) $
+/* Default if eig step was skipped. */
+if not(?boundp('d_spec_dos)) then d_spec_dos : 0.0 $
+
+/* ---------------------------------------------------------------------
+   SECTION 5.  BFS volume growth: connectivity dimension d_eff
+   --------------------------------------------------------------------- */
+
+bfs_volumes(root) := block(
+    [visited : makelist(false, ii, 1, N),
+     dist    : makelist(-1, ii, 1, N),
+     queue, v, j, max_d : 0, sizes],
+    visited[root] : true,
+    dist[root] : 0,
+    queue : [root],
+    while length(queue) > 0 do (
+        v : first(queue),
+        queue : rest(queue),
+        for j in nbrs[v] do
+            if not visited[j] then (
+                visited[j] : true,
+                dist[j] : dist[v] + 1,
+                if dist[j] > max_d then max_d : dist[j],
+                queue : endcons(j, queue))),
+    sizes : makelist(0, ii, 0, max_d),
+    for ii : 1 thru N do
+        if dist[ii] >= 0 then
+            sizes[dist[ii] + 1] : sizes[dist[ii] + 1] + 1,
+    /* Convert per-shell counts to cumulative N(<=r). */
+    for r : 2 thru length(sizes) do
+        sizes[r] : sizes[r] + sizes[r-1],
+    sizes) $
+
+vols : bfs_volumes(origin_id) $
+print("BFS cumulative volumes N(<=r) from origin:")$
+for r : 1 thru length(vols) do
+    print("  r =", r - 1, ": N =", vols[r])$
+
+/* Fit d_eff from log N vs log r.  We do BOTH:
+      (a) the "interior" fit r in [1, R-1] (skip origin and outermost
+          shell), which is the canonical choice;
+      (b) the "full" fit r in [1, R], for comparison.
+    Reporting both surfaces boundary sensitivity. */
+d_eff_est : 2.0 $
+d_eff_full : 2.0 $
+if length(vols) >= 4 then block(
+     [r_lo : 2, r_hi : length(vols) - 1,
+      x : [], y : [], fit, slope, intercept],
+     for r : r_lo thru r_hi do (
+         x : endcons(float(log(r - 1)), x),
+         y : endcons(float(log(vols[r])), y)),
+     fit : log_log_fit_basic(x, y),
+     slope     : fit[1],
+     intercept : fit[2],
+     print("Log-log fit (interior, r in [", r_lo - 1, ",", r_hi - 1, "]):"),
+     print("  d_eff estimate =", slope),
+     print("  prefactor log C =", intercept,
+           "  =>  C =", float(exp(intercept))),
+     d_eff_est : slope)
+else
+     print("Cluster too small for reliable interior d_eff fit.") $
+
+if length(vols) >= 3 then block(
+     [x : [], y : [], fit, r],
+     for r : 2 thru length(vols) do (
+         x : endcons(float(log(r - 1)), x),
+         y : endcons(float(log(vols[r])), y)),
+     fit : log_log_fit_basic(x, y),
+     print("Log-log fit (full, r in [1,", length(vols) - 1, "]):"),
+     print("  d_eff (full) =", fit[1],
+           "  log-C =", fit[2]),
+     d_eff_full : fit[1]) $
+
+/* ---------------------------------------------------------------------
+   SECTION 6.  Random-walk simulation: d_w and d_spec
+   ---------------------------------------------------------------------
+
+   Run M random walks from the origin, recording:
+     * Mean-squared graph-distance from start at each step
+       (using the precomputed BFS distance table as a proxy for
+        embedded distance; this is a reasonable scalar measure on
+        irregular graphs).
+     * Return frequency to the origin at even times t = 2, 4, 6,...
+
+   Fit:
+     <d(X_t, x_0)^2> ~ t^(2/d_w)
+     P_0(t)        ~ t^(-d_spec/2)
+   --------------------------------------------------------------------- */
+
+/* Precompute BFS distance from origin to every node. */
+bfs_dist(root) := block(
+    [visited : makelist(false, ii, 1, N),
+     dist    : makelist(-1, ii, 1, N),
+     queue, v, j],
+    visited[root] : true,
+    dist[root] : 0,
+    queue : [root],
+    while length(queue) > 0 do (
+        v : first(queue),
+        queue : rest(queue),
+        for j in nbrs[v] do
+            if not visited[j] then (
+                visited[j] : true,
+                dist[j] : dist[v] + 1,
+                queue : endcons(j, queue))),
+    dist) $
+
+dist_from_origin : bfs_dist(origin_id) $
+
+/* Single random walk: returns list of node IDs visited, length T+1. */
+random_walk(start, T) := block(
+    [path : [start], v : start, nb, r, idx],
+    for t : 1 thru T do (
+        nb : nbrs[v],
+        if length(nb) = 0 then return(path),
+        r : random(length(nb)),
+        v : nb[r + 1],
+        path : endcons(v, path)),
+    path) $
+
+M_walks : M_WALKS $
+T_steps : T_STEPS $
+
+print("Section 6: running", M_walks, "random walks of length", T_steps,
+      "from origin id =", origin_id)$
+
+/* Accumulators. */
+msd_sum : makelist(0, t, 0, T_steps) $
+ret_cnt : makelist(0, t, 0, T_steps) $
+
+for w : 1 thru M_walks do block(
+    [path : random_walk(origin_id, T_steps), t, v, d],
+    for t : 0 thru T_steps do (
+        v : path[t + 1],
+        d : dist_from_origin[v],
+        if d < 0 then d : 0,
+        msd_sum[t + 1] : msd_sum[t + 1] + d^2,
+        if v = origin_id then
+            ret_cnt[t + 1] : ret_cnt[t + 1] + 1)) $
+
+msd : makelist(float(msd_sum[t + 1] / M_walks), t, 0, T_steps) $
+p0  : makelist(float(ret_cnt[t + 1] / M_walks), t, 0, T_steps) $
+
+/* Guarded prints: only access indices that exist for this T_steps. */
+block(
+     [sample_ts : [1, 5, 10, 20], t, idx, out : []],
+     for t in sample_ts do (
+         idx : t + 1,
+         if idx <= length(msd) then
+             out : endcons([t, msd[idx]], out)),
+     print("MSD samples [t, <d^2>]:", out))$
+block(
+     [sample_ts : [2, 4, 10, 20], t, idx, out : []],
+     for t in sample_ts do (
+         idx : t + 1,
+         if idx <= length(p0) then
+             out : endcons([t, p0[idx]], out)),
+     print("P_0 samples [t, P_0(t)]:", out))$
+
+/* Fit d_w from log <Delta x^2> vs log t over the EARLY-TIME window
+    [MSD_FIT_LO, MSD_FIT_HI] to avoid the boundary plateau. */
+log_log_fit(xs, ys) := log_log_fit_basic(xs, ys) $
+
+/* d_w from MSD slope = 2/d_w  =>  d_w = 2/slope.
+    Early-time fit. */
+msd_x : [] $
+msd_y : [] $
+for t : MSD_FIT_LO thru MSD_FIT_HI do
+    if msd[t + 1] > 0 then (
+        msd_x : endcons(float(log(t)), msd_x),
+        msd_y : endcons(float(log(msd[t + 1])), msd_y)) $
+d_w_value : 2.0 $
+
+if length(msd_x) >= 3 then block(
+     [fit : log_log_fit(msd_x, msd_y), msd_slope],
+    msd_slope : fit[1],
+     print("MSD early-time log-log slope =", msd_slope,
+          "  =>  d_w estimate =",
+          if abs(msd_slope) > 1e-6 then float(2/msd_slope) else "n/a"),
+     if abs(msd_slope) > 1e-6 then d_w_value : float(2/msd_slope))
+else
+
+     print("Too few MSD data points for d_w fit.") $
+
+/* Late-time MSD slope (diagnostic: should be ~ 0 if saturated). */
+msd_x2 : [] $
+msd_y2 : [] $
+for t : max(MSD_FIT_HI + 1, 2) thru T_steps do
+     if msd[t + 1] > 0 then (
+         msd_x2 : endcons(float(log(t)), msd_x2),
+         msd_y2 : endcons(float(log(msd[t + 1])), msd_y2)) $
+if length(msd_x2) >= 3 then block(
+     [fit : log_log_fit(msd_x2, msd_y2)],
+     print("MSD late-time log-log slope =", fit[1],
+           "  (near 0 => boundary saturation)")) $
+
+/* d_spec from P_0 slope = -d_spec/2, restricted to early even times. */
+p0_x : [] $
+p0_y : [] $
+for t : P0_FIT_LO step 2 thru P0_FIT_HI do
+    if p0[t + 1] > 0 then (
+        p0_x : endcons(float(log(t)), p0_x),
+        p0_y : endcons(float(log(p0[t + 1])), p0_y)) $
+d_spec_value : 0.0 $
+
+if length(p0_x) >= 3 then block(
+     [fit : log_log_fit(p0_x, p0_y), p0_slope],
+    p0_slope : fit[1],
+     print("P_0 early-time log-log slope =", p0_slope,
+          "  =>  d_spec estimate =", -2*p0_slope),
+    d_spec_value : -2*p0_slope)
+else
+     print("Too few P_0 data points (small cluster) -- using AO fallback.")$
+
+print("------------------------------------------------------------")$
+/* ---------------------------------------------------------------------
+   SECTION 7.  Alexander-Orbach cross-check
+   --------------------------------------------------------------------- */
+
+print("------------------------------------------------------------")$
+print("Dimension estimates summary:")$
+print("  d_eff   (BFS volume growth) ~", d_eff_est)$
+print("  d_eff   (BFS, full range)   ~", d_eff_full)$
+print("  d_w     (MSD scaling)       ~", d_w_value)$
+print("  d_spec  (P_0 decay, early)  ~", d_spec_value)$
+if not eig_skipped then
+     print("  d_spec  (DOS log-log)       ~", d_spec_dos)$
+
+if d_w_value > 0 then block(
+    [d_spec_AO : float(2 * d_eff_est / d_w_value)],
+    print("  d_spec  (Alexander-Orbach 2*d_eff/d_w) ~", d_spec_AO),
+    if d_spec_value > 0 then
+        print("  Direct vs AO discrepancy:",
+              abs(d_spec_value - d_spec_AO))) $
+/* Consistency-check ordering: paper predicts d_spec < d_eff. */
+if d_spec_dos > 0 and d_eff_est > 0 then (
+     if d_spec_dos < d_eff_est then
+         print("OK: d_spec(DOS) < d_eff(BFS), consistent with sub-diffusion.")
+     else
+         print("WARNING: d_spec(DOS) >= d_eff(BFS); not sub-diffusive."))$
+/* Paper regime test:  2 < d_eff < 3. */
+if d_eff_est > 2 and d_eff_est < 3 then
+     print("OK: d_eff in (2, 3), inside paper's predicted fractional window.")
+else
+     print("Note: d_eff outside (2,3); cluster may be too small.")$
+
+print("Note: these are small-cluster estimates; quantitative agreement")$
+print("with the paper's predicted regime 2 < d_eff < 3 requires larger")$
+print("clusters and the cut-and-project window for proper local finiteness.")$
+
+/* ---------------------------------------------------------------------
+   SECTION 8.  Holonomy experiments
+   ---------------------------------------------------------------------
+
+   expansion is non-trivial (every 3rd edge contributes +1), any loop
+   enclosing the origin can show net holonomy.
+
+    Concretely: we look for 3-cycles through the origin and report
+    the raw holonomy and its reduction mod each fiber group.
+   --------------------------------------------------------------------- */
+
+/* Recover the sheet shift along a directed edge (i -> j). */
+edge_sheet_shift(i, j) := cell_sheet[j] - cell_sheet[i] $
+
+/* Total holonomy along a node sequence. */
+loop_holonomy(seq) := block(
+    [tot : 0, k],
+    for k : 1 thru length(seq) - 1 do
+        tot : tot + edge_sheet_shift(seq[k], seq[k + 1]),
+    tot) $
+
+/* Reduce holonomy into Z_n. */
+holonomy_mod(seq, n) := mod(loop_holonomy(seq), n) $
+
+/* Find a small closed loop: walk from origin to a neighbor n_a,
+   to a 2-step neighbor n_ab, and (if possible) back to origin via
+   a different edge. */
+find_small_loop() := block(
+    [a, b, na, nb, common, loop_found : false, loop],
+    for a in nbrs[origin_id] do (
+        if loop_found then return(loop),
+        na : nbrs[a],
+        for b in na do (
+            if loop_found then return(loop),
+            if b # origin_id then (
+                nb : nbrs[b],
+                if member(origin_id, nb) then (
+                    loop : [origin_id, a, b, origin_id],
+                    loop_found : true,
+                    return(loop))))),
+    if loop_found then loop else []) $
+
+small_loop : find_small_loop() $
+if length(small_loop) > 0 then block(
+     [h_total, h_reductions],
+    h_total : loop_holonomy(small_loop),
+    print("Section 8: small loop found:", small_loop),
+    print("  raw holonomy (sum of sheet shifts) =", h_total),
+     for fg in FIBER_GROUPS_DEFAULT do block(
+         [hmod : holonomy_mod(small_loop, fg)],
+         print("  Z_", fg, " reduction =", hmod,
+               if hmod # 0 then "  (non-trivial)"
+                            else "  (trivial)")))
+else
+     print("Section 8: no 3-cycle through origin in cluster.")$
+/* Longer-loop holonomy survey: look for 4- and 5-cycles through the
+     origin, count how many have non-trivial holonomy for each fiber group. */
+find_cycles_through_origin(maxlen) := block(
+     [cycles : [], v1, v2, v3, v4],
+     /* 4-cycles: origin -> a -> b -> c -> origin, a,b,c distinct */
+     for v1 in nbrs[origin_id] do
+         for v2 in nbrs[v1] do
+             if v2 # origin_id then
+                 for v3 in nbrs[v2] do
+                     if v3 # v1 and v3 # origin_id
+                        and member(origin_id, nbrs[v3]) then
+                         cycles : endcons(
+                             [origin_id, v1, v2, v3, origin_id],
+                             cycles),
+     if maxlen >= 5 then
+         /* 5-cycles */
+         for v1 in nbrs[origin_id] do
+             for v2 in nbrs[v1] do
+                 if v2 # origin_id then
+                     for v3 in nbrs[v2] do
+                         if v3 # v1 and v3 # origin_id then
+                             for v4 in nbrs[v3] do
+                                 if v4 # v2 and v4 # v1 and v4 # origin_id
+                                    and member(origin_id, nbrs[v4]) then
+                                     cycles : endcons(
+                                         [origin_id, v1, v2, v3, v4,
+                                          origin_id],
+                                         cycles),
+     cycles) $
+long_cycles : find_cycles_through_origin(5) $
+print("Longer cycles through origin (lengths 4-5):",
+       length(long_cycles), "found.")$
+if length(long_cycles) > 0 then block(
+      [hcounts, cyc, raw, samples, fg, k],
+      hcounts : makelist(0, k, 1, length(FIBER_GROUPS_DEFAULT)),
+     for cyc in long_cycles do (
+          raw : loop_holonomy(cyc),
+          for k : 1 thru length(FIBER_GROUPS_DEFAULT) do (
+              fg : FIBER_GROUPS_DEFAULT[k],
+              if mod(raw, fg) # 0 then
+                  hcounts[k] : hcounts[k] + 1)),
+      for k : 1 thru length(FIBER_GROUPS_DEFAULT) do
+          print("  Z_", FIBER_GROUPS_DEFAULT[k],
+                " non-trivial holonomy loops:", hcounts[k],
+                "/", length(long_cycles)),
+      /* Show up to 3 examples with non-trivial Z_2 holonomy (or Z_n). */
+     samples : 0,
+     for cyc in long_cycles do
+          if samples < 3 and holonomy_mod(cyc, n_int) # 0 then (
+             print("  example spinor loop:", cyc,
+                   "  raw =", loop_holonomy(cyc),
+                    "  Z_2 =", holonomy_mod(cyc, 2),
+                    "  Z_n =", holonomy_mod(cyc, n_int)),
+             samples : samples + 1))$
+
+/* Sweep over a longer loop: BFS shell-2 cells reachable from origin
+   and back.  Just illustrative -- counts vortex edges traversed. */
+n_vortex_edges_in_cluster : 0 $
+for i : 1 thru N do
+    for j in nbrs[i] do
+        if i < j and edge_sheet_shift(i, j) # 0 then
+            n_vortex_edges_in_cluster :
+                n_vortex_edges_in_cluster + 1 $
+print("Vortex edges in cluster (sheet shift != 0):",
+      n_vortex_edges_in_cluster)$
+print("Total edges in cluster:",
+      apply("+", deg_list) / 2)$
+print("Vortex fraction =",
+      float(n_vortex_edges_in_cluster / (apply("+", deg_list) / 2)))$
+/* Per-sheet vortex breakdown. */
+print("Per-sheet cell counts:")$
+for s in sheet_set do block(
+     [cnt : 0],
+     for i : 1 thru N do
+         if cell_sheet[i] = s then cnt : cnt + 1,
+     print("  sheet", s, ":", cnt, "cells"))$
+
+/* ---------------------------------------------------------------------
+   SECTION 9.  Cellular automaton dynamics
+   ---------------------------------------------------------------------
+
+    Define a binary outer-totalistic rule on the n-regular graph:
+     New state = f(self, sum_of_neighbors)
+    The default rule is B2/S12 for n <= 6 and B3/S23 for n > 6,
+    scaled to the degree of the graph.  Initialize with a small "seed"
+    at the origin and a couple of neighbors, then evolve T_ca steps.
+   --------------------------------------------------------------------- */
+
+/* Default rule scaled to n_int neighbors.
+    Birth threshold b_thresh ~ n_int/3 (rounded), survival window [b_thresh-1, b_thresh].
+    For n=5: b_thresh=2 => B2/S12 (original rule).
+    For n=6: b_thresh=2 => B2/S12.
+    For n=8: b_thresh=3 => B3/S23.                                     */
+ca_b_thresh : max(1, round(n_int / 3)) $
+ca_rule(self_state, nbr_sum) := block(
+     [b : ca_b_thresh],
+     if self_state = 1 then
+         (if nbr_sum = b - 1 or nbr_sum = b then 1 else 0)
+     else
+         (if nbr_sum = b then 1 else 0)) $
+print("Section 9: CA default rule B", ca_b_thresh, "/S",
+       ca_b_thresh - 1, ca_b_thresh,
+       "  (n_int =", n_int, ")")$
+
+/* Initial state: origin + first neighbor alive, rest dead. */
+state : makelist(0, ii, 1, N) $
+state[origin_id] : 1 $
+if length(nbrs[origin_id]) >= 1 then
+    state[nbrs[origin_id][1]] : 1 $
+if length(nbrs[origin_id]) >= 2 then
+    state[nbrs[origin_id][2]] : 1 $
+
+initial_pop : apply("+", state) $
+print("Section 9: CA initial population =", initial_pop)$
+
+/* Step the CA. */
+ca_step(s) := block(
+    [new_s : makelist(0, ii, 1, N), i, nsum],
+    for i : 1 thru N do (
+        nsum : apply("+", map(lambda([j], s[j]), nbrs[i])),
+        new_s[i] : ca_rule(s[i], nsum)),
+    new_s) $
+
+T_ca : T_CA $
+pop_history : [initial_pop] $
+for t : 1 thru T_ca do (
+    state : ca_step(state),
+    pop_history : endcons(apply("+", state), pop_history)) $
+
+print("CA population history (t = 0..", T_ca, "):")$
+for t : 0 thru T_ca do
+    print("  t =", t, " population =", pop_history[t + 1])$
+
+final_pop : last(pop_history) $
+print("CA final population =", final_pop,
+      if final_pop = 0 then "  (extinct)"
+      else if final_pop = initial_pop then "  (still life)"
+      else "  (active)")$
+
+/* Distribution of final live cells across sheets. */
+live_per_sheet : [] $
+for s in sheet_set do block(
+    [cnt : 0],
+    for i : 1 thru N do
+        if state[i] = 1 and cell_sheet[i] = s then cnt : cnt + 1,
+    live_per_sheet : endcons([s, cnt], live_per_sheet)) $
+print("Live cells per sheet at t =", T_ca, ":", live_per_sheet)$
+
+/* ---------------------------------------------------------------------
+    SECTION 10.  Extended ruleset survey (B/S families)
+    ---------------------------------------------------------------------
+     We systematically sweep over a panel of outer-totalistic B/S rules
+     on the n-regular(ish) n-gon graph, scoring each on:
+      - whether the seed dies, stabilizes, oscillates, or grows;
+      - the maximum and final population;
+      - the period (if periodic);
+      - sheet-spreading behavior.
+     We test combinations B, S drawn from subsets of {0,..,n_int}
+     from a curated list of "Life-like" candidates scaled to n_int.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 10: Extended ruleset survey")$
+print("============================================================")$
+/* General outer-totalistic rule constructor.  B and S are lists of
+    integer neighbor sums that trigger birth / survival. */
+make_rule(B, S) := buildq([B, S],
+     lambda([self_state, nbr_sum],
+         if self_state = 1 then
+             (if member(nbr_sum, S) then 1 else 0)
+         else
+             (if member(nbr_sum, B) then 1 else 0))) $
+/* Step a state with a given rule function. */
+ca_step_rule(s, rule_fn) := block(
+     [new_s : makelist(0, ii, 1, N), i, nsum],
+     for i : 1 thru N do (
+         nsum : apply("+", map(lambda([j], s[j]), nbrs[i])),
+         new_s[i] : rule_fn(s[i], nsum)),
+     new_s) $
+/* Generate a standard "blinker-style" seed: origin plus first 3 nbrs. */
+make_seed_origin(k) := block(
+     [s : makelist(0, ii, 1, N), nb : nbrs[origin_id], j],
+     s[origin_id] : 1,
+     for j : 1 thru min(k, length(nb)) do s[nb[j]] : 1,
+     s) $
+/* Run a rule on a seed for T steps, looking for cycles via state hash. */
+run_rule_diagnose(B, S, seed, T) := block(
+     [rule_fn : make_rule(B, S),
+      state : seed, hist : [], pops : [], i, prev_idx,
+      period : 0, transient : T, max_pop : 0, final_pop, fate],
+     hist : [state],
+     pops : [apply("+", state)],
+     max_pop : pops[1],
+     for i : 1 thru T do (
+         state : ca_step_rule(state, rule_fn),
+         pops  : endcons(apply("+", state), pops),
+         if last(pops) > max_pop then max_pop : last(pops),
+         /* cycle detect against previous states */
+         prev_idx : 0,
+         for k : 1 thru length(hist) do
+             if hist[k] = state and prev_idx = 0 then prev_idx : k,
+         if prev_idx > 0 then (
+             period    : length(hist) - prev_idx + 1,
+             transient : prev_idx - 1,
+             return(0)),
+         hist : endcons(state, hist)),
+     final_pop : last(pops),
+     fate : (
+         if final_pop = 0 then "extinct"
+         else if period = 1 then "still"
+         else if period > 1 then concat("period-", period)
+         else if final_pop > 3 * pops[1] then "growing"
+         else "active"),
+     [fate, period, transient, max_pop, final_pop, pops]) $
+/* Curated set of B/S candidates.  On a 5-regular graph, neighbor sum
+     is in 0..n_int (interior), so rules select subsets of {0,..,n_int}.
+     We exclude B0 to avoid trivial boundary births.
+     The panel is generated dynamically from the birth threshold b. */
+block(
+  [b : ca_b_thresh, h : max(1, round(n_int / 2))],
+  rule_panel : [
+      [[b],       [b-1, b]],           /* default rule */
+      [[b],       [b, b+1]],           /* shifted survival */
+      [[b+1],     [b, b+1]],           /* Conway-like B(b+1)/S(b,b+1) */
+      [[b],       [b-1, b, b+1]],      /* generous survival */
+      [[b+1],     [b-1, b, b+1]],      /* B(b+1)/S wide */
+      [[b, b+1],  [b, b+1]],           /* symmetric */
+      [[1],       [1, 2]],             /* replicator-style */
+      [[1],       [1]],                /* pure replicator */
+      [[b],       [b+1]],              /* minority */
+      [[b+1],     [b+1]],              /* high-density */
+      [[b, h],    [b-1, b, b+1]],      /* sparse+dense birth */
+      [[h],       [h-1, h]],           /* high-density survival */
+      [[b-1, b],  [b-1, b]],           /* low-threshold */
+      [[b+1],     [b, b+1, b+2]],      /* wide survival */
+      [[b],       makelist(j, j, 1, b+2)] /* generous */
+  ]) $
+/* Remove any rules with negative neighbor counts. */
+rule_panel : sublist(rule_panel, lambda([r],
+      every(lambda([x], x >= 0), r[1]) and
+      every(lambda([x], x >= 0), r[2]))) $
+/* Standardize the seed across the panel for comparability. */
+panel_seed : make_seed_origin(2) $
+panel_seed_pop : apply("+", panel_seed) $
+print("Panel seed population =", panel_seed_pop)$
+print("Panel run length T =", T_CA)$
+print("")$
+rule_results : [] $
+for r in rule_panel do block(
+     [B : r[1], S : r[2], res, label],
+     res : run_rule_diagnose(B, S, panel_seed, T_CA),
+     label : concat("B", apply(sconcat, B), "/S", apply(sconcat, S)),
+     rule_results : endcons([label, B, S, res[1], res[2],
+                             res[3], res[4], res[5]],
+                            rule_results),
+     print("  ", label,
+           "  fate=", res[1],
+           "  period=", res[2],
+           "  transient=", res[3],
+           "  max_pop=", res[4],
+           "  final_pop=", res[5])) $
+/* Classify the panel. */
+n_extinct : 0 $
+n_still   : 0 $
+n_period  : 0 $
+n_growing : 0 $
+n_active  : 0 $
+for r in rule_results do (
+     if r[4] = "extinct"  then n_extinct : n_extinct + 1,
+     if r[4] = "still"    then n_still   : n_still   + 1,
+     if r[4] = "growing"  then n_growing : n_growing + 1,
+     if r[4] = "active"   then n_active  : n_active  + 1,
+     if not member(r[4], ["extinct", "still", "growing", "active"])
+        then n_period : n_period + 1) $
+print("")$
+print("Panel classification:")$
+print("  extinct =", n_extinct,
+       "  still =", n_still,
+       "  periodic =", n_period,
+       "  growing =", n_growing,
+       "  active =", n_active)$
+/* Identify the most interesting rule (highest non-saturating max_pop
+    that does not blow up beyond ~ N/2). */
+best_rule : [] $
+best_score : 0 $
+for r in rule_results do block(
+     [mp : r[7]],
+     if mp > best_score and mp < N/2 and r[4] # "extinct" then (
+         best_score : mp,
+         best_rule  : r)) $
+if length(best_rule) > 0 then
+     print("Most active non-degenerate rule:", best_rule[1],
+           " with max_pop =", best_rule[7],
+           " fate=", best_rule[4])$
+/* ---------------------------------------------------------------------
+    SECTION 11.  Alternative tau-rules: holonomy and structure comparison
+    ---------------------------------------------------------------------
+     We rebuild small clusters under different vortex rules tau(i, k)
+     and compare (generalized to n_int):
+      - cell count after fixed BFS depth,
+      - number of sheets reached,
+      - vortex-edge fraction,
+      - degree statistics,
+       - non-trivial holonomy loop fraction in Z_2, Z_{n_int}, and others.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 11: Alternative tau-rule survey")$
+print("============================================================")$
+/* Cluster builder parameterized by tau function. */
+build_cluster_tau(tau_fn, depth) := block(
+     [saved_count : cell_count, saved_center : cell_center,
+      saved_chir : cell_chir, saved_sheet : cell_sheet,
+      saved_nbrs : nbrs, saved_origin : origin_id,
+     saved_tau : tau_rule, saved_hash : cell_hash,
+      result, origin_id2],
+     /* reset registry */
+     cell_count : 0,
+     cell_center : [], cell_chir : [], cell_sheet : [], nbrs : [],
+    cell_hash : ?make\-hash\-table(),
+     tau_rule(i, k) := apply(tau_fn, [i, k]),
+     origin_id2 : add_cell([0, 0], 0, 0),
+     expand_cluster(depth),
+     result : [cell_count, copylist(cell_center), copylist(cell_chir),
+               copylist(cell_sheet), copylist(nbrs), origin_id2],
+     /* restore */
+     cell_count  : saved_count,
+     cell_center : saved_center,
+     cell_chir   : saved_chir,
+     cell_sheet  : saved_sheet,
+     nbrs        : saved_nbrs,
+     origin_id   : saved_origin,
+    cell_hash   : saved_hash,
+     tau_rule(i, k) := apply(saved_tau, [i, k]),
+     result) $
+/* Various tau-rule candidates. */
+tau_none(i, k)     := 0 $
+tau_every3(i, k)   := if mod(i + k, 3) = 0 then 1 else 0 $
+tau_every2(i, k)   := if mod(i + k, 2) = 0 then 1 else 0 $
+tau_every5(i, k)   := if mod(i + k, 5) = 0 then 1 else 0 $
+tau_kparity(i, k)  := if mod(k, 2) = 0 then 1 else 0 $
+tau_chiral(i, k)   := if mod(k, 5) <= 1 then 1 else 0 $
+tau_signed(i, k)   := if mod(i + k, 3) = 0 then 1
+                       elseif mod(i + k, 3) = 1 then -1
+                       else 0 $
+tau_fib(i, k)      := if member(mod(i + k, 8), [1, 2, 3, 5]) then 1 else 0 $
+/* General period-n variants (always meaningful regardless of N_GON). */
+tau_everyn_fn(i, k)  := if mod(i + k, n_int) = 0 then 1 else 0 $
+tau_signedn_fn(i, k) := if mod(i + k, n_int) = 0 then 1
+                          elseif mod(i + k, n_int) = 1 then -1
+                          else 0 $
+tau_kmodn(i, k)      := if mod(k, n_int) = 0 then 1 else 0 $
+tau_chiralN(i, k)    := if mod(k, n_int) <= floor(n_int/3) then 1 else 0 $
+tau_panel : [
+     ["none      (flat)",     tau_none],
+     ["every3    (default)",  tau_every3],
+     ["every2",               tau_every2],
+     ["every5",               tau_every5],
+     ["k-parity",             tau_kparity],
+     ["chiral",               tau_chiral],
+     ["signed-3",             tau_signed],
+      ["fibonacci-mod8",       tau_fib],
+      ["every-n",              tau_everyn_fn],
+      ["signed-n",             tau_signedn_fn],
+      ["k-mod-n",              tau_kmodn],
+      ["chiral-n",             tau_chiralN]
+] $
+/* For each tau rule we report key stats from a depth-3 cluster
+    (kept smaller than the main cluster to keep this section snappy). */
+TAU_SURVEY_DEPTH : min(BFS_DEPTH, 3) $
+  /* Count vortex edges in a cluster snapshot. */
+count_vortex_edges(centers, sheets, nbr_list, n_cells) := block(
+     [v : 0, total : 0, i, j],
+     for i : 1 thru n_cells do
+         for j in nbr_list[i] do
+             if i < j then (
+                 total : total + 1,
+                     if sheets[j] - sheets[i] # 0 then v : v + 1),
+         [v, total]) $
+/* Helper: enumerate 4- and 5-cycles through a given root in a snapshot. */
+find_cycles_in_snapshot(root, nbr_list) := block(
+     [cycles : [], v1, v2, v3, v4],
+     for v1 in nbr_list[root] do
+         for v2 in nbr_list[v1] do
+             if v2 # root then
+                 for v3 in nbr_list[v2] do
+                     if v3 # v1 and v3 # root
+                        and member(root, nbr_list[v3]) then
+                         cycles : endcons([root, v1, v2, v3, root],
+                                          cycles),
+     for v1 in nbr_list[root] do
+         for v2 in nbr_list[v1] do
+             if v2 # root then
+                 for v3 in nbr_list[v2] do
+                     if v3 # v1 and v3 # root then
+                         for v4 in nbr_list[v3] do
+                             if v4 # v2 and v4 # v1 and v4 # root
+                                and member(root, nbr_list[v4]) then
+                                 cycles : endcons(
+                                     [root, v1, v2, v3, v4, root],
+                                     cycles),
+     cycles) $
+/* Holonomy of a sequence given a sheet vector. */
+snapshot_holonomy(seq, sheets) := block(
+     [tot : 0, k],
+     for k : 1 thru length(seq) - 1 do
+         tot : tot + (sheets[seq[k+1]] - sheets[seq[k]]),
+     tot) $
+tau_survey_results : [] $
+for tp in tau_panel do block(
+     [label : tp[1], tau_fn : tp[2], snap, nc, sheets, nbrlist, root,
+      ve_pair, vortex_edges, total_edges, deg_l, sheet_count,
+       cycles, hcounts, c, hh, k, fg],
+     snap : build_cluster_tau(tau_fn, TAU_SURVEY_DEPTH),
+     nc      : snap[1],
+     sheets  : snap[4],
+     nbrlist : snap[5],
+     root    : snap[6],
+     ve_pair : count_vortex_edges(snap[2], sheets, nbrlist, nc),
+     vortex_edges : ve_pair[1],
+     total_edges  : ve_pair[2],
+     deg_l : makelist(length(nbrlist[i]), i, 1, nc),
+     sheet_count : length(listify(setify(sheets))),
+     cycles : find_cycles_in_snapshot(root, nbrlist),
+      hcounts : makelist(0, k, 1, length(FIBER_GROUPS_DEFAULT)),
+     for c in cycles do (
+         hh : snapshot_holonomy(c, sheets),
+          for k : 1 thru length(FIBER_GROUPS_DEFAULT) do (
+              fg : FIBER_GROUPS_DEFAULT[k],
+              if mod(hh, fg) # 0 then
+                  hcounts[k] : hcounts[k] + 1)),
+     print("  tau =", label,
+           "  cells=", nc,
+           "  sheets=", sheet_count,
+             "  edges=", float(total_edges),
+             "  vortex=", float(vortex_edges),
+           "  vfrac=",
+             if total_edges > 0 then float(vortex_edges/total_edges) else 0.0,
+           "  meanDeg=",
+             if nc > 0 then float(apply("+", deg_l) / nc) else 0.0,
+           "  cycles=", length(cycles),
+            "  holonomy_nontrivial=", hcounts,
+            "  (groups=", FIBER_GROUPS_DEFAULT, ")"),
+     tau_survey_results : endcons(
+          append([label, nc, sheet_count, vortex_edges, total_edges,
+                  length(cycles)], hcounts),
+         tau_survey_results)) $
+/* Identify the tau-rule with the richest holonomy structure. */
+best_tau_label : "" $
+best_tau_score : -1 $
+for r in tau_survey_results do block(
+      /* sum all holonomy counts (columns 7 onward) */
+      [score : apply("+", rest(r, 6))],
+     if score > best_tau_score then (
+         best_tau_score : score,
+         best_tau_label : r[1])) $
+print("")$
+print("Richest-holonomy tau-rule (sum of Z_2/Z_3/Z_5 non-trivial counts):",
+       best_tau_label,
+       "  score =", best_tau_score)$
+/* ---------------------------------------------------------------------
+    SECTION 12.  Extended holonomy: more fiber groups
+    ---------------------------------------------------------------------
+     Apply Z_m reductions for m in FIBER_GROUPS_DEFAULT to the long_cycles
+     of the main cluster.  m = 2 is the spinor reduction; m = n_int is the
+     anyonic one tied to n-gon symmetry; others are diagnostic.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 12: Extended holonomy on main cluster")$
+print("============================================================")$
+fiber_groups : FIBER_GROUPS_DEFAULT $
+print("Examining", length(long_cycles), "long cycles in main cluster.")$
+if length(long_cycles) > 0 then block(
+     [hcounts, n, cyc, raw, residue, dist],
+     hcounts : makelist(0, k, 1, length(fiber_groups)),
+     /* residue distributions: for each n, a list of length n */
+     residue_dists : makelist(makelist(0, j, 1, fiber_groups[k]),
+                              k, 1, length(fiber_groups)),
+     for cyc in long_cycles do (
+         raw : loop_holonomy(cyc),
+         for k : 1 thru length(fiber_groups) do (
+             n : fiber_groups[k],
+             residue : mod(raw, n),
+             residue_dists[k][residue + 1] :
+                 residue_dists[k][residue + 1] + 1,
+             if residue # 0 then hcounts[k] : hcounts[k] + 1)),
+     for k : 1 thru length(fiber_groups) do
+         print("  Z_", fiber_groups[k],
+               ":  non-trivial =", hcounts[k], "/", length(long_cycles),
+               "  residue distribution =", residue_dists[k]))
+else
+     print("(no long cycles to analyze)")$
+/* Raw holonomy distribution. */
+if length(long_cycles) > 0 then block(
+     [raws : [], cyc],
+     for cyc in long_cycles do raws : endcons(loop_holonomy(cyc), raws),
+     print("Raw holonomy values (length", length(raws), "):"),
+     print("  min =", apply(min, raws),
+           "  max =", apply(max, raws),
+           "  mean =", float(apply("+", raws) / length(raws))),
+     /* histogram */
+     block(
+         [tab : []],
+         for v in sort(listify(setify(raws))) do block(
+             [cnt : 0],
+             for r in raws do if r = v then cnt : cnt + 1,
+             tab : endcons([v, cnt], tab)),
+         print("  histogram [value, count] =", tab))) $
+/* ---------------------------------------------------------------------
+    SECTION 13.  Structural pattern analysis
+    ---------------------------------------------------------------------
+    We compute several graph-theoretic descriptors that are sensitive to
+    the multi-sheeted construction:
+      - clustering coefficient (local triangle density),
+      - girth (length of shortest cycle through origin),
+      - degree histogram,
+      - inter-sheet edge count,
+      - sheet-to-sheet transition matrix.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 13: Structural patterns in main cluster")$
+print("============================================================")$
+/* Degree histogram. */
+deg_hist : [] $
+for d : 0 thru deg_max do block(
+     [cnt : 0],
+     for i : 1 thru N do
+         if length(nbrs[i]) = d then cnt : cnt + 1,
+     if cnt > 0 then deg_hist : endcons([d, cnt], deg_hist)) $
+print("Degree histogram [deg, count]:")$
+for h in deg_hist do print("  ", h)$
+/* Local clustering coefficient.  For node i with neighbors N(i):
+    c_i = (# edges among N(i)) / (|N(i)| choose 2).  Average over nodes
+    with degree >= 2. */
+clustering_coeffs : [] $
+for i : 1 thru N do block(
+     [ni : nbrs[i], di, edges_in : 0, j, kk],
+     di : length(ni),
+     if di >= 2 then (
+         for j in ni do
+             for kk in ni do
+                 if j < kk and member(kk, nbrs[j]) then
+                     edges_in : edges_in + 1,
+         clustering_coeffs : endcons(
+             float(edges_in / (di * (di - 1) / 2)),
+             clustering_coeffs))) $
+if length(clustering_coeffs) > 0 then
+     print("Mean local clustering coefficient =",
+           float(apply("+", clustering_coeffs)
+                 / length(clustering_coeffs)),
+           " over", length(clustering_coeffs), "nodes (deg >= 2)")
+else
+     print("No nodes with degree >= 2 for clustering.")$
+/* Triangle count (= sum of edges among neighbors / 3). */
+triangle_count : 0 $
+for i : 1 thru N do
+     for j in nbrs[i] do
+         if j > i then
+             for kk in nbrs[j] do
+                 if kk > j and member(kk, nbrs[i]) then
+                     triangle_count : triangle_count + 1 $
+print("Triangle count in main cluster =", triangle_count)$
+/* Girth at origin: shortest cycle returning to origin (length >= 3). */
+girth_origin : 0 $
+block([found : false, g],
+     for g : 3 thru 8 do (
+         if found then return(0),
+         /* BFS-based search for cycles of length g through origin */
+         block(
+              [paths : [[origin_id]], paths2 : [], p, last_v, nb_v, ext, st],
+              for st : 1 thru g do (
+                 paths2 : [],
+                 for p in paths do (
+                     last_v : last(p),
+                     for nb_v in nbrs[last_v] do (
+                         /* allow returning to origin only on final step */
+                          if st = g then (
+                             if nb_v = origin_id and length(p) >= 3 then (
+                                 girth_origin : g,
+                                 found : true,
+                                 return(0)))
+                         else (
+                             if not member(nb_v, p) and nb_v # origin_id then
+                                 paths2 : endcons(endcons(nb_v, p), paths2)))),
+                 if found then return(0),
+                 paths : paths2)))) $
+print("Girth (shortest cycle) through origin =",
+       if girth_origin > 0 then girth_origin else "> 8") $
+/* For odd n the dual graph is bipartite on chirality, so every cycle
+    of odd length must close via a non-trivial sheet-shift sequence
+    (i.e. it carries genuine monodromy and cannot be a pure same-sheet
+    geometric loop).  Report this as a structural observation. */
+if CHIRAL_ACTIVE and girth_origin > 0 then
+     print("  Bipartite-chirality note: any odd-length cycle through",
+           "origin carries non-zero net chirality flip; closure",
+           "requires the sheet/holonomy degree of freedom.")$
+/* Inter-sheet edges and sheet-to-sheet transition matrix. */
+sheet_list : sort(listify(setify(cell_sheet))) $
+n_sheets : length(sheet_list) $
+sheet_index(s) := block(
+     [idx : 0, k],
+     for k : 1 thru n_sheets do
+         if sheet_list[k] = s then idx : k,
+     idx) $
+trans_mat : zeromatrix(n_sheets, n_sheets) $
+for i : 1 thru N do
+     for j in nbrs[i] do
+         if i < j then block(
+             [si : sheet_index(cell_sheet[i]),
+              sj : sheet_index(cell_sheet[j])],
+             trans_mat[si, sj] : trans_mat[si, sj] + 1,
+             if si # sj then
+                 trans_mat[sj, si] : trans_mat[sj, si] + 1) $
+print("Sheets present:", sheet_list)$
+print("Sheet-to-sheet edge matrix (rows=sheet_list, cols=sheet_list):")$
+for i : 1 thru n_sheets do
+     print("  sheet", sheet_list[i], ":",
+           makelist(trans_mat[i, j], j, 1, n_sheets))$
+/* Inter-sheet edge count (should equal n_vortex_edges_in_cluster). */
+inter_sheet_edges : 0 $
+for i : 1 thru n_sheets do
+     for j : i + 1 thru n_sheets do
+         inter_sheet_edges : inter_sheet_edges + trans_mat[i, j] $
+print("Inter-sheet (vortex) edges =", inter_sheet_edges,
+       " (cross-check vs Section 8:", n_vortex_edges_in_cluster, ")")$
+/* ---------------------------------------------------------------------
+    SECTION 14.  Per-sheet sub-graph analysis
+    ---------------------------------------------------------------------
+    For each sheet, examine the induced sub-graph: how many cells, how
+    many intra-sheet edges, mean degree, and BFS-volume slope (as a
+    sheet-restricted d_eff estimate).
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 14: Per-sheet sub-graph statistics")$
+print("============================================================")$
+for s in sheet_list do block(
+     [sheet_nodes : [], sheet_edges : 0, deg_sum : 0, i, j, intra_deg, k,
+      sheet_seed],
+     for i : 1 thru N do
+         if cell_sheet[i] = s then
+             sheet_nodes : endcons(i, sheet_nodes),
+     if length(sheet_nodes) > 0 then (
+         for i in sheet_nodes do (
+             intra_deg : 0,
+             for j in nbrs[i] do
+                 if cell_sheet[j] = s then
+                     intra_deg : intra_deg + 1,
+             deg_sum : deg_sum + intra_deg),
+         sheet_edges : deg_sum / 2,
+         print("  sheet", s,
+               ":  nodes=", length(sheet_nodes),
+               "  intra-edges=", sheet_edges,
+               "  meanIntraDeg=",
+               float(deg_sum / length(sheet_nodes))))) $
+/* Sheet-population sequence: how does cell count fall off with sheet
+    index?  If geometric, we get a simple exponential decay rate. */
+pop_by_sheet : [] $
+for s in sheet_list do block(
+     [cnt : 0],
+     for i : 1 thru N do
+         if cell_sheet[i] = s then cnt : cnt + 1,
+     pop_by_sheet : endcons([s, cnt], pop_by_sheet)) $
+print("Sheet-population sequence:", pop_by_sheet)$
+if length(pop_by_sheet) >= 3 then block(
+     [xs : [], ys : [], pt, fit],
+     for pt in pop_by_sheet do
+         if second(pt) > 0 then (
+             xs : endcons(float(first(pt)), xs),
+             ys : endcons(float(log(second(pt))), ys)),
+     if length(xs) >= 3 then (
+         fit : log_log_fit_basic(xs, ys),
+         print("  log-pop vs sheet-index slope =", fit[1],
+               "  => decay rate r =", float(exp(fit[1])),
+               "  (geometric falloff if r < 1)"))) $
+/* ---------------------------------------------------------------------
+    SECTION 15.  Glider / oscillator hunt under multiple seeds
+    ---------------------------------------------------------------------
+    Re-run a small set of promising rules on several distinct seeds and
+    record any periodic orbits with period > 1.  We also test whether
+    any periodic pattern has a non-zero "center-of-mass drift" across
+    its period, which would indicate glider-like translation in the
+    BFS-distance metric.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 15: Glider / oscillator hunt")$
+print("============================================================")$
+/* Pick the top 3 rules by max_pop among non-extinct, non-growing. */
+promising_rules : [] $
+for r in rule_results do
+     if r[4] # "extinct" and r[4] # "growing"
+        and length(promising_rules) < 5 then
+         promising_rules : endcons([r[2], r[3], r[1]], promising_rules) $
+print("Trying", length(promising_rules),
+       "rules x several seed shapes.")$
+/* Seed shapes: single, pair, triple, 5-petal (all 5 nbrs of origin). */
+make_seed_shape(shape) := block(
+     [s : makelist(0, ii, 1, N), nb : nbrs[origin_id], j],
+     if shape = "single" then s[origin_id] : 1
+     elseif shape = "pair" then (
+         s[origin_id] : 1,
+         if length(nb) >= 1 then s[nb[1]] : 1)
+     elseif shape = "triple" then (
+         s[origin_id] : 1,
+         for j : 1 thru min(2, length(nb)) do s[nb[j]] : 1)
+     elseif shape = "petal" then
+         for j : 1 thru length(nb) do s[nb[j]] : 1
+     elseif shape = "all5" then (
+         s[origin_id] : 1,
+         for j : 1 thru length(nb) do s[nb[j]] : 1),
+     s) $
+seed_shapes : ["single", "pair", "triple", "petal", "all5"] $
+/* Compute COM-like statistic for a state: mean BFS distance of live
+    cells from origin. */
+live_mean_dist(state) := block(
+     [tot : 0, cnt : 0, i],
+     for i : 1 thru N do
+         if state[i] = 1 then (
+             tot : tot + dist_from_origin[i],
+             cnt : cnt + 1),
+     if cnt > 0 then float(tot / cnt) else 0) $
+/* Track distance history alongside the state hash for glider detection. */
+glider_hunt(B, S, seed, T) := block(
+     [rule_fn : make_rule(B, S),
+      state : seed, hist : [seed], dists : [live_mean_dist(seed)],
+      i, prev_idx : 0, period : 0, transient : 0,
+      d_amp : 0, d_drift : 0],
+     for i : 1 thru T do (
+         state : ca_step_rule(state, rule_fn),
+         dists : endcons(live_mean_dist(state), dists),
+         prev_idx : 0,
+         for k : 1 thru length(hist) do
+             if hist[k] = state and prev_idx = 0 then prev_idx : k,
+         if prev_idx > 0 then (
+             period : length(hist) - prev_idx + 1,
+             transient : prev_idx - 1,
+             return(0)),
+         hist : endcons(state, hist)),
+     if period > 1 then block(
+         [seg : rest(dists, transient)],
+         /* amplitude of distance oscillation over one period */
+         d_amp : float(apply(max, seg) - apply(min, seg)),
+         d_drift : float(last(seg) - first(seg))),
+     [period, transient, d_amp, d_drift]) $
+glider_summary : [] $
+for rp in promising_rules do block(
+     [B : rp[1], S : rp[2], label : rp[3], sh, seed, gh],
+     for sh in seed_shapes do (
+         seed : make_seed_shape(sh),
+         gh : glider_hunt(B, S, seed, T_CA),
+         glider_summary : endcons([label, sh, gh[1], gh[2], gh[3], gh[4]],
+                                  glider_summary),
+         if gh[1] > 1 then
+             print("  ", label, " seed=", sh,
+                   "  period=", gh[1],
+                   "  transient=", gh[2],
+                   "  d_amp=", gh[3],
+                   "  d_drift=", gh[4]))) $
+/* Count gliders: period > 1 AND d_amp > 0.5 (BFS-shells of motion). */
+n_oscillators : 0 $
+n_gliders     : 0 $
+for g in glider_summary do (
+     if g[3] > 1 then n_oscillators : n_oscillators + 1,
+     if g[3] > 1 and g[5] > 0.5 then n_gliders : n_gliders + 1) $
+print("")$
+print("Glider hunt summary:")$
+print("  trials =", length(glider_summary),
+       "  oscillators =", n_oscillators,
+       "  gliders =", n_gliders)$
+/* ---------------------------------------------------------------------
+    SECTION 16.  Long-loop holonomy enumeration
+    ---------------------------------------------------------------------
+     Enumerate longer simple cycles through the origin (up to
+    LONG_LOOP_MAX steps), and also enumerate cycles anchored at
+    *non-origin* vertices to expose monodromy that depends on the
+    base point.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 16: Long-loop holonomy enumeration")$
+print("============================================================")$
+/* DFS-based simple-cycle enumeration through a given root, up to
+    a maximum length.  Returns a list of cycles (each a list of node
+    IDs starting and ending at root).  Restricts to root being the
+    minimum-ID vertex in the cycle to avoid trivial reorderings. */
+enumerate_simple_cycles(root, maxlen, nbr_list) := block(
+     [results : [], stack, visited, depth_limit : maxlen,
+      v, nb, recur],
+        /* Recursive DFS.  Declared as a local lambda via define() so
+           the inner function can call itself. */
+     recur(path, current_depth) := block(
+         [last_v : last(path), nb, p_new, nx],
+         for nx in nbr_list[last_v] do (
+             if nx = root and current_depth >= 3 then
+                 results : endcons(endcons(root, path), results)
+             elseif nx > root and not member(nx, path)
+                    and current_depth < depth_limit then (
+                 p_new : endcons(nx, path),
+                 recur(p_new, current_depth + 1)))),
+     recur([root], 1),
+     results) $
+/* Enumerate cycles through origin up to LONG_LOOP_MAX steps. */
+print("Enumerating simple cycles through origin up to length",
+       LONG_LOOP_MAX, "...")$
+all_cycles_origin : enumerate_simple_cycles(origin_id, LONG_LOOP_MAX, nbrs) $
+print("Total cycles through origin found:", length(all_cycles_origin))$
+/* Length distribution. */
+if length(all_cycles_origin) > 0 then block(
+     [len_hist : []],
+     for L : 3 thru LONG_LOOP_MAX do block(
+         [cnt : 0],
+         for c in all_cycles_origin do
+             if length(c) - 1 = L then cnt : cnt + 1,
+         if cnt > 0 then len_hist : endcons([L, cnt], len_hist)),
+     print("Cycle-length distribution [len, count]:"),
+     for h in len_hist do print("  ", h)) $
+/* Multi-group holonomy enumeration. */
+long_fiber_groups : FIBER_GROUPS_DEFAULT $
+if length(all_cycles_origin) > 0 then block(
+     [hcounts, residue_dists, n, c, raw, residue, k],
+     hcounts : makelist(0, k, 1, length(long_fiber_groups)),
+     residue_dists : makelist(makelist(0, j, 1, long_fiber_groups[k]),
+                              k, 1, length(long_fiber_groups)),
+     for c in all_cycles_origin do (
+         raw : loop_holonomy(c),
+         for k : 1 thru length(long_fiber_groups) do (
+             n : long_fiber_groups[k],
+             residue : mod(raw, n),
+             residue_dists[k][residue + 1] :
+                 residue_dists[k][residue + 1] + 1,
+             if residue # 0 then hcounts[k] : hcounts[k] + 1)),
+     print("Holonomy by fiber group on all cycles through origin:"),
+     for k : 1 thru length(long_fiber_groups) do
+         print("  Z_", long_fiber_groups[k],
+               " non-trivial =", hcounts[k], "/", length(all_cycles_origin),
+               "  residue dist =", residue_dists[k]),
+     /* Show a few example non-trivial Z_2 cycles, if any. */
+     block(
+         [shown : 0],
+         for c in all_cycles_origin do
+             if shown < 3 and mod(loop_holonomy(c), 2) # 0 then (
+                 print("  example Z_2 non-trivial cycle of length",
+                       length(c) - 1, ":", c,
+                       " raw=", loop_holonomy(c)),
+                 shown : shown + 1))) $
+/* Now try cycles anchored at a non-origin vertex on a higher sheet,
+    to expose base-point-dependent monodromy. */
+non_origin_root : 0 $
+for i : 1 thru N do
+     if non_origin_root = 0 and cell_sheet[i] >= 2 and length(nbrs[i]) >= 3
+        then non_origin_root : i $
+if non_origin_root > 0 then block(
+     [cycs, hcounts, n, c, raw, residue, k],
+     print("Enumerating cycles through anchor node", non_origin_root,
+           " (sheet=", cell_sheet[non_origin_root], ", deg=",
+           length(nbrs[non_origin_root]), ") up to length",
+           LONG_LOOP_MAX, "..."),
+     cycs : enumerate_simple_cycles(non_origin_root, LONG_LOOP_MAX, nbrs),
+     print("  cycles found:", length(cycs)),
+     if length(cycs) > 0 then (
+         hcounts : makelist(0, k, 1, length(long_fiber_groups)),
+         for c in cycs do (
+             raw : loop_holonomy(c),
+             for k : 1 thru length(long_fiber_groups) do (
+                 n : long_fiber_groups[k],
+                 if mod(raw, n) # 0 then hcounts[k] : hcounts[k] + 1)),
+         print("  Holonomy distribution at non-origin anchor:"),
+         for k : 1 thru length(long_fiber_groups) do
+             print("    Z_", long_fiber_groups[k],
+                   " non-trivial =", hcounts[k], "/", length(cycs)))) $
+/* ---------------------------------------------------------------------
+    SECTION 17.  Cut-and-project acceptance window experiment
+    ---------------------------------------------------------------------
+     The didactic tau_rule is geometrically arbitrary.  The rigorous
+     regime uses a cut-and-project window: lift the n-gon centroid into
+     a higher-dimensional lattice, check whether its "perpendicular"
+     component lies inside an acceptance window, and assign a vortex
+     shift based on which window cell it falls in.
+     We implement a *projected* version: the vortex rule is a function
+     of the centroid's exact position, using the quasiperiodic projection
+     constant 2*cos(2*pi/n) (= phi - 1 for n=5).
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 17: Cut-and-project acceptance-window tau-rule")$
+print("============================================================")$
+/* Projection of a Q(sqrt(5)) coordinate to an irrational "phantom"
+    axis: x -> {x*phi} mod 1.  Two centroid coords give a 2D phantom
+    point; the acceptance window is a small rectangle in that plane. */
+/* Convert a Q(sqrt(5)) algebraic number to a floating-point value. */
+qfloat(z) := float(ratsimp(expand(z))) $
+/* Fractional part. */
+frac_part(x) := x - floor(x) $
+/* Phantom projection of a centroid using the n-gon's natural
+    quasiperiodic constant: 2*cos(2*pi/n).  For n=5 this equals phi-1. */
+proj_const_n : float(2*cos(2*%pi/n_int)) $
+phantom_proj(c) := block(
+      [px : frac_part(qfloat(c[1]) * proj_const_n),
+       py : frac_part(qfloat(c[2]) * proj_const_n)],
+     [px, py]) $
+/* Cut-and-project tau rule: vortex iff phantom point falls in an
+     n-fold-symmetric acceptance window.  We approximate the window
+     by the inequality cos(n*theta) > -threshold, where theta is the
+     polar angle of phantom_point - (0.5, 0.5).  For n=5 this gives
+     the pentagonal window of the original paper. */
+cap_window_threshold : 0.30 $
+in_cap_window(c) := block(
+     [p : phantom_proj(c), dx, dy, r2, theta_cos],
+     dx : p[1] - 0.5,
+     dy : p[2] - 0.5,
+     r2 : dx^2 + dy^2,
+     if r2 < 1e-12 then return(true),
+      /* Use n-fold-modulated test via Chebyshev proxy for cos(n*theta).
+         cos(2*theta) = (dx^2 - dy^2)/r2.  For n=5: T_5(cos(2t/5))
+         approximation; for general n we use the same Chebyshev proxy
+         scaled by n_int. */
+      theta_cos : (dx^2 - dy^2)/r2,
+      is(n_int * theta_cos^2 - (n_int - 1)
+         > -cap_window_threshold * (n_int - 1))) $
+/* Sample test: how many cells of the main cluster fall inside the
+    acceptance window? */
+cap_in_count : 0 $
+for i : 1 thru N do
+     if in_cap_window(cell_center[i]) then
+         cap_in_count : cap_in_count + 1 $
+print("Cells inside acceptance window:", cap_in_count, "/", N,
+       " (fraction =", float(cap_in_count / N), ")")$
+/* tau rule derived from acceptance window: shift +1 across edges
+     where exactly one endpoint is inside the n-fold window. */
+tau_cap(i, k) := block(
+     [c1 : cell_center[i],
+      c2 : reflected_neighbor_center(c1[1], c1[2], cell_orient[i], k),
+      a, b],
+     a : in_cap_window(c1),
+     b : in_cap_window(c2),
+     if a # b then 1 else 0) $
+/* Build a cap-window cluster at slightly smaller depth and measure. */
+CAP_DEPTH : min(BFS_DEPTH, 4) $
+print("Building cap-window cluster at depth", CAP_DEPTH, "...")$
+cap_snap : build_cluster_tau(tau_cap, CAP_DEPTH) $
+cap_N : cap_snap[1] $
+cap_sheets : cap_snap[4] $
+cap_nbrs : cap_snap[5] $
+cap_root : cap_snap[6] $
+cap_sheet_set : sort(listify(setify(cap_sheets))) $
+print("Cap-window cluster: N =", cap_N,
+       ", sheets =", cap_sheet_set)$
+/* If TAU_MODE = "cap", the main cluster IS the cap cluster, and
+    we have already characterized it above.  But the dedicated cap
+    block here provides a side-by-side measurement that is useful
+    regardless of TAU_MODE. */
+/* Per-sheet population and vortex edge count. */
+cap_ve_pair : count_vortex_edges(cap_snap[2], cap_sheets, cap_nbrs, cap_N) $
+print("  vortex edges =", cap_ve_pair[1], "/", cap_ve_pair[2],
+       "  (fraction =",
+       if cap_ve_pair[2] > 0 then float(cap_ve_pair[1]/cap_ve_pair[2]) else 0,
+       ")")$
+/* Holonomy on cap-window cluster. */
+cap_cycles : enumerate_simple_cycles(cap_root, min(LONG_LOOP_MAX, 6),
+                                       cap_nbrs) $
+print("  cycles through cap_root:", length(cap_cycles))$
+if length(cap_cycles) > 0 then block(
+     [hcounts, n, c, raw, k],
+     hcounts : makelist(0, k, 1, length(long_fiber_groups)),
+     for c in cap_cycles do (
+         raw : snapshot_holonomy(c, cap_sheets),
+         for k : 1 thru length(long_fiber_groups) do (
+             n : long_fiber_groups[k],
+             if mod(raw, n) # 0 then hcounts[k] : hcounts[k] + 1)),
+     print("  Holonomy by fiber group (cap-window cluster):"),
+     for k : 1 thru length(long_fiber_groups) do
+         print("    Z_", long_fiber_groups[k],
+               " non-trivial =", hcounts[k], "/", length(cap_cycles))) $
+/* BFS volume growth on the cap-window cluster to compare d_eff. */
+cap_vols : block(
+     [visited : makelist(false, ii, 1, cap_N),
+      dist : makelist(-1, ii, 1, cap_N),
+      queue : [cap_root], v, j, max_d : 0, sizes],
+     visited[cap_root] : true, dist[cap_root] : 0,
+     while length(queue) > 0 do (
+         v : first(queue), queue : rest(queue),
+         for j in cap_nbrs[v] do
+             if not visited[j] then (
+                 visited[j] : true,
+                 dist[j] : dist[v] + 1,
+                 if dist[j] > max_d then max_d : dist[j],
+                 queue : endcons(j, queue))),
+     sizes : makelist(0, ii, 0, max_d),
+     for ii : 1 thru cap_N do
+         if dist[ii] >= 0 then
+             sizes[dist[ii] + 1] : sizes[dist[ii] + 1] + 1,
+     for r : 2 thru length(sizes) do
+         sizes[r] : sizes[r] + sizes[r-1],
+     sizes) $
+print("Cap-window BFS volumes:", cap_vols)$
+if length(cap_vols) >= 4 then block(
+     [xs : [], ys : [], r, fit],
+     for r : 2 thru length(cap_vols) - 1 do (
+         xs : endcons(float(log(r - 1)), xs),
+         ys : endcons(float(log(cap_vols[r])), ys)),
+     fit : log_log_fit_basic(xs, ys),
+     print("  d_eff (cap-window, interior) =", fit[1])) $
+/* ---------------------------------------------------------------------
+    SECTION 18.  KPM-based spectral density approximation
+    ---------------------------------------------------------------------
+    For large N (e.g. the huge preset) the dense eigendecomposition is
+    skipped.  The Kernel Polynomial Method (KPM) approximates the
+    density of states rho(lambda) via Chebyshev moments of the
+    rescaled Hamiltonian:
+        mu_n = (1/N) tr T_n(L_tilde)
+    estimated stochastically with random vectors.
+    Here L_tilde = (L - a)/b is rescaled to [-1, 1].  Bound:
+    lambda_max(L) <= 2 * deg_max.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 18: KPM spectral density approximation")$
+print("============================================================")$
+/* Sparse matrix-vector product for L = D - A. */
+sparse_Lv(v) := block(
+     [result : makelist(0, ii, 1, N), i, j, dv],
+     for i : 1 thru N do (
+         dv : length(nbrs[i]) * v[i],
+         for j in nbrs[i] do
+             dv : dv - v[j],
+         result[i] : dv),
+     result) $
+/* KPM rescaling: L_tilde = (L - a)/b, with a = lam_max/2, b = lam_max/2,
+     so spec(L_tilde) subset [-1, 1].  Upper bound lam_max <= 2*deg_max.
+     We use a slightly tighter bound: a = deg_mean, b = deg_max + 1
+     to center the spectrum and avoid the ±1 Gibbs boundary. */
+kpm_a : float(deg_mean) $
+kpm_b : float(deg_max + 1) $
+/* Apply L_tilde to vector v. */
+kpm_Lt_v(v) := block(
+     [Lv : sparse_Lv(v)],
+     makelist((Lv[i] - kpm_a * v[i]) / kpm_b, i, 1, N)) $
+/* Verify that the rescaling keeps the spectrum in [-1, 1].
+    The largest eigenvalue of L is <= 2*deg_max, so
+    (2*deg_max - deg_mean) / (deg_max + 1) < 2.  Print a warning
+    if the bound is violated. */
+block(
+      [lam_max_bound : float(2 * deg_max),
+       rescaled_max  : float((2 * deg_max - deg_mean) / (deg_max + 1))],
+      print("KPM rescaling: a =", kpm_a, "  b =", kpm_b),
+      print("  rescaled lam_max bound =", rescaled_max,
+            if rescaled_max <= 1.0 then "  (OK: in [-1,1])"
+            else "  WARNING: may exceed 1; increase kpm_b")) $
+/* Estimate Chebyshev moments mu_n via stochastic trace.
+    mu_n approx (1/S) sum_{s=1..S} <z_s, T_n(L_tilde) z_s>,
+    using the recursion T_0 = I, T_1 = L_tilde, T_{n+1} = 2 L_tilde T_n - T_{n-1}. */
+kpm_estimate_moments(M, S) := block(
+     [mu : makelist(0.0, n, 1, M), s, z, t0, t1, t2, n, dot],
+     for s : 1 thru S do block(
+         [z],
+         z : makelist(if random(2) = 0 then 1.0 else -1.0, ii, 1, N),
+         /* normalize:  <z,z> = N */
+         t0 : z,
+         t1 : kpm_Lt_v(t0),
+         mu[1] : mu[1] + apply("+", t0*t0)/N,
+         if M >= 2 then mu[2] : mu[2] + apply("+", t0*t1)/N,
+         for n : 3 thru M do (
+             t2 : 2 * kpm_Lt_v(t1) - t0,
+             mu[n] : mu[n] + apply("+", t0*t2)/N,
+             t0 : t1, t1 : t2)),
+     makelist(mu[n]/S, n, 1, M)) $
+/* Variance of the stochastic trace estimator: run two independent
+    batches and report the spread as a quality indicator. */
+kpm_moment_variance(M, S) := block(
+      [mu1 : kpm_estimate_moments(M, max(1, floor(S/2))),
+       mu2 : kpm_estimate_moments(M, max(1, floor(S/2))),
+       var : []],
+      for k : 1 thru M do
+          var : endcons(float((mu1[k] - mu2[k])^2), var),
+      var) $
+/* Reconstruct DOS at points x in [-1+eps, 1-eps] using Jackson-damped
+    Chebyshev series.  rho(x) approx (1/(pi sqrt(1-x^2))) *
+    (mu_0 + 2 sum_{n>=1} g_n mu_n T_n(x))   where g_n is the Jackson kernel. */
+jackson_g(n, M) := block(
+     [Mp : M + 1],
+     ((Mp - n)/Mp) * cos(%pi * n / Mp)
+      + sin(%pi * n / Mp) * cot(%pi / Mp) / Mp) $
+kpm_dos_at(x, mu) := block(
+     [M : length(mu), s, n, T_prev : 1, T_curr : x, T_next, gv],
+     s : mu[1],
+     if M >= 2 then s : s + 2 * jackson_g(1, M) * mu[2] * x,
+     for n : 3 thru M do (
+         T_next : 2*x*T_curr - T_prev,
+         gv : jackson_g(n - 1, M),
+         s : s + 2 * gv * mu[n] * T_next,
+         T_prev : T_curr, T_curr : T_next),
+     s / (%pi * sqrt(max(1 - x^2, 1e-12)))) $
+/* Run KPM and report estimated DOS at several points. */
+print("Running KPM with M =", KPM_MOMENTS, "moments,",
+       KPM_SAMPLES, "random samples...")$
+kpm_mu : 0 $
+kpm_run_ok : false $
+errcatch(
+     kpm_mu : kpm_estimate_moments(KPM_MOMENTS, KPM_SAMPLES),
+     kpm_run_ok : true) $
+if kpm_run_ok then (
+     print("KPM moment summary: mu_0 =", kpm_mu[1],
+           " (should be ~ 1.0)"),
+     print("                    mu_1 =", kpm_mu[2],
+           "  mu_2 =", if KPM_MOMENTS >= 3 then kpm_mu[3] else 0,
+           "  mu_4 =", if KPM_MOMENTS >= 5 then kpm_mu[5] else 0),
+      /* Moment convergence check: compare first 5 moments between two
+         independent half-batches to estimate stochastic noise. */
+      block(
+          [var_est : kpm_moment_variance(min(10, KPM_MOMENTS),
+                                         max(2, floor(KPM_SAMPLES/2))),
+           k],
+          print("KPM moment variance (first 5 moments, split-batch):"),
+          for k : 1 thru min(5, length(var_est)) do
+              print("  mu_", k, " variance ~", var_est[k],
+                    "  std ~", float(sqrt(var_est[k])))),
+     /* Sample the reconstructed DOS at a few points along the spectrum. */
+     print("DOS samples [lambda, rho(lambda)]:"),
+     block(
+         [xs : [-0.95, -0.8, -0.5, -0.2, 0, 0.2, 0.5, 0.8, 0.95],
+          xx, lam, rho],
+         for xx in xs do (
+             lam : float(kpm_a + xx * kpm_b),
+             rho : float(kpm_dos_at(xx, kpm_mu)),
+             print("  lam =", lam, "  rho_est =", rho))),
+     /* Use the low-lambda tail to estimate d_spec from KPM.
+        rho(lam) ~ lam^(d_spec/2 - 1) for small positive lam.
+        We sample on a fine grid near the spectral edge and report
+        slopes over multiple sub-windows to surface uncertainty. */
+     block(
+         [low_xs : [], low_ys : [], xx, lam, rho, fit, slope,
+          sub_xs, sub_ys, sub_fit, w_lo, w_hi, slopes : [],
+          k_pt : 0],
+         for xx : -0.999 step 0.002 thru -0.80 do (
+             lam : float(kpm_a + xx * kpm_b),
+             /* shift origin so lam_0 (the smallest eigenvalue ~ 0) is at xx ~ -1 */
+             rho : float(kpm_dos_at(xx, kpm_mu)),
+             if lam > 1e-3 and rho > 1e-6 then (
+                 low_xs : endcons(float(log(lam)), low_xs),
+                 low_ys : endcons(float(log(rho)), low_ys))),
+         print("KPM low-tail sample count =", length(low_xs)),
+         if length(low_xs) >= 4 then (
+             fit : log_log_fit_basic(low_xs, low_ys),
+             slope : fit[1],
+             print("KPM low-lambda log-log slope =", slope),
+             print("  => d_spec_KPM (= 2*(slope+1)) ~", 2*(slope + 1)),
+             d_spec_kpm : 2*(slope + 1),
+             /* Sub-window slope sweep for uncertainty estimate. */
+             block(
+                 [n_low : length(low_xs), half, sub_fit2],
+                 half : floor(n_low / 2),
+                 if half >= 3 then (
+                     sub_xs : makelist(low_xs[k], k, 1, half),
+                     sub_ys : makelist(low_ys[k], k, 1, half),
+                     sub_fit : log_log_fit_basic(sub_xs, sub_ys),
+                     print("  KPM tail (lower half) slope =", sub_fit[1],
+                           "  d_spec ~", 2*(sub_fit[1] + 1)),
+                     sub_xs : makelist(low_xs[k], k, half + 1, n_low),
+                     sub_ys : makelist(low_ys[k], k, half + 1, n_low),
+                     sub_fit2 : log_log_fit_basic(sub_xs, sub_ys),
+                     print("  KPM tail (upper half) slope =", sub_fit2[1],
+                           "  d_spec ~", 2*(sub_fit2[1] + 1)))))
+         else (
+             print("KPM tail too short for slope fit."),
+             d_spec_kpm : 0.0)))
+else (
+     print("KPM run failed; skipping."),
+     d_spec_kpm : 0.0) $
+if not(?boundp('d_spec_kpm)) then d_spec_kpm : 0.0 $
+/* Cross-check: also estimate d_spec from the integrated DOS
+    N(<= lambda) ~ lambda^(d_spec/2).  We sum the reconstructed
+    DOS using a simple trapezoidal rule and report the log-log
+    slope of the CDF. */
+if kpm_run_ok then block(
+     [grid_x : [], grid_rho : [], xx, lam, rho, cdf : 0,
+      lam_list : [], cdf_list : [], xs : [], ys : [], fit, slope, prev_lam],
+     for xx : -0.999 step 0.002 thru 0.99 do (
+         lam : float(kpm_a + xx * kpm_b),
+         rho : float(kpm_dos_at(xx, kpm_mu)),
+         if rho < 0 then rho : 0,
+         grid_x   : endcons(lam, grid_x),
+         grid_rho : endcons(rho, grid_rho)),
+     /* trapezoidal integration */
+     prev_lam : grid_x[1],
+     for k : 2 thru length(grid_x) do (
+         cdf : cdf + 0.5 * (grid_rho[k] + grid_rho[k-1])
+                       * (grid_x[k] - grid_x[k-1]),
+         lam_list : endcons(grid_x[k], lam_list),
+         cdf_list : endcons(cdf, cdf_list)),
+     /* fit on small-lambda window */
+     for k : 1 thru length(lam_list) do
+         if lam_list[k] > 0.05 and lam_list[k] < 2.0
+            and cdf_list[k] > 1e-6 then (
+             xs : endcons(float(log(lam_list[k])), xs),
+             ys : endcons(float(log(cdf_list[k])), ys)),
+     if length(xs) >= 4 then (
+         fit : log_log_fit_basic(xs, ys),
+         slope : fit[1],
+         print("KPM integrated DOS log-log slope =", slope),
+         print("  => d_spec_KPM_CDF (= 2*slope) ~", 2*slope),
+         d_spec_kpm_cdf : 2*slope)
+     else (
+         print("KPM CDF window too sparse for slope fit."),
+         d_spec_kpm_cdf : 0.0)) $
+if not(?boundp('d_spec_kpm_cdf)) then d_spec_kpm_cdf : 0.0 $
+/* ---------------------------------------------------------------------
+    SECTION 19.  Per-sheet random walk diagnostics
+    ---------------------------------------------------------------------
+    Run random walks restricted to NOT crossing sheets, and compare to
+    the full unrestricted walk.  This isolates the effect of vortex
+    edges on diffusion: if d_w_intra ~ 2 and d_w_full > 2 then vortex
+    edges genuinely cause sub-diffusion via inter-sheet bottlenecks.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 19: Per-sheet random walk diagnostics")$
+print("============================================================")$
+/* Intra-sheet random walk: at each step, restrict to neighbors on
+    the same sheet as the start. */
+intra_walk(start, T) := block(
+     [path : [start], v : start, sh : cell_sheet[start],
+      nb, allowed, r],
+     for t : 1 thru T do (
+         nb : nbrs[v],
+         allowed : [],
+         for u in nb do
+             if cell_sheet[u] = sh then allowed : endcons(u, allowed),
+         if length(allowed) = 0 then return(path),
+         r : random(length(allowed)),
+         v : allowed[r + 1],
+         path : endcons(v, path)),
+     path) $
+/* Count how often the full walker actually crosses a sheet. */
+sheet_crossing_counts : makelist(0, ii, 0, T_steps) $
+intra_msd_sum : makelist(0, t, 0, min(T_steps, 100)) $
+intra_walk_count : 0 $
+M_intra : max(100, min(M_WALKS / 20, 2000)) $
+T_intra : min(T_steps, 100) $
+print("Running", M_intra, "intra-sheet walks of length", T_intra, "...")$
+for w : 1 thru M_intra do block(
+     [p : intra_walk(origin_id, T_intra), t, v, d],
+     if length(p) > 1 then intra_walk_count : intra_walk_count + 1,
+     for t : 0 thru min(T_intra, length(p) - 1) do (
+         v : p[t + 1],
+         d : dist_from_origin[v],
+         if d < 0 then d : 0,
+         intra_msd_sum[t + 1] : intra_msd_sum[t + 1] + d^2)) $
+if intra_walk_count > 0 then (
+     intra_msd : makelist(float(intra_msd_sum[t+1] / M_intra),
+                          t, 0, T_intra),
+     print("Intra-sheet MSD at t = 1, 5, 10:",
+           intra_msd[2],
+           if T_intra >= 5 then intra_msd[6] else 0,
+           if T_intra >= 10 then intra_msd[11] else 0),
+     /* Fit early-time slope. */
+     block(
+         [xs : [], ys : [], t, fit, slope_intra, d_w_intra],
+         for t : MSD_FIT_LO thru min(T_intra, MSD_FIT_HI) do
+             if intra_msd[t + 1] > 0 then (
+                 xs : endcons(float(log(t)), xs),
+                 ys : endcons(float(log(intra_msd[t + 1])), ys)),
+         if length(xs) >= 3 then (
+             fit : log_log_fit_basic(xs, ys),
+             slope_intra : fit[1],
+             d_w_intra : if abs(slope_intra) > 1e-6
+                          then float(2/slope_intra) else 0,
+             print("Intra-sheet MSD slope =", slope_intra,
+                   "  =>  d_w_intra =", d_w_intra),
+             print("Compare full d_w =", d_w_value,
+                   "  ratio d_w_intra/d_w_full =",
+                   if d_w_value > 0 then float(d_w_intra / d_w_value)
+                                    else "n/a"))))$
+/* Count actual sheet crossings in the original (full) walks: rerun
+    a small batch. */
+M_cross : min(200, M_WALKS) $
+cross_sum : 0 $
+for w : 1 thru M_cross do block(
+     [path : random_walk(origin_id, T_steps), t, prev_sh, cur_sh, count : 0],
+     for t : 2 thru length(path) do (
+         prev_sh : cell_sheet[path[t - 1]],
+         cur_sh  : cell_sheet[path[t]],
+         if prev_sh # cur_sh then count : count + 1),
+     cross_sum : cross_sum + count) $
+print("Mean sheet crossings per", T_steps, "-step walk =",
+       float(cross_sum / M_cross),
+       " (=", float(cross_sum / (M_cross * T_steps)), "per step)")$
+/* ---------------------------------------------------------------------
+    SECTION 20.  Cross-tau dimensional comparison
+    ---------------------------------------------------------------------
+    Estimate d_eff and a cheap d_w surrogate on the depth-3 cluster
+    built under EACH alternative tau-rule.  This shows how the choice
+    of vortex structure modulates geometry-level quantities.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 20: Cross-tau dimensional comparison")$
+print("============================================================")$
+/* BFS volumes from given root in a snapshot's nbr_list. */
+snapshot_bfs_volumes(root, nbr_list, n_cells) := block(
+     [visited : makelist(false, ii, 1, n_cells),
+      dist : makelist(-1, ii, 1, n_cells),
+      queue : [root], v, j, max_d : 0, sizes],
+     visited[root] : true, dist[root] : 0,
+     while length(queue) > 0 do (
+         v : first(queue), queue : rest(queue),
+         for j in nbr_list[v] do
+             if not visited[j] then (
+                 visited[j] : true,
+                 dist[j] : dist[v] + 1,
+                 if dist[j] > max_d then max_d : dist[j],
+                 queue : endcons(j, queue))),
+     sizes : makelist(0, ii, 0, max_d),
+     for ii : 1 thru n_cells do
+         if dist[ii] >= 0 then
+             sizes[dist[ii] + 1] : sizes[dist[ii] + 1] + 1,
+     for r : 2 thru length(sizes) do
+         sizes[r] : sizes[r] + sizes[r-1],
+     sizes) $
+tau_dim_results : [] $
+for tp in tau_panel do block(
+     [label : tp[1], tau_fn : tp[2], snap, vols, n_c, nbrlist, root,
+      xs, ys, fit, d_eff_tau, r],
+     snap : build_cluster_tau(tau_fn, TAU_SURVEY_DEPTH),
+     n_c : snap[1], nbrlist : snap[5], root : snap[6],
+     vols : snapshot_bfs_volumes(root, nbrlist, n_c),
+     d_eff_tau : 0.0,
+     if length(vols) >= 4 then block(
+         [xs : [], ys : []],
+         for r : 2 thru length(vols) - 1 do (
+             xs : endcons(float(log(r - 1)), xs),
+             ys : endcons(float(log(vols[r])), ys)),
+         fit : log_log_fit_basic(xs, ys),
+         d_eff_tau : fit[1]),
+     print("  tau =", label,
+           "  N=", n_c,
+           "  BFS-radius=", length(vols) - 1,
+           "  vols(last)=", last(vols),
+           "  d_eff~", d_eff_tau),
+     tau_dim_results : endcons([label, n_c, d_eff_tau], tau_dim_results)) $
+/* Identify the tau-rule with the most strongly fractional d_eff
+    (i.e. closest to the predicted 2.5 midpoint of the (2,3) window). */
+best_dim_label : "" $
+best_dim_dist  : 1000 $
+for r in tau_dim_results do block(
+     [d : abs(r[3] - 2.5)],
+     if r[3] > 0 and d < best_dim_dist then (
+         best_dim_dist : d,
+         best_dim_label : r[1])) $
+print("Most-fractional (closest to d_eff=2.5) tau-rule:",
+       best_dim_label,
+       "  |d_eff - 2.5| =", best_dim_dist)$
+/* =====================================================================
+      SECTION 23.  ERDŐS DISTANCE PROBLEM CATALOG
+      ---------------------------------------------------------------------
+      Using the distance ring pre-computation of Section 3b, we:
+        (a) Report the full ring table with algebraic annotations.
+        (b) Fit the Fibonacci spacing ratio delta_{k+1}/delta_k -> phi^2.
+        (c) Compute the multiplicity function and identify anomalously
+            high-multiplicity rings (norm-multiplicativity signature).
+        (d) Estimate the Erdős distinct-distance count D(P_n) and compare
+            to the integer-lattice bound Theta(n / sqrt(log n)).
+        (e) Detect Galois conjugate pairings between distances.
+        (f) Identify Pythagorean triples d1^2 + d2^2 = d3^2 in Q(sqrt(5)).
+    ===================================================================== */
+print("============================================================")$
+print("SECTION 23: Erdős Distance Problem Catalog")$
+print("============================================================")$
+/* (a) Full ring table with algebraic annotations. */
+print("Full distance ring table:")$
+print("  k | sq_dist [r,s] | float | ring_size | pairs | norm | Z[phi] basis | notes")$
+erdos_ring_data : [] $   /* list of records for downstream use */
+/* Cap the printed ring table to avoid log spam on large clusters.
+    Internal data structures still hold the full catalog. */
+ERDOS_TABLE_MAX : 50 $
+for k : 1 thru min(n_dist_classes, ERDOS_TABLE_MAX) do block(
+      [rs : dist_class_sorted[k][1],
+       cnt : dist_class_sorted[k][2],
+       rsize : origin_ring_sizes[k],
+       fval, norm_val, zphi, fib_check, sq_check, galois_rs, notes : ""],
+      fval     : qs5_float(rs),
+        /* Skip degenerate near-zero rings in the display. */
+        if abs(float(fval)) < 1e-9 then return(0),
+      norm_val : qs5_norm(rs),
+      zphi     : to_zphi_basis(rs),
+      fib_check : detect_fibonacci_distance(rs),
+      sq_check  : is_qs5_square(rs),
+      galois_rs : [ratsimp(rs[1]), ratsimp(-rs[2])],   /* sigma: sqrt5 -> -sqrt5 */
+      if fib_check[1] then
+          notes : concat(notes, " Fib(", fib_check[2], ")"),
+      if sq_check[1] then
+          notes : concat(notes, " sq(", float(sq_check[2]), "+",
+                         float(sq_check[3]), "sqrt5)"),
+      if ratsimp(rs[2]) = 0 then notes : concat(notes, " rational"),
+      if ratsimp(norm_val) = 1 then notes : concat(notes, " unit-norm"),
+      erdos_ring_data : endcons(
+          [k, rs, fval, rsize, cnt, norm_val, zphi, galois_rs, notes],
+          erdos_ring_data),
+      print("  ", k,
+            " [", float(rs[1]), ",", float(rs[2]), "]",
+            " ~", float(fval),
+            " ring=", rsize,
+            " pairs=", cnt,
+            " norm=", float(norm_val),
+            " Z[phi]=[", float(zphi[1]), ",", float(zphi[2]), "]",
+            notes)) $
+if n_dist_classes > ERDOS_TABLE_MAX then
+     print("  ... (", n_dist_classes - ERDOS_TABLE_MAX,
+           "additional distance classes; see erdos_ring_data internally)")$
+/* (b) Fibonacci spacing ratio fit. */
+print("")$
+print("(b) Fibonacci spacing ratio delta_{k+1}/delta_k:")$
+if n_dist_classes >= 3 then block(
+      [ratios : [], k, fk, fk1, ratio],
+      for k : 1 thru n_dist_classes - 1 do block(
+          [fk  : qs5_float(dist_class_sorted[k][1]),
+           fk1 : qs5_float(dist_class_sorted[k+1][1])],
+          if fk > 1e-9 then (
+              ratio : float(fk1 / fk),
+              ratios : endcons(ratio, ratios),
+              if k <= 10 then
+                  print("  delta_", k+1, "/delta_", k, " =", ratio))),
+      if length(ratios) >= 3 then block(
+          [mean_ratio : float(apply("+", ratios) / length(ratios)),
+           phi2 : float(phi^2)],
+          print("  Mean ratio =", mean_ratio,
+                "  phi^2 =", float(phi^2),
+                "  deviation =", abs(mean_ratio - float(phi^2))),
+          if abs(mean_ratio - float(phi^2)) < 0.5 then
+              print("  OK: spacing ratio converges toward phi^2 =", float(phi^2))
+          else
+              print("  Note: spacing ratio deviates from phi^2;",
+                    "cluster may be too small or N_GON != 5."))) $
+/* (c) Multiplicity analysis: identify high-multiplicity rings. */
+print("")$
+print("(c) Multiplicity analysis:")$
+mean_ring_size : if n_dist_classes > 0
+      then float(apply("+", origin_ring_sizes) / n_dist_classes)
+      else 0 $
+print("  Mean ring size =", mean_ring_size)$
+high_mult_threshold : max(2 * mean_ring_size, n_int) $
+print("  High-multiplicity threshold =", high_mult_threshold)$
+high_mult_rings : [] $
+for k : 1 thru n_dist_classes do
+      if origin_ring_sizes[k] >= high_mult_threshold then
+          high_mult_rings : endcons(
+              [k, dist_class_sorted[k][1], origin_ring_sizes[k]],
+              high_mult_rings) $
+print("  High-multiplicity rings (ring_size >=", high_mult_threshold, "):")$
+if length(high_mult_rings) > 0 then
+      for r in high_mult_rings do
+          print("    k=", r[1],
+                " sq_dist~", float(qs5_float(r[2])),
+                " ring_size=", r[3])
+else
+      print("    (none found; cluster may be too small)")$
+/* (d) Erdős distinct-distance count estimate. */
+print("")$
+print("(d) Erdős distinct-distance count D(P_n):")$
+D_Pn : n_dist_classes $
+n_pts : N $
+print("  n =", n_pts, "  D(P_n) =", D_Pn)$
+if n_pts > 1 then block(
+      [log_n : float(log(n_pts)),
+       sqrt_log_n : float(sqrt(log(n_pts))),
+       int_lattice_bound, pent_bound_upper, pent_bound_lower],
+      int_lattice_bound : float(n_pts / sqrt_log_n),
+      pent_bound_upper  : float(log_n),
+      pent_bound_lower  : float(log_n / log(log_n + 1)),
+      print("  Integer-lattice bound Theta(n/sqrt(log n)) ~", int_lattice_bound),
+      print("  Pentagonal upper bound O(log n) ~", pent_bound_upper),
+      print("  Pentagonal lower bound Omega(log n / log log n) ~",
+            pent_bound_lower),
+      print("  Ratio D(P_n) / log(n) =", float(D_Pn / log_n),
+            "  (should be O(1) for pentagonal lattice)"),
+      if D_Pn <= 2 * pent_bound_upper then
+          print("  OK: D(P_n) consistent with O(log n) bound.")
+      else
+          print("  Note: D(P_n) exceeds 2*log(n); boundary effects likely.")) $
+/* (e) Galois conjugate pairing. */
+print("")$
+print("(e) Galois conjugate distance pairings (sigma: sqrt5 -> -sqrt5):")$
+galois_pairs_found : 0 $
+galois_pair_list : [] $
+for k : 1 thru n_dist_classes do block(
+      [rs : dist_class_sorted[k][1],
+       conj_rs : [ratsimp(rs[1]), ratsimp(-rs[2])],
+       j, found : false],
+      /* Only report pairs where the conjugate is also in the distance set
+         and has a smaller index (to avoid double-counting). */
+      if float(rs[2]) > 1e-9 then   /* skip rational distances */
+          for j : 1 thru k - 1 do
+              if qs5_eq(dist_class_sorted[j][1], conj_rs) then (
+                  found : true,
+                  galois_pairs_found : galois_pairs_found + 1,
+                  galois_pair_list : endcons([j, k], galois_pair_list),
+                  print("  Pair: k=", j, " (d^2~", float(qs5_float(dist_class_sorted[j][1])), ")",
+                        " <-> k=", k, " (d^2~", float(qs5_float(rs)), ")",
+                        "  product=", float(qs5_float(rs) * qs5_float(dist_class_sorted[j][1])),
+                        "  norm=", float(qs5_norm(rs))))) $
+print("  Total Galois conjugate pairs found:", galois_pairs_found)$
+if galois_pairs_found = 0 and n_dist_classes > 2 then
+      print("  (No pairs found; cluster may be too small or distances are rational.)")$
+/* (f) Pythagorean triples in Q(sqrt(5)): d1^2 + d2^2 = d3^2. */
+print("")$
+print("(f) Pythagorean triples d1^2 + d2^2 = d3^2 in distance set:")$
+pyth_triples : [] $
+pyth_limit : min(n_dist_classes, 12) $   /* search only first 12 classes */
+for i : 1 thru pyth_limit do
+      for j : i thru pyth_limit do block(
+          [sum_rs : [ratsimp(dist_class_sorted[i][1][1]
+                             + dist_class_sorted[j][1][1]),
+                     ratsimp(dist_class_sorted[i][1][2]
+                             + dist_class_sorted[j][1][2])],
+           k],
+          for k : j thru pyth_limit do
+              if qs5_eq(dist_class_sorted[k][1], sum_rs) then (
+                  pyth_triples : endcons([i, j, k], pyth_triples),
+                  print("  d_", i, "^2 + d_", j, "^2 = d_", k, "^2",
+                        "  (", float(qs5_float(dist_class_sorted[i][1])),
+                        "+", float(qs5_float(dist_class_sorted[j][1])),
+                        "=", float(qs5_float(dist_class_sorted[k][1])), ")"))) $
+print("  Pythagorean triples found:", length(pyth_triples))$
+/* =====================================================================
+      SECTION 24.  DISTANCE WEB ANALYSIS
+      ---------------------------------------------------------------------
+      For each of the first few distance classes, build the distance web
+      W_d (graph on cluster vertices where edges connect pairs at distance d)
+      and analyze:
+        - degree sequence (regularity / biregularity)
+        - connected components
+        - triangle count in the web
+        - intersection with the adjacency graph (W_1 = adjacency graph)
+        - web intersection pattern (shared edges between W_d1 and W_d2)
+    ===================================================================== */
+print("============================================================")$
+print("SECTION 24: Distance Web Analysis")$
+print("============================================================")$
+/* Number of distance classes to analyze as webs. */
+WEB_CLASSES : min(n_dist_classes, 6) $
+/* Build the distance web for distance class k: returns adjacency list. */
+build_distance_web(k) := block(
+      [rs : dist_class_sorted[k][1],
+       web : makelist([], ii, 1, N),
+       i, j, dij],
+      for i : 1 thru N do
+          for j : i + 1 thru N do (
+               dij : sq_dist_exact(cell_center[i], cell_center[j]),
+               if listp(dij) and qs5_eq(dij, rs) then (
+                  web[i] : endcons(j, web[i]),
+                  web[j] : endcons(i, web[j]))),
+      web) $
+/* Connected components of a graph given as adjacency list. */
+connected_components(adj, n_nodes) := block(
+      [visited : makelist(false, ii, 1, n_nodes),
+       components : [], comp, queue, v, u],
+      for start : 1 thru n_nodes do
+          if not visited[start] then (
+              comp : [],
+              queue : [start],
+              visited[start] : true,
+              while length(queue) > 0 do (
+                  v : first(queue), queue : rest(queue),
+                  comp : endcons(v, comp),
+                  for u in adj[v] do
+                      if not visited[u] then (
+                          visited[u] : true,
+                          queue : endcons(u, queue))),
+              components : endcons(comp, components)),
+      components) $
+/* Triangle count in a graph given as adjacency list. */
+count_triangles_web(adj, n_nodes) := block(
+      [count : 0, i, j, k],
+      for i : 1 thru n_nodes do
+          for j in adj[i] do
+              if j > i then
+                  for k in adj[j] do
+                      if k > j and member(k, adj[i]) then
+                          count : count + 1,
+      count) $
+web_summary : [] $
+for k : 1 thru WEB_CLASSES do block(
+      [rs : dist_class_sorted[k][1],
+       fval : qs5_float(dist_class_sorted[k][1]),
+       web, deg_list_w, deg_min_w, deg_max_w, deg_mean_w,
+       comps, n_comps, comp_sizes, n_edges_w, n_tri_w,
+       is_regular, is_biregular],
+       print("  Building web for distance class k=", k,
+             " (sq_dist~", float(fval), ")..."),
+      web : build_distance_web(k),
+      deg_list_w : makelist(length(web[i]), i, 1, N),
+      deg_min_w  : apply(min, deg_list_w),
+      deg_max_w  : apply(max, deg_list_w),
+      deg_mean_w : float(apply("+", deg_list_w) / N),
+      n_edges_w  : apply("+", deg_list_w) / 2,
+      n_tri_w    : count_triangles_web(web, N),
+      comps      : connected_components(web, N),
+      n_comps    : length(comps),
+      comp_sizes : sort(map(length, comps)),
+      is_regular   : is(deg_min_w = deg_max_w),
+      is_biregular : is(length(listify(setify(deg_list_w))) <= 2),
+      print("  Web W_", k, ":",
+            "  edges=", n_edges_w,
+            "  deg_min=", deg_min_w,
+            "  deg_max=", deg_max_w,
+            "  deg_mean=", deg_mean_w,
+            "  components=", n_comps,
+            "  triangles=", n_tri_w,
+            if is_regular then "  REGULAR"
+            else if is_biregular then "  BIREGULAR"
+            else "  irregular"),
+      print("    Component sizes:", comp_sizes),
+      web_summary : endcons(
+          [k, fval, n_edges_w, deg_min_w, deg_max_w, n_comps,
+           n_tri_w, is_regular, is_biregular],
+          web_summary)) $
+/* Web intersection: count shared edges between W_1 and W_2. */
+print("")$
+print("Web intersection analysis (W_i ∩ W_j = shared edges):")$
+if WEB_CLASSES >= 2 then block(
+      [web1 : build_distance_web(1),
+       web2 : build_distance_web(2),
+       shared : 0, i, j],
+      for i : 1 thru N do
+          for j in web1[i] do
+              if j > i and member(j, web2[i]) then
+                  shared : shared + 1,
+      print("  |W_1 ∩ W_2| =", shared, "shared edges")) $
+/* Check whether W_1 equals the adjacency graph (it should for d=edge length). */
+print("")$
+print("W_1 vs adjacency graph comparison:")$
+block(
+       [web1 : build_distance_web(1), match : true, i, j,
+        mismatch_count : 0, MISMATCH_LIMIT : 5],
+      for i : 1 thru N do (
+          if sort(web1[i]) # sort(nbrs[i]) then (
+              match : false,
+                mismatch_count : mismatch_count + 1,
+                if mismatch_count <= MISMATCH_LIMIT then
+                    print("  Mismatch at node", i,
+                          ": web1=", sort(web1[i]),
+                          " nbrs=", sort(nbrs[i])))),
+        if mismatch_count > MISMATCH_LIMIT then
+            print("  ... (", mismatch_count - MISMATCH_LIMIT,
+                  "additional mismatches suppressed)"),
+      if match then
+          print("  W_1 = adjacency graph (as expected for unit-edge distance).")
+      else
+            print("  W_1 != adjacency graph; first",
+                  mismatch_count, "nodes differ.")) $
+/* =====================================================================
+      SECTION 25.  PINWHEEL PHENOMENON AND DIRECTION ANALYSIS
+      ---------------------------------------------------------------------
+      For each distance class, compute the set of directions (angles) of
+      vectors between pairs at that distance.  Analyze:
+        - number of distinct directions (up to tolerance)
+        - whether directions are dense in [0, 2*pi) (pinwheel)
+        - angular gap statistics
+        - comparison with integer-lattice (finitely many directions/dist)
+    ===================================================================== */
+print("============================================================")$
+print("SECTION 25: Pinwheel Phenomenon and Direction Analysis")$
+print("============================================================")$
+/* Angular tolerance for direction clustering (radians). */
+ANGLE_TOL : 1e-4 $
+/* Compute the angle of vector (dx, dy) in [0, 2*pi). */
+vec_angle(dx, dy) := block(
+      [a : float(atan2(dy, dx))],
+      if a < 0 then a + 2 * float(%pi) else a) $
+/* Count distinct directions among a list of angles (up to ANGLE_TOL). */
+count_distinct_angles(angles) := block(
+      [sorted : sort(angles), distinct : 0, prev : -1e10, a],
+      for a in sorted do (
+          if a - prev > ANGLE_TOL then (
+              distinct : distinct + 1,
+              prev : a)),
+      distinct) $
+/* Angular gap statistics: max gap and mean gap in a sorted angle list. */
+angular_gaps(angles) := block(
+      [sorted : sort(angles), n : length(angles),
+       gaps : [], k, wrap_gap, max_gap, mean_gap],
+      if n < 2 then return([2 * float(%pi), 2 * float(%pi)]),
+      for k : 1 thru n - 1 do
+          gaps : endcons(sorted[k+1] - sorted[k], gaps),
+      /* wrap-around gap */
+      wrap_gap : sorted[1] + 2 * float(%pi) - last(sorted),
+      gaps : endcons(wrap_gap, gaps),
+      max_gap  : apply(max, gaps),
+      mean_gap : float(apply("+", gaps) / length(gaps)),
+      [max_gap, mean_gap]) $
+/* Pinwheel threshold: if max_gap < pi/n_int we call it "dense". */
+pinwheel_threshold : float(%pi / n_int) $
+print("Pinwheel threshold (max angular gap < pi/n =",
+       float(%pi / n_int), "rad):")$
+DIRECTION_CLASSES : min(n_dist_classes, 8) $
+direction_summary : [] $
+for k : 1 thru DIRECTION_CLASSES do block(
+      [rs : dist_class_sorted[k][1],
+       fval : qs5_float(dist_class_sorted[k][1]),
+       angles : [], i, j, dx, dy, a,
+       n_distinct, gap_stats, is_pinwheel],
+        /* Skip degenerate near-zero distance classes. */
+        if abs(float(fval)) < 1e-9 then return(0),
+      /* Collect all directed angles for pairs at this distance. */
+      for i : 1 thru N do
+          for j : i + 1 thru N do block(
+               [dij : sq_dist_exact(cell_center[i], cell_center[j])],
+               if listp(dij) and qs5_eq(dij, rs) then (
+                  dx : float(qcanon(cell_center[j][1] - cell_center[i][1])),
+                  dy : float(qcanon(cell_center[j][2] - cell_center[i][2])),
+                  a  : vec_angle(dx, dy),
+                  angles : endcons(a, angles),
+                  /* also add the reverse direction */
+                  angles : endcons(vec_angle(-dx, -dy), angles))),
+      n_distinct : count_distinct_angles(angles),
+      gap_stats  : angular_gaps(sort(listify(setify(
+                       map(lambda([a], round(a / ANGLE_TOL) * ANGLE_TOL),
+                           angles))))),
+      is_pinwheel : is(gap_stats[1] < pinwheel_threshold),
+      print("  Distance class k=", k,
+            " (sq_dist~", float(fval), "):",
+            "  n_directions=", n_distinct,
+            "  max_gap=", float(gap_stats[1]),
+            "  mean_gap=", float(gap_stats[2]),
+            if is_pinwheel then "  PINWHEEL (dense)"
+            else "  sparse"),
+      direction_summary : endcons(
+          [k, fval, n_distinct, gap_stats[1], gap_stats[2], is_pinwheel],
+          direction_summary)) $
+/* Summary: how many distance classes show the pinwheel phenomenon? */
+n_pinwheel : length(sublist(direction_summary, lambda([r], r[6]))) $
+print("")$
+print("Pinwheel summary:", n_pinwheel, "/", DIRECTION_CLASSES,
+       "distance classes show dense directions.")$
+if n_pinwheel > 0 then
+      print("  Pinwheel phenomenon confirmed: multiple distances have",
+            "dense direction sets, consistent with erdos.md §3.4.")
+else
+      print("  No pinwheel detected; cluster may be too small for",
+            "irrational angle accumulation to manifest.")$
+/* Direction count vs distance: does n_directions grow with distance? */
+print("")$
+print("Direction count vs distance class (log-log fit):")$
+if length(direction_summary) >= 3 then block(
+      [xs : [], ys : [], r, fit],
+      for r in direction_summary do
+          if r[2] > 0 and r[3] > 0 then (
+              xs : endcons(float(log(r[2])), xs),
+              ys : endcons(float(log(r[3])), ys)),
+      if length(xs) >= 3 then (
+          fit : log_log_fit_basic(xs, ys),
+          print("  log(n_directions) vs log(sq_dist) slope =", fit[1]),
+          print("  Positive slope => more directions at larger distances",
+                "(consistent with pinwheel accumulation)."))) $
+/* ---------------------------------------------------------------------
+    SECTION 21.  Resistance distance and commute time (sample)
+    ---------------------------------------------------------------------
+    For a sample of pairs of nodes, estimate the effective resistance
+    R(u,v) via short random-walk-based commute time:
+        E[commute(u,v)] = 2 * |E| * R(u,v)
+    A scaling R(u,v) ~ dist(u,v)^(d_w - d_eff + 1) characterizes
+    transport on fractal graphs.  We test this on a few intra-sheet
+    pairs and a few cross-sheet pairs.
+    --------------------------------------------------------------------- */
+print("============================================================")$
+print("SECTION 21: Commute-time sampling")$
+print("============================================================")$
+/* First-hitting time of target starting from source. */
+hit_time(source, target, T_max) := block(
+     [v : source, t : 0, nb, r],
+     while v # target and t < T_max do (
+         nb : nbrs[v],
+         if length(nb) = 0 then return(-1),
+         r : random(length(nb)),
+         v : nb[r + 1],
+         t : t + 1),
+     if v = target then t else -1) $
+/* Estimate commute time via M_hit hitting-time samples (both directions). */
+commute_estimate(u, v, M_hit, T_max) := block(
+     [sum_uv : 0, sum_vu : 0, n_uv : 0, n_vu : 0, k, h],
+     for k : 1 thru M_hit do (
+         h : hit_time(u, v, T_max),
+         if h >= 0 then (sum_uv : sum_uv + h, n_uv : n_uv + 1)),
+     for k : 1 thru M_hit do (
+         h : hit_time(v, u, T_max),
+         if h >= 0 then (sum_vu : sum_vu + h, n_vu : n_vu + 1)),
+     if n_uv > 0 and n_vu > 0 then
+         float(sum_uv / n_uv + sum_vu / n_vu)
+     else -1.0) $
+/* Pick a few sample target nodes at varying BFS distances. */
+sample_targets : [] $
+for d_target : 1 thru min(BFS_DEPTH, 4) do block(
+     [found : 0, i],
+     for i : 1 thru N do
+         if found < 2 and dist_from_origin[i] = d_target then (
+             sample_targets : endcons([i, d_target], sample_targets),
+             found : found + 1)) $
+print("Commute-time samples from origin (subset):")$
+commute_data : [] $
+M_hit_sample : max(20, min(200, M_WALKS / 100)) $
+T_max_sample : max(100, T_STEPS) $
+for tp in sample_targets do block(
+     [v : tp[1], d : tp[2], ct, sh_v : cell_sheet[tp[1]]],
+     ct : commute_estimate(origin_id, v, M_hit_sample, T_max_sample),
+     if ct > 0 then (
+         commute_data : endcons([d, sh_v, ct], commute_data),
+         print("  target=", v, " dist=", d, " sheet=", sh_v,
+               " commute_est=", ct))) $
+/* Log-log fit of commute time vs distance. */
+if length(commute_data) >= 3 then block(
+     [xs : [], ys : [], pt, fit, slope, d_w_eff],
+     for pt in commute_data do
+         if first(pt) > 0 and third(pt) > 0 then (
+             xs : endcons(float(log(first(pt))), xs),
+             ys : endcons(float(log(third(pt))), ys)),
+     if length(xs) >= 3 then (
+         fit : log_log_fit_basic(xs, ys),
+         slope : fit[1],
+         /* For a fractal graph: commute(u,v) ~ |E| * R(u,v)
+            ~ dist(u,v)^(d_w - d_eff + 2).  Inverting:
+            d_w ~ d_eff + slope - 2.  But that's marginal here. */
+         print("Commute-time log-log slope =", slope),
+         print("  Interpretation: ~ dist^slope; for d_w > 2 expect slope > 1"))) $
+/* ---------------------------------------------------------------------
+    SECTION 22.  Summary report (was Section 10)
+    --------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------
+   SECTION 10.  Summary report
+   --------------------------------------------------------------------- */
+
+print("============================================================")$
+print("experiment.mac : summary  (N_GON =", N_GON, ")")$
+print("============================================================")$
+print("Preset =", EXPERIMENT_PRESET,
+       " (BFS_DEPTH =", BFS_DEPTH,
+       ", M_WALKS =", M_WALKS,
+       ", T_STEPS =", T_STEPS,
+       ", T_CA =", T_CA, ")")$
+print("N_GON =", N_GON,
+        "  interior angle =", float(theta_int_n * 180 / %pi), "deg",
+        "  k_flat =", k_flat_n,
+        "  fiber order =", FIBER_ORDER_N)$
+print("Cluster size N =", N)$
+print("Mean degree =", deg_mean,
+       " (", n_int, "-regular target; lower at boundary)")$
+print("Sheets occupied =", sheet_set)$
+if eig_skipped then
+     print("Spectral gap = (skipped)")
+else
+     print("Spectral gap =", spec_gap)$
+print("d_eff estimate (BFS) =", d_eff_est)$
+print("d_eff estimate (BFS, full) =", d_eff_full)$
+if not eig_skipped then
+     print("d_spec estimate (DOS) =", d_spec_dos)$
+print("d_w   estimate (MSD) =", d_w_value)$
+print("d_spec estimate (P_0) =", d_spec_value)$
+if d_w_value > 0 then
+    print("d_spec (Alexander-Orbach) =",
+          float(2 * d_eff_est / d_w_value))$
+if d_spec_kpm > 0 then
+     print("d_spec (KPM low-lambda)   =", d_spec_kpm)$
+if d_spec_kpm_cdf > 0 then
+     print("d_spec (KPM integrated)   =", d_spec_kpm_cdf)$
+print("Vortex edges =", n_vortex_edges_in_cluster,
+      " / total edges =", apply("+", deg_list) / 2)$
+print("CA final population =", final_pop, "after", T_ca, "steps")$
+print("Rule panel: extinct=", n_extinct,
+       " still=", n_still,
+       " periodic=", n_period,
+       " growing=", n_growing,
+       " active=", n_active)$
+if length(best_rule) > 0 then
+     print("Most active panel rule:", best_rule[1],
+           "  max_pop =", best_rule[7])$
+print("Richest-holonomy tau-rule =", best_tau_label,
+       "  score =", best_tau_score)$
+print("Triangles in main cluster =", triangle_count)$
+print("Girth through origin =",
+       if girth_origin > 0 then girth_origin else "> 8")$
+print("Glider hunt: oscillators =", n_oscillators,
+       "  gliders =", n_gliders, " (trials =", length(glider_summary), ")")$
+print("Long cycles enumerated through origin:",
+       length(all_cycles_origin), " (up to length", LONG_LOOP_MAX, ")")$
+print("Cap-window cluster: N =", cap_N,
+       ", sheets =", cap_sheet_set)$
+if d_spec_kpm > 0 then
+     print("KPM-based d_spec ~", d_spec_kpm)$
+print("Most-fractional tau-rule:", best_dim_label,
+       "  |d_eff - 2.5| =", best_dim_dist)$
+print("------------------------------------------------------------")$
+print("Erdős distance catalog (Section 23):")$
+print("  Distinct squared distances:", n_dist_classes)$
+print("  High-multiplicity rings:", length(high_mult_rings))$
+print("  Galois conjugate pairs:", galois_pairs_found)$
+print("  Pythagorean triples:", length(pyth_triples))$
+if n_pts > 1 then
+      print("  D(P_n)/log(n) =",
+            float(D_Pn / log(float(n_pts))),
+            "  (O(1) expected for pentagonal lattice)")$
+print("Distance web summary (Section 24):")$
+for r in web_summary do
+      print("  W_", r[1], ": edges=", r[3],
+            " deg=[", r[4], ",", r[5], "]",
+            " comps=", r[6],
+            " tri=", r[7],
+            if r[8] then " REGULAR" else if r[9] then " BIREGULAR" else "")$
+print("Pinwheel summary (Section 25):")$
+print("  Pinwheel classes:", n_pinwheel, "/", DIRECTION_CLASSES)$
+for r in direction_summary do
+      print("  k=", r[1], " n_dir=", r[3],
+            " max_gap=", float(r[4]),
+            if r[6] then " PINWHEEL" else "")$
+print("------------------------------------------------------------")$
+print("Active TAU_MODE for main cluster:", TAU_MODE)$
+print("Preset:", EXPERIMENT_PRESET)$
+print("N_GON:", N_GON)$
+print("------------------------------------------------------------")$
+print("Caveats:")$
+print("  * N_GON controls the polygon type.  Set it at the top of")$
+print("    Section 0 to study triangles (3), squares (4), pentagons")$
+print("    (5), hexagons (6), heptagons (7), etc.")$
+print("  * For n in {3,4,6} the tiling closes flat (deficit=0); the")$
+print("    sheet structure is driven entirely by the tau rule.")$
+print("  * Deeper BFS (depth 6, xhuge preset) gives ~thousands of")$
+print("    cells; dimension fits are improved but still finite-size.")$
+print("  * TAU_MODE controls whether the main cluster uses the")$
+print("    didactic every-n rule, the signed-n rule (richer monodromy),")$
+print("    or the rigorous cut-and-project window of idea.md §2.4.")$
+print("  * KPM spectral analysis (Section 18) is the preferred")$
+print("    method for large clusters where dense eigendecomposition")$
+print("    is infeasible.  Both low-lambda slope and integrated-DOS")$
+print("    slope are reported for cross-validation.")$
+print("  * Same-orientation tiling is geometrically frustrated; this")$
+print("    experiment lets the sheet index absorb the angular deficit,")$
+print("    consistent with the multi-sheeted construction.")$
+print("  * Section 23 catalogs the Erdős distance problem on the")$
+print("    pentagonal lattice: ring table, Fibonacci spacing, Galois")$
+print("    conjugate pairings, and D(P_n) vs log(n) scaling.")$
+print("  * Section 24 builds distance webs W_d and checks regularity,")$
+print("    connectivity, and intersection with the adjacency graph.")$
+print("  * Section 25 analyzes the pinwheel phenomenon: whether each")$
+print("    distance class has a dense set of directions in [0,2*pi).")$
+print("============================================================")$
+print("experiment.mac : done.")$
+print("============================================================")$

@@ -1,0 +1,189 @@
+/* =====================================================================
+ laplacian_analysis.mac
+
+ Standalone driver that:
+   (1) Builds a multi-sheeted N-gon adjacency graph at a fixed,
+       manageable size.
+   (2) Forms the adjacency matrix A and degree matrix D.
+   (3) Analyzes the graph Laplacian L = D - A:
+         - symmetry / row-sum sanity checks
+         - full eigenspectrum (LAPACK dgeev, symbolic fallback)
+         - spectral gap (algebraic connectivity)
+         - number of connected components (kernel dimension)
+         - largest eigenvalue and spectral radius bound
+         - normalized Laplacian eigenvalues in [0, 2]
+         - density-of-states based spectral dimension estimate
+
+ This file *forces* the eigendecomposition to run by overriding the
+ preset to a small/medium size with SKIP_EIG = false, so it is safe
+ to batch directly:
+
+     maxima --batch=laplacian_analysis.mac
+
+ It reuses experiment.mac for the graph construction by setting
+ overrides BEFORE batching, then performs the Laplacian analysis
+ here on the already-constructed cluster.
+ ===================================================================== */
+
+
+/* Force a tractable size with eigenvalues enabled.  These overrides
+ are read by experiment.mac in its configuration block. */
+EXPERIMENT_PRESET_OVERRIDE : "medium" $
+EXPERIMENT_TAU_OVERRIDE    : "signed3" $
+
+if not(?boundp('display2d)) then display2d : false$
+
+/* If you want a different polygon, set this before batching:
+ EXPERIMENT_N_GON_OVERRIDE : 5 $   */
+if not(?boundp('EXPERIMENT_N_GON_OVERRIDE)) then
+  EXPERIMENT_N_GON_OVERRIDE : 5 $
+
+print("============================================================")$
+print("laplacian_analysis.mac : building cluster via experiment.mac")$
+print("============================================================")$
+
+/* Build the graph (and run the standard experiment pipeline, which
+ already includes a Section 4 Laplacian analysis when SKIP_EIG is
+ false).  After this batch the global state (nbrs, cell_count, etc.)
+ is available for the supplementary analysis below. */
+batch("experiment.mac") $
+/* Open a log file to capture all output (in addition to console). */
+LAPLACIAN_LOG_FILE : "laplacian_analysis.log" $
+writefile(LAPLACIAN_LOG_FILE) $
+
+print("============================================================")$
+print("laplacian_analysis.mac : supplementary Laplacian analysis")$
+print("============================================================")$
+
+/* The cluster lives in the globals N, nbrs, deg_list, deg_max. */
+print("Cluster size N =", N)$
+print("Mean degree    =", deg_mean)$
+print("Max degree     =", deg_max)$
+
+/* ---- Build adjacency, degree, Laplacian matrices explicitly. ---- */
+load_ok : errcatch(load("lapack")) $
+
+A_la : zeromatrix(N, N) $
+for i : 1 thru N do
+  for j in nbrs[i] do
+      A_la[i, j] : 1 $
+
+D_la_diag : makelist(length(nbrs[i]), i, 1, N) $
+D_la      : apply(diag_matrix, D_la_diag) $
+L_la      : D_la - A_la $
+
+/* ---- Sanity checks. ---- */
+block(
+  [sym_err : lmax(flatten(args(L_la - transpose(L_la)))),
+   rowsums : makelist(apply("+", L_la[i]), i, 1, N),
+   rs_max],
+  rs_max : lmax(map(abs, rowsums)),
+  print("Symmetry residual |L - L^T|_max =", sym_err),
+  print("Row-sum max |.|               =", rs_max,
+        " (should be 0: all-ones is in kernel)"),
+  if sym_err # 0 then error("Laplacian not symmetric!"),
+  if rs_max # 0 then error("Laplacian rows do not sum to 0")) $
+
+/* ---- Numerical eigenvalues of L. ---- */
+L_float : float(L_la) $
+eig_la : [] $
+if ?fboundp('dgeev) then block(
+  [res : dgeev(L_float)],
+  eig_la : sort(map(lambda([z], float(realpart(z))), res[1])))
+else block(
+  [eigs : eigenvalues(L_float), vals, mults, k, m],
+  vals  : eigs[1],
+  mults : eigs[2],
+  for k : 1 thru length(vals) do
+      for m : 1 thru mults[k] do
+          eig_la : endcons(float(vals[k]), eig_la),
+  eig_la : sort(eig_la)) $
+
+print("------------------------------------------------------------")$
+print("Laplacian spectrum:")$
+print("  number of eigenvalues =", length(eig_la), " (expected", N, ")")$
+print("  smallest 6 eigenvalues =",
+    makelist(eig_la[k], k, 1, min(6, length(eig_la))))$
+print("  largest 3 eigenvalues  =",
+    makelist(eig_la[length(eig_la) - k + 1], k, 1, min(3, length(eig_la))))$
+
+/* ---- Connected components = multiplicity of the zero eigenvalue. ---- */
+block(
+  [zero_count : 0, lam],
+  for lam in eig_la do
+      if abs(lam) < 1e-7 then zero_count : zero_count + 1,
+  print("  zero-eigenvalue multiplicity =", zero_count,
+        " (= number of connected components)")) $
+
+/* ---- Spectral gap = smallest positive eigenvalue (Fiedler value). ---- */
+spec_gap_la : 0 $
+for lam in eig_la do
+  if spec_gap_la = 0 and lam > 1e-7 then spec_gap_la : lam $
+print("  spectral gap (algebraic connectivity / Fiedler value) =",
+    spec_gap_la)$
+
+/* ---- Spectral radius and Fiedler bound checks. ---- */
+lam_max_la : last(eig_la) $
+print("  largest eigenvalue lambda_max =", lam_max_la,
+    "   (bound: lambda_max <= 2*deg_max =", 2*deg_max, ")")$
+
+/* ---- Normalized Laplacian eigenvalues (in [0,2]) for graphs with
+      no isolated vertices.  L_norm = I - D^{-1/2} A D^{-1/2}. ---- */
+block(
+  [has_isolated : false, i],
+  for i : 1 thru N do
+      if D_la_diag[i] = 0 then has_isolated : true,
+  if has_isolated then
+      print("  (normalized Laplacian skipped: isolated vertices present)")
+  else block(
+      [Dinv_half : apply(diag_matrix,
+                         makelist(1/sqrt(D_la_diag[i]), i, 1, N)),
+       Lnorm, eig_norm],
+      Lnorm : Dinv_half . L_la . Dinv_half,
+      if ?fboundp('dgeev) then block(
+          [res : dgeev(float(Lnorm))],
+          eig_norm : sort(map(lambda([z], float(realpart(z))), res[1]))),
+      if ?boundp('eig_norm) then (
+          print("  normalized-Laplacian smallest 4 =",
+                makelist(eig_norm[k], k, 1, min(4, length(eig_norm)))),
+          print("  normalized-Laplacian largest 2  =",
+                makelist(eig_norm[length(eig_norm) - k + 1],
+                         k, 1, min(2, length(eig_norm))),
+                " (<= 2; = 2 iff bipartite component)")))) $
+
+/* ---- DOS-based spectral dimension: N(<=lambda) ~ lambda^(d_spec/2). ---- */
+log_log_fit_la(xs, ys) := block(
+  [n : length(xs), sx, sy, sxx, sxy, slope, intercept],
+  if n < 2 then return([0.0, 0.0]),
+  sx : apply("+", xs), sy : apply("+", ys),
+  sxx : apply("+", xs*xs), sxy : apply("+", xs*ys),
+  block([den : n*sxx - sx^2],
+      if abs(float(den)) < 1e-15 then return([0.0, float(sy/n)]),
+      slope : (n*sxy - sx*sy)/den),
+  intercept : (sy - slope*sx)/n,
+  [float(slope), float(intercept)]) $
+
+block(
+  [fractions : [0.05, 0.10, 0.20, 0.30, 0.40],
+   xs : [], ys : [], f, thr, cnt, lam, fit],
+  for f in fractions do (
+      thr : f * lam_max_la,
+      cnt : 0,
+      for lam in eig_la do if lam > 1e-7 and lam <= thr then cnt : cnt + 1,
+      if thr > 0 and cnt > 0 then (
+          xs : endcons(float(log(thr)), xs),
+          ys : endcons(float(log(cnt)), ys),
+          print("  CDF sample: N(<=", float(thr), ") =", cnt))),
+  if length(xs) >= 2 then (
+      fit : log_log_fit_la(xs, ys),
+      print("  spectral-CDF log-log slope =", fit[1],
+            "  => d_spec(DOS) ~", 2*fit[1]))
+  else
+      print("  spectral CDF too sparse for slope fit.")) $
+
+print("============================================================")$
+print("laplacian_analysis.mac : done.")$
+print("============================================================")$
+/* Close the log file so all buffered output is flushed to disk. */
+closefile() $
+print("Results written to log file:", LAPLACIAN_LOG_FILE)$
