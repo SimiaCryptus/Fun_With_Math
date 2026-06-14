@@ -3,6 +3,7 @@
     import { computeField } from "./field.js";
     import { renderField } from "./render.js";
    import { computeFFT2D, renderFFT3D } from "./fft.js";
+  import { topAutocorrVectors } from "./autocorr.js";
 
     const canvas = document.getElementById("field");
     const statsEl = document.getElementById("stats");
@@ -151,6 +152,7 @@
         lastOpts = opts;
         pending = null;
        updateFFT();
+       drawAcVectors();
       });
     }
 
@@ -296,6 +298,17 @@
        colorPhase = (colorPhase + cycleSpeed * dt) % 1;
        rerenderColor();
      }
+     // Autocorrelation random walk playback (independent of color cycling).
+     if (acPlaying) {
+       const stepsPerSec = parseFloat(acSpeed.value) || 1;
+       acAccum += dt;
+       const interval = 1 / stepsPerSec;
+       // Take at most one step per frame to keep things responsive.
+       if (acAccum >= interval) {
+         acAccum -= interval;
+         acWalkStep();
+       }
+     }
      requestAnimationFrame(animate);
    }
    requestAnimationFrame(animate);
@@ -336,12 +349,41 @@
    let dragStart = null;
    let panStart = null;
    canvas.addEventListener("mousedown", (ev) => {
+     // First check whether we're grabbing an autocorrelation vector endpoint.
+     const fp = clientToFieldPixel(ev);
+     const hit = acHitTest(fp.fx, fp.fy);
+     if (hit) {
+       acDragging = hit;
+       canvas.style.cursor = "crosshair";
+       ev.preventDefault();
+       return;
+     }
      dragging = true;
      dragStart = clientToFieldPixel(ev);
      panStart = { x: view.panX, y: view.panY };
      canvas.style.cursor = "grabbing";
    });
    window.addEventListener("mousemove", (ev) => {
+     // Editing an autocorrelation vector endpoint.
+     if (acDragging) {
+       const { fx, fy } = clientToFieldPixel(ev);
+       const size = canvas.width;
+       const cx = size / 2;
+       const cy = size / 2;
+       const v = acVectors[acDragging.index];
+       // Endpoint position in pixels relative to center, undoing the sign so
+       // the stored vector always represents the +v direction.
+       const dxPx = (fx - cx) * acDragging.sign;
+       const dyPx = (fy - cy) * acDragging.sign;
+       v.dx = dxPx * view.zoom;
+       v.dy = dyPx * view.zoom;
+       // Update the readout and redraw.
+       acOut.textContent = acVectors
+         .map((vv) => `(${vv.dx.toFixed(2)}, ${vv.dy.toFixed(2)})`)
+         .join("  ");
+       regenerate();
+       return;
+     }
      if (!dragging) return;
      const cur = clientToFieldPixel(ev);
      // Drag moves the view: dragging right pulls content right => pan left.
@@ -351,7 +393,18 @@
      view.panY = panStart.y - dyPx * view.zoom;
      regenerate();
    });
+   // Cursor feedback: show a pointer over draggable endpoint handles.
+   canvas.addEventListener("mousemove", (ev) => {
+     if (dragging || acDragging) return;
+     const { fx, fy } = clientToFieldPixel(ev);
+     canvas.style.cursor = acHitTest(fx, fy) ? "pointer" : "grab";
+   });
    window.addEventListener("mouseup", () => {
+     if (acDragging) {
+       acDragging = null;
+       canvas.style.cursor = "grab";
+       return;
+     }
      if (!dragging) return;
      dragging = false;
      canvas.style.cursor = "grab";
@@ -434,6 +487,160 @@
      fftWindow.style.top = Math.max(0, fwOrigin.y + dy) + "px";
    });
    window.addEventListener("mouseup", () => { fwDragging = false; });
+   // --- Autocorrelation-driven random walk ---
+   // Compute the two strongest autocorrelation displacement vectors, then
+   // step the pan by a randomly-signed combination of them. This nudges the
+   // viewport toward self-similar features in the field.
+   const acCompute = document.getElementById("acCompute");
+   const acStep = document.getElementById("acStep");
+   const acPlay = document.getElementById("acPlay");
+   const acSpeed = document.getElementById("acSpeed");
+   const acSpeedOut = document.getElementById("acSpeedOut");
+   const acOut = document.getElementById("acOut");
+  const acShow = document.getElementById("acShow");
+   let acVectors = null;
+   let acPlaying = false;
+   let acAccum = 0; // seconds accumulated toward the next step
+  let acShowVectors = false;
+  // Endpoint editing state: which vector endpoint (if any) is being dragged.
+  // { index, sign } identifies the +v (sign=1) or -v (sign=-1) endpoint of
+  // acVectors[index].
+  let acDragging = null;
+  // Pixel radius within which a click grabs an endpoint handle.
+  const AC_HANDLE_RADIUS = 10;
+  // Return the field-pixel position of a vector endpoint given its view.
+  function acEndpointPixel(v, sign) {
+    const size = canvas.width;
+    const cx = size / 2;
+    const cy = size / 2;
+    return {
+      x: cx + sign * (v.dx / view.zoom),
+      y: cy + sign * (v.dy / view.zoom),
+    };
+  }
+  // Hit-test: find the endpoint handle under a field-pixel coordinate.
+  function acHitTest(fx, fy) {
+    if (!acShowVectors || !acVectors) return null;
+    for (let i = 0; i < acVectors.length; i++) {
+      for (const sign of [1, -1]) {
+        const p = acEndpointPixel(acVectors[i], sign);
+        if (Math.hypot(fx - p.x, fy - p.y) <= AC_HANDLE_RADIUS) {
+          return { index: i, sign };
+        }
+      }
+    }
+    return null;
+  }
+  // Draw the autocorrelation vectors as overlay arrows from the canvas center.
+  function drawAcVectors() {
+    if (!acShowVectors || !acVectors || acVectors.length === 0) return;
+    const ctx = canvas.getContext("2d");
+    const size = canvas.width;
+    const cx = size / 2;
+    const cy = size / 2;
+    // Vectors are in lattice units; convert to field pixels via the zoom.
+    const colors = ["#ff3b6b", "#3bff9d", "#3b9dff", "#ffd23b"];
+    ctx.save();
+    ctx.lineWidth = Math.max(1, size / 256);
+    acVectors.forEach((v, i) => {
+      const px = v.dx / view.zoom;
+      const py = v.dy / view.zoom;
+      const color = colors[i % colors.length];
+      // Draw both +v and -v directions.
+      for (const s of [1, -1]) {
+        const ex = cx + s * px;
+        const ey = cy + s * py;
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(ex, ey);
+        ctx.stroke();
+        // Arrowhead.
+        const ang = Math.atan2(ey - cy, ex - cx);
+        const head = Math.max(5, size / 80);
+        ctx.beginPath();
+        ctx.moveTo(ex, ey);
+        ctx.lineTo(
+          ex - head * Math.cos(ang - Math.PI / 6),
+          ey - head * Math.sin(ang - Math.PI / 6)
+        );
+        ctx.lineTo(
+          ex - head * Math.cos(ang + Math.PI / 6),
+          ey - head * Math.sin(ang + Math.PI / 6)
+        );
+        ctx.closePath();
+        ctx.fill();
+        // Draggable endpoint handle (hollow circle).
+        const handleR = Math.max(4, size / 160);
+        ctx.beginPath();
+        ctx.arc(ex, ey, handleR, 0, Math.PI * 2);
+        ctx.fillStyle = "#0e0f13";
+        ctx.fill();
+        ctx.lineWidth = Math.max(1, size / 320);
+        ctx.strokeStyle = color;
+        ctx.stroke();
+        ctx.lineWidth = Math.max(1, size / 256);
+      }
+    });
+    // Center marker.
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(cx, cy, Math.max(2, size / 256) * 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+   function computeAutocorrVectors() {
+     if (!lastResult || !lastOpts) return;
+     acVectors = topAutocorrVectors(lastResult.data, lastOpts.size, view.zoom);
+     if (!acVectors || acVectors.length === 0) {
+       acOut.textContent = "no vectors";
+       acVectors = null;
+       return;
+     }
+     acOut.textContent = acVectors
+       .map((v) => `(${v.dx.toFixed(2)}, ${v.dy.toFixed(2)})`)
+       .join("  ");
+    drawAcVectors();
+   }
+   function acWalkStep() {
+     if (!acVectors || acVectors.length === 0) {
+       computeAutocorrVectors();
+       if (!acVectors) return;
+     }
+     // Random signed combination of the available vectors.
+     for (const v of acVectors) {
+       const sign = Math.random() < 0.5 ? -1 : 1;
+       // Only take a vector ~half the time so steps vary in length.
+       if (Math.random() < 0.5) {
+         view.panX += sign * v.dx;
+         view.panY += sign * v.dy;
+       }
+     }
+     regenerate();
+   }
+   acCompute.addEventListener("click", computeAutocorrVectors);
+   acStep.addEventListener("click", acWalkStep);
+   acSpeed.addEventListener("input", () => {
+     acSpeedOut.textContent = parseFloat(acSpeed.value).toFixed(1);
+   });
+   acPlay.addEventListener("click", () => {
+     acPlaying = !acPlaying;
+     acPlay.textContent = acPlaying ? "❚❚ pause" : "▶ play";
+     acAccum = 0;
+   });
+  acShow.addEventListener("click", () => {
+    acShowVectors = !acShowVectors;
+    acShow.textContent = acShowVectors ? "hide vectors" : "show vectors";
+    acShow.classList.toggle("active", acShowVectors);
+    if (acShowVectors && !acVectors) {
+      computeAutocorrVectors();
+    } else {
+      // Re-render to add or clear the overlay.
+      regenerate();
+    }
+  });
+
 
 
     // Initial render.
