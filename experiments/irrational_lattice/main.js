@@ -4,6 +4,7 @@ import { computeField } from "./field.js";
 import { renderField } from "./render.js";
 import { computeFFT2D, renderFFT3D } from "./fft.js";
 import { topAutocorrVectors } from "./autocorr.js";
+import { wireRationalControls } from "./rational.js";
 
 const canvas = document.getElementById("field");
 const statsEl = document.getElementById("stats");
@@ -45,6 +46,18 @@ const view = {
 const REF_SIZE = 512;
 function effectiveZoom(size) {
     return (view.zoom * REF_SIZE) / size;
+}
+// The active zoom granularity is a rational p/q controlled by the
+// numerator/denominator steppers (the slider only seeds an approximation).
+const zoomNumEl = document.getElementById("zoomNum");
+const zoomDenEl = document.getElementById("zoomDen");
+function zoomGranularity() {
+     const num = parseFloat(zoomNumEl.value) || 1;
+     const den = parseFloat(zoomDenEl.value) || 1;
+     const v = num / den;
+      // Accept any finite ratio strictly greater than 1. Do not pin to a
+      // fixed fallback range; the user may enter arbitrary num/den.
+      return isFinite(v) && v > 1 ? v : 1.0001;
 }
 
 // Integer offset state (paged through with buttons).
@@ -118,7 +131,6 @@ function updateOutputs(o) {
     outputs.seed.textContent = o.seed;
     outputs.cycle.textContent = parseFloat(controls.cycle.value).toFixed(2);
     outputs.offset.textContent = `${offset.x}, ${offset.y}`;
-    outputs.zoomStep.textContent = parseFloat(controls.zoomStep.value).toFixed(3);
 }
 
 function updateStats(o, result, elapsed) {
@@ -175,10 +187,25 @@ function rerenderColor() {
 
 // Wire up listeners.
 for (const key of Object.keys(controls)) {
+     // `size` and `zoomStep` are managed by the rational view controls, which
+     // update the hidden inputs and emit their own change events.
+     if (key === "size" || key === "zoomStep") continue;
     controls[key].addEventListener("input", regenerate);
     controls[key].addEventListener("change", regenerate);
 }
 document.getElementById("regen").addEventListener("click", regenerate);
+// Wire the rational view controls (integer grid size + rational zoom
+// granularity p/q seeded from the slider via continued fractions).
+const rationalControls = wireRationalControls({
+     maxDen: 100,
+     onChange: () => {
+         // Keep the legacy zoomStep output (if present) in sync, then redraw.
+         if (outputs.zoomStep) {
+             outputs.zoomStep.textContent = zoomGranularity().toFixed(3);
+         }
+         regenerate();
+     },
+});
 document.getElementById("resetView").addEventListener("click", () => {
     view.panX = 0;
     view.panY = 0;
@@ -222,7 +249,7 @@ function stepSweeps() {
         // Use the zoom granularity slider as a per-frame rate multiplier so the
         // sweep speed respects the same control as manual wheel zooming.
         if (target === "zoom") {
-            const zoomStep = parseFloat(controls.zoomStep.value) || 1.1;
+             const zoomStep = zoomGranularity();
             // Per-frame multiplier derived from the granularity (gentler than a
             // full wheel notch so the animation stays smooth).
             const rate = 1 + (zoomStep - 1) * 0.25;
@@ -421,7 +448,7 @@ canvas.addEventListener("wheel", (ev) => {
     const before = pixelToLattice(fx, fy);
     // Configurable zoom granularity: each wheel notch multiplies/divides
     // the zoom by zoomStep. Values close to 1.0 give finer control.
-    const zoomStep = parseFloat(controls.zoomStep.value) || 1.1;
+     const zoomStep = zoomGranularity();
     const factor = ev.deltaY < 0 ? 1 / zoomStep : zoomStep;
     view.zoom *= factor;
     // Clamp zoom to a reasonable range.
@@ -658,6 +685,8 @@ acShow.addEventListener("click", () => {
 // Initial render.
 fitCanvas();
 hashToState();
+// Reflect any hash-restored size into the rational stepper display.
+if (rationalControls && rationalControls.refresh) rationalControls.refresh();
 regenerate();
 // Respond to external hash changes (shared link pasted, back/forward nav).
 window.addEventListener("hashchange", () => {

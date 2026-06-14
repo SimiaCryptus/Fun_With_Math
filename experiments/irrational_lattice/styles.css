@@ -97,6 +97,53 @@
      padding: 0.35rem;
      font-size: 0.8rem;
    }
+   /* --- Integer stepper (numerator-style control) --- */
+   .int-stepper {
+     display: flex;
+     align-items: stretch;
+     gap: 0.25rem;
+   }
+   .int-stepper button {
+     flex: 0 0 auto;
+     width: 2rem;
+     padding: 0.25rem 0;
+     font-size: 1rem;
+     line-height: 1;
+     background: var(--panel-2);
+     color: var(--accent);
+     border: 1px solid var(--border);
+   }
+   .int-stepper button:hover { filter: brightness(1.2); }
+   .int-stepper input[type="number"] {
+     flex: 1 1 0;
+     width: 100%;
+     min-width: 0;
+     max-width: 100%;
+     background: var(--panel-2);
+     color: var(--fg);
+     border: 1px solid var(--border);
+     border-radius: 4px;
+     padding: 0.35rem 0.5rem;
+     font-size: 0.85rem;
+     font-variant-numeric: tabular-nums;
+     text-align: center;
+   }
+   /* --- Rational stepper (p / q control) --- */
+   .rational-stepper {
+     margin-top: 0.4rem;
+   }
+   .rs-frac {
+     display: flex;
+     align-items: center;
+     gap: 0.4rem;
+   }
+   .rs-frac .int-stepper { flex: 1 1 0; }
+   .rs-bar {
+     color: var(--muted);
+     font-size: 1.2rem;
+     font-weight: 600;
+     padding: 0 0.1rem;
+   }
 
     .legend {
       display: flex;

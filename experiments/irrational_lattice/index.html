@@ -87,11 +87,31 @@
 
           <div class="control">
             <label>Grid size: <output id="sizeOut">256</output></label>
-           <input type="range" id="size" min="64" max="1024" value="256" step="32">
+           <input type="hidden" id="size" value="256">
+           <div class="int-stepper">
+             <button id="sizeMinus" title="Decrease grid size">−</button>
+             <input type="range" id="sizeInput" min="1" max="1024" value="256" step="1">
+             <button id="sizePlus" title="Increase grid size">+</button>
+           </div>
           </div>
          <div class="control">
            <label>Zoom granularity: <output id="zoomStepOut">1.100</output></label>
-           <input type="range" id="zoomStep" min="1.005" max="1.5" value="1.1" step="0.005">
+          <input type="range" id="zoomStep" min="1.001" max="4.0" value="1.1" step="0.001">
+          <div class="rational-stepper">
+            <div class="rs-frac">
+              <div class="int-stepper">
+                <button id="zoomNumMinus" title="Decrease numerator">−</button>
+                <input type="number" id="zoomNum" min="1" max="100000" value="11" step="1">
+                <button id="zoomNumPlus" title="Increase numerator">+</button>
+              </div>
+              <span class="rs-bar">/</span>
+              <div class="int-stepper">
+                <button id="zoomDenMinus" title="Decrease denominator">−</button>
+                <input type="number" id="zoomDen" min="1" max="100000" value="10" step="1">
+                <button id="zoomDenPlus" title="Increase denominator">+</button>
+              </div>
+            </div>
+          </div>
           <button class="sweep-btn" data-target="zoom" data-dir="in" title="Sweep zoom in">⟲ in</button>
           <button class="sweep-btn" data-target="zoom" data-dir="out" title="Sweep zoom out">⟲ out</button>
          </div>
