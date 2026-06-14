@@ -22,7 +22,7 @@ export function K(a = 0, b = 0, c = 0, d = 0) {
 }
 
 export const ZERO = K(0, 0, 0, 0);
-export const ONE  = K(1, 0, 0, 0);
+export const ONE = K(1, 0, 0, 0);
 export const SQRT5 = K(0, 1, 0, 0);
 // S = sqrt(10 + 2*sqrt(5)) = 4*sin(72 deg)
 export const S_SYM = K(0, 0, 1, 0);
@@ -108,7 +108,7 @@ export function key(x) {
 // Pretty-printing in human-readable algebraic form.
 function fmtRat(q, opts = {}) {
   const r = round(q);
-  if (r === 0) return "0";
+  if (r === 0) return '0';
   // Try to express as small rational a/b.
   for (let den = 1; den <= 64; den++) {
     const num = r * den;
@@ -121,8 +121,8 @@ function fmtRat(q, opts = {}) {
   return r.toFixed(6);
 }
 function fmtTerm(coef, sym) {
-  if (coef === 0) return "";
-  if (sym === "") return fmtRat(coef);
+  if (coef === 0) return '';
+  if (sym === '') return fmtRat(coef);
   const r = round(coef);
   if (r === 1) return sym;
   if (r === -1) return `-${sym}`;
@@ -130,17 +130,19 @@ function fmtTerm(coef, sym) {
 }
 export function toAlg(x) {
   const parts = [];
-  const add = (t) => { if (t !== "") parts.push(t); };
-  add(fmtTerm(x.a, ""));
-  add(fmtTerm(x.b, "√5"));
-  add(fmtTerm(x.c, "S"));
-  add(fmtTerm(x.d, "S√5"));
-  if (parts.length === 0) return "0";
+  const add = (t) => {
+    if (t !== '') parts.push(t);
+  };
+  add(fmtTerm(x.a, ''));
+  add(fmtTerm(x.b, '√5'));
+  add(fmtTerm(x.c, 'S'));
+  add(fmtTerm(x.d, 'S√5'));
+  if (parts.length === 0) return '0';
   let out = parts[0];
   for (let i = 1; i < parts.length; i++) {
     const p = parts[i];
-    if (p.startsWith("-")) out += " − " + p.slice(1);
-    else out += " + " + p;
+    if (p.startsWith('-')) out += ' − ' + p.slice(1);
+    else out += ' + ' + p;
   }
   return out;
 }

@@ -44,12 +44,14 @@ struct FamilyPerformanceData {
 ## Key Features
 
 ### 1. Multi-Format Output
+
 - **HTML/Markdown Reports**: Interactive reports with tables and plots
 - **CSV Exports**: Raw data and summary statistics
 - **LaTeX Tables**: Publication-ready academic tables
 - **Detailed Analysis**: Individual optimizer-problem reports
 
 ### 2. Comprehensive Analysis
+
 - Performance ranking and comparison
 - Statistical significance testing
 - Family-based analysis (optimizer families vs problem families)
@@ -57,6 +59,7 @@ struct FamilyPerformanceData {
 - Resource utilization metrics
 
 ### 3. Visualization Support
+
 - Convergence plots (linear and logarithmic scales)
 - Performance comparison matrices
 - Family vs family comparison tables
@@ -102,6 +105,7 @@ impl ReportGenerator {
 Creates a new `ReportGenerator` instance.
 
 **Parameters:**
+
 - `output_dir`: Directory path where all output files will be generated
 - `_config`: Benchmark configuration containing run parameters
 
@@ -120,10 +124,12 @@ pub async fn generate_main_report(
 Generates the complete benchmark report with all components.
 
 **Parameters:**
+
 - `all_results`: Array of tuples containing problem specifications and their results
 - `use_optimizer_families`: Whether to group optimizers by family for analysis
 
 **Generated Files:**
+
 - `benchmark_report.md`: Main HTML/Markdown report
 - `detailed_results.csv`: Raw experimental data
 - `summary_statistics.csv`: Aggregated statistics
@@ -145,6 +151,7 @@ fn generate_winner_summary_table(
 Creates a quick summary table showing the best performing optimizer for each problem.
 
 **Features:**
+
 - Problem family classification
 - Success rate calculation
 - Mean final value comparison
@@ -164,6 +171,7 @@ fn generate_family_vs_family_comparison_table(
 Generates a comprehensive matrix comparing optimizer families against problem families.
 
 **Metrics Included:**
+
 - Average ranking across problems
 - Best rank average (average of best ranks achieved)
 - Best performing variant identification
@@ -182,6 +190,7 @@ fn generate_problem_section(
 Creates detailed analysis for individual problems.
 
 **Components:**
+
 - Performance ranking table
 - Success/failure rate analysis
 - Statistical measures (mean, std dev, best, worst)
@@ -196,16 +205,19 @@ Creates detailed analysis for individual problems.
 The system generates multiple CSV files for different analysis needs:
 
 #### 1. Detailed Results CSV
+
 ```csv
 Problem,ProblemFamily,Dimension,Optimizer,Run,FinalValue,FinalGradientNorm,Iterations,FunctionEvals,GradientEvals,Time,Converged,ConvergenceReason
 ```
 
 #### 2. Summary Statistics CSV
+
 ```csv
 Problem,ProblemFamily,Dimension,Optimizer,MeanFinalValue,MeanFinalValueSuccess,MeanFinalValueFail,StdFinalValue,BestValue,WorstValue,MeanIterations,MeanFunctionEvals,MeanFunctionEvalsSuccess,MeanFunctionEvalsFail,MeanGradientEvals,MeanGradientEvalsSuccess,MeanGradientEvalsFail,MeanTime,SuccessRate,NumRuns
 ```
 
 #### 3. Problem-Specific CSVs
+
 Individual CSV files for each problem stored in `problems/` directory.
 
 ### CSV Export Implementation
@@ -218,6 +230,7 @@ fn generate_csv_exports(
 ```
 
 **Features:**
+
 - Separate statistics for successful and failed runs
 - Comprehensive error handling
 - Automatic directory creation
@@ -240,6 +253,7 @@ fn generate_main_performance_latex_table(
 Creates a comprehensive performance comparison table using `longtable` for multi-page support.
 
 **Features:**
+
 - Scientific notation formatting with `siunitx`
 - Multi-row problem grouping
 - Bold highlighting for best performers
@@ -258,6 +272,7 @@ fn generate_comparison_matrix_latex_table(
 Generates win-loss-tie matrices between optimizer families.
 
 **Statistical Analysis:**
+
 - Welch's t-test for significance testing
 - Color coding for dominance patterns
 - Comprehensive legend and explanations
@@ -273,6 +288,7 @@ fn generate_comprehensive_latex_document(
 ```
 
 Creates a complete LaTeX document with:
+
 - Title page and abstract
 - Methodology section
 - All performance tables
@@ -297,34 +313,34 @@ Generates detailed analysis for each optimizer-problem combination.
 #### Report Components:
 
 1. **Executive Summary**
-    - Problem and optimizer identification
-    - Success rate and basic statistics
-    - Quick performance metrics
+   - Problem and optimizer identification
+   - Success rate and basic statistics
+   - Quick performance metrics
 
 2. **Run-by-Run Analysis**
-    - Tabular view of all individual runs
-    - Color coding for success/failure
-    - Detailed convergence information
+   - Tabular view of all individual runs
+   - Color coding for success/failure
+   - Detailed convergence information
 
 3. **Convergence Analysis**
-    - Success/failure pattern analysis
-    - Timing and iteration statistics
-    - Failure reason categorization
+   - Success/failure pattern analysis
+   - Timing and iteration statistics
+   - Failure reason categorization
 
 4. **Parameter Evolution Analysis**
-    - Best run detailed examination
-    - Parameter trajectory visualization
-    - Convergence behavior insights
+   - Best run detailed examination
+   - Parameter trajectory visualization
+   - Convergence behavior insights
 
 5. **Performance Analysis**
-    - Computational efficiency metrics
-    - Resource utilization statistics
-    - Comparative performance indicators
+   - Computational efficiency metrics
+   - Resource utilization statistics
+   - Comparative performance indicators
 
 6. **Failure Analysis**
-    - Failure pattern identification
-    - Early failure detection
-    - Numerical stability assessment
+   - Failure pattern identification
+   - Early failure detection
+   - Numerical stability assessment
 
 ## Usage Examples
 
@@ -432,16 +448,19 @@ if let Ok((_, p_value)) = self.statistical_analysis.welch_t_test_public(&data1, 
 ## Performance Considerations
 
 ### Memory Management
+
 - Streaming CSV generation for large datasets
 - Efficient data structure usage
 - Minimal memory footprint for report generation
 
 ### Computational Efficiency
+
 - Lazy evaluation where possible
 - Efficient sorting and ranking algorithms
 - Optimized statistical computations
 
 ### File I/O Optimization
+
 - Batch file operations
 - Efficient string building
 - Minimal disk access patterns
@@ -490,6 +509,7 @@ let (t_stat, p_value) = stats.welch_t_test_public(&sample1, &sample2)?;
 ## Best Practices
 
 ### 1. Data Validation
+
 Always validate input data before processing:
 
 ```rust
@@ -505,6 +525,7 @@ if final_values.is_empty() {
 ```
 
 ### 2. Error Context
+
 Provide meaningful error context:
 
 ```rust
@@ -514,6 +535,7 @@ fs::write(&csv_path, csv_content).with_context(|| {
 ```
 
 ### 3. Resource Management
+
 Create output directories as needed:
 
 ```rust
@@ -522,6 +544,7 @@ fs::create_dir_all(&self.output_dir)
 ```
 
 ### 4. Consistent Formatting
+
 Use consistent number formatting throughout reports:
 
 ```rust
@@ -529,4 +552,3 @@ format!("{:.2e}", value)  // Scientific notation
 format!("{:.1}%", rate)   // Percentage
 format!("{:.3}", time)    // Time in seconds
 ```
-

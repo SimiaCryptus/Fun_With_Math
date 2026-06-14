@@ -54,26 +54,12 @@
 
         <label>
           Harmonics: <span id="termLabel">7</span>
-          <input
-            type="range"
-            id="termRange"
-            min="1"
-            max="41"
-            step="2"
-            value="7"
-          />
+          <input type="range" id="termRange" min="1" max="41" step="2" value="7" />
         </label>
 
         <label>
           Speed: <span id="speedLabel">1.0×</span>
-          <input
-            type="range"
-            id="speedRange"
-            min="0.1"
-            max="4"
-            step="0.1"
-            value="1"
-          />
+          <input type="range" id="speedRange" min="0.1" max="4" step="0.1" value="1" />
         </label>
 
         <label>
@@ -101,9 +87,8 @@
 
         <div class="info-box">
           <h4>What you're seeing</h4>
-          Each circle spins at a harmonic frequency. Their combined tip traces
-          the target wave on the right. Add more harmonics for a sharper
-          approximation.
+          Each circle spins at a harmonic frequency. Their combined tip traces the target wave on
+          the right. Add more harmonics for a sharper approximation.
         </div>
       </aside>
     </div>
@@ -114,19 +99,19 @@
 
     <script>
       (function () {
-        const cCanvas = document.getElementById("circleCanvas");
-        const wCanvas = document.getElementById("waveCanvas");
-        const cCtx = cCanvas.getContext("2d");
-        const wCtx = wCanvas.getContext("2d");
+        const cCanvas = document.getElementById('circleCanvas');
+        const wCanvas = document.getElementById('waveCanvas');
+        const cCtx = cCanvas.getContext('2d');
+        const wCtx = wCanvas.getContext('2d');
         const wrap = cCanvas.parentElement;
 
-        const termRange = document.getElementById("termRange");
-        const termLabel = document.getElementById("termLabel");
-        const speedRange = document.getElementById("speedRange");
-        const speedLabel = document.getElementById("speedLabel");
-        const waveSelect = document.getElementById("waveform");
-        const toggleBtn = document.getElementById("toggleBtn");
-        const clearBtn = document.getElementById("clearBtn");
+        const termRange = document.getElementById('termRange');
+        const termLabel = document.getElementById('termLabel');
+        const speedRange = document.getElementById('speedRange');
+        const speedLabel = document.getElementById('speedLabel');
+        const waveSelect = document.getElementById('waveform');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const clearBtn = document.getElementById('clearBtn');
 
         let paused = false;
         let t = 0;
@@ -138,18 +123,17 @@
           const terms = [];
           for (let k = 1; k <= N; k++) {
             switch (type) {
-              case "square":
-                if (k % 2 !== 0)
-                  terms.push({ freq: k, amp: 4 / Math.PI / k, phase: 0 });
+              case 'square':
+                if (k % 2 !== 0) terms.push({ freq: k, amp: 4 / Math.PI / k, phase: 0 });
                 break;
-              case "sawtooth":
+              case 'sawtooth':
                 terms.push({
                   freq: k,
                   amp: ((2 / Math.PI) * (k % 2 === 0 ? -1 : 1)) / k,
                   phase: 0,
                 });
                 break;
-              case "triangle":
+              case 'triangle':
                 if (k % 2 !== 0) {
                   const sign = Math.floor((k - 1) / 2) % 2 === 0 ? 1 : -1;
                   terms.push({
@@ -185,7 +169,7 @@
             wH = wCanvas.height;
 
           // Background
-          cCtx.fillStyle = "#0d1117";
+          cCtx.fillStyle = '#0d1117';
           cCtx.fillRect(0, 0, W, H);
 
           // Center for circle diagram
@@ -206,7 +190,7 @@
             // Circle
             cCtx.beginPath();
             cCtx.arc(x, y, Math.abs(r), 0, Math.PI * 2);
-            cCtx.strokeStyle = "rgba(88,166,255,.15)";
+            cCtx.strokeStyle = 'rgba(88,166,255,.15)';
             cCtx.lineWidth = 1;
             cCtx.stroke();
 
@@ -214,7 +198,7 @@
             cCtx.beginPath();
             cCtx.moveTo(x, y);
             cCtx.lineTo(nx, ny);
-            cCtx.strokeStyle = "rgba(88,166,255,.6)";
+            cCtx.strokeStyle = 'rgba(88,166,255,.6)';
             cCtx.lineWidth = 1.5;
             cCtx.stroke();
 
@@ -225,7 +209,7 @@
           // Tip dot
           cCtx.beginPath();
           cCtx.arc(x, y, 4, 0, Math.PI * 2);
-          cCtx.fillStyle = "#bc8cff";
+          cCtx.fillStyle = '#bc8cff';
           cCtx.fill();
 
           cCtx.restore();
@@ -237,11 +221,11 @@
           wavePoints.unshift({ relY });
           if (wavePoints.length > wW) wavePoints.length = wW;
 
-          wCtx.fillStyle = "#0a0e14";
+          wCtx.fillStyle = '#0a0e14';
           wCtx.fillRect(0, 0, wW, wH);
 
           wCtx.beginPath();
-          wCtx.strokeStyle = "rgba(188,140,255,.9)";
+          wCtx.strokeStyle = 'rgba(188,140,255,.9)';
           wCtx.lineWidth = 2;
           for (let i = 0; i < wavePoints.length; i++) {
             const py = wMidY + wavePoints[i].relY * (wH * 0.45);
@@ -252,7 +236,7 @@
 
           // Zero line
           wCtx.beginPath();
-          wCtx.strokeStyle = "rgba(255,255,255,.08)";
+          wCtx.strokeStyle = 'rgba(255,255,255,.08)';
           wCtx.lineWidth = 1;
           wCtx.moveTo(0, wMidY);
           wCtx.lineTo(wW, wMidY);
@@ -264,7 +248,7 @@
           cCtx.setLineDash([4, 4]);
           cCtx.moveTo(x, y);
           cCtx.lineTo(W, y);
-          cCtx.strokeStyle = "rgba(188,140,255,.3)";
+          cCtx.strokeStyle = 'rgba(188,140,255,.3)';
           cCtx.lineWidth = 1;
           cCtx.stroke();
           cCtx.restore();
@@ -279,23 +263,22 @@
         }
 
         // ── Controls ─────────────────────────────────────────────
-        termRange.addEventListener("input", () => {
+        termRange.addEventListener('input', () => {
           termLabel.textContent = termRange.value;
           wavePoints = [];
         });
-        speedRange.addEventListener("input", () => {
-          speedLabel.textContent =
-            parseFloat(speedRange.value).toFixed(1) + "×";
+        speedRange.addEventListener('input', () => {
+          speedLabel.textContent = parseFloat(speedRange.value).toFixed(1) + '×';
         });
-        waveSelect.addEventListener("change", () => {
+        waveSelect.addEventListener('change', () => {
           wavePoints = [];
           t = 0;
         });
-        toggleBtn.addEventListener("click", () => {
+        toggleBtn.addEventListener('click', () => {
           paused = !paused;
-          toggleBtn.textContent = paused ? "▶ Resume" : "⏸ Pause";
+          toggleBtn.textContent = paused ? '▶ Resume' : '⏸ Pause';
         });
-        clearBtn.addEventListener("click", () => {
+        clearBtn.addEventListener('click', () => {
           wavePoints = [];
         });
 

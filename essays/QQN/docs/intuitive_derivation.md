@@ -16,10 +16,10 @@ The question is: how do we combine their advice intelligently?
 
 Let's start with what we have at any point in our optimization:
 
-* **Current parameters**: `x` (our current position)
-* **Gradient**: `∇f(x)` (steepest ascent direction)
-* **Negative gradient**: `-∇f(x)` (steepest descent direction)
-* **L-BFGS direction**: `d_lbfgs` (quasi-Newton guess for best direction)
+- **Current parameters**: `x` (our current position)
+- **Gradient**: `∇f(x)` (steepest ascent direction)
+- **Negative gradient**: `-∇f(x)` (steepest descent direction)
+- **L-BFGS direction**: `d_lbfgs` (quasi-Newton guess for best direction)
 
 The key insight is to treat this as a **1-dimensional optimization problem**. Instead of trying to figure out the
 optimal step in the full parameter space, we'll define a path and then just optimize along that path.
@@ -31,9 +31,9 @@ parameter `t`, where `t ∈ [0, 1]`.
 
 Our intuition says we want:
 
-* At `t = 0`: Follow the conservative gradient advice
-* At `t = 1`: Follow the aggressive L-BFGS advice
-* For `0 < t < 1`: Some blend of both
+- At `t = 0`: Follow the conservative gradient advice
+- At `t = 1`: Follow the aggressive L-BFGS advice
+- For `0 < t < 1`: Some blend of both
 
 The simplest way to achieve this is with linear interpolation:
 
@@ -67,8 +67,8 @@ step(t) = t(1-t) × (-∇f) + t² × d_lbfgs
 
 An important consideration in the QQN algorithm is the relative magnitudes of the gradient and L-BFGS directions. These vectors often have very different scales:
 
-* The gradient magnitude depends on the function's local steepness
-* The L-BFGS direction magnitude depends on the quasi-Newton approximation and previous steps
+- The gradient magnitude depends on the function's local steepness
+- The L-BFGS direction magnitude depends on the quasi-Newton approximation and previous steps
 
 We can introduce a **gradient scaling factor** `α` to balance these magnitudes:
 
@@ -80,14 +80,14 @@ step(t) = t(1-t) × α × (-∇f) + t² × d_lbfgs
 
 The crucial observation is that the scaling factor `α` **does not change the geometric path** traced in parameter space. To see why, consider the path as a curve parameterized by `t`:
 
-* Without scaling: `curve₁(t) = t(1-t) × (-∇f) + t² × d_lbfgs`
-* With scaling: `curve₂(t) = t(1-t) × α × (-∇f) + t² × d_lbfgs`
+- Without scaling: `curve₁(t) = t(1-t) × (-∇f) + t² × d_lbfgs`
+- With scaling: `curve₂(t) = t(1-t) × α × (-∇f) + t² × d_lbfgs`
 
 Both curves pass through the same points:
 
-* Start at the origin (t=0)
-* End at `d_lbfgs` (t=1)
-* Have the same shape - just traversed at different speeds
+- Start at the origin (t=0)
+- End at `d_lbfgs` (t=1)
+- Have the same shape - just traversed at different speeds
 
 What changes is the **parametric velocity** - how quickly we move along the curve as `t` increases. With a larger `α`, we move faster through the gradient-dominated portion of the path (small t) and slower through the L-BFGS-dominated portion (large t).
 
@@ -101,9 +101,9 @@ This leads to three natural choices for the scaling factor:
 step(t) = t(1-t) × (-∇f) + t² × d_lbfgs
 ```
 
-* Simplest approach
-* Uses the natural magnitudes of both vectors
-* Works well when gradient and L-BFGS directions have comparable scales
+- Simplest approach
+- Uses the natural magnitudes of both vectors
+- Works well when gradient and L-BFGS directions have comparable scales
 
 #### 2. Dynamic Scaling (Magnitude Equalization)
 
@@ -112,10 +112,10 @@ step(t) = t(1-t) × (-∇f) + t² × d_lbfgs
 step(t) = t(1-t) × α × (-∇f) + t² × d_lbfgs
 ```
 
-* Equalizes the magnitudes of the two direction components
-* Ensures balanced contribution from both methods
-* Particularly useful when one vector dominates in magnitude
-* The 1D search explores the path more uniformly
+- Equalizes the magnitudes of the two direction components
+- Ensures balanced contribution from both methods
+- Particularly useful when one vector dominates in magnitude
+- The 1D search explores the path more uniformly
 
 #### 3. Fixed Hyperparameter Scaling
 
@@ -124,22 +124,23 @@ step(t) = t(1-t) × α × (-∇f) + t² × d_lbfgs
 step(t) = t(1-t) × α × (-∇f) + t² × d_lbfgs
 ```
 
-* Allows manual control over the relative importance
-* Can be tuned based on problem characteristics
-* Useful when you have prior knowledge about the optimization landscape
+- Allows manual control over the relative importance
+- Can be tuned based on problem characteristics
+- Useful when you have prior knowledge about the optimization landscape
 
 ### Impact on the Algorithm
 
 The choice of scaling affects how the 1D line search explores the quadratic path:
 
-* **Large α**: More emphasis on gradient direction, t* tends to be smaller
-* **Small α**: More emphasis on L-BFGS direction, t* tends to be larger
-* **Dynamic α**: Adaptive behavior based on current iteration
+- **Large α**: More emphasis on gradient direction, t\* tends to be smaller
+- **Small α**: More emphasis on L-BFGS direction, t\* tends to be larger
+- **Dynamic α**: Adaptive behavior based on current iteration
 
 Importantly, all three strategies maintain the key properties of QQN:
-* Initial descent direction (derivative at t=0 is proportional to -∇f)
-* Smooth interpolation between methods
-* Automatic adaptation through 1D optimization
+
+- Initial descent direction (derivative at t=0 is proportional to -∇f)
+- Smooth interpolation between methods
+- Automatic adaptation through 1D optimization
 
 ## Why This Formula Makes Sense
 
@@ -181,10 +182,10 @@ Our initial direction is pure gradient descent, which guarantees we start moving
 
 The path `step(t)` traces out a **quadratic curve** in parameter space:
 
-* It starts at the origin (current position)
-* Initially heads in the gradient direction
-* Curves toward the L-BFGS direction
-* The amount of curvature depends on how different the two directions are
+- It starts at the origin (current position)
+- Initially heads in the gradient direction
+- Curves toward the L-BFGS direction
+- The amount of curvature depends on how different the two directions are
 
 This quadratic nature is why it's called "Quadratic-Quasi-Newton" - we're using a quadratic path to interpolate between
 Newton-like and gradient-like steps.
@@ -214,12 +215,12 @@ Brent's method, etc.) to find the optimal `t*`.
 
 The genius of this approach is that it:
 
-* **Guarantees descent**: The initial direction is always downhill
-* **Adapts automatically**: If L-BFGS direction is good, `t*` will be close to 1. If it's bad, `t*` will be small and
+- **Guarantees descent**: The initial direction is always downhill
+- **Adapts automatically**: If L-BFGS direction is good, `t*` will be close to 1. If it's bad, `t*` will be small and
   we'll mostly follow the gradient
-* **Provides smooth interpolation**: No abrupt switches between methods
-* **Reduces to known methods**: Pure gradient descent when `t* ≈ 0`, pure L-BFGS when `t* ≈ 1`
-* **Handles edge cases gracefully**: Even if L-BFGS gives a terrible direction, we can always fall back to gradient
+- **Provides smooth interpolation**: No abrupt switches between methods
+- **Reduces to known methods**: Pure gradient descent when `t* ≈ 0`, pure L-BFGS when `t* ≈ 1`
+- **Handles edge cases gracefully**: Even if L-BFGS gives a terrible direction, we can always fall back to gradient
   descent
 
 The quadratic interpolation gives us the best of both worlds: the reliability of gradient descent with the speed of
@@ -232,16 +233,16 @@ quasi-Newton methods, automatically balanced based on what the function actually
 One of the most significant advantages of QQN is that it **dramatically simplifies the L-BFGS algorithm**. Traditional
 L-BFGS implementations require:
 
-* Complex line search procedures with Wolfe conditions
-* Careful handling of step size initialization
-* Multiple fallback strategies when the quasi-Newton direction fails
-* Intricate logic for handling edge cases and numerical issues
+- Complex line search procedures with Wolfe conditions
+- Careful handling of step size initialization
+- Multiple fallback strategies when the quasi-Newton direction fails
+- Intricate logic for handling edge cases and numerical issues
   With QQN, we strip away this complexity. We only need L-BFGS to provide a **quasi-Newton guess** for the direction.
   The 1D optimization along our quadratic path automatically handles:
-* Step size selection
-* Ensuring sufficient decrease
-* Fallback to gradient descent when needed
-* All edge cases through the natural behavior of the interpolation
+- Step size selection
+- Ensuring sufficient decrease
+- Fallback to gradient descent when needed
+- All edge cases through the natural behavior of the interpolation
   This means the L-BFGS component can be much simpler - it just needs to maintain its memory and produce a direction
   estimate. All the robustness comes from the QQN framework itself.
 
@@ -250,11 +251,11 @@ L-BFGS implementations require:
 Another remarkable property of QQN is that it's **essentially parameter-free**. Unlike traditional optimization methods
 that require careful tuning of:
 
-* Initial step sizes
-* Line search parameters (c1, c2 for Wolfe conditions)
-* Trust region radii
-* Momentum coefficients
-* Learning rate schedules
+- Initial step sizes
+- Line search parameters (c1, c2 for Wolfe conditions)
+- Trust region radii
+- Momentum coefficients
+- Learning rate schedules
   QQN has no essential hyperparameters of its own. The only parameters in the implementation belong to:
 
 1. **Component elements**: Like the memory size for L-BFGS (typically 5-10, not sensitive)
@@ -262,11 +263,11 @@ that require careful tuning of:
 3. **1D search method**: Which typically has robust defaults
    This parameter-free nature means:
 
-* No hyperparameter tuning needed
-* Consistent behavior across different problems
-* Easy to use as a drop-in replacement
-* Reduced risk of misconfiguration
-* More time spent on the actual problem rather than optimizer tuning
+- No hyperparameter tuning needed
+- Consistent behavior across different problems
+- Easy to use as a drop-in replacement
+- Reduced risk of misconfiguration
+- More time spent on the actual problem rather than optimizer tuning
   The algorithm automatically adapts to the problem at hand through the 1D optimization, finding the right balance
   between gradient and quasi-Newton steps without any user intervention.
 
@@ -283,11 +284,13 @@ In optimization, momentum helps accelerate convergence by accumulating a velocit
 ### From Quadratic to Cubic
 
 Recall our quadratic path:
+
 ```
 step(t) = t(1-t) × α × (-∇f) + t² × d_lbfgs
 ```
 
 To incorporate momentum, we extend this to a cubic polynomial:
+
 ```
 step(t) = t(1-t)(1-2t) × m + t(1-t) × α × (-∇f) + t² × d_lbfgs
 ```
@@ -299,15 +302,15 @@ where `m` is our momentum vector.
 Let's break down what each term contributes:
 
 1. **Momentum term**: `t(1-t)(1-2t) × m`
-   * Zero at t=0 and t=1 (preserves our endpoints)
-   * Maximum influence around t=0.5
-   * Controls the initial curvature of the path
+   - Zero at t=0 and t=1 (preserves our endpoints)
+   - Maximum influence around t=0.5
+   - Controls the initial curvature of the path
 2. **Gradient term**: `t(1-t) × α × (-∇f)`
-   * Provides the initial descent direction
-   * Same role as in quadratic version
+   - Provides the initial descent direction
+   - Same role as in quadratic version
 3. **L-BFGS term**: `t² × d_lbfgs`
-   * Dominates as t→1
-   * Unchanged from quadratic version
+   - Dominates as t→1
+   - Unchanged from quadratic version
 
 ### The Second Derivative Connection
 
@@ -355,13 +358,13 @@ Uses a "lookahead" gradient for better convergence properties.
 m_{k+1} = β(t*_k) × m_k + (1-β(t*_k)) × (-∇f_k)
 ```
 
-where β depends on the optimal t* from the previous iteration, automatically adjusting momentum based on how well our directions are working.
+where β depends on the optimal t\* from the previous iteration, automatically adjusting momentum based on how well our directions are working.
 
 ### The Complete Cubic QQN Algorithm
 
 1. **Initialize**: Start with m₀ = 0 (no initial momentum)
 2. **Compute directions**: Calculate `-∇f`, `d_lbfgs`, and update `m`
-3. **Define cubic path**: 
+3. **Define cubic path**:
    ```
    step(t) = t(1-t)(1-2t) × m + t(1-t) × α × (-∇f) + t² × d_lbfgs
    ```
@@ -374,35 +377,35 @@ where β depends on the optimal t* from the previous iteration, automatically ad
 
 The cubic extension provides several advantages:
 
-* **Richer path space**: Can represent more complex curves between gradient and L-BFGS directions
-* **Momentum acceleration**: Benefits from momentum's ability to accelerate through consistent gradient directions
-* **Smoother trajectories**: The additional degree of freedom allows for smoother optimization paths
-* **Better handling of valleys**: Momentum helps navigate narrow valleys in the loss landscape
+- **Richer path space**: Can represent more complex curves between gradient and L-BFGS directions
+- **Momentum acceleration**: Benefits from momentum's ability to accelerate through consistent gradient directions
+- **Smoother trajectories**: The additional degree of freedom allows for smoother optimization paths
+- **Better handling of valleys**: Momentum helps navigate narrow valleys in the loss landscape
 
 ### When to Use Cubic vs Quadratic
 
 **Use Quadratic QQN when**:
 
-* Simplicity is paramount
-* The problem has relatively simple geometry
-* You want minimal computational overhead
-* Starting from a good initialization
+- Simplicity is paramount
+- The problem has relatively simple geometry
+- You want minimal computational overhead
+- Starting from a good initialization
 
 **Use Cubic QQN when**:
 
-* Dealing with ill-conditioned problems
-* The loss landscape has long, narrow valleys
-* You can afford slightly more computation per step
-* Previous experience shows momentum helps
+- Dealing with ill-conditioned problems
+- The loss landscape has long, narrow valleys
+- You can afford slightly more computation per step
+- Previous experience shows momentum helps
 
 ### Implementation Considerations
 
 The cubic version requires:
 
-* Maintaining an additional momentum vector
-* Slightly more complex path evaluation (one extra term)
-* Choosing a momentum update scheme
-* Potentially tuning the momentum coefficient β (though adaptive schemes can eliminate this)
+- Maintaining an additional momentum vector
+- Slightly more complex path evaluation (one extra term)
+- Choosing a momentum update scheme
+- Potentially tuning the momentum coefficient β (though adaptive schemes can eliminate this)
 
 Despite these additions, the cubic QQN remains remarkably simple compared to traditional optimizers with momentum, as all the complexity is still handled by the 1D line search.
 
@@ -410,10 +413,10 @@ Despite these additions, the cubic QQN remains remarkably simple compared to tra
 
 Both quadratic and cubic QQN can be seen as instances of a general polynomial interpolation framework:
 
-* **Linear**: Pure gradient descent (degenerate case)
-* **Quadratic**: Interpolates between gradient and quasi-Newton
-* **Cubic**: Adds momentum via second-derivative control
-* **Higher-order**: Possible but rarely necessary in practice
+- **Linear**: Pure gradient descent (degenerate case)
+- **Quadratic**: Interpolates between gradient and quasi-Newton
+- **Cubic**: Adds momentum via second-derivative control
+- **Higher-order**: Possible but rarely necessary in practice
 
 The beauty is that each extension maintains the core benefits: guaranteed descent, automatic adaptation, and essential parameter-free operation. The 1D optimization framework elegantly handles all the complexity, regardless of the polynomial degree.
 
@@ -500,8 +503,9 @@ A unique application of constrained QQN is ensuring that certain metrics don't d
 #### Protective Geometry for Auxiliary Datasets
 
 Suppose we have:
-* Primary objective: f(x) on training data
-* Protected metric: g(x) on validation data
+
+- Primary objective: f(x) on training data
+- Protected metric: g(x) on validation data
 
 We can define a protective trust region:
 
@@ -573,8 +577,9 @@ project_manifold(x, step) = retract(x, tangent_project(x, step))
 ```
 
 where:
-* `tangent_project` projects the step onto the tangent space at x
-* `retract` maps from the tangent space back to the manifold
+
+- `tangent_project` projects the step onto the tangent space at x
+- `retract` maps from the tangent space back to the manifold
 
 ### Implementation Strategy
 
@@ -582,11 +587,11 @@ The constrained QQN algorithm becomes:
 
 1. **Compute directions**: As before (-∇f, d_lbfgs, possibly momentum)
 2. **Define path**: step(t) using quadratic or cubic interpolation
-3. **Constrained 1D search**: 
+3. **Constrained 1D search**:
    ```
    minimize f(x + project(step(t))) over t ∈ [0, 1]
    ```
-4. **Update**: x_new = x + project(step(t*))
+4. **Update**: x_new = x + project(step(t\*))
 5. **Update memories**: L-BFGS and momentum as usual
 
 ### Key Advantages
@@ -595,7 +600,7 @@ This constrained QQN framework offers several benefits:
 
 1. **Unified treatment**: All constraints handled through the same projection mechanism
 2. **Maintains simplicity**: Still just a 1D optimization problem
-3. **Automatic adaptation**: The optimal t* automatically adjusts based on how constraints affect the path
+3. **Automatic adaptation**: The optimal t\* automatically adjusts based on how constraints affect the path
 4. **Composability**: Different constraints combine naturally
 5. **Efficiency**: Many projections can be computed analytically
 
@@ -604,6 +609,7 @@ This constrained QQN framework offers several benefits:
 #### Projection Ordering
 
 When composing multiple projections, the order can matter. Generally:
+
 1. Apply hard constraints first (box bounds, manifold constraints)
 2. Apply soft constraints next (sparsity, regularization)
 3. Apply protective constraints last (non-degradation)
@@ -615,6 +621,7 @@ Some projections are cheap (box constraints, L1), while others may be expensive 
 #### Trust Region Adaptation
 
 The trust region size can be adapted based on:
-* Constraint activity (how often we hit boundaries)
-* Progress quality (actual vs predicted decrease)
-* Problem phase (exploration vs convergence)
+
+- Constraint activity (how often we hit boundaries)
+- Progress quality (actual vs predicted decrease)
+- Problem phase (exploration vs convergence)

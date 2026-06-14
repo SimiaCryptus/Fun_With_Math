@@ -6,7 +6,7 @@
 // where alpha_k, beta_k are incommensurate frequency vectors derived
 // deterministically from the algebraic structure of Q(sqrt(D)).
 
-import { QuadField } from "./algebra.js";
+import { QuadField } from './algebra.js';
 
 // Deterministic pseudo-irrational vector built from sqrt(D) and a seed.
 // Produces frequencies that are algebraically related but not commensurate
@@ -91,12 +91,12 @@ export function computeField(opts) {
   const zoom = opts.zoom || 1;
   const offsetX = opts.offsetX || 0;
   const offsetY = opts.offsetY || 0;
-  const cmap2d = opts.cmap2d || "none";
+  const cmap2d = opts.cmap2d || 'none';
   const field = new QuadField(D);
   const params = makeFrequencies(D, K, alphaScale, seed);
   const out = new Float32Array(size * size);
   // Secondary channel for 2D colormaps (e.g. snap distance).
-  const useChannel2 = cmap2d && cmap2d !== "none";
+  const useChannel2 = cmap2d && cmap2d !== 'none';
   const chan2 = useChannel2 ? new Float32Array(size * size) : null;
   let min2 = Infinity,
     max2 = -Infinity;
@@ -133,13 +133,13 @@ export function computeField(opts) {
 
       let v;
       switch (mode) {
-        case "rational":
+        case 'rational':
           v = Math.hypot(ax, ay);
           break;
-        case "irrational":
+        case 'irrational':
           v = Math.hypot(bx, by) * field.sqrtD;
           break;
-        case "snapped": {
+        case 'snapped': {
           // Snap T_eps(x) = x + eps * eta(x) to nearest integer lattice.
           const tx = xo + epsilon * rx;
           const ty = yo + epsilon * ry;
@@ -148,7 +148,7 @@ export function computeField(opts) {
           v = Math.hypot(tx - sx, ty - sy);
           break;
         }
-        case "magnitude":
+        case 'magnitude':
         default:
           v = Math.hypot(rx, ry);
           break;
@@ -160,15 +160,15 @@ export function computeField(opts) {
       if (useChannel2) {
         let v2;
         switch (cmap2d) {
-          case "rational_irrational":
+          case 'rational_irrational':
             v2 = Math.hypot(ax, ay);
             break;
-          case "xy_phase": {
+          case 'xy_phase': {
             // Phase angle of the displacement, normalized to [0,1].
             v2 = (Math.atan2(ry, rx) + Math.PI) / (2 * Math.PI);
             break;
           }
-          case "snap":
+          case 'snap':
           default: {
             const tx = xo + epsilon * rx;
             const ty = yo + epsilon * ry;

@@ -207,7 +207,7 @@ fractals:
 To organize the project's geometric landscape:
 
 | Type                   | Example           | Dimensions                                       |
-|------------------------|-------------------|--------------------------------------------------|
+| ---------------------- | ----------------- | ------------------------------------------------ |
 | Lattice                | $\mathbb{Z}^n$    | $d_{\text{eff}} = d_w/2 = d_{\text{spec}}/1 = n$ |
 | Smooth manifold        | $\mathbb{R}^n$    | Same as lattice                                  |
 | Fractal (self-similar) | Sierpiński gasket | All three differ, all non-integer                |

@@ -118,7 +118,7 @@ export function computeFFT2D(data, size, maxN = 64) {
 // Render the FFT log-magnitude as a 3D surface (isometric/oblique projection).
 // opts: { rot (deg), tilt (deg), heightScale }.
 export function renderFFT3D(canvas, fft, opts = {}) {
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext('2d');
   const W = canvas.width,
     H = canvas.height;
   ctx.clearRect(0, 0, W, H);
@@ -157,8 +157,7 @@ export function renderFFT3D(canvas, fft, opts = {}) {
     maxSy = -Infinity;
   for (let y = 0; y < N; y++) {
     for (let x = 0; x < N; x++) {
-      const z =
-        ((mag[y * N + x] - min) / range) * (cellH / (Math.min(W, H) * 0.5));
+      const z = ((mag[y * N + x] - min) / range) * (cellH / (Math.min(W, H) * 0.5));
       const [sx, sy] = project(x, y, z);
       if (sx < minSx) minSx = sx;
       if (sx > maxSx) maxSx = sx;
@@ -177,8 +176,7 @@ export function renderFFT3D(canvas, fft, opts = {}) {
     const [sx, sy] = project(gx, gy, z);
     return [sx * s + ox, sy * s + oy];
   };
-  const zAt = (x, y) =>
-    ((mag[y * N + x] - min) / range) * (cellH / (Math.min(W, H) * 0.5));
+  const zAt = (x, y) => ((mag[y * N + x] - min) / range) * (cellH / (Math.min(W, H) * 0.5));
 
   // Painter's algorithm: draw quads from back to front.
   // "Back" = larger projected depth (ry after rotation). We approximate by
@@ -206,11 +204,10 @@ export function renderFFT3D(canvas, fft, opts = {}) {
       const p11 = toScreen(x + 1, y + 1, z11);
       const p01 = toScreen(x, y + 1, z01);
 
-      const t =
-        (z00 + z10 + z11 + z01) / 4 / (cellH / (Math.min(W, H) * 0.5) || 1);
+      const t = (z00 + z10 + z11 + z01) / 4 / (cellH / (Math.min(W, H) * 0.5) || 1);
       const [r, g, b] = spectrumColor(Math.max(0, Math.min(1, t)));
       ctx.fillStyle = `rgb(${r},${g},${b})`;
-      ctx.strokeStyle = "rgba(0,0,0,0.25)";
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
       ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(p00[0], p00[1]);

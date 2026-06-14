@@ -258,7 +258,7 @@ when interpreting the multi-sheeted cover as a polyhedral surface.
 ## Glossary of Closely Related Terms
 
 | Term               | Smooth setting                   | Discrete setting            |
-|--------------------|----------------------------------|-----------------------------|
+| ------------------ | -------------------------------- | --------------------------- |
 | Manifold           | Smooth manifold                  | CW complex                  |
 | Connection         | Connection 1-form                | Edge labels in $G$          |
 | Parallel transport | ODE solution                     | Path-product of edge labels |

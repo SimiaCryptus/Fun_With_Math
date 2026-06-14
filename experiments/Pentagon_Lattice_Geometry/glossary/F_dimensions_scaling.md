@@ -13,7 +13,7 @@ A naive intuition equates "dimension" with the number of coordinates. But on fra
 and complex graphs, several inequivalent definitions emerge:
 
 | Dimension                  | What it measures                 | Typical formula                             |
-|----------------------------|----------------------------------|---------------------------------------------|
+| -------------------------- | -------------------------------- | ------------------------------------------- |
 | Topological                | Local Euclidean structure        | Manifold dimension                          |
 | Hausdorff                  | Measure-theoretic scaling        | Covering by small balls                     |
 | Fractal / box-counting     | Geometric self-similarity        | $\log N / \log s$                           |

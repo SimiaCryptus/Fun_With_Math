@@ -16,15 +16,15 @@ We present the Quadratic-Quasi-Newton (QQN) algorithm, which automatically combi
 
 Consider the fundamental question in optimization: given multiple directional advisors, how should we combine their recommendations? This problem arises naturally when we have:
 
-* **Gradient direction**: $-\nabla f(\mathbf{x})$ providing guaranteed descent
-* **Quasi-Newton direction**: $\mathbf{d}_{\text{QN}}$ offering potential superlinear convergence
-* **Trust and uncertainty**: The quasi-Newton direction may be unreliable
+- **Gradient direction**: $-\nabla f(\mathbf{x})$ providing guaranteed descent
+- **Quasi-Newton direction**: $\mathbf{d}_{\text{QN}}$ offering potential superlinear convergence
+- **Trust and uncertainty**: The quasi-Newton direction may be unreliable
 
 Traditional approaches include:
 
-* **Trust region methods** [@conn2000trust]: Constrain steps within regions where quadratic models are trusted
-* **Line search switching** [@morales2000automatic]: Alternate between methods based on heuristics
-* **Linear combinations** [@biggs1973minimization]: Weighted averages of directions
+- **Trust region methods** [@conn2000trust]: Constrain steps within regions where quadratic models are trusted
+- **Line search switching** [@morales2000automatic]: Alternate between methods based on heuristics
+- **Linear combinations** [@biggs1973minimization]: Weighted averages of directions
 
 We propose a geometric solution: construct a smooth parametric path that naturally interpolates between directions while guaranteeing descent properties.
 
@@ -43,9 +43,9 @@ $$\mathbf{d}(t) = \mathbf{a}t^2 + \mathbf{b}t + \mathbf{c}$$
 
 Applying boundary conditions:
 
-* From condition 1: $\mathbf{c} = \mathbf{0}$
-* From condition 2: $\mathbf{b} = -\nabla f(\mathbf{x})$
-* From condition 3: $\mathbf{a} = \mathbf{d}_{\text{L-BFGS}} + \nabla f(\mathbf{x})$
+- From condition 1: $\mathbf{c} = \mathbf{0}$
+- From condition 2: $\mathbf{b} = -\nabla f(\mathbf{x})$
+- From condition 3: $\mathbf{a} = \mathbf{d}_{\text{L-BFGS}} + \nabla f(\mathbf{x})$
 
 This yields the canonical QQN path:
 $$\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}}$$
@@ -84,7 +84,7 @@ return xₖ
 **Lemma 1** (Universal Descent): For any direction $\mathbf{d}_{\text{L-BFGS}} \in \mathbb{R}^n$, the QQN path satisfies:
 $$\mathbf{d}'(0) = -\nabla f(\mathbf{x})$$
 
-*Proof*: Direct differentiation of $\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}}$ gives:
+_Proof_: Direct differentiation of $\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}}$ gives:
 $$\mathbf{d}'(t) = (1-2t)(-\nabla f) + 2t\mathbf{d}_{\text{L-BFGS}}$$
 
 Evaluating at $t=0$: $\mathbf{d}'(0) = -\nabla f(\mathbf{x})$. $\square$
@@ -92,7 +92,7 @@ This property ensures descent regardless of the quality of $\mathbf{d}_{\text{L-
 
 **Theorem 1** (Descent Property): For any $\mathbf{d}_{\text{L-BFGS}}$, there exists $\bar{t} > 0$ such that $\phi(t) = f(\mathbf{x} + \mathbf{d}(t))$ satisfies $\phi(t) < \phi(0)$ for all $t \in (0, \bar{t}]$.
 
-*Proof*: Since $\mathbf{d}'(0) = -\nabla f(\mathbf{x})$:
+_Proof_: Since $\mathbf{d}'(0) = -\nabla f(\mathbf{x})$:
 $$\phi'(0) = \nabla f(\mathbf{x})^T(-\nabla f(\mathbf{x})) = -\|\nabla f(\mathbf{x})\|^2 < 0$$
 
 By continuity of $\phi'$, there exists $\bar{t} > 0$ such that $\phi'(t) < 0$ for $t \in (0, \bar{t}]$. $\square$
@@ -110,7 +110,7 @@ QQN generates iterates satisfying:
 
 $$\liminf_{k \to \infty} \|\nabla f(\mathbf{x}_k)\| = 0$$
 
-*Proof*: We establish convergence through a descent lemma approach.
+_Proof_: We establish convergence through a descent lemma approach.
 
 **Step 1: Monotonic Decrease**
 
@@ -157,7 +157,7 @@ The summability of $\|\nabla f(\mathbf{x}_k)\|^2$ implies $\liminf_{k \to \infty
 $$\lim_{k \to \infty} \frac{\|(\mathbf{H}_k - (\nabla^2 f(\mathbf{x}^*))^{-1})(\mathbf{x}_{k+1} - \mathbf{x}_k)\|}{\|\mathbf{x}_{k+1} - \mathbf{x}_k\|} = 0$$
 Then QQN converges superlinearly: $\|\mathbf{x}_{k+1} - \mathbf{x}^*\| = o(\|\mathbf{x}_k - \mathbf{x}^*\|)$.
 
-*Proof*: We analyze the behavior near the optimum.
+_Proof_: We analyze the behavior near the optimum.
 
 **Step 1: Neighborhood Properties**
 
@@ -192,7 +192,7 @@ establishing superlinear convergence. $\square$
 
 **Theorem 4** (Graceful Degradation): Let $\theta_k$ be the angle between $-\nabla f(\mathbf{x}_k)$ and $\mathbf{d}_{\text{L-BFGS}}$. If $\theta_k > \pi/2$ (obtuse angle), then the optimal parameter satisfies $t^* \in [0, 1/2]$, ensuring gradient-dominated steps.
 
-*Proof*: When $\theta_k > \pi/2$, we have $\nabla f(\mathbf{x}_k)^T \mathbf{d}_{\text{L-BFGS}} > 0$. The derivative of our objective along the path is:
+_Proof_: When $\theta_k > \pi/2$, we have $\nabla f(\mathbf{x}_k)^T \mathbf{d}_{\text{L-BFGS}} > 0$. The derivative of our objective along the path is:
 $$\frac{d}{dt}f(\mathbf{x}_k + \mathbf{d}(t)) = \nabla f(\mathbf{x}_k + \mathbf{d}(t))^T \mathbf{d}'(t)$$
 
 At $t = 1/2$:
@@ -207,9 +207,9 @@ This is equivalent to gradient descent with step size $t^*$. $\square$
 
 **Theorem 5** (Computational Complexity): Each QQN iteration requires:
 
-* $O(n)$ operations for path construction
-* $O(mn)$ operations for L-BFGS direction computation
-* $O(k)$ function evaluations for univariate optimization
+- $O(n)$ operations for path construction
+- $O(mn)$ operations for L-BFGS direction computation
+- $O(k)$ function evaluations for univariate optimization
 
 where $n$ is the dimension, $m$ is the L-BFGS memory size, and $k$ is typically small (3-10).
 The total complexity per iteration is $O(mn + kn)$, matching L-BFGS when function evaluation dominates.
@@ -230,7 +230,7 @@ where $\alpha > 0$ is a scaling factor. Three natural choices emerge:
 
 **Proposition 1** (Scaling Invariance): The set of points reachable by the QQN path is invariant to the choice of $\alpha$. Only the parametrization changes.
 
-*Proof*: The path $\{\mathbf{x} + \mathbf{d}(t) : t \in [0, 2]\}$ traces the same curve in $\mathbb{R}^n$ regardless of $\alpha$, as any point on one parametrization can be reached by adjusting $t$ in another. $\square$
+_Proof_: The path $\{\mathbf{x} + \mathbf{d}(t) : t \in [0, 2]\}$ traces the same curve in $\mathbb{R}^n$ regardless of $\alpha$, as any point on one parametrization can be reached by adjusting $t$ in another. $\square$
 
 ## Cubic Extension with Momentum
 
@@ -250,7 +250,6 @@ $$t^* = \arg\min_{t: \|\mathbf{d}(t)\| \leq \Delta} f(\mathbf{x} + \mathbf{d}(t)
 where $\Delta$ is the trust region radius.
 
 # Comparison with Related Methods
-
 
 ## Relationship to Trust Region Methods
 
@@ -276,10 +275,13 @@ QQN generalizes this by optimizing along a parametric path that adapts its direc
 ## Relationship to Hybrid Methods
 
 Previous hybrid approaches typically use discrete switching:
-$$\mathbf{d} = \begin{cases}
+
+$$
+\mathbf{d} = \begin{cases}
 \mathbf{d}_{\text{gradient}} & \text{if condition A} \\
 \mathbf{d}_{\text{quasi-Newton}} & \text{if condition B}
-\end{cases}$$
+\end{cases}
+$$
 
 QQN provides continuous interpolation, eliminating discontinuities and the need for switching logic.
 
@@ -289,9 +291,9 @@ QQN provides continuous interpolation, eliminating discontinuities and the need 
 
 The univariate optimization can use various methods:
 
-* **Golden section search**: Robust, no derivatives needed
-* **Brent's method**: Faster convergence with parabolic interpolation
-* **Bisection on derivative**: When gradient information is available
+- **Golden section search**: Robust, no derivatives needed
+- **Brent's method**: Faster convergence with parabolic interpolation
+- **Bisection on derivative**: When gradient information is available
 
 **Implementation Note**: We recommend Brent's method with fallback to golden section search. The search interval $[0, 2]$ allows for extrapolation beyond the L-BFGS direction when beneficial.
 
@@ -306,9 +308,9 @@ with typical values $\epsilon_{\text{abs}} = 10^{-8}$ and $\epsilon_{\text{rel}}
 
 QQN inherits L-BFGS memory requirements:
 
-* Store $m$ vector pairs $(\mathbf{s}_i, \mathbf{y}_i)$
-* Typical choice: $m = 5-10$
-* Memory usage: $O(mn)$
+- Store $m$ vector pairs $(\mathbf{s}_i, \mathbf{y}_i)$
+- Typical choice: $m = 5-10$
+- Memory usage: $O(mn)$
 
 ## Numerical Stability
 

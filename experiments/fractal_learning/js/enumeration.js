@@ -38,6 +38,6 @@ export function enumerateCommutative(K, N) {
 }
 
 export function enumerate(K, N, mode) {
-  if (mode === "ordered") return enumerateOrdered(K, N);
+  if (mode === 'ordered') return enumerateOrdered(K, N);
   return enumerateCommutative(K, N);
 }

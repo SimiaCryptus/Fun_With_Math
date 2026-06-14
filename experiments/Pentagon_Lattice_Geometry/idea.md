@@ -12,8 +12,8 @@ covers and Riemann surfaces. We analyze the emergent dimensionality of the resul
 the irregular nature of these overlaps prevents a clean 3D lattice regularization, instead yielding a fractional
 effective dimension $2 < d_{\text{eff}} < 3$, with a generically smaller spectral
 dimension $d_{\text{spec}} < d_{\text{eff}}$ reflecting sub-diffusive transport. To prevent two critical failure
-modes—the *cyclotomic density trap* (in which projected vertices accumulate densely in $\mathbb{R}^2$) and
-*floating-point topological tearing*—we ground the construction in exact arithmetic over the real quadratic
+modes—the _cyclotomic density trap_ (in which projected vertices accumulate densely in $\mathbb{R}^2$) and
+_floating-point topological tearing_—we ground the construction in exact arithmetic over the real quadratic
 field $\mathbb{Q}(\sqrt{5})$ (equivalently, the cyclotomic field $\mathbb{Q}[\zeta_5]$) and impose a cut-and-project
 selection window inherited from a 5D hypercubic ambient space. Finally, we define an isometric cellular automaton (CA)
 operating on this geometry and outline a numerical pipeline combining expansion bounds, random walks, and—most
@@ -27,7 +27,7 @@ lower-dimensional discrete structures is a central theme in quantum gravity, con
 automata theory. In traditional lattice models, the dimensionality of the space is typically an input parameter, defined
 by the coordinate grid of the underlying graph (e.g., $\mathbb{Z}^2$ or $\mathbb{Z}^3$). However, in theories such as
 Causal Dynamical Triangulations (CDT), Loop Quantum Gravity, and Group Field Theory, spacetime dimensionality is
-expected to be an emergent, scale-dependent property, often exhibiting a phenomenon known as *dimensional flow* in
+expected to be an emergent, scale-dependent property, often exhibiting a phenomenon known as _dimensional flow_ in
 which $d_{\text{spec}}$ runs with the probing scale.
 
 In this paper, we introduce a geometric mechanism where a fractional-dimensional space emerges from a purely 2D local
@@ -39,13 +39,13 @@ We resolve this frustration not by curving the space into a 3D manifold (as in a
 aperiodicity (as in Penrose tilings), but by allowing the pentagons to overlap on a multi-sheeted covering space. By
 enforcing a strict adjacency rule—where pentagons on different sheets can only connect along edges that match
 identically in both 2D position and orientation—we construct a branched covering space. The transition functions
-associated with these matched edges form a *discrete connection*, and the resulting structure is a discrete
+associated with these matched edges form a _discrete connection_, and the resulting structure is a discrete
 principal $G$-bundle whose monodromy realizes spinor-like holonomy.
 
 This paper formalizes this construction, demonstrates its connection to spinor-like holonomy, analyzes its emergent
 fractional dimensionality, and proposes a cellular automaton framework to study dynamical propagation on these
 multi-sheeted graphs. Throughout, we emphasize a key methodological commitment: the geometry must be implemented with
-*exact algebraic arithmetic* over $\mathbb{Q}(\sqrt{5})$, since floating-point computation inevitably corrupts the
+_exact algebraic arithmetic_ over $\mathbb{Q}(\sqrt{5})$, since floating-point computation inevitably corrupts the
 5-fold symmetry on which the entire construction depends.
 
 ## 2. Geometric Construction of Multi-Sheeted Pentagon Tilings
@@ -57,9 +57,9 @@ is $\theta = 108^\circ = \frac{3\pi}{5}$ radians.
 
 When we attempt to pack regular pentagons around a single vertex in $\mathbb{R}^2$, we find that:
 
-* Three pentagons share a vertex, summing to $3 \times 108^\circ = 324^\circ$, leaving an angular deficit
+- Three pentagons share a vertex, summing to $3 \times 108^\circ = 324^\circ$, leaving an angular deficit
   of $\delta = 36^\circ = \frac{\pi}{5}$.
-* Four pentagons share a vertex, summing to $4 \times 108^\circ = 432^\circ$, resulting in an angular excess
+- Four pentagons share a vertex, summing to $4 \times 108^\circ = 432^\circ$, resulting in an angular excess
   of $72^\circ = \frac{2\pi}{5}$.
 
 In standard Euclidean geometry, this mismatch prevents a regular, monohedral tiling. To accommodate this without gaps,
@@ -114,7 +114,7 @@ spherical dodecahedron for exactly 3 pentagons per vertex) or allow the tiles to
 
 We define a covering space $\mathcal{M}$ over the Euclidean plane $\mathbb{R}^2$.
 Let $\pi: \mathcal{M} \to \mathbb{R}^2$ be the projection map. The space $\mathcal{M}$ consists of an infinite stack of
-2D sheets, indexed by a sheet parameter $s \in G$, where $G$ is a discrete *fiber group* (typically $G = \mathbb{Z}$ for
+2D sheets, indexed by a sheet parameter $s \in G$, where $G$ is a discrete _fiber group_ (typically $G = \mathbb{Z}$ for
 an infinite cover, or $G = \mathbb{Z}_n$ for an $n$-fold cover; $G = \mathbb{Z}_2$ recovers the canonical spinor double
 cover).
 
@@ -128,9 +128,9 @@ We impose the following rules:
 2. **Multi-Sheeted Overlapping**: Pentagons on different sheets $s \neq s'$ are allowed to overlap arbitrarily in their
    projection on $\mathbb{R}^2$.
 3. **Identical Edge Adjacency**: Two pentagons $P_{i,s}$ and $P_{j,s'}$ share an edge $e$ if and only if:
-    * Their projected edges in $\mathbb{R}^2$ match identically in position and orientation: $\pi(e_i) = \pi(e_j)$.
-    * The transition from sheet $s$ to $s'$ is governed by a transition function $\tau(e) \in G$ associated with the
-      shared edge.
+   - Their projected edges in $\mathbb{R}^2$ match identically in position and orientation: $\pi(e_i) = \pi(e_j)$.
+   - The transition from sheet $s$ to $s'$ is governed by a transition function $\tau(e) \in G$ associated with the
+     shared edge.
 
 This construction yields a graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$, where the vertices $\mathcal{V}$ are the
 pentagons, and the edges $\mathcal{E}$ represent the shared boundaries that satisfy the identical matching condition.
@@ -194,7 +194,7 @@ A subtle but critical pitfall arises in any computational realization of this co
 pentagons is intrinsically tied to the golden ratio $\phi = \frac{1+\sqrt{5}}{2}$ and the 5th roots of
 unity $\zeta_5 = e^{2\pi i/5}$. Naive `float64` arithmetic accumulates rounding errors that, when iterated across many
 edge-matching tests, cause the Adjacency Oracle of Section 6.1 to either spuriously merge distinct pentagons or fail to
-recognize true matches—producing *topological tearing* of the covering space.
+recognize true matches—producing _topological tearing_ of the covering space.
 
 We therefore mandate that all coordinates and orientations be represented exactly as elements of the real quadratic
 field $\mathbb{Q}(\sqrt{5})$ (or equivalently in the cyclotomic field $\mathbb{Q}[\zeta_5]$). Each centroid is stored as
@@ -206,18 +206,18 @@ scale.
 
 ### 2.4. Topological Regularization: The Cut-and-Project Window
 
-Unconstrained sheet-stacking risks a second pathology: the *cyclotomic density trap*. Because $\phi$ is irrational, free
+Unconstrained sheet-stacking risks a second pathology: the _cyclotomic density trap_. Because $\phi$ is irrational, free
 orbits of the pentagonal rotation group densify in $\mathbb{R}^2$; without restriction, the projected vertex
 set $\pi(\mathcal{V})$ becomes dense, the graph loses local finiteness, and $d_{\text{eff}}$ diverges into pathological
 regimes.
 
 The remedy, well-known from quasicrystal theory, is the **cut-and-project method**. We embed the construction in a 5D
 hypercubic ambient lattice $\mathbb{Z}^5$ (whose natural action accommodates the icosahedral/pentagonal symmetry) and
-define a bounded *acceptance window* $W \subset \mathbb{R}^3$ in the orthogonal complement of a chosen 2D physical
+define a bounded _acceptance window_ $W \subset \mathbb{R}^3$ in the orthogonal complement of a chosen 2D physical
 subspace. A pentagon labelled by sheet $s$ is admitted into the simulation graph $\mathcal{G}$ if and only if its lift
 into $\mathbb{Z}^5$ projects within $W$. This single constraint:
 
-1. Guarantees *local finiteness* (only finitely many sheets pass through any compact region).
+1. Guarantees _local finiteness_ (only finitely many sheets pass through any compact region).
 2. Enforces a controlled, quasicrystalline distribution of sheet transitions.
 3. Keeps $d_{\text{eff}}$ bounded strictly inside $(2,3)$.
 
@@ -304,7 +304,7 @@ to achieve identity is the precise discrete geometric analogue of spinor holonom
 ### 3.3. Connection to Anyons and Braid Statistics
 
 The sheet-transition group is structurally close to a discrete braid group: a particle (or CA glider) looping around a
-pentagonal defect accumulates a phase (sheet shift) that is a *fraction* of a full rotation when $G = \mathbb{Z}_n$
+pentagonal defect accumulates a phase (sheet shift) that is a _fraction_ of a full rotation when $G = \mathbb{Z}_n$
 for $n > 2$. This mimics anyonic statistics observed in condensed matter and offers a fully discrete, coordinate-free
 toy model for topological quantum computing primitives.
 
@@ -313,9 +313,9 @@ toy model for topological quantum computing primitives.
 A critical question is whether this multi-sheeted structure behaves globally like a 2D plane, a 3D space, or something
 in between. We distinguish two operationally distinct notions of dimension:
 
-* The **connectivity (Hausdorff-like) dimension** $d_{\text{eff}}$, governing volume
+- The **connectivity (Hausdorff-like) dimension** $d_{\text{eff}}$, governing volume
   growth $V(r) \sim r^{d_{\text{eff}}}$.
-* The **spectral dimension** $d_{\text{spec}}$, governing diffusion and return
+- The **spectral dimension** $d_{\text{spec}}$, governing diffusion and return
   probabilities $P_0(t) \sim t^{-d_{\text{spec}}/2}$.
 
 On smooth Euclidean manifolds these coincide, but on fractal or topologically obstructed geometries they generically
@@ -342,9 +342,9 @@ overlaps form a structure akin to a quasicrystal in the sheet-transition space.
 This irregularity restricts the connectivity. While some regions allow rapid transitions across sheets (increasing local
 connectivity), other regions present topological barriers where matching edges are sparse. Consequently:
 
-* The volume of a neighborhood of radius $r$ grows faster than $r^2$ (due to sheet-jumping) but slower than $r^3$ (due
+- The volume of a neighborhood of radius $r$ grows faster than $r^2$ (due to sheet-jumping) but slower than $r^3$ (due
   to the irregularity and sparsity of matching overlaps).
-* The effective dimension $d_{\text{eff}}$ is fractional:
+- The effective dimension $d_{\text{eff}}$ is fractional:
   $$2 < d_{\text{eff}} < 3.$$
 
 <p align="center">
@@ -397,7 +397,7 @@ connectivity), other regions present topological barriers where matching edges a
 
 ### 4.3. Dimensional Decoupling and Anomalous Diffusion
 
-The vortex defects act as topological bottlenecks for diffusion, so random walks on $\mathcal{G}$ are *sub-diffusive*:
+The vortex defects act as topological bottlenecks for diffusion, so random walks on $\mathcal{G}$ are _sub-diffusive_:
 the walk dimension obeys $d_w > 2$. Via the Alexander–Orbach-type relation
 $$d_{\text{spec}} = \frac{2 d_{\text{eff}}}{d_w},$$
 we expect a strict inequality $d_{\text{spec}} < d_{\text{eff}}$, with both quantities exhibiting **dimensional flow
@@ -414,20 +414,20 @@ To study the dynamical consequences of this geometry, we define an **Isometric C
 
 Let $\mathcal{G} = (\mathcal{V}, \mathcal{E})$ be the adjacency graph of the multi-sheeted pentagon tiling.
 
-* **State Space**: Each cell (pentagon) $i \in \mathcal{V}$ has a state $\sigma_i^t \in \mathcal{S}$ at time step $t$.
-* **Neighborhood**: The neighborhood of cell $i$ is defined by its adjacent cells in the graph:
+- **State Space**: Each cell (pentagon) $i \in \mathcal{V}$ has a state $\sigma_i^t \in \mathcal{S}$ at time step $t$.
+- **Neighborhood**: The neighborhood of cell $i$ is defined by its adjacent cells in the graph:
   $$\mathcal{N}(i) = \{ j \in \mathcal{V} \mid (i, j) \in \mathcal{E} \}$$
-* **Local Transition Rule**: The state of cell $i$ at time $t+1$ is a function of the states of its neighbors at
+- **Local Transition Rule**: The state of cell $i$ at time $t+1$ is a function of the states of its neighbors at
   time $t$:
   $$\sigma_i^{t+1} = f\left( \sigma_i^t, \{ \sigma_j^t \}_{j \in \mathcal{N}(i)} \right)$$
 
-Each pentagon has exactly 5 edges, suggesting natural *5-regular outer-totalistic* rule families—a "Pentagonal Game of
+Each pentagon has exactly 5 edges, suggesting natural _5-regular outer-totalistic_ rule families—a "Pentagonal Game of
 Life"—parametrized by birth/survival sets on a 5-neighbor count.
 
 ### 5.2. Causal Extension
 
 A purely static stack of sheets lacks a causal structure. To embed this CA into a quantum-gravity-compatible framework,
-the sheet stack is reinterpreted as a *foliation of space-like slices* evolving along a directed time axis; admissible
+the sheet stack is reinterpreted as a _foliation of space-like slices_ evolving along a directed time axis; admissible
 transitions $\tau(e)$ are restricted to those respecting this causal ordering. This converts the ICA into a **Causal
 Cellular Automaton**, analogous to the time-oriented building rules of CDT.
 
@@ -437,25 +437,25 @@ Because the neighborhood relation is purely local in the graph $\mathcal{G}$, th
 knows" about its immediate edge-sharing neighbors. However, because some of these neighbors lie on different sheets,
 information can "jump" sheets. This leads to:
 
-* **Glider Propagation and Splitting**: Gliders traveling along a sheet can hit a matching edge and split, with one
+- **Glider Propagation and Splitting**: Gliders traveling along a sheet can hit a matching edge and split, with one
   component continuing on the same sheet and another transitioning to an overlapping sheet.
-* **Anisotropic, Sub-diffusive Spreading**: Due to the irregular distribution of sheet transitions, information spreads
+- **Anisotropic, Sub-diffusive Spreading**: Due to the irregular distribution of sheet transitions, information spreads
   anisotropically along the pathways of matching edges, with mean-squared displacement scaling
   as $\langle \Delta x^2(t) \rangle \sim t^{2/d_w}$ with $d_w > 2$.
-* **Vortex Scattering**: Topological defects act as scattering centers for gliders, rotating their direction of
+- **Vortex Scattering**: Topological defects act as scattering centers for gliders, rotating their direction of
   propagation or shifting their sheet index—a discrete analogue of Aharonov–Bohm scattering.
 
 ### 5.4. Computational Considerations
 
-Because $\mathcal{G}$ is *not vertex-transitive*, it cannot be flattened into a contiguous memory array as ordinary 2D
+Because $\mathcal{G}$ is _not vertex-transitive_, it cannot be flattened into a contiguous memory array as ordinary 2D
 CA can. Efficient simulation requires:
 
-* **Lazy graph generation**: nodes and edges are materialized only as the dynamics expands the active region.
-* **Spatial hashing**: keyed by exact $\mathbb{Q}(\sqrt{5})$-coordinates and sheet index to maintain $O(1)$ neighbor
+- **Lazy graph generation**: nodes and edges are materialized only as the dynamics expands the active region.
+- **Spatial hashing**: keyed by exact $\mathbb{Q}(\sqrt{5})$-coordinates and sheet index to maintain $O(1)$ neighbor
   lookups.
-* **Decidability awareness**: determining whether an arbitrary choice of $\tau$ yields a globally consistent infinite
+- **Decidability awareness**: determining whether an arbitrary choice of $\tau$ yields a globally consistent infinite
   cover is undecidable in general (a variant of the Domino Problem); the cut-and-project construction sidesteps this by
-  providing an *a priori* consistent rule family.
+  providing an _a priori_ consistent rule family.
 
 ## 6. Numerical Methodology for Dimension Estimation
 
@@ -488,10 +488,10 @@ def get_neighbors(cell_id):
 We measure the growth of the neighborhood volume as a function of graph distance $r$.
 
 1. **Algorithm**:
-    * Select an origin cell $i_0 \in \mathcal{V}$.
-    * Perform a Breadth-First Search (BFS) up to a maximum radius $R$.
-    * Maintain a hash set of visited cells to ensure unique counting.
-    * For each radius $r \in [1, R]$, record the number of unique cells $N(r)$ within distance $\le r$.
+   - Select an origin cell $i_0 \in \mathcal{V}$.
+   - Perform a Breadth-First Search (BFS) up to a maximum radius $R$.
+   - Maintain a hash set of visited cells to ensure unique counting.
+   - For each radius $r \in [1, R]$, record the number of unique cells $N(r)$ within distance $\le r$.
 
 2. **Fitting**:
    Assuming a power-law growth $N(r) \sim C r^{d_{\text{eff}}}$, perform a linear regression on the log-log data:
@@ -588,19 +588,19 @@ The fractional dimension $2 < d_{\text{eff}} < 3$ places this geometry in a regi
 results acquire genuinely new content. Running Metropolis–Hastings Ising and XY model simulations on $\mathcal{G}$ may
 reveal:
 
-* Novel critical exponents interpolating between known 2D and 3D universality classes.
-* Partial circumvention of the Mermin–Wagner theorem due to the effectively super-2D connectivity.
-* Anomalous susceptibility and specific heat scaling tied to $d_{\text{spec}}$ rather than $d_{\text{eff}}$.
+- Novel critical exponents interpolating between known 2D and 3D universality classes.
+- Partial circumvention of the Mermin–Wagner theorem due to the effectively super-2D connectivity.
+- Anomalous susceptibility and specific heat scaling tied to $d_{\text{spec}}$ rather than $d_{\text{eff}}$.
 
 ### 7.3. Open Questions
 
-* **Classification of Sheet-Transition Groups**: What is the algebraic structure of the group generated by the sheet
+- **Classification of Sheet-Transition Groups**: What is the algebraic structure of the group generated by the sheet
   transitions? Is it finitely presented, and does it admit a chaotic or orderly structure? Which choices of $G$
   and $\tau$ yield decidable, locally finite covers?
-* **Universality Classes of CA**: Do standard 2D CA rules (like Conway's Game of Life) remain active and stable when
+- **Universality Classes of CA**: Do standard 2D CA rules (like Conway's Game of Life) remain active and stable when
   lifted to this fractional-dimensional geometry, or do they undergo a phase transition? Can 5-regular outer-totalistic
   rules be tuned to Turing-universal behavior?
-* **Continuous Limit**: Does the multi-sheeted tiling converge to a smooth non-Euclidean manifold, a singular metric
+- **Continuous Limit**: Does the multi-sheeted tiling converge to a smooth non-Euclidean manifold, a singular metric
   space, or a quantum-gravitational fractal in the limit of infinitely small tile size?
 
 ## 8. Conclusion

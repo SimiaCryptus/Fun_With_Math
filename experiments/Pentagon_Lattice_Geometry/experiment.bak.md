@@ -2,8 +2,8 @@
 
 This document summarizes the computational experiments performed in
 `experiment.mac` (with output recorded in `experiment.log`) for the paper
-*Emergent Fractional Dimensionality and Spinor-Like Holonomy in
-Multi-Sheeted Pentagon Tilings* (`idea.md`). Where `analysis.mac`
+_Emergent Fractional Dimensionality and Spinor-Like Holonomy in
+Multi-Sheeted Pentagon Tilings_ (`idea.md`). Where `analysis.mac`
 establishes the **symbolic identities** underlying the construction,
 `experiment.mac` performs **constructive numerical experiments** on a
 concrete instance of the multi-sheeted pentagon adjacency graph. The
@@ -26,7 +26,7 @@ and the Alexander–Orbach cross-check.
 All pentagon centroids, vertices, and edge midpoints are represented as
 pairs of elements of the real quadratic field $\mathbb{Q}(\sqrt{5})$.
 Canonicalization (`qcanon`) and exact equality (`qeq`) are implemented
-via `ratsimp`, eliminating the *floating-point topological tearing* of
+via `ratsimp`, eliminating the _floating-point topological tearing_ of
 §2.3 of the paper. Two algebraic sanity checks pass at startup:
 
 - $\phi^2 = \phi + 1$,
@@ -50,7 +50,7 @@ For a pentagon with centroid $C$ and orientation $j \in \{0,\dots,4\}$:
 - Reflected-neighbor center across edge $k$: $C' = 2\cdot\text{edge\_mid} - C$.
 
 All operations stay inside $\mathbb{Q}(\sqrt{5})^2$, so the
-adjacency oracle is *topologically exact*.
+adjacency oracle is _topologically exact_.
 
 ## 3. Multi-Sheeted Graph Construction
 
@@ -68,7 +68,7 @@ built lazily by BFS:
 Degree statistics:
 
 | min | mean  | max |
-|-----|-------|-----|
+| --- | ----- | --- |
 | 1   | 3.764 | 10  |
 
 Interior cells approach the 5-regular target; boundary cells have lower
@@ -78,7 +78,7 @@ to multi-sheet edge incidences.
 Per-sheet cell census:
 
 | sheet | cells |
-|-------|------:|
+| ----- | ----: |
 | 0     |   196 |
 | 1     |   194 |
 | 2     |   165 |
@@ -111,7 +111,7 @@ random-walk and Alexander–Orbach estimates of Sections 6–7 below.
 BFS from the origin produces
 
 | $r$ | $N(\le r)$ |
-|-----|------------|
+| --- | ---------- |
 | 0   | 1          |
 | 1   | 7          |
 | 2   | 31         |
@@ -122,8 +122,10 @@ BFS from the origin produces
 A least-squares fit of $\log N$ vs. $\log r$ over the interior radii
 $r \in [1, 4]$ (excluding origin and outermost shell) gives
 
-$$d_{\text{eff}}^{\text{(interior)}} \approx 2.724,
-\qquad C \approx 6.029.$$
+$$
+d_{\text{eff}}^{\text{(interior)}} \approx 2.724,
+\qquad C \approx 6.029.
+$$
 
 Fitting over the full range $r \in [1, 5]$ instead yields
 
@@ -158,7 +160,7 @@ walker reaches the cluster boundary:
 A separate **late-time MSD slope** is also reported as a saturation
 diagnostic; it should be near $0$ once the walker fills the cluster.
 
-Observed values (huge preset, BFS\_DEPTH = 5):
+Observed values (huge preset, BFS_DEPTH = 5):
 
 - MSD at $t = 1, 5, 10, 20$: $1.000,\ 11.604,\ 13.842,\ 14.693$.
 - $P_0$ at $t = 2, 4, 10, 20$: $0.1640,\ 0.0597,\ 0.0084,\ 0.0036$.
@@ -175,7 +177,7 @@ early-time fits draw on $4$ MSD points and $5$ even-$t$ $P_0$ points,
 which is sufficient to extract slopes but still narrow enough that the
 extracted exponents should be regarded as quantitatively indicative
 rather than precise. In particular the recovered $d_w \approx 1.465 < 2$
-is *super-diffusive* — opposite to the sub-diffusive regime predicted
+is _super-diffusive_ — opposite to the sub-diffusive regime predicted
 in §4.3 of `idea.md`. This is a diagnostic of the small-cluster /
 boundary-dominated regime: with the walker only a few steps from the
 boundary even at $t = 5$, the MSD curve still inherits significant
@@ -188,8 +190,10 @@ short-time ballistic character before the plateau. Larger clusters
 The Alexander–Orbach relation $d_{\text{spec}} = 2 d_{\text{eff}} / d_w$
 from §4.3 of `idea.md` is applied to the random-walk estimates:
 
-$$d_{\text{spec}}^{\text{(AO)}}
-= \frac{2 \cdot 2.724}{1.465} \approx 3.718.$$
+$$
+d_{\text{spec}}^{\text{(AO)}}
+= \frac{2 \cdot 2.724}{1.465} \approx 3.718.
+$$
 
 Compare with the direct $P_0$-decay estimate $d_{\text{spec}}
 \approx 3.708$. The two agree to within
@@ -197,7 +201,7 @@ Compare with the direct $P_0$-decay estimate $d_{\text{spec}}
 $$|3.708 - 3.718| \approx 0.010,$$
 
 a remarkably tight internal consistency: the random-walk machinery is
-measuring the *same* underlying geometry by two independent routes
+measuring the _same_ underlying geometry by two independent routes
 (mean-squared displacement vs. return probability), and the
 Alexander–Orbach relation closes the loop to within $\sim 0.3\%$.
 
@@ -223,12 +227,12 @@ For the didactic `tau_rule` ($+1$ shift on every third edge):
 - **3-cycles through the origin**: none in the depth-5 cluster
   (typical for tree-like multi-sheet structures).
 - **4- and 5-cycles through the origin**: 16 found.
-    - $\mathbb{Z}_2$ (spinor) non-trivial holonomy loops: $0 / 16$.
-    - $\mathbb{Z}_5$ (anyonic) non-trivial holonomy loops: $0 / 16$.
+  - $\mathbb{Z}_2$ (spinor) non-trivial holonomy loops: $0 / 16$.
+  - $\mathbb{Z}_5$ (anyonic) non-trivial holonomy loops: $0 / 16$.
 
 All 16 short cycles found through the origin in this cluster therefore
 carry **trivial holonomy** under both the spinor and anyonic
-reductions. This is consistent with the *didactic* nature of the
+reductions. This is consistent with the _didactic_ nature of the
 `tau_rule(i, k) = [(i + k) ≡ 0 mod 3]` choice: with vortex contributions
 distributed in a `mod 3`-regular pattern, short loops near the origin
 tend to traverse vortex and non-vortex edges in pairs that cancel mod 2
@@ -244,7 +248,7 @@ monodromy requires either:
 
 ## 9. Cellular Automaton Dynamics
 
-A 5-neighbor outer-totalistic *Pentagonal-Life* rule is implemented:
+A 5-neighbor outer-totalistic _Pentagonal-Life_ rule is implemented:
 
 - **Birth**: $B = \{2\}$ (dead cell with exactly 2 live neighbors).
 - **Survival**: $S = \{1, 2\}$.
@@ -252,7 +256,7 @@ A 5-neighbor outer-totalistic *Pentagonal-Life* rule is implemented:
 Initial seed: origin plus its first two neighbors (population 3).
 
 | $t$  | population |
-|------|------------|
+| ---- | ---------- |
 | 0    | 3          |
 | 1    | 4          |
 | 2–64 | 4          |
@@ -262,7 +266,7 @@ cells** by $t = 1$ and persists unchanged through all 64 recorded
 steps. Final live distribution across sheets at $t = 64$:
 
 | sheet | live cells |
-|-------|------------|
+| ----- | ---------- |
 | 0     | 3          |
 | 1     | 1          |
 | 2     | 0          |
@@ -271,7 +275,7 @@ steps. Final live distribution across sheets at $t = 64$:
 | 5     | 0          |
 
 The CA confirms that the multi-sheeted neighborhood structure
-supports configurations that *span multiple sheets* — exactly the
+supports configurations that _span multiple sheets_ — exactly the
 mechanism by which information propagates through vortex
 transitions in §5 of `idea.md`.
 
@@ -286,13 +290,13 @@ standardized "triple" seed (origin + two neighbors).
 
 The panel results (huge preset):
 
-| count    | rules                                                    |
-|----------|----------------------------------------------------------|
-| extinct  | 5 (`B3/S23`, `B2/S3`, `B3/S3`, `B4/S34`, `B3/S234`)      |
+| count    | rules                                                      |
+| -------- | ---------------------------------------------------------- |
+| extinct  | 5 (`B3/S23`, `B2/S3`, `B3/S3`, `B4/S34`, `B3/S234`)        |
 | still    | 5 (`B2/S12`, `B2/S123`, `B3/S123`, `B24/S123`, `B2/S1234`) |
-| periodic | 2 (`B2/S23` and `B23/S23`, both period 2)                |
-| growing  | 3 (`B1/S12`, `B1/S1`, `B12/S12`)                         |
-| active   | 0                                                        |
+| periodic | 2 (`B2/S23` and `B23/S23`, both period 2)                  |
+| growing  | 3 (`B1/S12`, `B1/S1`, `B12/S12`)                           |
+| active   | 0                                                          |
 
 The **most active non-degenerate rule** is `B1/S12` with `max_pop = 348`
 (growing fate), reflecting replicator-style dynamics characteristic of
@@ -309,16 +313,16 @@ The default `tau_rule(i, k) = [(i+k) \equiv 0 \pmod 3]` is one of
 many possible vortex-edge assignments. We rebuild a depth-3 cluster
 under eight alternative $\tau$-rules and compare structural features:
 
-| rule label         | $\tau(i,k)$                                  |
-|--------------------|----------------------------------------------|
-| `none`             | $0$ (flat, no vortex edges)                  |
-| `every3`           | $[(i+k) \bmod 3 = 0]$ (default)              |
-| `every2`           | $[(i+k) \bmod 2 = 0]$                        |
-| `every5`           | $[(i+k) \bmod 5 = 0]$                        |
-| `k-parity`         | $[k \bmod 2 = 0]$                            |
-| `chiral`           | $[k \bmod 5 \le 1]$                          |
-| `signed-3`         | $\{+1, -1, 0\}$ depending on $(i+k) \bmod 3$ |
-| `fibonacci-mod 8`  | $[(i+k) \bmod 8 \in \{1,2,3,5\}]$            |
+| rule label        | $\tau(i,k)$                                  |
+| ----------------- | -------------------------------------------- |
+| `none`            | $0$ (flat, no vortex edges)                  |
+| `every3`          | $[(i+k) \bmod 3 = 0]$ (default)              |
+| `every2`          | $[(i+k) \bmod 2 = 0]$                        |
+| `every5`          | $[(i+k) \bmod 5 = 0]$                        |
+| `k-parity`        | $[k \bmod 2 = 0]$                            |
+| `chiral`          | $[k \bmod 5 \le 1]$                          |
+| `signed-3`        | $\{+1, -1, 0\}$ depending on $(i+k) \bmod 3$ |
+| `fibonacci-mod 8` | $[(i+k) \bmod 8 \in \{1,2,3,5\}]$            |
 
 Observed cluster statistics (depth-3) include:
 
@@ -343,8 +347,11 @@ or both.
 
 The holonomy machinery of §8 is applied to the main cluster's
 enumerated 16 long cycles under six fiber groups:
-$$G \in \{\mathbb{Z}_2, \mathbb{Z}_3, \mathbb{Z}_4, \mathbb{Z}_5,
-\mathbb{Z}_6, \mathbb{Z}_{10}\}.$$
+
+$$
+G \in \{\mathbb{Z}_2, \mathbb{Z}_3, \mathbb{Z}_4, \mathbb{Z}_5,
+\mathbb{Z}_6, \mathbb{Z}_{10}\}.
+$$
 
 For each $G = \mathbb{Z}_n$ we report:
 
@@ -361,7 +368,7 @@ in every case). The raw integer holonomy values have
 $$\min = \max = \text{mean} = 0,$$
 
 with the full histogram concentrated as $[(0, 16)]$. In other words,
-*every* enumerated 4- and 5-cycle through the origin in this cluster
+_every_ enumerated 4- and 5-cycle through the origin in this cluster
 has net sheet shift exactly $0$, before any modular reduction. This
 is the strongest possible statement that the didactic `every3`
 $\tau$-rule produces no detectable monodromy at short range, and
@@ -383,7 +390,7 @@ are computed on the depth-5 cluster:
 **Degree histogram** $[d, n_d]$:
 
 | $d$ | $n_d$ |
-|-----|------:|
+| --- | ----: |
 | 1   |   179 |
 | 2   |   140 |
 | 3   |    80 |
@@ -415,14 +422,14 @@ through paired vortex edges.
 **Sheet-to-sheet edge matrix** $T_{s,s'}$ (rows/columns indexed by
 sheet $\in \{0,1,2,3,4,5\}$):
 
-| sheet | 0   | 1   | 2   | 3   | 4  | 5 |
-|-------|-----|-----|-----|-----|----|---|
-| 0     | 317 | 158 |   0 |   0 |  0 | 0 |
-| 1     | 158 | 275 | 135 |   0 |  0 | 0 |
-| 2     |   0 | 135 | 210 | 105 |  0 | 0 |
-| 3     |   0 |   0 | 105 |  80 | 40 | 0 |
-| 4     |   0 |   0 |   0 |  40 | 12 | 8 |
-| 5     |   0 |   0 |   0 |   0 |  8 | 0 |
+| sheet | 0   | 1   | 2   | 3   | 4   | 5   |
+| ----- | --- | --- | --- | --- | --- | --- |
+| 0     | 317 | 158 | 0   | 0   | 0   | 0   |
+| 1     | 158 | 275 | 135 | 0   | 0   | 0   |
+| 2     | 0   | 135 | 210 | 105 | 0   | 0   |
+| 3     | 0   | 0   | 105 | 80  | 40  | 0   |
+| 4     | 0   | 0   | 0   | 40  | 12  | 8   |
+| 5     | 0   | 0   | 0   | 0   | 8   | 0   |
 
 The matrix is tridiagonal: under the unidirectional `every3` rule,
 edges connect only sheet $s$ to sheet $s \pm 1$. Off-diagonal sum
@@ -435,7 +442,7 @@ sheet index, consistent with the geometric falloff in cell count.
 For each occupied sheet, the induced sub-graph statistics are:
 
 | sheet | nodes | intra-edges | mean intra-degree |
-|-------|------:|------------:|------------------:|
+| ----- | ----: | ----------: | ----------------: |
 | 0     |   196 |         317 |             3.235 |
 | 1     |   194 |         275 |             2.835 |
 | 2     |   165 |         210 |             2.545 |
@@ -469,24 +476,24 @@ additionally `d_amp > 0.5` (BFS-shells of motion).
 
 Observed results (huge preset):
 
-| count        | value |
-|--------------|------:|
-| trials       |    25 |
-| oscillators  |     8 |
-| gliders      |     5 |
+| count       | value |
+| ----------- | ----: |
+| trials      |    25 |
+| oscillators |     8 |
+| gliders     |     5 |
 
 Sample oscillator/glider trials (showing period and distance amplitude):
 
-| rule       | seed     | period | $d_{\text{amp}}$ | $d_{\text{drift}}$ |
-|------------|----------|-------:|-----------------:|-------------------:|
-| `B2/S12`   | `petal`  |      4 |             2.00 |               0.00 |
-| `B2/S12`   | `all5`   |      4 |             1.20 |               0.00 |
-| `B2/S23`   | `petal`  |      4 |             2.00 |               0.00 |
-| `B2/S23`   | `all5`   |      4 |             2.00 |               0.00 |
-| `B2/S123`  | `petal`  |      4 |             2.00 |               0.00 |
-| `B2/S123`  | `all5`   |      4 |             0.46 |               0.00 |
-| `B2/S23`   | `triple` |      2 |             0.00 |               0.00 |
-| `B23/S23`  | `triple` |      2 |             0.00 |               0.00 |
+| rule      | seed     | period | $d_{\text{amp}}$ | $d_{\text{drift}}$ |
+| --------- | -------- | -----: | ---------------: | -----------------: |
+| `B2/S12`  | `petal`  |      4 |             2.00 |               0.00 |
+| `B2/S12`  | `all5`   |      4 |             1.20 |               0.00 |
+| `B2/S23`  | `petal`  |      4 |             2.00 |               0.00 |
+| `B2/S23`  | `all5`   |      4 |             2.00 |               0.00 |
+| `B2/S123` | `petal`  |      4 |             2.00 |               0.00 |
+| `B2/S123` | `all5`   |      4 |             0.46 |               0.00 |
+| `B2/S23`  | `triple` |      2 |             0.00 |               0.00 |
+| `B23/S23` | `triple` |      2 |             0.00 |               0.00 |
 
 All five glider candidates have $d_{\text{drift}} = 0$, meaning they
 oscillate in amplitude (the mean BFS distance of live cells from the
@@ -499,7 +506,7 @@ substantially larger cluster.
 ## Summary of Numerical Results
 
 | Quantity                                               | Value (depth-5 cluster, huge preset)                                                   |
-|--------------------------------------------------------|----------------------------------------------------------------------------------------|
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------- |
 | Cluster size $N$                                       | 712                                                                                    |
 | Mean degree                                            | 3.764                                                                                  |
 | Max degree                                             | 10                                                                                     |
@@ -518,11 +525,11 @@ substantially larger cluster.
 | CA final population                                    | 4 (stable still life) after 64 steps                                                   |
 | Ruleset panel: extinct / still / periodic / growing    | 5 / 5 / 2 / 3                                                                          |
 | Most active panel rule                                 | `B1/S12` with `max_pop = 348` (growing)                                                |
-| $\tau$-rule survey panel size                          | 8                                                                                     |
+| $\tau$-rule survey panel size                          | 8                                                                                      |
 | Richest-holonomy $\tau$-rule                           | `none (flat)` (score 0; all rules tied)                                                |
 | Fiber groups examined                                  | $\{\mathbb{Z}_2,\mathbb{Z}_3,\mathbb{Z}_4,\mathbb{Z}_5,\mathbb{Z}_6,\mathbb{Z}_{10}\}$ |
-| Triangles in main cluster                              | 0                                                                                     |
-| Girth through origin                                   | 4                                                                                     |
+| Triangles in main cluster                              | 0                                                                                      |
+| Girth through origin                                   | 4                                                                                      |
 | Glider hunt: trials / oscillators / gliders            | 25 / 8 / 5 (all breathers; $d_{\text{drift}} = 0$)                                     |
 
 The most reliable dimensional output on this cluster is
@@ -549,7 +556,7 @@ next steps for quantitative dimensional spectroscopy.
    preset, the Laplacian spectrum is not computed; KPM replacement is
    the principled path forward for $N \gtrsim 10^3$.
 3. **Walk-dimension anomaly.** The recovered $d_w \approx 1.465 < 2$
-   is super-diffusive — the *opposite* of the sub-diffusive regime
+   is super-diffusive — the _opposite_ of the sub-diffusive regime
    predicted in §4.3. This is diagnosed as a small-cluster /
    short-time artefact: the walker has not yet experienced the
    vortex-bottleneck physics that would push $d_w$ above 2.
@@ -578,7 +585,7 @@ next steps for quantitative dimensional spectroscopy.
 ## Summary Table of Key Functions in `experiment.mac`
 
 | Function                                            | Purpose                                                  |
-|-----------------------------------------------------|----------------------------------------------------------|
+| --------------------------------------------------- | -------------------------------------------------------- |
 | `qcanon`, `qeq`                                     | Exact $\mathbb{Q}(\sqrt{5})$ canonicalization & equality |
 | `rot72`, `spoke`, `edge_mid_rel`                    | Exact pentagon geometry primitives                       |
 | `edge_midpoint`, `reflected_neighbor_center`        | Adjacent-pentagon centroids                              |

@@ -23,7 +23,7 @@ body {
     ui-sans-serif,
     -apple-system,
     system-ui,
-    "Segoe UI",
+    'Segoe UI',
     Roboto,
     sans-serif;
   font-size: 13px;
@@ -88,8 +88,8 @@ label {
 .row > * {
   flex: 1;
 }
-input[type="number"],
-input[type="text"],
+input[type='number'],
+input[type='text'],
 select {
   background: #0d1117;
   color: var(--ink);
@@ -100,7 +100,7 @@ select {
   font-family: inherit;
   font-size: 12px;
 }
-input[type="range"] {
+input[type='range'] {
   width: 100%;
 }
 button {

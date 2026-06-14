@@ -69,7 +69,7 @@ or **transitioning between sheets** in a multi-sheeted cover.
 The five **convex regular polyhedra**:
 
 | Solid        | Faces        | Field                  |
-|--------------|--------------|------------------------|
+| ------------ | ------------ | ---------------------- |
 | Tetrahedron  | 4 triangles  | $\mathbb{Q}(\sqrt{2})$ |
 | Cube         | 6 squares    | $\mathbb{Q}$           |
 | Octahedron   | 8 triangles  | $\mathbb{Q}$           |

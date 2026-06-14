@@ -38,7 +38,7 @@ Reports are configured using the `ReportConfig` struct:
 pub struct ReportConfig {
     pub format: ReportFormat,              // Output format (HTML, LaTeX, etc.)
     pub include_detailed_stats: bool,      // Include detailed statistics
-    pub include_plots: bool,               // Include visualizations  
+    pub include_plots: bool,               // Include visualizations
     pub style_options: HashMap<String, String>, // Custom styling
 }
 ```
@@ -62,16 +62,16 @@ let metadata = reports.generate_all(&data, &_config, &output_dir)?;
 Provides aggregate performance metrics grouped by problem family and optimizer.
 
 ### Family vs Family Report
+
 Shows a comparison matrix of how different optimizer families perform across different problem families.
+
 - **Name**: `family_vs_family`
 - **Formats**: HTML, LaTeX, Markdown, CSV
 - **Use case**: Cross-family performance comparison
 
-
 ### Performance Table Report
 
 Shows detailed performance metrics for each optimizer-problem combination.
-
 
 ## Usage Examples
 
@@ -131,7 +131,7 @@ The unified reporting system includes comprehensive testing infrastructure throu
 
 1. **Basic Functionality**: Tests report name, description, supported formats
 2. **Content Generation**: Validates content generation for all formats
-3. **Data Validation**: Tests input data validation and error handling  
+3. **Data Validation**: Tests input data validation and error handling
 4. **Metadata Generation**: Validates report metadata
 5. **File Export**: Tests file export functionality
 6. **Format Consistency**: Ensures different formats produce different but valid content
@@ -165,6 +165,7 @@ let data_refs: Vec<_> = test_data.iter().map(|(p, r)| (p, r.clone())).collect();
 To add a new report type:
 
 1. **Create the Report Struct**:
+
 ```rust
 pub struct MyCustomReport;
 
@@ -176,6 +177,7 @@ impl MyCustomReport {
 ```
 
 2. **Implement the Report Trait**:
+
 ```rust
 impl Report for MyCustomReport {
     fn name(&self) -> &'static str {
@@ -198,6 +200,7 @@ impl Report for MyCustomReport {
 ```
 
 3. **Add Tests**:
+
 ```rust
 #[cfg(test)]
 mod tests {
@@ -213,6 +216,7 @@ mod tests {
 ```
 
 4. **Add to Collection** (optional):
+
 ```rust
 let reports = ReportCollection::new()
     .add_report(MyCustomReport::new())
@@ -222,24 +226,28 @@ let reports = ReportCollection::new()
 ## Output Formats
 
 ### HTML
+
 - Complete standalone HTML documents
 - Embedded CSS for styling
 - Tables and basic formatting
 - Suitable for web display
 
-### LaTeX  
+### LaTeX
+
 - Complete LaTeX documents with packages
 - Professional table formatting
 - Scientific notation support
 - Ready for academic publication
 
 ### Markdown
+
 - GitHub-flavored markdown
 - Table support
 - Suitable for documentation
 - Easy to convert to other formats
 
 ### CSV
+
 - Comma-separated values
 - Easy data import/export
 - Suitable for further analysis

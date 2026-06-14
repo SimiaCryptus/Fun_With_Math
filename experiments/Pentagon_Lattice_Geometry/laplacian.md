@@ -3,14 +3,14 @@
 This document describes how the adjacency matrix and graph Laplacian
 are formed for the multi-sheeted $n$-gon tiling graph, what spectral
 quantities are computed, and how they connect to the dimensional
-predictions of the paper *Emergent Fractional Dimensionality and
-Spinor-Like Holonomy in Multi-Sheeted Pentagon Tilings*.
+predictions of the paper _Emergent Fractional Dimensionality and
+Spinor-Like Holonomy in Multi-Sheeted Pentagon Tilings_.
 
 The analysis is performed in two places:
 
 - **`experiment.mac`, Section 4** — runs the Laplacian eigen-analysis
   as part of the full pipeline (subject to `SKIP_EIG`).
-- **`laplacian_analysis.mac`** — a standalone driver that *forces* the
+- **`laplacian_analysis.mac`** — a standalone driver that _forces_ the
   eigendecomposition at a fixed, tractable cluster size, and adds
   supplementary quantities (connected-component count, normalized
   Laplacian spectrum, spectral-radius bound).
@@ -56,8 +56,8 @@ diagnostic for the multi-sheeted construction.
 
 ### 2.2 Spectral gap (algebraic connectivity)
 
-The smallest **positive** eigenvalue $\lambda_2$ is the *Fiedler value*
-or *algebraic connectivity*. It measures how well-connected the graph
+The smallest **positive** eigenvalue $\lambda_2$ is the _Fiedler value_
+or _algebraic connectivity_. It measures how well-connected the graph
 is: a small gap indicates weak inter-sheet bridges (the vortex edges).
 The value is preset-dependent: a 156-cell `medium` signed-3 cluster
 gives $\lambda_2 \approx 0.027$, whereas the 31-cell `small` cluster
@@ -92,15 +92,19 @@ the bipartite-chirality structure discussed in `experiment.md`.
 
 The **spectral dimension** $d_{\text{spec}}$ governs the low-frequency
 density of states $\rho(\lambda)$ of the Laplacian:
-$$\rho(\lambda) \sim \lambda^{\,d_{\text{spec}}/2 - 1}
-\quad (\lambda \to 0^+),$$
+
+$$
+\rho(\lambda) \sim \lambda^{\,d_{\text{spec}}/2 - 1}
+\quad (\lambda \to 0^+),
+$$
+
 equivalently the integrated DOS scales as
 $$N(\le \lambda) \sim \lambda^{\,d_{\text{spec}}/2}.$$
 
 We estimate $d_{\text{spec}}$ by counting eigenvalues below several
 fractions of $\lambda_{\max}$ and performing a log–log least-squares
 fit of $\log N(\le \lambda)$ against $\log \lambda$; the slope is
-$d_{\text{spec}}/2$. **Note:** the integrated DOS must *exclude* the
+$d_{\text{spec}}/2$. **Note:** the integrated DOS must _exclude_ the
 zero (kernel) eigenvalue. `experiment.mac` §4 currently includes it
 ($d_{\text{spec}}^{\text{DOS}}\approx 1.90$ in the small run) while
 the standalone `laplacian_analysis.mac` excludes it
@@ -123,7 +127,7 @@ $d_{\text{spec}}^{\text{DOS}} \approx 1.9 < d_{\text{eff}} \approx 2.4$
 The three derived quantities form a coherent story:
 
 | Object                     | Quantity                 | Interpretation                          |
-|----------------------------|--------------------------|-----------------------------------------|
+| -------------------------- | ------------------------ | --------------------------------------- |
 | $A$ (adjacency)            | row sums $= d_i$         | local connectivity / degree             |
 | $L = D - A$                | $\ker L$                 | connected components                    |
 | $L$                        | $\lambda_2$ (Fiedler)    | global connectivity, vortex bottlenecks |

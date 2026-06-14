@@ -3,6 +3,7 @@
 ## Technical Documentation
 
 ### Table of Contents
+
 1. [System Overview](#system-overview)
 2. [Architecture](#architecture)
 3. [Core Components](#core-components)
@@ -21,6 +22,7 @@
 The QQN Optimizer Benchmarking and Reporting System is a comprehensive framework for evaluating and comparing optimization algorithms. It provides automated benchmarking, statistical analysis, visualization, and report generation capabilities specifically designed for academic research and algorithm development.
 
 ### Key Capabilities
+
 - **Multi-optimizer comparison** across diverse problem sets
 - **Statistical significance testing** with multiple comparison methods
 - **Automated report generation** in multiple formats (Markdown, LaTeX, CSV)
@@ -63,15 +65,18 @@ graph TD
 ## Core Components
 
 ### 1. ExperimentRunner
+
 The central orchestrator that manages the entire benchmarking process.
 
 **Key Features:**
+
 - Parallel benchmark execution
 - Problem validation
 - Result aggregation
 - Error recovery
 
 **Methods:**
+
 ```rust
 pub async fn run_comparative_benchmarks(
     &self,
@@ -86,15 +91,18 @@ pub async fn run_championship_benchmarks(
 ```
 
 ### 2. ReportGenerator
+
 Handles all report generation and formatting tasks.
 
 **Capabilities:**
+
 - Multi-format output (Markdown, LaTeX, CSV)
 - Hierarchical report structure
 - Problem family classification
 - Detailed optimizer-problem analysis
 
 **Report Types:**
+
 - Main benchmark report
 - Problem-specific reports
 - Optimizer comparison matrices
@@ -102,18 +110,22 @@ Handles all report generation and formatting tasks.
 - LaTeX publication-ready documents
 
 ### 3. StatisticalAnalysis
+
 Provides rigorous statistical testing for optimizer comparison.
 
 **Statistical Methods:**
+
 - Welch's t-test for unequal variances
 - Cohen's d effect size calculation
 - Multiple comparison correction
 - Win/loss/tie matrix generation
 
 ### 4. PlottingManager
+
 Manages all visualization generation with error recovery.
 
 **Plot Types:**
+
 - Convergence plots (linear and log scale)
 - Performance comparison charts
 - Distribution boxplots
@@ -126,6 +138,7 @@ Manages all visualization generation with error recovery.
 ### 1. Benchmark Execution
 
 #### Standard Benchmarking
+
 ```rust
 run_benchmark(
     report_path_prefix: &str,
@@ -138,6 +151,7 @@ run_benchmark(
 ```
 
 **Features:**
+
 - Configurable evaluation limits
 - Multiple independent runs with different seeds
 - Time-based termination
@@ -146,6 +160,7 @@ run_benchmark(
 ### 2. Problem Classification
 
 Problems are automatically classified into families:
+
 - **Convex Unimodal**: Sphere, Matyas
 - **Non-Convex Unimodal**: Rosenbrock, Beale, GoldsteinPrice, Levi
 - **Highly Multimodal**: Rastrigin, Ackley, Michalewicz, StyblinskiTang
@@ -156,6 +171,7 @@ Problems are automatically classified into families:
 ### 3. Optimizer Organization
 
 Pre-configured optimizer sets include:
+
 - **QQN Variants**: Different line search methods
 - **L-BFGS Variants**: Conservative, standard, and aggressive configurations
 - **Gradient Descent**: With momentum, Nesterov, weight decay
@@ -165,6 +181,7 @@ Pre-configured optimizer sets include:
 ### 4. Report Generation
 
 #### Main Report Structure
+
 1. **Executive Summary**: Quick winner overview
 2. **Problem-by-Problem Analysis**: Detailed performance tables
 3. **Statistical Analysis**: Significance testing results
@@ -172,7 +189,9 @@ Pre-configured optimizer sets include:
 5. **Conclusions**: Key findings and recommendations
 
 #### Detailed Reports
+
 For each optimizer-problem combination:
+
 - Run-by-run performance metrics
 - Convergence analysis
 - Parameter evolution tracking
@@ -182,12 +201,14 @@ For each optimizer-problem combination:
 ### 5. Statistical Analysis
 
 #### Comparison Methods
+
 - **Pairwise Testing**: All optimizer pairs compared
 - **Family-wise Comparison**: Grouped optimizer comparison
 - **Effect Size Analysis**: Practical significance assessment
 - **Win Matrix Generation**: Visual comparison summary
 
 #### Metrics Analyzed
+
 - Final objective value
 - Computational cost (function/gradient evaluations)
 - Success rate
@@ -196,18 +217,21 @@ For each optimizer-problem combination:
 ### 6. Output Formats
 
 #### CSV Files
+
 - `detailed_results.csv`: All run data
 - `summary_statistics.csv`: Aggregated metrics
 - `statistical_analysis_raw_data.csv`: Test results
 - Problem-specific CSV files
 
 #### LaTeX Documents
+
 - Main performance tables
 - Problem-specific tables
 - Comparison matrices
 - Complete benchmark document
 
 #### Markdown Reports
+
 - HTML-compatible formatting
 - Embedded visualizations
 - Hyperlinked navigation
@@ -271,6 +295,7 @@ run_championship_benchmark(
 ## Output Formats
 
 ### Directory Structure
+
 ```
 output_dir/
 ├── benchmark_report.md           # Main report
@@ -290,18 +315,21 @@ output_dir/
 ### Report Features
 
 #### Winner Summary Table
+
 - Quick overview of best performers
 - Success rate and performance metrics
 - Visual highlighting of QQN variants
 - Runner-up identification
 
 #### Performance Tables
+
 - Comprehensive metrics per optimizer
 - Separate statistics for successful/failed runs
 - Hyperlinked detailed reports
 - Rank-based ordering
 
 #### Statistical Comparison Matrix
+
 - Color-coded win/loss/tie results
 - Problem-specific comparisons
 - Statistical significance indicators
@@ -312,18 +340,21 @@ output_dir/
 ## Statistical Analysis
 
 ### Welch's t-test Implementation
+
 - Handles unequal variances
 - Degrees of freedom calculation
 - Two-tailed p-value computation
 - Robust to small sample sizes
 
 ### Effect Size Calculation
+
 - Cohen's d for standardized differences
 - Pooled standard deviation
 - Interpretation guidelines
 - Practical significance assessment
 
 ### Multiple Comparison Handling
+
 - Problem-wise grouping
 - Family-wise error rate consideration
 - Bonferroni correction option
@@ -334,18 +365,21 @@ output_dir/
 ## Visualization
 
 ### Convergence Plots
+
 - Linear and logarithmic scales
 - Multi-optimizer overlay
 - Iteration and evaluation-based views
 - Automatic legend generation
 
 ### Performance Visualization
+
 - Box plots for distribution analysis
 - Bar charts for mean comparison
 - Scatter plots for correlation
 - Heatmaps for matrix visualization
 
 ### Error Handling
+
 - Graceful plot failure recovery
 - Fallback visualization options
 - Warning messages for missing data
@@ -356,6 +390,7 @@ output_dir/
 ## Configuration
 
 ### BenchmarkConfig Options
+
 ```rust
 pub struct BenchmarkConfig {
     pub max_iterations: usize,
@@ -369,10 +404,12 @@ pub struct BenchmarkConfig {
 ```
 
 ### Threshold Modes
+
 - **Standard Mode**: Uses problem-specific success thresholds
 - **No-Threshold Mode**: Disables convergence thresholds for calibration
 
 ### Logging Configuration
+
 - Configurable verbosity levels
 - Performance timing logs
 - Error tracking
@@ -383,6 +420,7 @@ pub struct BenchmarkConfig {
 ## Extension Points
 
 ### Adding New Optimizers
+
 ```rust
 pub fn custom_optimizers() -> Vec<(String, Arc<dyn Optimizer>)> {
     vec![
@@ -392,6 +430,7 @@ pub fn custom_optimizers() -> Vec<(String, Arc<dyn Optimizer>)> {
 ```
 
 ### Adding New Problems
+
 ```rust
 pub fn custom_problems() -> Vec<Arc<dyn OptimizationProblem>> {
     vec![
@@ -401,12 +440,14 @@ pub fn custom_problems() -> Vec<Arc<dyn OptimizationProblem>> {
 ```
 
 ### Custom Report Sections
+
 - Override `generate_conclusions()`
 - Add custom statistical tests
 - Implement new visualization types
 - Extend CSV export formats
 
 ### Custom Analysis
+
 - Implement new statistical methods
 - Add performance metrics
 - Create specialized comparisons
@@ -417,24 +458,28 @@ pub fn custom_problems() -> Vec<Arc<dyn OptimizationProblem>> {
 ## Best Practices
 
 ### Performance Optimization
+
 1. Use appropriate number of runs (10-20 for testing, 50+ for publication)
 2. Set reasonable time limits
 3. Enable parallel execution
 4. Use championship mode for large-scale comparisons
 
 ### Report Generation
+
 1. Ensure sufficient disk space for outputs
 2. Validate problem configurations before benchmarking
 3. Use descriptive naming for experiments
 4. Archive results with timestamps
 
 ### Statistical Rigor
+
 1. Ensure adequate sample sizes
 2. Check for outliers in results
 3. Report both statistical and practical significance
 4. Use appropriate multiple comparison corrections
 
 ### Troubleshooting
+
 1. Check log files for detailed error messages
 2. Validate optimizer configurations
 3. Ensure problems return finite values

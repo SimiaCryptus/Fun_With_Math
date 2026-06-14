@@ -9,7 +9,7 @@
 body {
   background: #1a1a2e;
   color: #e0e0f0;
-  font-family: "Segoe UI", sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 13px;
   height: 100vh;
   overflow: hidden;
@@ -101,7 +101,7 @@ body {
   gap: 4px;
 }
 
-input[type="color"] {
+input[type='color'] {
   width: 32px;
   height: 22px;
   border: none;
@@ -111,7 +111,7 @@ input[type="color"] {
   background: none;
 }
 
-input[type="range"] {
+input[type='range'] {
   width: 70px;
   accent-color: #a0c4ff;
 }
@@ -151,7 +151,7 @@ input[type="range"] {
   padding: 2px 0;
 }
 
-.toggle-row input[type="checkbox"] {
+.toggle-row input[type='checkbox'] {
   accent-color: #a0c4ff;
   width: 14px;
   height: 14px;

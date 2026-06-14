@@ -30,7 +30,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family:
-    "Segoe UI",
+    'Segoe UI',
     system-ui,
     -apple-system,
     sans-serif;
@@ -208,14 +208,14 @@ nav .spacer {
   color: var(--text);
   font-size: 0.8rem;
 }
-.controls input[type="range"] {
+.controls input[type='range'] {
   width: 100%;
   accent-color: var(--accent);
   cursor: pointer;
 }
 .controls select,
-.controls input[type="number"],
-.controls input[type="text"] {
+.controls input[type='number'],
+.controls input[type='text'] {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -287,7 +287,7 @@ nav .spacer {
   background: rgba(255, 255, 255, 0.06);
   border-radius: 4px;
   padding: 0.1em 0.35em;
-  font-family: "Fira Code", Consolas, monospace;
+  font-family: 'Fira Code', Consolas, monospace;
   font-size: 0.85em;
   color: var(--accent2);
 }

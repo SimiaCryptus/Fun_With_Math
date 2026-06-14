@@ -6,19 +6,33 @@
 //     cos(72) = (sqrt(5) - 1)/4
 //     sin(72) = S/4         where S = sqrt(10 + 2 sqrt(5))
 
-import {
-  K, ZERO, ONE, add, sub, neg, scale, mul, toFloat, key, toAlg, eq
-} from "./field.js";
+import { K, ZERO, ONE, add, sub, neg, scale, mul, toFloat, key, toAlg, eq } from './field.js';
 
 // ----- Vec2 over the field -----
-export function V(x, y) { return { x, y }; }
-export function vAdd(p, q)   { return V(add(p.x, q.x), add(p.y, q.y)); }
-export function vSub(p, q)   { return V(sub(p.x, q.x), sub(p.y, q.y)); }
-export function vScale(p, r) { return V(scale(p.x, r), scale(p.y, r)); }
-export function vEq(p, q)    { return eq(p.x, q.x) && eq(p.y, q.y); }
-export function vKey(p)      { return key(p.x) + "|" + key(p.y); }
-export function vFloat(p)    { return [toFloat(p.x), toFloat(p.y)]; }
-export function vAlg(p)      { return `( ${toAlg(p.x)} , ${toAlg(p.y)} )`; }
+export function V(x, y) {
+  return { x, y };
+}
+export function vAdd(p, q) {
+  return V(add(p.x, q.x), add(p.y, q.y));
+}
+export function vSub(p, q) {
+  return V(sub(p.x, q.x), sub(p.y, q.y));
+}
+export function vScale(p, r) {
+  return V(scale(p.x, r), scale(p.y, r));
+}
+export function vEq(p, q) {
+  return eq(p.x, q.x) && eq(p.y, q.y);
+}
+export function vKey(p) {
+  return key(p.x) + '|' + key(p.y);
+}
+export function vFloat(p) {
+  return [toFloat(p.x), toFloat(p.y)];
+}
+export function vAlg(p) {
+  return `( ${toAlg(p.x)} , ${toAlg(p.y)} )`;
+}
 
 // ----- Pentagon constants (unit-edge regular pentagon) -----
 //
@@ -55,10 +69,7 @@ export const SIN72 = K(0, 0, 1 / 4, 0);
 
 export function rotate(p, cos, sin) {
   // (x,y) -> (cos*x - sin*y, sin*x + cos*y)
-  return V(
-    sub(mul(cos, p.x), mul(sin, p.y)),
-    add(mul(sin, p.x), mul(cos, p.y))
-  );
+  return V(sub(mul(cos, p.x), mul(sin, p.y)), add(mul(sin, p.x), mul(cos, p.y)));
 }
 
 // Vertex k (0..4) of pentagon at centroid `c` with orientation index `o`
@@ -70,8 +81,8 @@ export function rotate(p, cos, sin) {
 // can't tile the plane edge-to-edge). Without this flip, neighbors
 // would visually look "the same orientation" instead of inverted.
 export function pentVertex(centroid, orient, k, sigma = 0) {
-   // start with v0 = (0, R) for sigma=0, or (0, -R) for sigma=1.
-   let v = (sigma & 1) ? V(ZERO, neg(R_CIRCUM)) : V(ZERO, R_CIRCUM);
+  // start with v0 = (0, R) for sigma=0, or (0, -R) for sigma=1.
+  let v = sigma & 1 ? V(ZERO, neg(R_CIRCUM)) : V(ZERO, R_CIRCUM);
   const steps = (orient + k) % 5;
   for (let i = 0; i < steps; i++) v = rotate(v, COS72, SIN72);
   return vAdd(centroid, v);
@@ -79,14 +90,13 @@ export function pentVertex(centroid, orient, k, sigma = 0) {
 
 export function pentVertices(centroid, orient, sigma = 0) {
   const out = [];
-   for (let k = 0; k < 5; k++) out.push(pentVertex(centroid, orient, k, sigma));
+  for (let k = 0; k < 5; k++) out.push(pentVertex(centroid, orient, k, sigma));
   return out;
 }
 
 // Edge k connects vertex k and vertex k+1.
 export function pentEdge(centroid, orient, k, sigma = 0) {
-   return [pentVertex(centroid, orient, k, sigma),
-           pentVertex(centroid, orient, (k + 1) % 5, sigma)];
+  return [pentVertex(centroid, orient, k, sigma), pentVertex(centroid, orient, (k + 1) % 5, sigma)];
 }
 
 // ----- Edge-mate computation -----
@@ -127,22 +137,21 @@ export function pentEdge(centroid, orient, k, sigma = 0) {
 
 export function neighborOf(centroid, orient, sigma, k) {
   // edge midpoint
-   const [v0, v1] = pentEdge(centroid, orient, k, sigma);
+  const [v0, v1] = pentEdge(centroid, orient, k, sigma);
   const mid = vScale(vAdd(v0, v1), 0.5);
   // c' = c + 2*(mid - c)
   const newC = vAdd(centroid, vScale(vSub(mid, centroid), 2));
-   const newSigma = 1 - (sigma & 1);
-   const newO = (orient + 3) % 5;
+  const newSigma = 1 - (sigma & 1);
+  const newO = (orient + 3) % 5;
   // determine which edge of the neighbor matches: the neighbor edge
   // whose vertex set equals {v0, v1}.
   let matchEdge = -1;
   for (let kk = 0; kk < 5; kk++) {
-     const [w0, w1] = pentEdge(newC, newO, kk, newSigma);
-    if ((vEq(w0, v0) && vEq(w1, v1)) ||
-        (vEq(w0, v1) && vEq(w1, v0))) {
+    const [w0, w1] = pentEdge(newC, newO, kk, newSigma);
+    if ((vEq(w0, v0) && vEq(w1, v1)) || (vEq(w0, v1) && vEq(w1, v0))) {
       matchEdge = kk;
       break;
     }
   }
-   return { centroid: newC, orient: newO, sigma: newSigma, matchEdge };
+  return { centroid: newC, orient: newO, sigma: newSigma, matchEdge };
 }

@@ -5,7 +5,7 @@
 In 2023, Smith, Myers, Kaplan, and Goodman-Strauss resolved a half-century-old open problem
 by exhibiting the **"hat" monotile** — a single 13-sided polygon (and its mirror, the "turtle")
 that tiles the plane aperiodically. Subsequent refinement produced the **"spectre"** monotile,
-which achieves strict aperiodicity *without* requiring reflected copies. Collectively, these
+which achieves strict aperiodicity _without_ requiring reflected copies. Collectively, these
 shapes are known as **einsteins** (from the German "ein Stein," one stone).
 
 This document analyzes the einstein tilings through the lens of the frameworks developed in
@@ -17,7 +17,7 @@ This document analyzes the einstein tilings through the lens of the frameworks d
    the kite-based construction on the $3.4.6.4$ Laves lattice — making the einstein
    **Criterion-2 admissible** in the sense of `affine.md`.
 3. The orientation group, however, is **infinite**: the hat appears in twelve rotational
-   orientations *and* reflections, but the substitution rule forces additional rotations
+   orientations _and_ reflections, but the substitution rule forces additional rotations
    by angles incommensurate with $\mathbb{Z}_{12}$ at the meta-scale. This is the
    **partial failure of Criterion 1** that underlies aperiodicity.
 4. Reconnection occurs only through a **substitution hierarchy** rather than through
@@ -28,7 +28,7 @@ This document analyzes the einstein tilings through the lens of the frameworks d
    is replaced by a **handedness label**.
 
 The einstein is therefore not a counterexample to the multi-polygon framework but a
-particularly elegant *limit case*: a single-vertex type graph whose entire combinatorial
+particularly elegant _limit case_: a single-vertex type graph whose entire combinatorial
 richness is pushed into the **substitution loop** on that vertex.
 
 ---
@@ -37,7 +37,7 @@ richness is pushed into the **substitution loop** on that vertex.
 
 ### 1.1 Historical Background
 
-The hierarchy of tiling problems can be ordered by the *number of distinct prototiles*
+The hierarchy of tiling problems can be ordered by the _number of distinct prototiles_
 required to enforce aperiodicity:
 
 - **Wang (1961)**: an aperiodic set of tiles must exist if the Domino Problem is
@@ -58,7 +58,7 @@ The einstein achieves three structural feats simultaneously:
 1. **Geometric realization**: a concrete 13-sided polygon that fits together edge-to-edge.
 2. **Aperiodic forcing**: any tiling by congruent copies is necessarily non-periodic.
 3. **Substitutive hierarchy**: the tiling admits a self-similar inflation rule on
-   *metatiles* (collections of hats), which generates the full tiling combinatorially.
+   _metatiles_ (collections of hats), which generates the full tiling combinatorially.
 
 In the language of `multipolygon.md` Section 2.3, the einstein is a **schedule automaton**
 with a single state but an extraordinarily rich set of input symbols (edge classes),
@@ -78,6 +78,7 @@ Specifically, partition the plane into kites of the $3.4.6.4$ Laves lattice. The
 is the union of **eight** adjacent kites assembled into a 13-sided polygon. Because the
 underlying kite has $\mathbb{Q}(\sqrt{3})$ coordinates (it sits on a hexagonal-symmetric
 substrate), **every vertex of the hat lies in $\mathbb{Q}(\sqrt{3})^2$**.
+
 <p align="center">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-220 -180 440 360" width="500">
    <title>The Hat Monotile</title>
@@ -133,7 +134,6 @@ substrate), **every vertex of the hat lies in $\mathbb{Q}(\sqrt{3})^2$**.
 <br/><em>Figure 1: The hat tile, a 13-gon with edges in two length classes. Vertex
 coordinates lie in $\mathbb{Q}(\sqrt{3})^2$.</em>
 </p>
-
 
 This is the first key observation:
 
@@ -257,6 +257,7 @@ satisfy a **substitution rule**:
 $$\sigma: \mathcal{M} \to \mathcal{M}^*,$$
 mapping each metatile to a finite patch composed of (smaller) metatiles. Iterating
 $\sigma$ produces arbitrarily large patches of the tiling.
+
 <p align="center">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-260 -160 520 320" width="600">
    <title>The Substitution Rule on Metatiles</title>
@@ -301,7 +302,6 @@ $\sigma$ produces arbitrarily large patches of the tiling.
 $H_7$ into a patch of four metatile types $\{H_7, H_8, F, P\}$.</em>
 </p>
 
-
 ### 4.2 The Two-Level Type Graph
 
 The substitution structure is naturally captured by a **two-level type graph**:
@@ -320,6 +320,7 @@ $$V(\mathcal{T}) = \{H, H_7, H_8, F, P\}, \quad E(\mathcal{T}) = E_{\text{adj}} 
 
 where $E_{\text{adj}}$ encodes ground-level and meta-level adjacencies, and
 $E_{\text{inflate}}$ encodes the substitution maps.
+
 <p align="center">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-220 -160 440 320" width="520">
    <title>The Two-Level Type Graph of the Einstein</title>
@@ -364,7 +365,6 @@ $E_{\text{inflate}}$ encodes the substitution maps.
 dashed red edges are inflation (substitution) maps connecting metatiles to constituent hats.</em>
 </p>
 
-
 ### 4.3 Comparison with Penrose
 
 This matches exactly the Penrose construction described in `multipolygon.md` Section 2.2:
@@ -373,8 +373,8 @@ level and an inflation rule connecting each rhomb to a patch of smaller rhombs. 
 einstein simply replaces the two-vertex ground graph with a **one-vertex ground graph**,
 pushing all combinatorial complexity into the inflation rules at the meta level.
 
-> **Key insight**: From the multi-polygon perspective, the einstein is *Penrose with the
-> ground graph collapsed to a point*. The substitution-level graph carries all the work
+> **Key insight**: From the multi-polygon perspective, the einstein is _Penrose with the
+> ground graph collapsed to a point_. The substitution-level graph carries all the work
 > that the multi-tile ground graph carried in earlier aperiodic constructions.
 
 ---
@@ -404,7 +404,7 @@ naturally in the **biquadratic field** $\mathbb{Q}(\sqrt{3}, \sqrt{5})$.
 > The resolution is that the **ground-level tiling** lives entirely in $\mathbb{Q}(\sqrt{3})$.
 > The $\sqrt{5}$ enters only at the **meta-level inflation factor**, not at any individual
 > hat vertex. Criterion 2 is satisfied at the ground level; the meta-level adds an
-> *independent* algebraic layer that is consistent with — rather than required by — the
+> _independent_ algebraic layer that is consistent with — rather than required by — the
 > ground-level geometry.
 
 This stratified algebraic structure is genuinely new in the framework: the einstein
@@ -412,14 +412,14 @@ exhibits a **two-tier algebraic compactness**, where:
 
 1. The ground field is $\mathbb{Q}(\sqrt{3})$ — admissible.
 2. The substitution scaling factor lies in $\mathbb{Q}(\sqrt{3}, \sqrt{5})$, but acts on
-   the tiling only as a *global similarity*, not as a generator of new tile placements
+   the tiling only as a _global similarity_, not as a generator of new tile placements
    within a single inflation level.
 
 ### 5.2 The Orientation Group
 
 The hat appears in 12 rotational orientations (multiples of $30°$) plus reflections,
 giving an apparent orientation group $D_{12}$ of order 24. Combined with the substitution
-rule, however, the orientation group at the meta-level is *not* a subgroup of $D_{12}$:
+rule, however, the orientation group at the meta-level is _not_ a subgroup of $D_{12}$:
 the inflation rule rotates metatiles by angles involving $\arctan(\sqrt{3}/\sqrt{5})$ and
 related quadratic-irrational arctangents, which are **not** rational multiples of $\pi$.
 
@@ -451,7 +451,7 @@ Penrose. The einstein is therefore the **minimal-prototile representative of Lev
 
 ### 6.1 The Reflection Issue
 
-The hat tiles the plane aperiodically *only if* both the hat and its mirror image are used.
+The hat tiles the plane aperiodically _only if_ both the hat and its mirror image are used.
 The hat alone, without reflections, does not admit any tiling. Smith et al.'s refinement
 to the **spectre** modifies the edges of the hat (replacing straight segments with curves
 that break reflective symmetry) to produce a tile that:
@@ -467,6 +467,7 @@ For the hat (with reflections), the local data at each tile includes a **chirali
 $\chi \in \{+, -\}$. The matching rules force chirality flips along certain edge classes.
 Walking around a vertex configuration, the chirality label may flip an even or odd number
 of times — exactly analogous to the **sheet index** of `idea.md`!
+
 <p align="center">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -130 400 260" width="500">
    <title>The Z₂ Chirality Bundle over the Hat Tiling</title>
@@ -523,7 +524,6 @@ of times — exactly analogous to the **sheet index** of `idea.md`!
 The closed walk $\gamma$ may pick up a non-trivial $\mathbb{Z}_2$ holonomy.</em>
 </p>
 
-
 > **Proposition 6.2**: The hat tiling carries a natural $\mathbb{Z}_2$ holonomy whose
 > "sheet index" is the chirality label $\chi$. Closed walks on the dual adjacency graph
 > may transport chirality non-trivially, yielding a discrete principal $\mathbb{Z}_2$-bundle
@@ -531,7 +531,7 @@ The closed walk $\gamma$ may pick up a non-trivial $\mathbb{Z}_2$ holonomy.</em>
 
 Under the substitution rule, the chirality of a metatile is determined by its position in
 the inflation hierarchy; the chirality flips are organized by the substitution combinatorics
-into a globally consistent pattern (the bundle has *finitely many* sheets and *finite*
+into a globally consistent pattern (the bundle has _finitely many_ sheets and _finite_
 holonomy, unlike the pentagonal case where the holonomy is governed by an infinite cyclic
 group).
 
@@ -549,8 +549,8 @@ In bundle language:
   whose total space is the spectre's tiling itself.
 
 This makes the hat→spectre transition a direct analogue of passing from the spin double
-cover to the rotation group — except that here the discrete bundle is *finite* and the
-quotient is *geometric* rather than topological.
+cover to the rotation group — except that here the discrete bundle is _finite_ and the
+quotient is _geometric_ rather than topological.
 
 ---
 
@@ -586,7 +586,7 @@ geometric-dimensional.
 
 ### 7.3 Spectral Signature of Aperiodicity
 
-While the spectral *dimension* is integer, the spectrum itself exhibits the hallmarks of
+While the spectral _dimension_ is integer, the spectrum itself exhibits the hallmarks of
 substitution tilings:
 
 - **Cantor-set spectrum**: the Laplacian spectrum has gaps at every scale of the
@@ -605,14 +605,15 @@ Ammann–Beenker, even though the underlying type graph is minimal.
 
 Refining the table of `multipolygon.md` Section 9:
 
-| Level | Structure                              | Field                  | Orientation group | Example                  |
-|-------|----------------------------------------|------------------------|-------------------|--------------------------|
-| 0     | Periodic, finite isometry closure      | Single $\mathbb{Q}(\sqrt{d})$ | Finite     | Square, hexagonal        |
-| 1a    | Aperiodic, substitution-mediated       | $\mathbb{Q}(\sqrt{5})$ | Finite (local) + infinite (meta) | Penrose |
-| 1b    | Aperiodic, substitution + chirality    | $\mathbb{Q}(\sqrt{3})$ | Finite (local) + infinite (meta) + $\mathbb{Z}_2$ chirality | **Hat** |
-| 1c    | Aperiodic, substitution, no chirality  | $\mathbb{Q}(\sqrt{3})$ | Finite (local) + infinite (meta) | **Spectre** |
-| 2     | Multi-sheeted covering, fractional dim | $\mathbb{Q}(\sqrt{5})$ | Infinite cyclic   | Pentagon (`idea.md`)     |
-| 3     | Non-reconnective                       | Mixed / transcendental | Infinite, free    | Generic irregular polygon |
+| Level | Structure                              | Field                         | Orientation group                                           | Example                   |
+| ----- | -------------------------------------- | ----------------------------- | ----------------------------------------------------------- | ------------------------- |
+| 0     | Periodic, finite isometry closure      | Single $\mathbb{Q}(\sqrt{d})$ | Finite                                                      | Square, hexagonal         |
+| 1a    | Aperiodic, substitution-mediated       | $\mathbb{Q}(\sqrt{5})$        | Finite (local) + infinite (meta)                            | Penrose                   |
+| 1b    | Aperiodic, substitution + chirality    | $\mathbb{Q}(\sqrt{3})$        | Finite (local) + infinite (meta) + $\mathbb{Z}_2$ chirality | **Hat**                   |
+| 1c    | Aperiodic, substitution, no chirality  | $\mathbb{Q}(\sqrt{3})$        | Finite (local) + infinite (meta)                            | **Spectre**               |
+| 2     | Multi-sheeted covering, fractional dim | $\mathbb{Q}(\sqrt{5})$        | Infinite cyclic                                             | Pentagon (`idea.md`)      |
+| 3     | Non-reconnective                       | Mixed / transcendental        | Infinite, free                                              | Generic irregular polygon |
+
 <p align="center">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-30 -30 660 360" width="640">
    <title>The Reconnection Hierarchy</title>
@@ -659,7 +660,6 @@ Refining the table of `multipolygon.md` Section 9:
 sublevels 1b and 1c, with $\mathbb{Q}(\sqrt{3})$ ground-level substrate.</em>
 </p>
 
-
 The hat and spectre occupy a **new sublevel 1b/1c** in the hierarchy, distinguished from
 Penrose by:
 
@@ -674,8 +674,8 @@ Penrose by:
 ### 9.1 Single-Vertex Type Graphs
 
 Recall from `pinwheels.md` (and `multipolygon.md` Section 1.2) that the pinwheel can be
-viewed *either* as a single-vertex tiling (with the composite base+fin treated as a
-monotile) *or* as a two-vertex tiling (with $\{B, F\}$). The einstein corresponds to the
+viewed _either_ as a single-vertex tiling (with the composite base+fin treated as a
+monotile) _or_ as a two-vertex tiling (with $\{B, F\}$). The einstein corresponds to the
 **single-vertex view applied at the finest possible level**: there is no internal
 decomposition of the hat into "base" and "fin" components.
 
@@ -796,7 +796,7 @@ Adapting and specializing the open questions of `multipolygon.md` Section 12:
    Turing-universal computation? The aperiodicity guarantees that glider trajectories
    never repeat, potentially enabling new universality constructions.
 
-7. **Causal structure**: the substitution hierarchy naturally provides a *time foliation*
+7. **Causal structure**: the substitution hierarchy naturally provides a _time foliation_
    (each substitution level = one time step). Does this yield a causal CA in the sense of
    `idea.md` Section 5.2, with the meta-level inflation playing the role of "spacetime"
    coarse-graining?

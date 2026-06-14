@@ -9,7 +9,7 @@
  */
 export class OptimizerLbfgs {
   constructor(opts = {}) {
-    this.name = "lbfgs";
+    this.name = 'lbfgs';
     this.m = opts.historySize ?? 10;
     this.maxLineSearch = opts.maxLineSearch ?? 20;
     this.c1 = opts.c1 ?? 1e-4;

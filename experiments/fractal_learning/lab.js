@@ -23,10 +23,10 @@ function randn() {
 
 // ---------- DOM ----------
 const $ = (id) => document.getElementById(id);
-const view = $("view");
-const ctx = view.getContext("2d");
-const lossCanvas = $("lossCanvas");
-const lctx = lossCanvas.getContext("2d");
+const view = $('view');
+const ctx = view.getContext('2d');
+const lossCanvas = $('lossCanvas');
+const lctx = lossCanvas.getContext('2d');
 
 // ---------- world<->screen ----------
 let world = { cx: 0, cy: 0, scale: 200 }; // 1 unit = 200 px
@@ -51,7 +51,7 @@ function resizeCanvas() {
   lossCanvas.width = lossCanvas.clientWidth * dpr;
   lossCanvas.height = lossCanvas.clientHeight * dpr;
 }
-window.addEventListener("resize", () => {
+window.addEventListener('resize', () => {
   resizeCanvas();
   draw();
 });
@@ -60,7 +60,7 @@ window.addEventListener("resize", () => {
 const state = {
   K: 2,
   N: 7,
-  enumeration: "commutative",
+  enumeration: 'commutative',
   target: [], // [[x,y],...]
   // params: theta[k] = {A: [a11,a12,a21,a22], b:[b1,b2]}
   theta: [],
@@ -117,8 +117,7 @@ function enumerateCommutative(K, N) {
   return out;
 }
 function enumerate() {
-  if (state.enumeration === "ordered")
-    return enumerateOrdered(state.K, state.N);
+  if (state.enumeration === 'ordered') return enumerateOrdered(state.K, state.N);
   return enumerateCommutative(state.K, state.N);
 }
 
@@ -127,12 +126,7 @@ function newTheta(K) {
   const theta = [];
   for (let k = 0; k < K; k++) {
     theta.push({
-      A: [
-        0.5 + 0.05 * randn(),
-        0.05 * randn(),
-        0.05 * randn(),
-        0.5 + 0.05 * randn(),
-      ],
+      A: [0.5 + 0.05 * randn(), 0.05 * randn(), 0.05 * randn(), 0.5 + 0.05 * randn()],
       b: [0.2 * randn(), 0.2 * randn()],
     });
   }
@@ -193,8 +187,8 @@ function zeroGrad(K) {
 function computeLossAndGrad(words, theta) {
   const K = state.K;
   const Q = state.target;
-  const alpha = parseFloat($("alpha").value);
-  const beta = parseFloat($("beta").value);
+  const alpha = parseFloat($('alpha').value);
+  const beta = parseFloat($('beta').value);
 
   const { orbit, traces } = forward(words, theta);
   const P = orbit;
@@ -207,8 +201,7 @@ function computeLossAndGrad(words, theta) {
   // For each p in P, compute nearest q in Q.
   // Also for Q->P matching, remember per-p the q's that map to it.
   const nnP = new Array(Np); // {idx,dist2}
-  for (let i = 0; i < Np; i++)
-    nnP[i] = M > 0 ? nearestIndex(P[i], Q) : { idx: -1, dist2: 0 };
+  for (let i = 0; i < Np; i++) nnP[i] = M > 0 ? nearestIndex(P[i], Q) : { idx: -1, dist2: 0 };
 
   // Forward chamfer P->Q
   if (M > 0 && alpha !== 0) {
@@ -280,10 +273,10 @@ function computeLossAndGrad(words, theta) {
   }
 
   // Regularizers
-  const lamA = parseFloat($("lamA").value) || 0;
-  const lamb = parseFloat($("lamb").value) || 0;
-  const lamC = parseFloat($("lamC").value) || 0;
-  const eps = parseFloat($("eps").value) || 0;
+  const lamA = parseFloat($('lamA').value) || 0;
+  const lamb = parseFloat($('lamb').value) || 0;
+  const lamC = parseFloat($('lamC').value) || 0;
+  const eps = parseFloat($('eps').value) || 0;
 
   for (let k = 0; k < K; k++) {
     const A = theta[k].A,
@@ -302,9 +295,7 @@ function computeLossAndGrad(words, theta) {
     // Use Frobenius-based soft bound: penalize (||A||_F - sqrt(2)(1-eps))_+^2
     // (cheap and stable)
     if (lamC !== 0) {
-      const frob = Math.sqrt(
-        A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + A[3] * A[3],
-      );
+      const frob = Math.sqrt(A[0] * A[0] + A[1] * A[1] + A[2] * A[2] + A[3] * A[3]);
       const target = Math.SQRT2 * (1 - eps);
       const ex = frob - target;
       if (ex > 0) {
@@ -332,9 +323,9 @@ function ensureAdamState(K) {
   }
 }
 function stepOptimizer(grad) {
-  const lr = parseFloat($("lr").value);
-  const optim = $("optim").value;
-  if (optim === "sgd") {
+  const lr = parseFloat($('lr').value);
+  const optim = $('optim').value;
+  if (optim === 'sgd') {
     for (let k = 0; k < state.K; k++) {
       for (let r = 0; r < 4; r++) state.theta[k].A[r] -= lr * grad[k].A[r];
       for (let r = 0; r < 2; r++) state.theta[k].b[r] -= lr * grad[k].b[r];
@@ -370,7 +361,7 @@ function stepOptimizer(grad) {
 
 // ---------- training step ----------
 let cachedWords = null;
-let cachedKey = "";
+let cachedKey = '';
 function getWords() {
   const key = `${state.K}|${state.N}|${state.enumeration}`;
   if (key !== cachedKey) {
@@ -398,9 +389,9 @@ function forwardOnly() {
 
 // ---------- drawing ----------
 function drawGrid() {
-  ctx.fillStyle = "#0a0d12";
+  ctx.fillStyle = '#0a0d12';
   ctx.fillRect(0, 0, view.width, view.height);
-  ctx.strokeStyle = "#161b22";
+  ctx.strokeStyle = '#161b22';
   ctx.lineWidth = 1;
   const step = 0.25;
   const [x0, y0] = s2w(0, view.height);
@@ -418,7 +409,7 @@ function drawGrid() {
   }
   ctx.stroke();
   // axes
-  ctx.strokeStyle = "#30363d";
+  ctx.strokeStyle = '#30363d';
   ctx.beginPath();
   const [, sy0] = w2s(0, 0);
   const [sx0] = w2s(0, 0);
@@ -441,8 +432,8 @@ function drawPoints(pts, color, r) {
 
 function drawFixedPoints() {
   // fixed point of T_k: x = A x + b -> (I-A) x = b
-  ctx.fillStyle = "#ff7b72";
-  ctx.strokeStyle = "#ff7b72";
+  ctx.fillStyle = '#ff7b72';
+  ctx.strokeStyle = '#ff7b72';
   for (let k = 0; k < state.theta.length; k++) {
     const { A, b } = state.theta[k];
     // I - A = [[1-a, -b], [-c, 1-d]]
@@ -458,22 +449,22 @@ function drawFixedPoints() {
     ctx.beginPath();
     ctx.arc(sx, sy, 6, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.font = "11px ui-monospace";
-    ctx.fillText("T" + (k + 1), sx + 8, sy - 6);
+    ctx.font = '11px ui-monospace';
+    ctx.fillText('T' + (k + 1), sx + 8, sy - 6);
   }
 }
 
 function draw() {
   drawGrid();
-  drawPoints(state.target, "#3fb950", 2.5);
-  drawPoints(state.orbit, "#58a6ff", 1.8);
+  drawPoints(state.target, '#3fb950', 2.5);
+  drawPoints(state.orbit, '#58a6ff', 1.8);
   drawFixedPoints();
 }
 
 function drawLossCurve() {
   const w = lossCanvas.width,
     h = lossCanvas.height;
-  lctx.fillStyle = "#0d1117";
+  lctx.fillStyle = '#0d1117';
   lctx.fillRect(0, 0, w, h);
   const data = state.lossHistory;
   if (data.length < 2) return;
@@ -482,7 +473,7 @@ function drawLossCurve() {
   let lo = Math.min(...logs),
     hi = Math.max(...logs);
   if (hi - lo < 1e-6) hi = lo + 1e-6;
-  lctx.strokeStyle = "#58a6ff";
+  lctx.strokeStyle = '#58a6ff';
   lctx.lineWidth = 1.5;
   lctx.beginPath();
   for (let i = 0; i < logs.length; i++) {
@@ -492,19 +483,19 @@ function drawLossCurve() {
     else lctx.lineTo(x, y);
   }
   lctx.stroke();
-  lctx.fillStyle = "#7d8590";
-  lctx.font = "10px ui-monospace";
+  lctx.fillStyle = '#7d8590';
+  lctx.font = '10px ui-monospace';
   lctx.fillText(`log10 loss [${lo.toFixed(2)}, ${hi.toFixed(2)}]`, 4, 12);
 }
 
 // ---------- UI: transforms inspector ----------
 function renderTransforms() {
-  const root = $("transforms");
-  root.innerHTML = "";
+  const root = $('transforms');
+  root.innerHTML = '';
   for (let k = 0; k < state.theta.length; k++) {
     const t = state.theta[k];
-    const card = document.createElement("div");
-    card.className = "tf";
+    const card = document.createElement('div');
+    card.className = 'tf';
     card.innerHTML = `
       <div class="tf-head">
         <b>T${k + 1}</b>
@@ -525,8 +516,8 @@ function renderTransforms() {
     `;
     root.appendChild(card);
   }
-  root.querySelectorAll("input").forEach((inp) => {
-    inp.addEventListener("change", (e) => {
+  root.querySelectorAll('input').forEach((inp) => {
+    inp.addEventListener('change', (e) => {
       const k = +e.target.dataset.k;
       const r = e.target.dataset.r;
       const i = +e.target.dataset.i;
@@ -580,11 +571,7 @@ function presetHeart(n = 250) {
   for (let i = 0; i < n; i++) {
     const t = (2 * Math.PI * i) / n;
     const x = 16 * Math.pow(Math.sin(t), 3);
-    const y =
-      13 * Math.cos(t) -
-      5 * Math.cos(2 * t) -
-      2 * Math.cos(3 * t) -
-      Math.cos(4 * t);
+    const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
     pts.push([x / 20, y / 20]);
   }
   return pts;
@@ -667,11 +654,11 @@ function presetGrid(n = 7) {
 
 // ---------- init presets ----------
 function initSmall() {
-  rand = mulberry32(parseInt($("seed").value) || 1);
+  rand = mulberry32(parseInt($('seed').value) || 1);
   state.theta = newTheta(state.K);
 }
 function initRotations() {
-  rand = mulberry32(parseInt($("seed").value) || 1);
+  rand = mulberry32(parseInt($('seed').value) || 1);
   state.theta = [];
   for (let k = 0; k < state.K; k++) {
     const a = (2 * Math.PI * k) / state.K + 0.1 * randn();
@@ -683,7 +670,7 @@ function initRotations() {
   }
 }
 function initShrink() {
-  rand = mulberry32(parseInt($("seed").value) || 1);
+  rand = mulberry32(parseInt($('seed').value) || 1);
   state.theta = [];
   for (let k = 0; k < state.K; k++) {
     const cx = 0.5 * Math.cos((2 * Math.PI * k) / state.K);
@@ -694,7 +681,7 @@ function initShrink() {
 }
 function initSierpinski3() {
   state.K = 3;
-  $("K").value = 3;
+  $('K').value = 3;
   const verts = [
     [-0.6, -0.5],
     [0.6, -0.5],
@@ -704,76 +691,76 @@ function initSierpinski3() {
     A: [0.5, 0, 0, 0.5],
     b: [0.5 * v[0], 0.5 * v[1]],
   }));
-  cachedKey = "";
+  cachedKey = '';
 }
 function initBarnsley() {
   state.K = 4;
-  $("K").value = 4;
+  $('K').value = 4;
   state.theta = [
     { A: [0, 0, 0, 0.16], b: [0, -0.7] },
     { A: [0.85, 0.04, -0.04, 0.85], b: [0, 0.27] },
     { A: [0.2, -0.26, 0.23, 0.22], b: [0, 0.27] },
     { A: [-0.15, 0.28, 0.26, 0.24], b: [0, -0.07] },
   ];
-  cachedKey = "";
+  cachedKey = '';
 }
 
 // ---------- UI wiring ----------
 function refreshK() {
-  const newK = Math.max(1, Math.min(6, parseInt($("K").value) || 2));
+  const newK = Math.max(1, Math.min(6, parseInt($('K').value) || 2));
   if (newK !== state.K) {
     state.K = newK;
-    cachedKey = "";
+    cachedKey = '';
     initSmall();
   }
 }
 function refreshN() {
-  const newN = Math.max(1, Math.min(12, parseInt($("N").value) || 5));
+  const newN = Math.max(1, Math.min(12, parseInt($('N').value) || 5));
   if (newN !== state.N) {
     state.N = newN;
-    cachedKey = "";
+    cachedKey = '';
   }
 }
 function updateOrbitSize() {
   const w = getWords();
-  $("orbitSize").textContent = `orbit size: ${w.length} words`;
-  $("orbitCount").textContent = w.length;
+  $('orbitSize').textContent = `orbit size: ${w.length} words`;
+  $('orbitCount').textContent = w.length;
 }
 
-$("K").addEventListener("change", () => {
+$('K').addEventListener('change', () => {
   refreshK();
   afterParamChange();
 });
-$("N").addEventListener("change", () => {
+$('N').addEventListener('change', () => {
   refreshN();
   afterParamChange();
 });
-$("enum").addEventListener("change", () => {
-  state.enumeration = $("enum").value;
-  cachedKey = "";
+$('enum').addEventListener('change', () => {
+  state.enumeration = $('enum').value;
+  cachedKey = '';
   afterParamChange();
 });
-$("initSmall").addEventListener("click", () => {
+$('initSmall').addEventListener('click', () => {
   initSmall();
   afterParamChange();
 });
-$("initRot").addEventListener("click", () => {
+$('initRot').addEventListener('click', () => {
   initRotations();
   afterParamChange();
 });
-$("initShrink").addEventListener("click", () => {
+$('initShrink').addEventListener('click', () => {
   initShrink();
   afterParamChange();
 });
-$("initSierp").addEventListener("click", () => {
+$('initSierp').addEventListener('click', () => {
   initSierpinski3();
   afterParamChange();
 });
-$("initBarnsley").addEventListener("click", () => {
+$('initBarnsley').addEventListener('click', () => {
   initBarnsley();
   afterParamChange();
 });
-$("reset").addEventListener("click", () => {
+$('reset').addEventListener('click', () => {
   initSmall();
   state.iter = 0;
   state.lossHistory = [];
@@ -783,8 +770,8 @@ $("reset").addEventListener("click", () => {
   afterParamChange();
 });
 
-$("step").addEventListener("click", () => {
-  const steps = parseInt($("steps").value) || 1;
+$('step').addEventListener('click', () => {
+  const steps = parseInt($('steps').value) || 1;
   for (let i = 0; i < steps; i++) trainStep();
   updateHUD();
   draw();
@@ -792,9 +779,9 @@ $("step").addEventListener("click", () => {
   drawLossCurve();
 });
 
-$("run").addEventListener("click", () => {
+$('run').addEventListener('click', () => {
   state.running = !state.running;
-  $("run").textContent = state.running ? "⏸ Pause" : "▶ Run";
+  $('run').textContent = state.running ? '⏸ Pause' : '▶ Run';
   if (state.running) loop();
 });
 
@@ -802,10 +789,10 @@ let lastFrame = 0;
 function loop() {
   if (!state.running) return;
   const now = performance.now();
-  const fps = parseFloat($("fps").value) || 60;
+  const fps = parseFloat($('fps').value) || 60;
   const minDt = 1000 / fps;
   if (now - lastFrame >= minDt) {
-    const steps = parseInt($("steps").value) || 1;
+    const steps = parseInt($('steps').value) || 1;
     for (let i = 0; i < steps; i++) trainStep();
     updateHUD();
     draw();
@@ -826,23 +813,22 @@ function afterParamChange() {
 }
 
 function updateHUD() {
-  $("targCount").textContent = state.target.length;
-  $("orbitCount").textContent = state.orbit.length;
-  $("iterVal").textContent = state.iter;
-  $("lossVal").textContent =
-    state.lastLoss == null ? "—" : state.lastLoss.toExponential(3);
+  $('targCount').textContent = state.target.length;
+  $('orbitCount').textContent = state.orbit.length;
+  $('iterVal').textContent = state.iter;
+  $('lossVal').textContent = state.lastLoss == null ? '—' : state.lastLoss.toExponential(3);
 }
 
 // ---------- target drawing ----------
 let drawing = false;
-view.addEventListener("mousedown", (e) => {
+view.addEventListener('mousedown', (e) => {
   drawing = true;
   addTargetAt(e);
 });
-view.addEventListener("mousemove", (e) => {
+view.addEventListener('mousemove', (e) => {
   if (drawing) addTargetAt(e);
 });
-window.addEventListener("mouseup", () => {
+window.addEventListener('mouseup', () => {
   drawing = false;
 });
 function addTargetAt(e) {
@@ -861,13 +847,13 @@ function addTargetAt(e) {
   updateHUD();
   draw();
 }
-$("targetClear").addEventListener("click", () => {
+$('targetClear').addEventListener('click', () => {
   state.target = [];
   updateHUD();
   draw();
 });
-$("loadPreset").addEventListener("click", () => {
-  const v = $("targetPreset").value;
+$('loadPreset').addEventListener('click', () => {
+  const v = $('targetPreset').value;
   if (!v) return;
   const map = {
     circle: presetCircle,
@@ -885,16 +871,16 @@ $("loadPreset").addEventListener("click", () => {
 });
 
 // ---------- keyboard ----------
-window.addEventListener("keydown", (e) => {
-  if (e.code === "Space" && e.target.tagName !== "INPUT") {
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
     e.preventDefault();
-    $("step").click();
+    $('step').click();
   }
 });
 
 // ---------- zoom/pan ----------
 view.addEventListener(
-  "wheel",
+  'wheel',
   (e) => {
     e.preventDefault();
     const rect = view.getBoundingClientRect();
@@ -910,21 +896,21 @@ view.addEventListener(
     world.cy += wy - nwy;
     draw();
   },
-  { passive: false },
+  { passive: false }
 );
 
 // right-click drag pan
 let panning = false,
   panLast = null;
-view.addEventListener("contextmenu", (e) => e.preventDefault());
-view.addEventListener("mousedown", (e) => {
+view.addEventListener('contextmenu', (e) => e.preventDefault());
+view.addEventListener('mousedown', (e) => {
   if (e.button === 2) {
     panning = true;
     panLast = [e.clientX, e.clientY];
     drawing = false;
   }
 });
-window.addEventListener("mousemove", (e) => {
+window.addEventListener('mousemove', (e) => {
   if (panning) {
     const dx = e.clientX - panLast[0];
     const dy = e.clientY - panLast[1];
@@ -935,19 +921,19 @@ window.addEventListener("mousemove", (e) => {
     draw();
   }
 });
-window.addEventListener("mouseup", (e) => {
+window.addEventListener('mouseup', (e) => {
   if (e.button === 2) panning = false;
 });
 
 // ---------- boot ----------
 resizeCanvas();
-state.K = parseInt($("K").value);
-state.N = parseInt($("N").value);
-state.enumeration = $("enum").value;
-rand = mulberry32(parseInt($("seed").value) || 1);
+state.K = parseInt($('K').value);
+state.N = parseInt($('N').value);
+state.enumeration = $('enum').value;
+rand = mulberry32(parseInt($('seed').value) || 1);
 initSmall();
 state.target = presetCircle(150);
-$("targetPreset").value = "circle";
+$('targetPreset').value = 'circle';
 ensureAdamState(state.K);
 forwardOnly();
 updateOrbitSize();

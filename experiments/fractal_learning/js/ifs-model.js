@@ -2,8 +2,8 @@
 // Each transform: A_k (2x2), b_k (2,). Stored as a single flat variable per k
 // so the optimizer interface is uniform.
 
-import { makeRng } from "./rng.js";
-import { computeCommutativeOrbit } from "./orbit-commutative.js";
+import { makeRng } from './rng.js';
+import { computeCommutativeOrbit } from './orbit-commutative.js';
 
 export class IFSModel {
   /**
@@ -90,12 +90,7 @@ export class IFSModel {
     const arr = [];
     for (let k = 0; k < this.K; k++) {
       arr.push({
-        A: [
-          0.5 + 0.05 * randn(),
-          0.05 * randn(),
-          0.05 * randn(),
-          0.5 + 0.05 * randn(),
-        ],
+        A: [0.5 + 0.05 * randn(), 0.05 * randn(), 0.05 * randn(), 0.5 + 0.05 * randn()],
         b: [0.2 * randn(), 0.2 * randn()],
       });
     }
@@ -109,12 +104,7 @@ export class IFSModel {
     const arr = [];
     for (let k = 0; k < this.K; k++) {
       arr.push({
-        A: [
-          0.5 + 0.05 * randn(),
-          0.05 * randn(),
-          0.05 * randn(),
-          0.5 + 0.05 * randn(),
-        ],
+        A: [0.5 + 0.05 * randn(), 0.05 * randn(), 0.05 * randn(), 0.5 + 0.05 * randn()],
         b: [0.2 * randn(), 0.2 * randn()],
       });
     }
@@ -129,12 +119,7 @@ export class IFSModel {
       const a = (2 * Math.PI * k) / this.K + 0.1 * randn();
       const s = 0.5;
       arr.push({
-        A: [
-          s * Math.cos(a),
-          -s * Math.sin(a),
-          s * Math.sin(a),
-          s * Math.cos(a),
-        ],
+        A: [s * Math.cos(a), -s * Math.sin(a), s * Math.sin(a), s * Math.cos(a)],
         b: [0.3 * Math.cos(a), 0.3 * Math.sin(a)],
       });
     }
@@ -198,7 +183,7 @@ export class IFSModel {
     for (let s = 0; s < N; s++) {
       const col = new Int32Array(P);
       for (let i = 0; i < P; i++) col[i] = words[i][s];
-      steps.push(tf.tensor1d(col, "int32"));
+      steps.push(tf.tensor1d(col, 'int32'));
     }
     return { steps, N, P };
   }

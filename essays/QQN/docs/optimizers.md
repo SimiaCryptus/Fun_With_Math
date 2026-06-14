@@ -17,6 +17,7 @@ The search direction is computed using the two-loop recursion algorithm, which e
 ### Configuration Strategies
 
 #### Default Configuration
+
 ```rust
 LBFGSConfig {
     history_size: 10,
@@ -36,12 +37,14 @@ LBFGSConfig {
 ```
 
 #### Aggressive Configuration
+
 - **Reduced history size**: 5 (faster computation, less memory)
 - **Larger step limits**: `max_step_size: 10.0`, `max_param_change: 10.0`
 - **Disabled gradient clipping**: Allows full gradient magnitude
 - **Strategy**: Prioritizes speed over stability, suitable for well-conditioned problems
 
 #### Hybrid Configuration
+
 - **Balanced history**: 12 corrections (good approximation quality)
 - **Moderate constraints**: `max_step_size: 5.0`, `max_param_change: 2.0`
 - **Controlled gradient clipping**: `gradient_clip: 50.0`
@@ -68,6 +71,7 @@ x_{t+1} = x_t - α * v_t           (parameter update)
 ### Configuration Strategies
 
 #### Default Configuration
+
 ```rust
 GDConfig {
     learning_rate: 0.01,
@@ -79,6 +83,7 @@ GDConfig {
 ```
 
 #### Conservative Configuration
+
 - **Low learning rate**: 0.001 for stability
 - **High momentum**: 0.95 for smooth convergence
 - **Nesterov acceleration**: Improved momentum variant
@@ -86,6 +91,7 @@ GDConfig {
 - **Strategy**: Prioritizes stability and convergence guarantees
 
 #### Momentum Configuration
+
 - **Standard momentum**: 0.9 coefficient
 - **Adaptive learning rate**: Scales based on gradient magnitude
 - **Strategy**: Accelerates convergence while maintaining stability
@@ -93,6 +99,7 @@ GDConfig {
 ### Technical Features
 
 1. **Adaptive Learning Rate**:
+
    ```rust
    let adaptive_factor = if grad_norm > threshold {
        1.0 / (1.0 + (grad_norm / threshold).ln())
@@ -120,6 +127,7 @@ x_{t+1} = x_t - α * m̂_t / (√v̂_t + ε)    (parameter update)
 ### Configuration Strategies
 
 #### Fast Configurations
+
 Multiple variants optimized for different scenarios:
 
 1. **Adam-Fast**: `learning_rate: 0.1`, constant schedule
@@ -132,18 +140,21 @@ Multiple variants optimized for different scenarios:
 ### Learning Rate Schedules
 
 #### Exponential Decay
+
 ```rust
 current_lr *= lr_decay;
 current_lr = current_lr.max(min_learning_rate);
 ```
 
 #### Cosine Annealing
+
 ```rust
 let cosine_decay = 0.5 * (1.0 + (π * t / T).cos());
 current_lr = min_lr + (max_lr - min_lr) * cosine_decay;
 ```
 
 #### Adaptive Schedule
+
 ```rust
 if relative_improvement < threshold {
     bad_step_count += 1;
@@ -165,34 +176,41 @@ if relative_improvement < threshold {
 ### Problem-Specific Recommendations
 
 #### Well-Conditioned Quadratic Problems
+
 - **L-BFGS-Aggressive**: Fast convergence with large steps
 - **Adam-Fast**: High learning rate with momentum
 
 #### Ill-Conditioned Problems
+
 - **L-BFGS-Hybrid**: Balanced approach with safeguards
 - **GD-Conservative**: Stable, predictable convergence
 
 #### Non-Convex Landscapes (e.g., Rosenbrock)
+
 - **GD-Conservative**: Nesterov momentum for valley navigation
 - **Adam-Fast-Adaptive**: Automatic learning rate adjustment
 
 #### High-Dimensional Problems
+
 - **Adam variants**: Efficient per-parameter adaptation
 - **L-BFGS**: Limited memory requirements
 
 ### Performance Characteristics
 
 #### Convergence Speed Ranking
+
 1. **L-BFGS-Aggressive**: Fastest for smooth problems
 2. **Adam-Fast variants**: Consistent across problem types
 3. **GD-Conservative**: Steady but slower convergence
 
 #### Numerical Stability Ranking
+
 1. **GD-Conservative**: Most stable with safeguards
 2. **L-BFGS-Hybrid**: Good balance of speed and stability
 3. **Adam-Fast-Conservative**: Stable with gradient clipping
 
 #### Memory Efficiency Ranking
+
 1. **GD variants**: Minimal memory overhead
 2. **Adam**: Moderate memory for moment estimates
 3. **L-BFGS**: Higher memory for history storage
@@ -200,18 +218,21 @@ if relative_improvement < threshold {
 ## 5. Implementation Highlights
 
 ### Numerical Safeguards
+
 - **Finite value checking**: Prevents NaN/Inf propagation
 - **Gradient magnitude limits**: Prevents numerical overflow
 - **Step size bounds**: Ensures reasonable parameter updates
 - **Recovery mechanisms**: Automatic state reset on failure
 
 ### Performance Optimizations
+
 - **Vectorized operations**: Efficient tensor computations
 - **Memory pre-allocation**: Reduces allocation overhead
 - **Early termination**: Convergence detection prevents unnecessary iterations
 - **Adaptive tolerances**: Problem-aware convergence criteria
 
 ### Monitoring and Diagnostics
+
 - **Comprehensive metadata**: Gradient norms, step sizes, convergence metrics
 - **Timing information**: Performance profiling capabilities
 - **Verbose logging**: Detailed optimization progress tracking

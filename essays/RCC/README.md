@@ -75,8 +75,8 @@ Three canonical constructions for π, ordered by convergence rate:
 
 ### Setup
 
-Given a sequence (s_N) of rationals with limit α, fix a tolerance ε > 0 and pick the smallest N such that |s_N − α| < ε.
-The truncation s_N = p_N/q_N is the _rational certificate_ for α at tolerance ε.
+Given a sequence (s*N) of rationals with limit α, fix a tolerance ε > 0 and pick the smallest N such that |s_N − α| < ε.
+The truncation s_N = p_N/q_N is the \_rational certificate* for α at tolerance ε.
 
 The cost model has two components:
 

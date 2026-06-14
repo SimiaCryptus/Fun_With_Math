@@ -218,16 +218,16 @@ $$\mathbf{d}'(t) = (1-2t)(-\nabla f) + 2t\mathbf{d}_{\text{LBFGS}}$$
 ### 3.3.1 Adaptive Solver Selection
 
 The choice of one-dimensional solver significantly impacts QQN's performance and robustness. Different function characteristics call for different solution strategies:
-* **Smooth, Well-Behaved Functions**: When $\phi(t)$ exhibits smooth behavior with a clear minimum, methods like Brent's algorithm that combine golden section search with parabolic interpolation achieve rapid convergence with minimal function evaluations.
-* **Noisy or Discontinuous Functions**: For functions with numerical noise or discontinuities (common in simulation-based optimization), golden section search provides robustness at the cost of additional evaluations. Its convergence depends only on function comparisons, not on smoothness.
-* **Functions with Cheap Gradients**: When gradient computation is inexpensive (e.g., automatic differentiation), bisection on $\phi'(t) = 0$ can be highly efficient. This approach directly targets stationary points and provides quadratic convergence near the solution.
-* **Adaptive Strategy**: An intelligent implementation might start with an aggressive method (e.g., cubic interpolation using $\phi(0)$, $\phi'(0)$, $\phi(1)$, $\phi'(1)$) and fall back to more robust methods if irregularities are detected. Indicators for switching include:
-  * Non-monotonic behavior suggesting multiple local minima
-  * Numerical issues (NaN, overflow) indicating function evaluation problems
-  * Slow convergence suggesting poor conditioning
+
+- **Smooth, Well-Behaved Functions**: When $\phi(t)$ exhibits smooth behavior with a clear minimum, methods like Brent's algorithm that combine golden section search with parabolic interpolation achieve rapid convergence with minimal function evaluations.
+- **Noisy or Discontinuous Functions**: For functions with numerical noise or discontinuities (common in simulation-based optimization), golden section search provides robustness at the cost of additional evaluations. Its convergence depends only on function comparisons, not on smoothness.
+- **Functions with Cheap Gradients**: When gradient computation is inexpensive (e.g., automatic differentiation), bisection on $\phi'(t) = 0$ can be highly efficient. This approach directly targets stationary points and provides quadratic convergence near the solution.
+- **Adaptive Strategy**: An intelligent implementation might start with an aggressive method (e.g., cubic interpolation using $\phi(0)$, $\phi'(0)$, $\phi(1)$, $\phi'(1)$) and fall back to more robust methods if irregularities are detected. Indicators for switching include:
+  - Non-monotonic behavior suggesting multiple local minima
+  - Numerical issues (NaN, overflow) indicating function evaluation problems
+  - Slow convergence suggesting poor conditioning
 
 This adaptive approach ensures QQN maintains efficiency on well-behaved problems while providing robustness for challenging cases.
-
 
 ### 3.4 Properties of the Quadratic Path
 
@@ -236,7 +236,7 @@ The quadratic path exhibits several desirable properties:
 **Theorem 1** (Descent Property): For any $\mathbf{d}_{\text{LBFGS}}$, there exists $\bar{t} > 0$ such
 that $\phi(t) < \phi(0)$ for all $t \in (0, \bar{t}]$.
 
-*Proof*: Since $\mathbf{d}'(0) = -\nabla f(\mathbf{x}_k)$, we have:
+_Proof_: Since $\mathbf{d}'(0) = -\nabla f(\mathbf{x}_k)$, we have:
 $$\phi'(0) = \nabla f(\mathbf{x}_k)^T (-\nabla f(\mathbf{x}_k)) = -\|\nabla f(\mathbf{x}_k)\|^2 < 0$$
 
 By continuity of $\phi'$, there exists $\bar{t} > 0$ such that $\phi'(t) < 0$ for $t \in (0, \bar{t}]$. □
@@ -244,8 +244,8 @@ By continuity of $\phi'$, there exists $\bar{t} > 0$ such that $\phi'(t) < 0$ fo
 **Theorem 2** (Interpolation Property): The path $\mathbf{d}(t)$ smoothly interpolates between gradient and quasi-Newton
 directions:
 
-* As $t \to 0^+$: $\mathbf{d}(t) \approx t(-\nabla f)$ (gradient behavior)
-* As $t \to 1^-$: $\mathbf{d}(t) \approx \mathbf{d}_{\text{LBFGS}} - (1-t)\nabla f$ (quasi-Newton behavior)
+- As $t \to 0^+$: $\mathbf{d}(t) \approx t(-\nabla f)$ (gradient behavior)
+- As $t \to 1^-$: $\mathbf{d}(t) \approx \mathbf{d}_{\text{LBFGS}} - (1-t)\nabla f$ (quasi-Newton behavior)
 
 ### 3.5 Comparison with Traditional Approaches
 
@@ -262,18 +262,19 @@ eliminates step size initialization issues, and the quadratic path naturally han
 direction is poor.
 
 ### 3.6 The Straight-Path Multiplier
+
 A subtle but crucial implementation detail concerns the scale mismatch between gradient and L-BFGS directions. The L-BFGS direction $\mathbf{d}_{\text{LBFGS}} = -H_k \nabla f$ incorporates curvature information and typically has a magnitude appropriate for unit steps. In contrast, the gradient $\nabla f$ may have arbitrary scaling depending on the function's characteristics.
 To address this, QQN employs a **straight-path multiplier** $\gamma$ (typically 5-20) that scales the gradient component:
 $$\mathbf{d}(t) = t(1-t)(-\gamma \nabla f) + t^2 \mathbf{d}_{\text{LBFGS}}$$
 This scaling serves several purposes:
+
 1. **Scale Compatibility**: Ensures the gradient and L-BFGS components have comparable magnitudes, preventing one from dominating the interpolation
 2. **Effective Step Sizes**: Without scaling, the gradient component might be too small to make meaningful progress, especially early in optimization when $t$ is small
 3. **Maintains Bounded Domain**: The line search still operates on $t \in [0,1]$, preserving theoretical properties while exploring appropriate step sizes
-The actual step taken is $\mathbf{x}_{k+1} = \mathbf{x}_k + \mathbf{d}(t^*)$, where the scaling factor $\gamma$ is absorbed into the path definition. This is analogous to how traditional gradient descent methods require a learning rate to scale the raw gradient.
-**Implementation Note**: When QQN falls back to pure gradient descent (e.g., during initial iterations or when L-BFGS fails), the algorithm uses:
-$$\mathbf{x}_{k+1} = \mathbf{x}_k - \gamma t^* \nabla f$$
-where $t^*$ is found via line search. This ensures consistent behavior whether using the quadratic path or pure gradient steps.
-
+   The actual step taken is $\mathbf{x}_{k+1} = \mathbf{x}_k + \mathbf{d}(t^*)$, where the scaling factor $\gamma$ is absorbed into the path definition. This is analogous to how traditional gradient descent methods require a learning rate to scale the raw gradient.
+   **Implementation Note**: When QQN falls back to pure gradient descent (e.g., during initial iterations or when L-BFGS fails), the algorithm uses:
+   $$\mathbf{x}_{k+1} = \mathbf{x}_k - \gamma t^* \nabla f$$
+   where $t^*$ is found via line search. This ensures consistent behavior whether using the quadratic path or pure gradient steps.
 
 ## 4. Theoretical Analysis
 
@@ -290,7 +291,7 @@ $$\|\nabla f(\mathbf{x}) - \nabla f(\mathbf{y})\| \leq L\|\mathbf{x} - \mathbf{y
 such that:
 $$\liminf_{k \to \infty} \|\nabla f(\mathbf{x}_k)\| = 0$$
 
-*Proof Sketch*: The descent property (Theorem 1) ensures $f(\mathbf{x}_{k+1}) < f(\mathbf{x}_k)$ for all $k$
+_Proof Sketch_: The descent property (Theorem 1) ensures $f(\mathbf{x}_{k+1}) < f(\mathbf{x}_k)$ for all $k$
 where $\nabla f(\mathbf{x}_k) \neq 0$. Since $f$ is bounded below, the sequence $\{f(\mathbf{x}_k)\}$ converges. The
 one-dimensional optimization ensures sufficient decrease at each step, leading to gradient convergence. (Full proof
 follows standard descent method analysis.)
@@ -308,7 +309,7 @@ $$\lim_{k \to \infty} \frac{\|(H_k - [\nabla^2 f(\mathbf{x}_k)]^{-1})\mathbf{s}_
 
 then QQN converges superlinearly: $\|\mathbf{x}_{k+1} - \mathbf{x}^*\| = o(\|\mathbf{x}_k - \mathbf{x}^*\|)$.
 
-*Proof Sketch*: Near $\mathbf{x}^*$, the L-BFGS direction becomes increasingly accurate. The one-dimensional
+_Proof Sketch_: Near $\mathbf{x}^*$, the L-BFGS direction becomes increasingly accurate. The one-dimensional
 optimization will select $t^* \approx 1$, effectively taking full quasi-Newton steps. The convergence rate then matches
 that of L-BFGS.
 
@@ -319,7 +320,7 @@ QQN exhibits superior robustness compared to pure quasi-Newton methods:
 **Theorem 5** (Fallback to Gradient Descent): If $\mathbf{d}_{\text{LBFGS}}$ is a poor direction (e.g., ascent direction
 or excessive magnitude), the optimal $t^*$ will be small, resulting in near-gradient descent behavior.
 
-*Proof*: If $\nabla f(\mathbf{x}_k)^T \mathbf{d}_{\text{LBFGS}} > 0$ (ascent direction), then for small $t$:
+_Proof_: If $\nabla f(\mathbf{x}_k)^T \mathbf{d}_{\text{LBFGS}} > 0$ (ascent direction), then for small $t$:
 $$\nabla f(\mathbf{x}_k)^T \mathbf{d}(t) \approx t\nabla f(\mathbf{x}_k)^T(-\nabla f(\mathbf{x}_k)) = -t\|\nabla f(\mathbf{x}_k)\|^2 < 0$$
 
 The one-dimensional optimization will find $t^*$ in the region where descent is guaranteed. □
@@ -339,14 +340,13 @@ The dominant cost is usually the 1D optimization, but this replaces the multiple
 traditional line searches.
 QQN exhibits essentially identical scalability to L-BFGS since it performs a linear recombination of the gradient and L-BFGS directions. The quadratic interpolation $\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{LBFGS}}$ requires only $O(n)$ additional operations beyond standard L-BFGS computation. While our approach may appear more prescriptive than sophisticated line search strategies, it trades flexibility for robustness. Some line search implementations with carefully tuned parameters may achieve marginally better performance on specific problem classes, but they also risk pathological behavior when their assumptions are violated. QQN's bounded search domain $t \in [0,1]$ provides a natural safeguard against such failures.
 
-
 ### 5.2 Memory Requirements
 
 QQN stores:
 
-* Current position: $O(n)$
-* L-BFGS history: $O(mn)$ for $m$ vector pairs
-* Temporary vectors: $O(n)$ for path evaluation
+- Current position: $O(n)$
+- L-BFGS history: $O(mn)$ for $m$ vector pairs
+- Temporary vectors: $O(n)$ for path evaluation
 
 Total memory: $O((m+c)n)$ where $c$ is a small constant.
 
@@ -380,15 +380,18 @@ else:
 ```
 
 **QQN-Adaptive-Scaling**: Dynamically adjust the straight-path multiplier based on observed step sizes:
+
 ```
 if average_t* < 0.1:  // Steps too small
     γ = min(γ * 1.5, γ_max)
 else if average_t* > 0.9:  // Steps too large
     γ = max(γ / 1.5, γ_min)
 ```
+
 This variant adapts the gradient scaling to maintain effective interpolation throughout optimization.
 
 **QQN-Adaptive-1D**: Dynamically select one-dimensional solver based on observed function behavior:
+
 ```
 // Initial aggressive attempt
 t_cubic = cubic_interpolation(φ(0), φ'(0), φ(1), φ'(1))
@@ -401,19 +404,20 @@ else if high_noise_detected:
 else:
     use Brent's method (default)
 ```
-This variant monitors solver performance across iterations and adapts its strategy, learning which approaches work best for the specific problem at hand.
 
+This variant monitors solver performance across iterations and adapts its strategy, learning which approaches work best for the specific problem at hand.
 
 **QQN-Momentum**: Incorporate momentum into the quadratic path:
 
 ### 5.5 Path Resolution Process
+
 The QQN algorithm follows a systematic path resolution process that mirrors classical optimization principles while providing additional structure:
+
 1. **Curve Construction**: We first establish the quadratic curve $\mathbf{d}(t)$ in the full parameter space, defining a one-dimensional manifold connecting the current point to the L-BFGS target.
 2. **Segment Selection**: The constraint $t \in [0,1]$ restricts attention to a specific segment of this curve, ensuring we remain in a region where the gradient-based initialization provides descent guarantees.
 3. **Point Resolution**: Finally, the one-dimensional optimization identifies the optimal point $t^*$ along this segment, completing the iteration.
-This three-stage process—from curve to segment to point—provides a clear conceptual framework that generalizes naturally to more complex settings, such as constrained optimization or multi-objective problems.
-d(t) = t(1-t)(-gₖ + βvₖ₋₁) + t²d_LBFGS
-
+   This three-stage process—from curve to segment to point—provides a clear conceptual framework that generalizes naturally to more complex settings, such as constrained optimization or multi-objective problems.
+   d(t) = t(1-t)(-gₖ + βvₖ₋₁) + t²d_LBFGS
 
 ## 6. Experimental Validation
 
@@ -429,10 +433,10 @@ companion paper; here we summarize key findings:
 
 ### 6.2 Comparison Methods
 
-* **L-BFGS**: Standard implementation with strong Wolfe line search
-* **Gradient Descent**: With optimal fixed step size (oracle)
-* **Adam**: Popular adaptive method in machine learning
-* **Trust Region Newton**: Sophisticated second-order method
+- **L-BFGS**: Standard implementation with strong Wolfe line search
+- **Gradient Descent**: With optimal fixed step size (oracle)
+- **Adam**: Popular adaptive method in machine learning
+- **Trust Region Newton**: Sophisticated second-order method
 
 ### 6.3 Key Findings
 
@@ -487,12 +491,11 @@ Current limitations of QQN include:
 3. **Parallel Implementation**: The sequential nature of L-BFGS updates limits parallelization
 4. **Function Requirements**: The current framework explicitly requires well-behaved objective functions with analytical gradients. The algorithm assumes that gradient information is exact and that the function exhibits sufficient smoothness for meaningful quadratic interpolation. Addressing noisy objectives, such as those arising in neural network training with mini-batches, represents an important direction for follow-up work. Such extensions would likely require modifications to both the path construction and the convergence analysis.
 5. **Geometric Constraints**: The quadratic path construction opens intriguing possibilities for incorporating geometric constraints directly into the optimization process. For instance, one could:
-   * Constrain the path to remain within a feasible region for box-constrained problems
-   * Ensure the path respects manifold constraints for optimization on Riemannian manifolds
-   * Incorporate trust region ideas by modulating the path based on local model accuracy
-   * Design paths that explicitly avoid regions of high curvature or numerical instability
-   While these extensions are conceptually appealing and could significantly enhance the algorithm's applicability, they are beyond the scope of this initial work. Our focus here is on establishing the fundamental QQN framework and demonstrating its effectiveness on unconstrained problems. Future research will explore how geometric insights can be systematically incorporated into the path construction process.
-
+   - Constrain the path to remain within a feasible region for box-constrained problems
+   - Ensure the path respects manifold constraints for optimization on Riemannian manifolds
+   - Incorporate trust region ideas by modulating the path based on local model accuracy
+   - Design paths that explicitly avoid regions of high curvature or numerical instability
+     While these extensions are conceptually appealing and could significantly enhance the algorithm's applicability, they are beyond the scope of this initial work. Our focus here is on establishing the fundamental QQN framework and demonstrating its effectiveness on unconstrained problems. Future research will explore how geometric insights can be systematically incorporated into the path construction process.
 
 Future research directions include:
 
@@ -504,7 +507,6 @@ Future research directions include:
 6. **Constrained Optimization**: Systematic approaches for ensuring path feasibility in constrained settings
 7. **Intelligent 1D Solver Selection**: Machine learning approaches to predict optimal solver choice based on problem features
 8. **Hybrid 1D Methods**: Combining multiple one-dimensional solvers with smooth transitions based on convergence indicators
-
 
 ### 7.4 Conclusion
 

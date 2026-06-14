@@ -49,6 +49,7 @@ pub struct OptimizerGenome {
 #### Parameter Encoding by Optimizer Type
 
 **QQN Parameters:**
+
 - `c1`: Armijo condition parameter (1e-6 to 1e-2)
 - `c2`: Curvature condition parameter (0.1 to 0.99)
 - `lbfgs_history`: Memory size (3 to 20)
@@ -58,6 +59,7 @@ pub struct OptimizerGenome {
 - `line_search_method`: Categorical (0-5, representing different methods)
 
 **L-BFGS Parameters:**
+
 - `history_size`: Memory vectors (3 to 30)
 - `c1`, `c2`: Wolfe conditions (1e-6 to 1e-2, 0.1 to 0.99)
 - `epsilon`: Convergence tolerance (log-scale: 1e-12 to 1e-6)
@@ -65,6 +67,7 @@ pub struct OptimizerGenome {
 - `initial_step`: Initial step size (0.01 to 2.0)
 
 **Adam Parameters:**
+
 - `learning_rate`: Learning rate (log-scale: 1e-4 to 1.0)
 - `beta1`: First moment decay (0.8 to 0.99)
 - `beta2`: Second moment decay (0.9 to 0.9999)
@@ -72,12 +75,14 @@ pub struct OptimizerGenome {
 - `weight_decay`: L2 regularization (0.0 to 1e-3)
 
 **Gradient Descent Parameters:**
+
 - `learning_rate`: Step size (log-scale: 1e-3 to 1.0)
 - `momentum`: Momentum coefficient (0.0 to 0.99)
 - `weight_decay`: L2 regularization (0.0 to 1e-3)
 - `nesterov`: Boolean flag (0.0 or 1.0)
 
 **Trust Region Parameters:**
+
 - `initial_radius`: Starting trust region size (0.01 to 2.0)
 - `max_radius`: Maximum radius (10.0 to 200.0)
 - `eta_1`, `eta_2`: Acceptance thresholds (0.05-0.25, 0.5-0.95)
@@ -98,6 +103,7 @@ pub fn initialize_population(
 ```
 
 Parameters are initialized using uniform random sampling within predefined ranges, with special handling for:
+
 - **Log-scale parameters**: Exponential distribution for learning rates and tolerances
 - **Categorical parameters**: Discrete uniform distribution
 - **Boolean parameters**: Bernoulli distribution
@@ -111,6 +117,7 @@ fn tournament_selection(&mut self, population: &[OptimizerGenome]) -> Result<Opt
 ```
 
 The selection process:
+
 1. Randomly sample `tournament_size` individuals
 2. Select the individual with lowest fitness (minimization)
 3. Track selection events for genealogy analysis
@@ -124,14 +131,18 @@ fn crossover(&mut self, parent1: &OptimizerGenome, parent2: &OptimizerGenome) ->
 ```
 
 #### Cross-type Breeding
+
 When parents have different optimizer types:
+
 1. Randomly select offspring type from either parent
 2. Generate valid parameter set for chosen type
 3. Inherit compatible parameters from parents
 4. Generate random values for incompatible parameters
 
 #### Same-type Breeding
+
 For same-type parents:
+
 1. Apply uniform crossover (50% probability per parameter)
 2. Preserve parameter validity constraints
 3. Maintain genealogical tracking
@@ -147,6 +158,7 @@ fn mutate(&mut self, genome: &mut OptimizerGenome)
 #### Mutation Strategies by Parameter Type
 
 **Log-scale Parameters** (learning_rate, epsilon):
+
 ```rust
 let log_val = value.ln();
 let new_log_val = log_val + delta * 2.0;
@@ -154,17 +166,20 @@ let new_log_val = log_val + delta * 2.0;
 ```
 
 **Probability Parameters** (beta1, beta2, c1, c2):
+
 ```rust
 *value = (*value + delta).max(0.0).min(0.999);
 ```
 
 **Integer Parameters** (history_size, max_iterations):
+
 ```rust
 let int_val = (*value as i32 + (delta * 10.0) as i32).max(1);
 *value = int_val as f64;
 ```
 
 **Categorical Parameters** (line_search_method):
+
 ```rust
 if self.rng.gen_bool(0.3) {
     *value = self.rng.gen_range(0.0..6.0).floor();
@@ -172,6 +187,7 @@ if self.rng.gen_bool(0.3) {
 ```
 
 **Boolean Parameters** (nesterov):
+
 ```rust
 if self.rng.gen_bool(0.3) {
     *value = 1.0 - *value;
@@ -181,6 +197,7 @@ if self.rng.gen_bool(0.3) {
 ### 2.6 Elitism and Survival
 
 **Elitist Selection** preserves top performers:
+
 - Elite size: `max(1, population_size / 10)`
 - Direct transfer to next generation
 - Fitness-based ranking (ascending order)
@@ -215,6 +232,7 @@ let fitness = if result.best_value.is_finite() {
 ```
 
 #### Components:
+
 1. **Value Component**: Logarithm of absolute objective value (clamped at -20)
 2. **Speed Component**: Normalized iteration count (10% weight)
 3. **Convergence Penalty**: Large penalty (1e10) for failed runs
@@ -228,6 +246,7 @@ let semaphore = Arc::new(Semaphore::new(8)); // Limit concurrent evaluations
 ```
 
 Benefits:
+
 - Parallel fitness evaluation
 - Resource management
 - Fault tolerance through task isolation
@@ -254,6 +273,7 @@ pub struct EvolutionaryEvent {
 ```
 
 #### Event Types:
+
 - `Initialization`: Population creation
 - `Selection`: Parent selection for reproduction
 - `Crossover`: Genetic recombination
@@ -288,16 +308,19 @@ pub struct IndividualRecord {
 The system computes multiple diversity measures:
 
 #### Parameter Variance:
+
 ```rust
 let variance = values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / values.len() as f64;
 ```
 
 #### Fitness Diversity:
+
 ```rust
 let fitness_diversity = fitnesses.iter().map(|f| (f - mean).powi(2)).sum::<f64>() / fitnesses.len() as f64;
 ```
 
 #### Family Diversity (Shannon Entropy):
+
 ```rust
 let family_diversity = family_counts.values().map(|&count| {
     let p = count as f64 / total;
@@ -351,18 +374,21 @@ let mut best_genomes: Vec<OptimizerGenome> = sorted_population.into_iter().take(
 The system generates comprehensive reports in multiple formats:
 
 #### JSON Exports:
+
 - Complete evolution data
 - Generation summaries
 - Individual records
 - Selected optimizers
 
 #### CSV Exports:
+
 - Individual performance metrics
 - Event logs
 - Generation statistics
 - Parameter evolution traces
 
 #### HTML Reports:
+
 - Interactive evolution visualization
 - Family performance comparison
 - Parameter distribution analysis
@@ -384,24 +410,24 @@ pub async fn run_evolved_championship(
 
 ### 7.1 Evolution Parameters
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `population_size` | 50 | Number of individuals per generation |
-| `num_generations` | 20 | Evolution iterations |
-| `mutation_rate` | 0.2 | Probability of mutation |
-| `crossover_rate` | 0.7 | Probability of crossover |
-| `elite_size` | `population_size/10` | Number of elite individuals |
-| `tournament_size` | 3 | Tournament selection size |
-| `evaluation_runs` | 5 | Fitness evaluation repetitions |
+| Parameter         | Default              | Description                          |
+| ----------------- | -------------------- | ------------------------------------ |
+| `population_size` | 50                   | Number of individuals per generation |
+| `num_generations` | 20                   | Evolution iterations                 |
+| `mutation_rate`   | 0.2                  | Probability of mutation              |
+| `crossover_rate`  | 0.7                  | Probability of crossover             |
+| `elite_size`      | `population_size/10` | Number of elite individuals          |
+| `tournament_size` | 3                    | Tournament selection size            |
+| `evaluation_runs` | 5                    | Fitness evaluation repetitions       |
 
 ### 7.2 Benchmark Configuration
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `max_iterations` | 1000 | Maximum optimizer iterations |
-| `time_limit` | 300s | Wall-clock time limit |
-| `num_runs` | 10 | Statistical repetitions |
-| `initial_point_noise` | 0.1 | Starting point perturbation |
+| Parameter             | Default | Description                  |
+| --------------------- | ------- | ---------------------------- |
+| `max_iterations`      | 1000    | Maximum optimizer iterations |
+| `time_limit`          | 300s    | Wall-clock time limit        |
+| `num_runs`            | 10      | Statistical repetitions      |
+| `initial_point_noise` | 0.1     | Starting point perturbation  |
 
 ## 8. Performance Considerations
 

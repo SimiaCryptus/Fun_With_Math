@@ -91,24 +91,24 @@ diverse benchmark suite.
 
 The COCO framework (Hansen et al., 2016) established rigorous standards for optimization benchmarking, including:
 
-* Multiple independent runs for statistical validity
-* Standardized problem suites with known properties
-* Performance metrics beyond simple convergence
+- Multiple independent runs for statistical validity
+- Standardized problem suites with known properties
+- Performance metrics beyond simple convergence
 
 Beiranvand et al. (2017) surveyed best practices in optimization benchmarking, highlighting common pitfalls including:
 
-* Insufficient problem diversity
-* Lack of statistical testing
-* Unfair hyperparameter selection
-* Implementation quality variations
+- Insufficient problem diversity
+- Lack of statistical testing
+- Unfair hyperparameter selection
+- Implementation quality variations
 
 ### 2.3 Comparative Studies
 
 Bottou et al. (2018) compared optimization methods for large-scale machine learning, revealing trade-offs between:
 
-* Convergence speed versus per-iteration cost
-* Theoretical guarantees versus practical performance
-* Generalization versus optimization accuracy
+- Convergence speed versus per-iteration cost
+- Theoretical guarantees versus practical performance
+- Generalization versus optimization accuracy
 
 Their work emphasizes that no single algorithm dominates across all scenarios, motivating our comprehensive evaluation
 approach.
@@ -121,21 +121,21 @@ We evaluate the following optimizers, each representing different optimization p
 
 #### 3.1.1 QQN Variants
 
-* **QQN-Bisection**: Uses bisection for 1D optimization
-* **QQN-GoldenSection**: Uses golden section search
-* **QQN-Brent**: Uses Brent's method for faster 1D convergence
+- **QQN-Bisection**: Uses bisection for 1D optimization
+- **QQN-GoldenSection**: Uses golden section search
+- **QQN-Brent**: Uses Brent's method for faster 1D convergence
 
 #### 3.1.2 L-BFGS Variants
 
-* **L-BFGS-Standard**: Reference implementation with strong Wolfe line search
-* **L-BFGS-Aggressive**: Relaxed line search conditions
-* **L-BFGS-Conservative**: Strict line search for numerical stability
+- **L-BFGS-Standard**: Reference implementation with strong Wolfe line search
+- **L-BFGS-Aggressive**: Relaxed line search conditions
+- **L-BFGS-Conservative**: Strict line search for numerical stability
 
 #### 3.1.3 First-Order Methods
 
-* **GD**: Vanilla gradient descent with optimal fixed step size
-* **GD-Momentum**: Classical momentum (β = 0.9)
-* **Adam**: Adaptive moment estimation with default parameters
+- **GD**: Vanilla gradient descent with optimal fixed step size
+- **GD-Momentum**: Classical momentum (β = 0.9)
+- **Adam**: Adaptive moment estimation with default parameters
 
 ### 3.2 Benchmark Problem Suite
 
@@ -143,56 +143,56 @@ Our evaluation encompasses 26 problems across five categories:
 
 #### 3.2.1 Convex Functions (2 problems)
 
-* **Sphere**: f(x) = Σx_i² (dimensions: 2, 5, 10)
-* **Matyas**: f(x,y) = 0.26(x² + y²) - 0.48xy
+- **Sphere**: f(x) = Σx_i² (dimensions: 2, 5, 10)
+- **Matyas**: f(x,y) = 0.26(x² + y²) - 0.48xy
 
 #### 3.2.2 Non-Convex Unimodal (4 problems)
 
-* **Rosenbrock**: Classic banana function (dimensions: 2, 5, 10)
-* **Beale**: Sharp, narrow valley
-* **Levi**: Multiple local minima with single global
-* **GoldsteinPrice**: Complex landscape with flat regions
+- **Rosenbrock**: Classic banana function (dimensions: 2, 5, 10)
+- **Beale**: Sharp, narrow valley
+- **Levi**: Multiple local minima with single global
+- **GoldsteinPrice**: Complex landscape with flat regions
 
 #### 3.2.3 Highly Multimodal (15 problems)
 
-* **Rastrigin**: Regular grid of local minima
-* **Ackley**: Deceptive global structure
-* **Michalewicz**: Steep ridges and valleys
-* **StyblinskiTang**: Asymmetric multimodal
+- **Rastrigin**: Regular grid of local minima
+- **Ackley**: Deceptive global structure
+- **Michalewicz**: Steep ridges and valleys
+- **StyblinskiTang**: Asymmetric multimodal
 
 #### 3.2.4 Machine Learning - Convex (2 problems)
 
-* **Ridge Regression**: 100 samples, 20 features
-* **Logistic Regression**: Binary classification, 200 samples
+- **Ridge Regression**: 100 samples, 20 features
+- **Logistic Regression**: Binary classification, 200 samples
 
 #### 3.2.5 Machine Learning - Non-Convex (3 problems)
 
-* **SVM**: Non-smooth hinge loss
-* **Neural Network**: 2-layer MLP, 100 hidden units
-* **Deep Network**: 4-layer network, 1500 parameters
+- **SVM**: Non-smooth hinge loss
+- **Neural Network**: 2-layer MLP, 100 hidden units
+- **Deep Network**: 4-layer network, 1500 parameters
 
 ### 3.3 Evaluation Protocol
 
 #### 3.3.1 Initialization
 
-* **Starting Points**: Uniformly random within problem-specific bounds
-* **Multiple Runs**: 30 independent runs per algorithm-problem pair
-* **Random Seeds**: Deterministic sequence for reproducibility
+- **Starting Points**: Uniformly random within problem-specific bounds
+- **Multiple Runs**: 30 independent runs per algorithm-problem pair
+- **Random Seeds**: Deterministic sequence for reproducibility
 
 #### 3.3.2 Convergence Criteria
 
-* **Gradient Tolerance**: ||∇f|| < 10⁻⁶
-* **Function Tolerance**: |f_k - f_{k-1}|/|f_k| < 10⁻⁷
-* **Maximum Iterations**: Problem-dependent (1,000-10,000)
-* **Success Threshold**: Within 0.01% of known optimal value
+- **Gradient Tolerance**: ||∇f|| < 10⁻⁶
+- **Function Tolerance**: |f*k - f*{k-1}|/|f_k| < 10⁻⁷
+- **Maximum Iterations**: Problem-dependent (1,000-10,000)
+- **Success Threshold**: Within 0.01% of known optimal value
 
 #### 3.3.3 Performance Metrics
 
-* **Success Rate**: Percentage of runs reaching success threshold
-* **Function Evaluations**: Total objective function calls
-* **Gradient Evaluations**: Total gradient computations
-* **Wall Time**: CPU time in milliseconds
-* **Final Error**: |f_final - f_optimal|
+- **Success Rate**: Percentage of runs reaching success threshold
+- **Function Evaluations**: Total objective function calls
+- **Gradient Evaluations**: Total gradient computations
+- **Wall Time**: CPU time in milliseconds
+- **Final Error**: |f_final - f_optimal|
 
 ### 3.4 Statistical Analysis
 
@@ -219,7 +219,7 @@ Bonferroni correction for family-wise error rate control.
 Table 1 presents aggregate performance across all problems:
 
 | Algorithm           | Success Rate | Avg Function Evals | Avg Gradient Evals | Relative Time |
-|---------------------|--------------|--------------------|--------------------|---------------|
+| ------------------- | ------------ | ------------------ | ------------------ | ------------- |
 | QQN-Bisection       | **84.6%**    | 287.3              | 45.2               | 1.15×         |
 | QQN-GoldenSection   | 82.1%        | 312.5              | 45.2               | 1.08×         |
 | QQN-Brent           | 83.9%        | 265.8              | 45.2               | 1.21×         |
@@ -232,9 +232,9 @@ Table 1 presents aggregate performance across all problems:
 
 **Key Observations:**
 
-* QQN variants achieve the highest success rates (82-85%)
-* L-BFGS variants show moderate success (74-79%) with fewer function evaluations
-* First-order methods lag significantly (42-61%) with high evaluation counts
+- QQN variants achieve the highest success rates (82-85%)
+- L-BFGS variants show moderate success (74-79%) with fewer function evaluations
+- First-order methods lag significantly (42-61%) with high evaluation counts
 
 ### 4.2 Convex Function Results
 
@@ -243,7 +243,7 @@ Performance on convex problems tests basic convergence properties:
 #### Sphere Function (10D)
 
 | Algorithm       | Success Rate | Function Evals | Final Error     |
-|-----------------|--------------|----------------|-----------------|
+| --------------- | ------------ | -------------- | --------------- |
 | QQN-Bisection   | 100%         | 42 ± 3         | 1.2e-8 ± 0.3e-8 |
 | L-BFGS-Standard | 100%         | 31 ± 2         | 2.1e-8 ± 0.5e-8 |
 | GD              | 100%         | 408 ± 12       | 8.7e-7 ± 1.2e-7 |
@@ -257,15 +257,15 @@ These problems reveal differences in handling complex landscapes:
 #### Rosenbrock Function (5D)
 
 | Algorithm         | Success Rate | Function Evals | Final Error     |
-|-------------------|--------------|----------------|-----------------|
+| ----------------- | ------------ | -------------- | --------------- |
 | QQN-Bisection     | **100%**     | 892 ± 124      | 3.2e-7 ± 1.1e-7 |
 | QQN-Brent         | **100%**     | 756 ± 98       | 2.8e-7 ± 0.9e-7 |
 | L-BFGS-Standard   | 60%          | 1243 ± 892     | 0.23 ± 0.41     |
 | L-BFGS-Aggressive | 40%          | 987 ± 743      | 0.67 ± 0.82     |
-| GD                | 0%           | 10000*         | 24.3 ± 8.7      |
+| GD                | 0%           | 10000\*        | 24.3 ± 8.7      |
 | Adam              | 20%          | 8932 ± 1234    | 1.82 ± 2.31     |
 
-*Maximum iterations reached
+\*Maximum iterations reached
 
 **Critical Finding**: QQN achieves perfect success on Rosenbrock where L-BFGS variants struggle, demonstrating superior
 handling of ill-conditioned valleys.
@@ -277,10 +277,10 @@ Multimodal functions test global optimization capabilities:
 #### Rastrigin Function (5D)
 
 | Algorithm       | Success Rate | Function Evals | Final Error |
-|-----------------|--------------|----------------|-------------|
+| --------------- | ------------ | -------------- | ----------- |
 | QQN-Bisection   | **40%**      | 1823 ± 567     | 12.4 ± 18.2 |
 | L-BFGS-Standard | 20%          | 1456 ± 892     | 24.7 ± 22.3 |
-| GD              | 0%           | 10000*         | 67.3 ± 12.4 |
+| GD              | 0%           | 10000\*        | 67.3 ± 12.4 |
 | Adam            | 10%          | 7234 ± 2341    | 43.2 ± 28.7 |
 
 Even on extremely multimodal problems, QQN shows improved success rates through better exploration.
@@ -290,7 +290,7 @@ Even on extremely multimodal problems, QQN shows improved success rates through 
 #### Neural Network Training (2-layer MLP)
 
 | Algorithm       | Success Rate | Function Evals | Test Accuracy |
-|-----------------|--------------|----------------|---------------|
+| --------------- | ------------ | -------------- | ------------- |
 | QQN-Bisection   | 90%          | 234 ± 45       | 94.2% ± 1.3%  |
 | L-BFGS-Standard | 80%          | 187 ± 67       | 93.8% ± 1.7%  |
 | Adam            | **100%**     | 523 ± 123      | 94.5% ± 1.1%  |
@@ -328,7 +328,7 @@ QQN maintains perfect success across dimensions while other methods degrade sign
 Table 2 shows Welch's t-test results comparing QQN-Bisection with other methods on success rates:
 
 | Comparison         | Mean Difference | t-statistic | p-value | Cohen's d |
-|--------------------|-----------------|-------------|---------|-----------|
+| ------------------ | --------------- | ----------- | ------- | --------- |
 | QQN vs L-BFGS-Std  | +7.7%           | 3.42        | <0.001  | 0.68      |
 | QQN vs L-BFGS-Aggr | +10.4%          | 4.23        | <0.001  | 0.89      |
 | QQN vs GD          | +42.3%          | 12.67       | <0.001  | 2.34      |
@@ -343,7 +343,7 @@ Performance varies significantly by problem type:
 #### Success Rates by Category
 
 | Category            | QQN-Bisection | L-BFGS-Std | Adam    | GD   |
-|---------------------|---------------|------------|---------|------|
+| ------------------- | ------------- | ---------- | ------- | ---- |
 | Convex              | 100%          | 100%       | 100%    | 100% |
 | Non-convex Unimodal | **95%**       | 65%        | 45%     | 25%  |
 | Multimodal          | **32%**       | 18%        | 12%     | 3%   |
@@ -357,7 +357,7 @@ QQN shows particular strength on non-convex unimodal problems while remaining co
 We analyze sensitivity to initialization by computing coefficient of variation (CV) for function evaluations:
 
 | Algorithm       | CV (Function Evals) | CV (Success Rate) |
-|-----------------|---------------------|-------------------|
+| --------------- | ------------------- | ----------------- |
 | QQN-Bisection   | **0.23**            | **0.12**          |
 | L-BFGS-Standard | 0.41                | 0.28              |
 | Adam            | 0.34                | 0.19              |
@@ -421,7 +421,6 @@ An important characteristic of QQN that deserves transparent discussion is its t
 4. **Inflated Metrics**: The extended search phase inflates function evaluation counts compared to methods that terminate more aggressively
 
 This presents an ethical dilemma in algorithm evaluation:
-
 
 We chose to present results with QQN's default behavior rather than optimizing for benchmark performance. This decision reflects our commitment to honest evaluation over promotional metrics. Practitioners should be aware that:
 

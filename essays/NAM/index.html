@@ -8,10 +8,7 @@
       content="Numbers as Machines: A Generator-Based Numerics Library — A coinductive computational substrate where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand."
     />
     <meta name="author" content="Generator-Based Numerics" />
-    <meta
-      property="og:title"
-      content="Numbers as Machines: A Generator-Based Numerics Library"
-    />
+    <meta property="og:title" content="Numbers as Machines: A Generator-Based Numerics Library" />
     <meta
       property="og:description"
       content="Every number is a deterministic, forkable virtual machine that emits an infinite digit stream on demand."
@@ -57,10 +54,9 @@
         --color-border-accent: rgba(79, 156, 249, 0.3);
 
         /* Typography */
-        --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
-        --font-mono:
-          "JetBrains Mono", "Fira Code", "Cascadia Code", "Consolas", monospace;
-        --font-serif: "Georgia", "Times New Roman", serif;
+        --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+        --font-serif: 'Georgia', 'Times New Roman', serif;
 
         --text-xs: 0.75rem;
         --text-sm: 0.875rem;
@@ -157,20 +153,12 @@
 
       /* Background texture */
       body::before {
-        content: "";
+        content: '';
         position: fixed;
         inset: 0;
         background-image:
-          radial-gradient(
-            ellipse 80% 50% at 20% 10%,
-            rgba(79, 156, 249, 0.04) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 60% 40% at 80% 80%,
-            rgba(124, 58, 237, 0.04) 0%,
-            transparent 60%
-          );
+          radial-gradient(ellipse 80% 50% at 20% 10%, rgba(79, 156, 249, 0.04) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 40% at 80% 80%, rgba(124, 58, 237, 0.04) 0%, transparent 60%);
         pointer-events: none;
         z-index: 0;
       }
@@ -360,34 +348,26 @@
 
       /* Animated background grid */
       .hero-section::before {
-        content: "";
+        content: '';
         position: absolute;
         inset: 0;
         background-image:
           linear-gradient(rgba(79, 156, 249, 0.03) 1px, transparent 1px),
           linear-gradient(90deg, rgba(79, 156, 249, 0.03) 1px, transparent 1px);
         background-size: 60px 60px;
-        mask-image: radial-gradient(
-          ellipse 80% 60% at 50% 50%,
-          black 30%,
-          transparent 80%
-        );
+        mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 80%);
         pointer-events: none;
       }
 
       .hero-section::after {
-        content: "";
+        content: '';
         position: absolute;
         top: 20%;
         left: 50%;
         transform: translateX(-50%);
         width: 600px;
         height: 400px;
-        background: radial-gradient(
-          ellipse,
-          rgba(79, 156, 249, 0.08) 0%,
-          transparent 70%
-        );
+        background: radial-gradient(ellipse, rgba(79, 156, 249, 0.08) 0%, transparent 70%);
         pointer-events: none;
       }
 
@@ -429,12 +409,7 @@
         line-height: var(--leading-tight);
         letter-spacing: -0.03em;
         margin-bottom: var(--space-3);
-        background: linear-gradient(
-          135deg,
-          #e2e8f0 0%,
-          #4f9cf9 50%,
-          #7c3aed 100%
-        );
+        background: linear-gradient(135deg, #e2e8f0 0%, #4f9cf9 50%, #7c3aed 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -685,11 +660,7 @@
       }
 
       .article-section--closing {
-        background: linear-gradient(
-          180deg,
-          transparent,
-          rgba(79, 156, 249, 0.02)
-        );
+        background: linear-gradient(180deg, transparent, rgba(79, 156, 249, 0.02));
         border-radius: var(--radius-xl);
         padding: var(--space-12) var(--space-8);
         border: 1px solid var(--color-border-subtle);
@@ -890,18 +861,13 @@
       }
 
       .code-block::before {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(79, 156, 249, 0.3),
-          transparent
-        );
+        background: linear-gradient(90deg, transparent, rgba(79, 156, 249, 0.3), transparent);
       }
 
       .code-block::-webkit-scrollbar {
@@ -1335,11 +1301,7 @@
            ============================================================ */
       .concept-highlight {
         padding: var(--space-6);
-        background: linear-gradient(
-          135deg,
-          rgba(79, 156, 249, 0.06),
-          rgba(124, 58, 237, 0.06)
-        );
+        background: linear-gradient(135deg, rgba(79, 156, 249, 0.06), rgba(124, 58, 237, 0.06));
         border: 1px solid rgba(79, 156, 249, 0.2);
         border-radius: var(--radius-xl);
         position: relative;
@@ -1347,7 +1309,7 @@
       }
 
       .concept-highlight::before {
-        content: "";
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
@@ -1436,7 +1398,7 @@
       }
 
       .examples-item::before {
-        content: "→";
+        content: '→';
         color: var(--color-accent-primary);
         font-family: var(--font-mono);
         flex-shrink: 0;
@@ -1687,7 +1649,7 @@
       }
 
       .roadmap-phase::before {
-        content: "";
+        content: '';
         position: absolute;
         left: 0;
         top: 0;
@@ -1836,11 +1798,7 @@
            ============================================================ */
       .closing-quote {
         padding: var(--space-8) var(--space-10);
-        background: linear-gradient(
-          135deg,
-          rgba(79, 156, 249, 0.05),
-          rgba(124, 58, 237, 0.05)
-        );
+        background: linear-gradient(135deg, rgba(79, 156, 249, 0.05), rgba(124, 58, 237, 0.05));
         border: 1px solid rgba(79, 156, 249, 0.15);
         border-radius: var(--radius-2xl);
         position: relative;
@@ -2327,15 +2285,15 @@
          ============================================================ -->
     <header class="site-header">
       <div class="header-inner">
-       <a class="header-brand" href="../../index.html">
+        <a class="header-brand" href="../../index.html">
           <span class="header-logo-icon" aria-hidden="true">⟳</span>
           <span class="header-brand-name">Generator Numerics</span>
-       </a>
+        </a>
         <nav class="header-nav" aria-label="Primary navigation">
           <ul class="header-nav-list">
-           <li class="header-nav-item">
-             <a href="../../index.html" class="header-nav-link">← Home</a>
-           </li>
+            <li class="header-nav-item">
+              <a href="../../index.html" class="header-nav-link">← Home</a>
+            </li>
             <li class="header-nav-item">
               <a href="#core-inversion" class="header-nav-link">Core Idea</a>
             </li>
@@ -2375,18 +2333,15 @@
         <h1 class="hero-title" id="hero-title">Numbers as Machines</h1>
         <p class="hero-subtitle">A Generator-Based Numerics Library</p>
         <p class="hero-lead">
-          Every number is a deterministic, forkable virtual machine that emits
-          an infinite digit stream on demand. This is not a metaphor — it is a
-          literal computational ontology with precise consequences for
-          implementation, memory complexity, and the structure of mathematics
-          itself.
+          Every number is a deterministic, forkable virtual machine that emits an infinite digit
+          stream on demand. This is not a metaphor — it is a literal computational ontology with
+          precise consequences for implementation, memory complexity, and the structure of
+          mathematics itself.
         </p>
         <!-- Core primitive display -->
         <div class="hero-primitive-block" aria-label="Core primitive interface">
           <span class="primitive-label">The Primitive</span>
-          <pre
-            class="primitive-code"
-          ><code>step : State → (digit, State)</code></pre>
+          <pre class="primitive-code"><code>step : State → (digit, State)</code></pre>
         </div>
         <!-- Quick-stat badges summarizing key properties -->
         <div class="hero-stats-row">
@@ -2423,22 +2378,16 @@
           <nav class="toc-nav" aria-label="Article sections">
             <ol class="toc-list">
               <li class="toc-item toc-item--level-1">
-                <a href="#core-inversion" class="toc-link"
-                  >The Core Inversion</a
-                >
+                <a href="#core-inversion" class="toc-link">The Core Inversion</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#binary-multiplexer" class="toc-link"
-                  >The Binary Multiplexer</a
-                >
+                <a href="#binary-multiplexer" class="toc-link">The Binary Multiplexer</a>
               </li>
               <li class="toc-item toc-item--level-1">
                 <a href="#carry-problem" class="toc-link">The Carry Problem</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#unbounded-precision" class="toc-link"
-                  >Unbounded Precision</a
-                >
+                <a href="#unbounded-precision" class="toc-link">Unbounded Precision</a>
               </li>
               <li class="toc-item toc-item--level-1">
                 <a href="#p-adics" class="toc-link">p-Adics Come for Free</a>
@@ -2447,32 +2396,22 @@
                 <a href="#primitives" class="toc-link">The Odd Primitives</a>
                 <ol class="toc-sublist">
                   <li class="toc-item toc-item--level-2">
-                    <a href="#series-stepper" class="toc-link"
-                      >Series Stepper</a
-                    >
+                    <a href="#series-stepper" class="toc-link">Series Stepper</a>
                   </li>
                   <li class="toc-item toc-item--level-2">
                     <a href="#tail-bound" class="toc-link">Tail Bound Oracle</a>
                   </li>
                   <li class="toc-item toc-item--level-2">
-                    <a href="#interval-refinement" class="toc-link"
-                      >Interval Refinement</a
-                    >
+                    <a href="#interval-refinement" class="toc-link">Interval Refinement</a>
                   </li>
                   <li class="toc-item toc-item--level-2">
-                    <a href="#valuation-extractor" class="toc-link"
-                      >Valuation Extractor</a
-                    >
+                    <a href="#valuation-extractor" class="toc-link">Valuation Extractor</a>
                   </li>
                   <li class="toc-item toc-item--level-2">
-                    <a href="#carry-propagator" class="toc-link"
-                      >Carry Propagator</a
-                    >
+                    <a href="#carry-propagator" class="toc-link">Carry Propagator</a>
                   </li>
                   <li class="toc-item toc-item--level-2">
-                    <a href="#composition-engine" class="toc-link"
-                      >Composition Engine</a
-                    >
+                    <a href="#composition-engine" class="toc-link">Composition Engine</a>
                   </li>
                   <li class="toc-item toc-item--level-2">
                     <a href="#memoization" class="toc-link">Memoization</a>
@@ -2483,37 +2422,25 @@
                 <a href="#abi" class="toc-link">The Forkable Nano-VM ABI</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#llvm-substrate" class="toc-link"
-                  >LLVM as Execution Substrate</a
-                >
+                <a href="#llvm-substrate" class="toc-link">LLVM as Execution Substrate</a>
               </li>
               <li class="toc-item toc-item--level-1">
                 <a href="#base-codec" class="toc-link">Base as Codec</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#bbp-formulas" class="toc-link"
-                  >BBP Formulas Explained</a
-                >
+                <a href="#bbp-formulas" class="toc-link">BBP Formulas Explained</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#memory-complexity" class="toc-link"
-                  >Memory as Complexity Metric</a
-                >
+                <a href="#memory-complexity" class="toc-link">Memory as Complexity Metric</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#randomness" class="toc-link"
-                  >Randomness as Encrypted Determinism</a
-                >
+                <a href="#randomness" class="toc-link">Randomness as Encrypted Determinism</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#random-program" class="toc-link"
-                  >A Random Program Is a Valid Number</a
-                >
+                <a href="#random-program" class="toc-link">A Random Program Is a Valid Number</a>
               </li>
               <li class="toc-item toc-item--level-1">
-                <a href="#equality-limits" class="toc-link"
-                  >Equality and Its Limits</a
-                >
+                <a href="#equality-limits" class="toc-link">Equality and Its Limits</a>
               </li>
               <li class="toc-item toc-item--level-1">
                 <a href="#user-api" class="toc-link">The User-Facing API</a>
@@ -2537,11 +2464,7 @@
              ARTICLE: Main article content
              -------------------------------------------------------- -->
       <main class="article-main" id="main-content">
-        <article
-          class="article-body"
-          itemscope
-          itemtype="https://schema.org/TechArticle"
-        >
+        <article class="article-body" itemscope itemtype="https://schema.org/TechArticle">
           <!-- ================================================
                      SECTION 1: The Core Inversion
                      ================================================ -->
@@ -2552,66 +2475,53 @@
           >
             <div class="section-header">
               <span class="section-number">01</span>
-              <h2 class="section-title" id="heading-core-inversion">
-                The Core Inversion
-              </h2>
+              <h2 class="section-title" id="heading-core-inversion">The Core Inversion</h2>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                Classical numerics treats numbers as values — static objects
-                stored in registers, manipulated by arithmetic circuits,
-                approximated by floating-point hardware. This essay proposes a
-                different substrate:
+                Classical numerics treats numbers as values — static objects stored in registers,
+                manipulated by arithmetic circuits, approximated by floating-point hardware. This
+                essay proposes a different substrate:
                 <strong class="key-concept"
-                  >every number is a deterministic, forkable virtual
-                  machine</strong
+                  >every number is a deterministic, forkable virtual machine</strong
                 >
                 that emits an infinite digit stream on demand.
               </p>
               <p>
-                This is not a metaphor. It is a literal computational ontology
-                with precise consequences for implementation, memory complexity,
-                and the structure of mathematics itself. The framing has deep
-                roots — Cauchy sequences, computable reals (Turing 1936),
-                coalgebraic stream arithmetic, p-adic expansions, exact real
-                arithmetic systems like iRRAM, and the Type-2 Theory of
-                Effectivity all instantiate parts of this idea. What is new here
-                is not the underlying mathematics but the
+                This is not a metaphor. It is a literal computational ontology with precise
+                consequences for implementation, memory complexity, and the structure of mathematics
+                itself. The framing has deep roots — Cauchy sequences, computable reals (Turing
+                1936), coalgebraic stream arithmetic, p-adic expansions, exact real arithmetic
+                systems like iRRAM, and the Type-2 Theory of Effectivity all instantiate parts of
+                this idea. What is new here is not the underlying mathematics but the
                 <strong class="key-concept"
-                  >unified protocol, the codec/base separation, and the explicit
-                  ABI</strong
+                  >unified protocol, the codec/base separation, and the explicit ABI</strong
                 >
                 that makes all of it composable at native speed.
               </p>
 
               <!-- Callout: Categorical framing -->
-              <aside
-                class="callout callout--info"
-                aria-label="Categorical framing note"
-              >
+              <aside class="callout callout--info" aria-label="Categorical framing note">
                 <div class="callout-icon" aria-hidden="true">∿</div>
                 <div class="callout-content">
                   <p class="callout-text">
                     Categorically, this is the
-                    <strong>final coalgebra</strong> for the digit-stream
-                    functor <code class="inline-code">F(X) = D × X</code> — the
-                    same framing used in coinductive treatments of streams.
+                    <strong>final coalgebra</strong> for the digit-stream functor
+                    <code class="inline-code">F(X) = D × X</code> — the same framing used in
+                    coinductive treatments of streams.
                   </p>
                 </div>
               </aside>
 
               <p>
-                The primitive is simple. A number is any deterministic program
-                that implements this interface. Everything else — vectors,
-                matrices, tensors, p-adics, transcendentals, metrics, arithmetic
-                — is a combinator over this primitive.
+                The primitive is simple. A number is any deterministic program that implements this
+                interface. Everything else — vectors, matrices, tensors, p-adics, transcendentals,
+                metrics, arithmetic — is a combinator over this primitive.
               </p>
 
               <!-- Core primitive code block -->
               <figure class="code-figure" aria-label="Core step primitive">
-                <figcaption class="code-caption">
-                  Core Primitive Interface
-                </figcaption>
+                <figcaption class="code-caption">Core Primitive Interface</figcaption>
                 <pre
                   class="code-block"
                 ><code class="code-content">step : State → (digit, State)</code></pre>
@@ -2635,38 +2545,28 @@
             </div>
             <div class="section-body">
               <p class="section-intro">
-                A vector is a nesting of binary multiplexer encoders. A matrix
-                or tensor is a nesting of vector construction operators. This is
-                not an analogy to existing data structures — it is the correct
-                ontological description of what these objects are.
+                A vector is a nesting of binary multiplexer encoders. A matrix or tensor is a
+                nesting of vector construction operators. This is not an analogy to existing data
+                structures — it is the correct ontological description of what these objects are.
               </p>
 
               <!-- MUX combinator code block -->
-              <figure
-                class="code-figure"
-                aria-label="MUX combinator definition"
-              >
-                <figcaption class="code-caption">
-                  The Core Combinator
-                </figcaption>
+              <figure class="code-figure" aria-label="MUX combinator definition">
+                <figcaption class="code-caption">The Core Combinator</figcaption>
                 <pre
                   class="code-block"
                 ><code class="code-content">MUX(selector, left, right)</code></pre>
               </figure>
 
               <p>
-                Where <code class="inline-code">selector</code> is itself a
-                generator, and <code class="inline-code">left</code> and
+                Where <code class="inline-code">selector</code> is itself a generator, and
+                <code class="inline-code">left</code> and
                 <code class="inline-code">right</code>
                 are generators recursively.
               </p>
 
               <!-- Properties grid for MUX benefits -->
-              <div
-                class="properties-grid"
-                role="list"
-                aria-label="MUX combinator properties"
-              >
+              <div class="properties-grid" role="list" aria-label="MUX combinator properties">
                 <div class="property-card" role="listitem">
                   <div class="property-icon" aria-hidden="true">∞</div>
                   <h3 class="property-title">Unbounded Precision</h3>
@@ -2684,9 +2584,7 @@
                 <div class="property-card" role="listitem">
                   <div class="property-icon" aria-hidden="true">⟶</div>
                   <h3 class="property-title">Lazy Evaluation</h3>
-                  <p class="property-desc">
-                    Only expand the tree as far as the consumer requires.
-                  </p>
+                  <p class="property-desc">Only expand the tree as far as the consumer requires.</p>
                 </div>
                 <div class="property-card" role="listitem">
                   <div class="property-icon" aria-hidden="true">⊗</div>
@@ -2698,30 +2596,23 @@
                 <div class="property-card" role="listitem">
                   <div class="property-icon" aria-hidden="true">⊞</div>
                   <h3 class="property-title">Vectors &amp; Tensors</h3>
-                  <p class="property-desc">
-                    Nested MUX trees over number generators, uniformly.
-                  </p>
+                  <p class="property-desc">Nested MUX trees over number generators, uniformly.</p>
                 </div>
               </div>
 
               <p>
-                Arithmetic becomes generator composition. Addition is a
-                carry-propagating combinator over two digit generators.
-                Multiplication is a convolution combinator. Division, negation,
-                and subtraction follow the same pattern — pure generator
-                composition.
+                Arithmetic becomes generator composition. Addition is a carry-propagating combinator
+                over two digit generators. Multiplication is a convolution combinator. Division,
+                negation, and subtraction follow the same pattern — pure generator composition.
               </p>
 
               <!-- Warning callout: carry propagation challenge -->
-              <aside
-                class="callout callout--warning"
-                aria-label="Carry propagation challenge"
-              >
+              <aside class="callout callout--warning" aria-label="Carry propagation challenge">
                 <div class="callout-icon" aria-hidden="true">⚠</div>
                 <div class="callout-content">
                   <p class="callout-text">
-                    Carry propagation is where the abstraction meets its hardest
-                    test, and we should be honest about it.
+                    Carry propagation is where the abstraction meets its hardest test, and we should
+                    be honest about it.
                   </p>
                 </div>
               </aside>
@@ -2744,26 +2635,21 @@
             </div>
             <div class="section-body">
               <p class="section-intro">
-                Standard positional arithmetic has a notorious flaw as a stream
-                operation: addition is
-                <strong class="key-concept">not local</strong>. The first digit
-                of <code class="inline-code">0.4999... + 0.5000...</code> cannot
-                be determined from any finite prefix — a carry from arbitrarily
-                deep in the expansion could propagate up and flip every digit
-                above it.
+                Standard positional arithmetic has a notorious flaw as a stream operation: addition
+                is
+                <strong class="key-concept">not local</strong>. The first digit of
+                <code class="inline-code">0.4999... + 0.5000...</code> cannot be determined from any
+                finite prefix — a carry from arbitrarily deep in the expansion could propagate up
+                and flip every digit above it.
               </p>
               <p>
-                Any naive digit-by-digit addition combinator will fail to
-                terminate on inputs near a digit boundary. This is not an edge
-                case; it is a structural property of the standard
-                representation.
+                Any naive digit-by-digit addition combinator will fail to terminate on inputs near a
+                digit boundary. This is not an edge case; it is a structural property of the
+                standard representation.
               </p>
 
               <!-- Solution callout -->
-              <aside
-                class="callout callout--solution"
-                aria-label="Signed-digit solution"
-              >
+              <aside class="callout callout--solution" aria-label="Signed-digit solution">
                 <div class="callout-icon" aria-hidden="true">✓</div>
                 <div class="callout-content">
                   <h3 class="callout-title">
@@ -2771,40 +2657,28 @@
                   </h3>
                   <p class="callout-text">
                     Digits range over
-                    <code class="inline-code"
-                      >{-(b-1), ..., -1, 0, 1, ..., b-1}</code
-                    >
-                    rather than <code class="inline-code">{0, ..., b-1}</code>.
-                    The Avizienis signed-digit representation is the canonical
-                    choice.
+                    <code class="inline-code">{-(b-1), ..., -1, 0, 1, ..., b-1}</code>
+                    rather than <code class="inline-code">{0, ..., b-1}</code>. The Avizienis
+                    signed-digit representation is the canonical choice.
                   </p>
                 </div>
               </aside>
 
               <!-- Signed-digit properties list -->
-              <ul
-                class="feature-list"
-                aria-label="Signed-digit representation properties"
-              >
+              <ul class="feature-list" aria-label="Signed-digit representation properties">
                 <li class="feature-list-item">
                   <span class="feature-check" aria-hidden="true">✓</span>
-                  <span
-                    >Addition is digit-local — no unbounded carry
-                    propagation</span
-                  >
+                  <span>Addition is digit-local — no unbounded carry propagation</span>
+                </li>
+                <li class="feature-list-item">
+                  <span class="feature-check" aria-hidden="true">✓</span>
+                  <span>Each number has multiple valid encodings (the redundancy)</span>
                 </li>
                 <li class="feature-list-item">
                   <span class="feature-check" aria-hidden="true">✓</span>
                   <span
-                    >Each number has multiple valid encodings (the
-                    redundancy)</span
-                  >
-                </li>
-                <li class="feature-list-item">
-                  <span class="feature-check" aria-hidden="true">✓</span>
-                  <span
-                    >The MUX/codec layer projects to standard non-redundant form
-                    only when emitting an externally visible digit</span
+                    >The MUX/codec layer projects to standard non-redundant form only when emitting
+                    an externally visible digit</span
                   >
                 </li>
               </ul>
@@ -2818,10 +2692,9 @@
                 <div class="callout-content">
                   <p class="callout-text">
                     This is a
-                    <strong>non-negotiable design commitment</strong> for the
-                    real-number arithmetic layer. Without it, the arithmetic
-                    combinators are mathematically ill-defined as local
-                    operations.
+                    <strong>non-negotiable design commitment</strong> for the real-number arithmetic
+                    layer. Without it, the arithmetic combinators are mathematically ill-defined as
+                    local operations.
                   </p>
                 </div>
               </aside>
@@ -2844,22 +2717,18 @@
             </div>
             <div class="section-body">
               <p class="section-intro">
-                Because digits are computed on demand and the tree is lazily
-                evaluated, unbounded precision is not a feature to be added — it
-                is the
-                <strong class="key-concept"
-                  >default behavior of the substrate</strong
-                >. Structural sharing keeps memory bounded to what is actually
-                needed.
+                Because digits are computed on demand and the tree is lazily evaluated, unbounded
+                precision is not a feature to be added — it is the
+                <strong class="key-concept">default behavior of the substrate</strong>. Structural
+                sharing keeps memory bounded to what is actually needed.
               </p>
               <p>
-                You compute exactly as many digits as the consumer requests, and
-                no more. This is the same mechanism used by lazy streams in
-                functional languages and exact real arithmetic libraries (iRRAM,
-                Haskell's <code class="inline-code">Data.Number.CReal</code>,
-                MPFR with rigorous error tracking), but grounded in a more
-                explicit state-machine semantics that LLVM can compile directly
-                to native code, and unified under a single ABI rather than
+                You compute exactly as many digits as the consumer requests, and no more. This is
+                the same mechanism used by lazy streams in functional languages and exact real
+                arithmetic libraries (iRRAM, Haskell's
+                <code class="inline-code">Data.Number.CReal</code>, MPFR with rigorous error
+                tracking), but grounded in a more explicit state-machine semantics that LLVM can
+                compile directly to native code, and unified under a single ABI rather than
                 scattered across domain-specific libraries.
               </p>
             </div>
@@ -2868,32 +2737,23 @@
           <!-- ================================================
                      SECTION 5: p-Adics Come for Free
                      ================================================ -->
-          <section
-            class="article-section"
-            id="p-adics"
-            aria-labelledby="heading-p-adics"
-          >
+          <section class="article-section" id="p-adics" aria-labelledby="heading-p-adics">
             <div class="section-header">
               <span class="section-number">05</span>
-              <h2 class="section-title" id="heading-p-adics">
-                p-Adics Come for Free
-              </h2>
+              <h2 class="section-title" id="heading-p-adics">p-Adics Come for Free</h2>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                The p-adic numbers are particularly natural in this model, and
-                notably
-                <strong class="key-concept">easier than the reals</strong> in a
-                precise technical sense: digit commitment is <em>local</em> in
-                p-adics, where it is <em>non-local</em>
+                The p-adic numbers are particularly natural in this model, and notably
+                <strong class="key-concept">easier than the reals</strong> in a precise technical
+                sense: digit commitment is <em>local</em> in p-adics, where it is <em>non-local</em>
                 in the reals.
               </p>
               <p>
-                A p-adic number is a digit stream indexed from the least
-                significant digit upward, with digits in
-                <code class="inline-code">{0, 1, ..., p-1}</code>. In the
-                generator model, this is simply a MUX tree with a p-way
-                multiplexer instead of a binary one.
+                A p-adic number is a digit stream indexed from the least significant digit upward,
+                with digits in
+                <code class="inline-code">{0, 1, ..., p-1}</code>. In the generator model, this is
+                simply a MUX tree with a p-way multiplexer instead of a binary one.
               </p>
 
               <!-- Key insight callout: periodic state machines -->
@@ -2903,42 +2763,33 @@
               >
                 <div class="callout-icon" aria-hidden="true">↻</div>
                 <div class="callout-content">
-                  <h3 class="callout-title">
-                    p-Adic Numbers Are Periodic State Machines
-                  </h3>
+                  <h3 class="callout-title">p-Adic Numbers Are Periodic State Machines</h3>
                   <p class="callout-text">
-                    A p-adic rational has an ultimately periodic digit
-                    expansion, which means its generator VM has a finite state
-                    space with a periodic orbit. The VM cycles through a finite
-                    set of states, emitting the repeating digit pattern.
+                    A p-adic rational has an ultimately periodic digit expansion, which means its
+                    generator VM has a finite state space with a periodic orbit. The VM cycles
+                    through a finite set of states, emitting the repeating digit pattern.
                   </p>
                 </div>
               </aside>
 
               <p>
-                This has an immediate consequence: the p-adic metric is also a
-                periodic state machine. The p-adic distance between two numbers
-                <code class="inline-code">x</code> and
-                <code class="inline-code">y</code> is
+                This has an immediate consequence: the p-adic metric is also a periodic state
+                machine. The p-adic distance between two numbers
+                <code class="inline-code">x</code> and <code class="inline-code">y</code> is
                 <code class="inline-code">p^{-v_p(x-y)}</code>, where
-                <code class="inline-code">v_p(x-y)</code> is the index of the
-                first digit where they differ. If both are periodic generators,
-                then the metric computation is a product automaton over their
-                state spaces — itself a finite, periodic machine.
+                <code class="inline-code">v_p(x-y)</code> is the index of the first digit where they
+                differ. If both are periodic generators, then the metric computation is a product
+                automaton over their state spaces — itself a finite, periodic machine.
               </p>
 
               <!-- General primitive highlight -->
-              <div
-                class="concept-highlight"
-                aria-label="AutomatonOverGenerators primitive"
-              >
+              <div class="concept-highlight" aria-label="AutomatonOverGenerators primitive">
                 <h3 class="concept-highlight-title">AutomatonOverGenerators</h3>
                 <p class="concept-highlight-body">
-                  A finite state machine whose transition function reads one or
-                  more digit generators and produces either a new generator or a
-                  scalar (valuation, distance, boolean). p-adics and their
-                  metric are the cleanest, most symmetric instance of this
-                  pattern.
+                  A finite state machine whose transition function reads one or more digit
+                  generators and produces either a new generator or a scalar (valuation, distance,
+                  boolean). p-adics and their metric are the cleanest, most symmetric instance of
+                  this pattern.
                 </p>
               </div>
             </div>
@@ -2947,11 +2798,7 @@
           <!-- ================================================
                      SECTION 6: The Odd Primitives
                      ================================================ -->
-          <section
-            class="article-section"
-            id="primitives"
-            aria-labelledby="heading-primitives"
-          >
+          <section class="article-section" id="primitives" aria-labelledby="heading-primitives">
             <div class="section-header">
               <span class="section-number">06</span>
               <h2 class="section-title" id="heading-primitives">
@@ -2960,9 +2807,8 @@
             </div>
             <div class="section-body">
               <p class="section-intro">
-                Supporting most of mathematics requires some nonstandard
-                primitives — operators that compile mathematical definitions
-                into digit streams with correctness guarantees.
+                Supporting most of mathematics requires some nonstandard primitives — operators that
+                compile mathematical definitions into digit streams with correctness guarantees.
               </p>
 
               <!-- Primitive: Series Stepper -->
@@ -2971,19 +2817,15 @@
                   <span class="primitive-tag">Primitive 1</span>
                   <h3 class="primitive-title">Series Stepper</h3>
                 </div>
-                <figure
-                  class="code-figure"
-                  aria-label="Series stepper interface"
-                >
+                <figure class="code-figure" aria-label="Series stepper interface">
                   <pre
                     class="code-block"
                   ><code class="code-content">series_step(state) → (term, new_state)</code></pre>
                 </figure>
                 <p class="primitive-desc">
-                  A finite state machine that emits the next term of an infinite
-                  series. This is the computational form of a mathematical
-                  definition — a convergent series becomes an executable state
-                  machine.
+                  A finite state machine that emits the next term of an infinite series. This is the
+                  computational form of a mathematical definition — a convergent series becomes an
+                  executable state machine.
                 </p>
               </div>
 
@@ -2993,10 +2835,7 @@
                   <span class="primitive-tag">Primitive 2</span>
                   <h3 class="primitive-title">Tail Bound Oracle</h3>
                 </div>
-                <figure
-                  class="code-figure"
-                  aria-label="Tail bound oracle interface"
-                >
+                <figure class="code-figure" aria-label="Tail bound oracle interface">
                   <pre
                     class="code-block"
                   ><code class="code-content">tail_bound(state) → E</code></pre>
@@ -3004,26 +2843,18 @@
                 <p class="primitive-desc">
                   Given the current series state at index
                   <code class="inline-code">n</code>, returns an upper bound
-                  <code class="inline-code">E</code> such that the remaining
-                  tail satisfies
-                  <code class="inline-code">|∑_{k&gt;n} a_k| ≤ E</code>. This is
-                  the bridge from convergence proofs to executable digit safety.
+                  <code class="inline-code">E</code> such that the remaining tail satisfies
+                  <code class="inline-code">|∑_{k&gt;n} a_k| ≤ E</code>. This is the bridge from
+                  convergence proofs to executable digit safety.
                 </p>
-                <aside
-                  class="callout callout--warning"
-                  aria-label="Mathematical barrier note"
-                >
+                <aside class="callout callout--warning" aria-label="Mathematical barrier note">
                   <div class="callout-icon" aria-hidden="true">⚠</div>
                   <div class="callout-content">
                     <p class="callout-text">
                       This is a
-                      <strong
-                        >mathematical barrier, not merely an engineering
-                        concern</strong
-                      >
-                      — every supported transcendental constant or analytic
-                      function requires its own per-constant convergence proof,
-                      embedded as a callable bound.
+                      <strong>mathematical barrier, not merely an engineering concern</strong>
+                      — every supported transcendental constant or analytic function requires its
+                      own per-constant convergence proof, embedded as a callable bound.
                     </p>
                   </div>
                 </aside>
@@ -3038,10 +2869,7 @@
                     <span class="primitive-scope">(for reals)</span>
                   </h3>
                 </div>
-                <figure
-                  class="code-figure"
-                  aria-label="Interval refinement engine interface"
-                >
+                <figure class="code-figure" aria-label="Interval refinement engine interface">
                   <pre
                     class="code-block"
                   ><code class="code-content">refine_interval(L, U, term, E) → (L', U')
@@ -3050,10 +2878,9 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                 <p class="primitive-desc">
                   Maintains a shrinking interval
                   <code class="inline-code">[L, U]</code>
-                  containing the true value. A digit is emitted when all numbers
-                  in the current interval share the same prefix of sufficient
-                  length. This is the real-number version of digit extraction —
-                  an online, monotone refinement process.
+                  containing the true value. A digit is emitted when all numbers in the current
+                  interval share the same prefix of sufficient length. This is the real-number
+                  version of digit extraction — an online, monotone refinement process.
                 </p>
               </div>
 
@@ -3066,21 +2893,17 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                     <span class="primitive-scope">(for p-adics)</span>
                   </h3>
                 </div>
-                <figure
-                  class="code-figure"
-                  aria-label="Valuation extractor interface"
-                >
+                <figure class="code-figure" aria-label="Valuation extractor interface">
                   <pre
                     class="code-block"
                   ><code class="code-content">valuation(a_n) → v_p(a_n)</code></pre>
                 </figure>
                 <p class="primitive-desc">
-                  For p-adics, locality is algebraic rather than analytic. A
-                  term with p-adic valuation
-                  <code class="inline-code">v</code> can only affect digits at
-                  positions <code class="inline-code">≤ v</code>. No tail bound
-                  oracle required, no interval refinement, no boundary
-                  pathologies.
+                  For p-adics, locality is algebraic rather than analytic. A term with p-adic
+                  valuation
+                  <code class="inline-code">v</code> can only affect digits at positions
+                  <code class="inline-code">≤ v</code>. No tail bound oracle required, no interval
+                  refinement, no boundary pathologies.
                 </p>
               </div>
 
@@ -3090,19 +2913,15 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                   <span class="primitive-tag">Primitive 5</span>
                   <h3 class="primitive-title">Carry Propagator</h3>
                 </div>
-                <figure
-                  class="code-figure"
-                  aria-label="Carry propagator interface"
-                >
+                <figure class="code-figure" aria-label="Carry propagator interface">
                   <pre
                     class="code-block"
                   ><code class="code-content">carry(k) → {0, 1, ...}</code></pre>
                 </figure>
                 <p class="primitive-desc">
-                  Addition, subtraction, multiplication, and division all reduce
-                  to digitwise combinators plus a carry propagation rule. Under
-                  signed-digit representation, this combinator is local. Under
-                  standard representation, it is not.
+                  Addition, subtraction, multiplication, and division all reduce to digitwise
+                  combinators plus a carry propagation rule. Under signed-digit representation, this
+                  combinator is local. Under standard representation, it is not.
                 </p>
               </div>
 
@@ -3112,19 +2931,13 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                   <span class="primitive-tag">Primitive 6</span>
                   <h3 class="primitive-title">Composition Engine</h3>
                 </div>
-                <figure
-                  class="code-figure"
-                  aria-label="Composition engine interface"
-                >
-                  <pre
-                    class="code-block"
-                  ><code class="code-content">compose(f, g) → h</code></pre>
+                <figure class="code-figure" aria-label="Composition engine interface">
+                  <pre class="code-block"><code class="code-content">compose(f, g) → h</code></pre>
                 </figure>
                 <p class="primitive-desc">
-                  All mathematical operations reduce to composing digit
-                  generators. This is the function algebra of the numerics
-                  library — the mechanism by which complex mathematical objects
-                  are built from simpler ones.
+                  All mathematical operations reduce to composing digit generators. This is the
+                  function algebra of the numerics library — the mechanism by which complex
+                  mathematical objects are built from simpler ones.
                 </p>
               </div>
 
@@ -3132,9 +2945,7 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
               <div class="primitive-block" id="memoization">
                 <div class="primitive-header">
                   <span class="primitive-tag">Primitive 7</span>
-                  <h3 class="primitive-title">
-                    Memoization and Structural Sharing
-                  </h3>
+                  <h3 class="primitive-title">Memoization and Structural Sharing</h3>
                 </div>
                 <figure class="code-figure" aria-label="Memoization interface">
                   <pre
@@ -3142,25 +2953,19 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                   ><code class="code-content">memo(generator) → generator'</code></pre>
                 </figure>
                 <p class="primitive-desc">
-                  Repeated digit queries must not recompute. Shared subtrees
-                  must remain shared. Memoization is exposed as an
-                  <strong
-                    >explicit wrapper, never an implicit global cache</strong
-                  >, because implicit caching breaks the value-semantics story
-                  for forking.
+                  Repeated digit queries must not recompute. Shared subtrees must remain shared.
+                  Memoization is exposed as an
+                  <strong>explicit wrapper, never an implicit global cache</strong>, because
+                  implicit caching breaks the value-semantics story for forking.
                 </p>
                 <div class="api-modes-row" aria-label="Memoization API modes">
                   <div class="api-mode-card">
                     <code class="api-mode-code">.streaming()</code>
-                    <p class="api-mode-desc">
-                      O(1) space, sequential access only, no cache
-                    </p>
+                    <p class="api-mode-desc">O(1) space, sequential access only, no cache</p>
                   </div>
                   <div class="api-mode-card">
                     <code class="api-mode-code">.cached(max_digits=N)</code>
-                    <p class="api-mode-desc">
-                      Bounded LRU cache, random access within N digits
-                    </p>
+                    <p class="api-mode-desc">Bounded LRU cache, random access within N digits</p>
                   </div>
                 </div>
               </div>
@@ -3170,23 +2975,15 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
           <!-- ================================================
                      SECTION 7: The Forkable Nano-VM ABI
                      ================================================ -->
-          <section
-            class="article-section"
-            id="abi"
-            aria-labelledby="heading-abi"
-          >
+          <section class="article-section" id="abi" aria-labelledby="heading-abi">
             <div class="section-header">
               <span class="section-number">07</span>
-              <h2 class="section-title" id="heading-abi">
-                The Forkable Nano-VM: A Two-Tier ABI
-              </h2>
+              <h2 class="section-title" id="heading-abi">The Forkable Nano-VM: A Two-Tier ABI</h2>
             </div>
             <div class="section-body">
               <p class="section-intro">
                 The full picture of a number in this model is a
-                <strong class="key-concept"
-                  >forkable, coinductive, deterministic nano-VM</strong
-                >.
+                <strong class="key-concept">forkable, coinductive, deterministic nano-VM</strong>.
               </p>
 
               <!-- VM properties list -->
@@ -3194,22 +2991,18 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                 <li class="numbered-feature-item">
                   <span class="numbered-feature-label">Stateful</span>
                   <span class="numbered-feature-desc"
-                    >Each number carries internal state that evolves as digits
-                    are requested.</span
+                    >Each number carries internal state that evolves as digits are requested.</span
                   >
                 </li>
                 <li class="numbered-feature-item">
                   <span class="numbered-feature-label">Forkable</span>
                   <span class="numbered-feature-desc"
-                    >The state can be cloned exactly at any point, enabling
-                    parallel digit computation, comparison, metric evaluation,
-                    and speculative arithmetic.</span
+                    >The state can be cloned exactly at any point, enabling parallel digit
+                    computation, comparison, metric evaluation, and speculative arithmetic.</span
                   >
                 </li>
                 <li class="numbered-feature-item">
-                  <span class="numbered-feature-label"
-                    >Deterministic &amp; Pure</span
-                  >
+                  <span class="numbered-feature-label">Deterministic &amp; Pure</span>
                   <span class="numbered-feature-desc"
                     >Forking is exact; there is no hidden global state.</span
                   >
@@ -3217,15 +3010,14 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                 <li class="numbered-feature-item">
                   <span class="numbered-feature-label">Periodic-Friendly</span>
                   <span class="numbered-feature-desc"
-                    >The VM supports periodic state cycles, ultimately periodic
-                    orbits, and product automata.</span
+                    >The VM supports periodic state cycles, ultimately periodic orbits, and product
+                    automata.</span
                   >
                 </li>
                 <li class="numbered-feature-item">
                   <span class="numbered-feature-label">Composable</span>
                   <span class="numbered-feature-desc"
-                    >Two VMs combine into a new VM via arithmetic and analytic
-                    combinators.</span
+                    >Two VMs combine into a new VM via arithmetic and analytic combinators.</span
                   >
                 </li>
                 <li class="numbered-feature-item">
@@ -3237,18 +3029,10 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
               </ol>
 
               <!-- Two-tier comparison table -->
-              <div
-                class="table-wrapper"
-                role="region"
-                aria-label="Two-tier ABI comparison"
-              >
-                <table
-                  class="data-table"
-                  aria-label="Automaton vs Series tier comparison"
-                >
+              <div class="table-wrapper" role="region" aria-label="Two-tier ABI comparison">
+                <table class="data-table" aria-label="Automaton vs Series tier comparison">
                   <caption class="table-caption">
-                    The Critical Bifurcation: Two Structurally Distinct
-                    Generator Classes
+                    The Critical Bifurcation: Two Structurally Distinct Generator Classes
                   </caption>
                   <thead class="table-head">
                     <tr>
@@ -3261,13 +3045,9 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                   <tbody class="table-body">
                     <tr class="table-row table-row--automaton">
                       <td class="table-td table-td--tier">
-                        <span class="tier-badge tier-badge--automaton"
-                          >Automaton</span
-                        >
+                        <span class="tier-badge tier-badge--automaton">Automaton</span>
                       </td>
-                      <td class="table-td">
-                        Rationals, algebraic irrationals, periodic p-adics
-                      </td>
+                      <td class="table-td">Rationals, algebraic irrationals, periodic p-adics</td>
                       <td class="table-td">Fixed-size, inline</td>
                       <td class="table-td">
                         <span class="cost-badge cost-badge--fast">O(1)</span>
@@ -3276,18 +3056,12 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
                     </tr>
                     <tr class="table-row table-row--series">
                       <td class="table-td table-td--tier">
-                        <span class="tier-badge tier-badge--series"
-                          >Series</span
-                        >
+                        <span class="tier-badge tier-badge--series">Series</span>
                       </td>
-                      <td class="table-td">
-                        Classical transcendentals (π, e, log 2, ζ(3))
-                      </td>
+                      <td class="table-td">Classical transcendentals (π, e, log 2, ζ(3))</td>
                       <td class="table-td">Grows with computation depth</td>
                       <td class="table-td">
-                        <span class="cost-badge cost-badge--moderate"
-                          >O(log n)</span
-                        >
+                        <span class="cost-badge cost-badge--moderate">O(log n)</span>
                         — must deep-copy accumulators
                       </td>
                     </tr>
@@ -3296,13 +3070,8 @@ emit_digit_if_safe(L, U, base) → maybe digit</code></pre>
               </div>
 
               <!-- ABI struct definitions -->
-              <figure
-                class="code-figure"
-                aria-label="Two-tier ABI struct definitions"
-              >
-                <figcaption class="code-caption">
-                  Two-Tier ABI — C Struct Definitions
-                </figcaption>
+              <figure class="code-figure" aria-label="Two-tier ABI struct definitions">
+                <figcaption class="code-caption">Two-Tier ABI — C Struct Definitions</figcaption>
                 <pre
                   class="code-block code-block--c"
                 ><code class="code-content">// Automaton tier: pure value semantics, O(1) fork
@@ -3340,22 +3109,14 @@ typedef struct {
             </div>
             <div class="section-body">
               <p class="section-intro">
-                The nano-VM is not a bytecode interpreter. It does not encode or
-                decode its own state. That is precisely why LLVM is the right
-                implementation target.
+                The nano-VM is not a bytecode interpreter. It does not encode or decode its own
+                state. That is precisely why LLVM is the right implementation target.
               </p>
 
               <!-- Canonical ABI code -->
-              <figure
-                class="code-figure"
-                aria-label="Canonical ABI for automaton tier"
-              >
-                <figcaption class="code-caption">
-                  Canonical ABI — Automaton Tier (C)
-                </figcaption>
-                <pre
-                  class="code-block code-block--c"
-                ><code class="code-content">struct NumVMStep {
+              <figure class="code-figure" aria-label="Canonical ABI for automaton tier">
+                <figcaption class="code-caption">Canonical ABI — Automaton Tier (C)</figcaption>
+                <pre class="code-block code-block--c"><code class="code-content">struct NumVMStep {
     uint32_t digit;
     AutomatonVM next;
 };
@@ -3365,9 +3126,7 @@ typedef struct NumVMStep (*NumVMFn)(AutomatonVM);</code></pre>
 
               <!-- LLVM IR code -->
               <figure class="code-figure" aria-label="LLVM IR representation">
-                <figcaption class="code-caption">
-                  LLVM IR Representation
-                </figcaption>
+                <figcaption class="code-caption">LLVM IR Representation</figcaption>
                 <pre
                   class="code-block code-block--llvm"
                 ><code class="code-content">%AutomatonVM = type { i32, i32, [4 x i64] }
@@ -3377,21 +3136,14 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
               </figure>
 
               <!-- Key insight: state is native machine data -->
-              <aside
-                class="callout callout--insight"
-                aria-label="State is native machine data"
-              >
+              <aside class="callout callout--insight" aria-label="State is native machine data">
                 <div class="callout-icon" aria-hidden="true">⚡</div>
                 <div class="callout-content">
                   <p class="callout-text">
-                    <strong
-                      >State is native machine data, not a serialized
-                      blob.</strong
-                    >
-                    LLVM handles state layout, register allocation, calling
-                    conventions, inlining, constant folding, JIT specialization,
-                    dead code elimination, loop unrolling, and tail recursion
-                    elimination.
+                    <strong>State is native machine data, not a serialized blob.</strong>
+                    LLVM handles state layout, register allocation, calling conventions, inlining,
+                    constant folding, JIT specialization, dead code elimination, loop unrolling, and
+                    tail recursion elimination.
                   </p>
                 </div>
               </aside>
@@ -3409,21 +3161,16 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
               </figure>
 
               <!-- LLVM caveat -->
-              <aside
-                class="callout callout--warning"
-                aria-label="LLVM optimization caveat"
-              >
+              <aside class="callout callout--warning" aria-label="LLVM optimization caveat">
                 <div class="callout-icon" aria-hidden="true">⚠</div>
                 <div class="callout-content">
                   <h3 class="callout-title">A Caveat About LLVM's Reach</h3>
                   <p class="callout-text">
                     LLVM optimization applies fully to
-                    <em>statically-known, compile-time-fixed</em> expression
-                    trees. For <em>runtime-constructed</em> expression trees,
-                    the library provides a
+                    <em>statically-known, compile-time-fixed</em> expression trees. For
+                    <em>runtime-constructed</em> expression trees, the library provides a
                     <strong>JIT compilation path</strong>:
-                    <code class="inline-code">compile(expr_tree) → NumVMFn</code
-                    >.
+                    <code class="inline-code">compile(expr_tree) → NumVMFn</code>.
                   </p>
                 </div>
               </aside>
@@ -3433,11 +3180,7 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
           <!-- ================================================
                      SECTION 9: Base as Codec
                      ================================================ -->
-          <section
-            class="article-section"
-            id="base-codec"
-            aria-labelledby="heading-base-codec"
-          >
+          <section class="article-section" id="base-codec" aria-labelledby="heading-base-codec">
             <div class="section-header">
               <span class="section-number">09</span>
               <h2 class="section-title" id="heading-base-codec">
@@ -3447,16 +3190,12 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
             <div class="section-body">
               <p class="section-intro">
                 The base parameter is not a mathematical constant. It is a
-                <strong class="key-concept"
-                  >projection operator — a codec</strong
-                >. This is the correct ontological description.
+                <strong class="key-concept">projection operator — a codec</strong>. This is the
+                correct ontological description.
               </p>
 
               <!-- Ontology breakdown -->
-              <div
-                class="ontology-breakdown"
-                aria-label="Number ontology breakdown"
-              >
+              <div class="ontology-breakdown" aria-label="Number ontology breakdown">
                 <div class="ontology-item">
                   <span class="ontology-term">A number</span>
                   <span class="ontology-equals">=</span>
@@ -3470,24 +3209,20 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
                 <div class="ontology-item">
                   <span class="ontology-term">A digit</span>
                   <span class="ontology-equals">=</span>
-                  <span class="ontology-def"
-                    >a symbol in that decoder's alphabet</span
-                  >
+                  <span class="ontology-def">a symbol in that decoder's alphabet</span>
                 </div>
               </div>
 
               <p>
-                This is the same relationship as a probability distribution to
-                an arithmetic coder, a message to a bitstream, a model to a
-                codebook. Base is a codec. The number is the generator. The
-                digits are the encoded tape.
+                This is the same relationship as a probability distribution to an arithmetic coder,
+                a message to a bitstream, a model to a codebook. Base is a codec. The number is the
+                generator. The digits are the encoded tape.
               </p>
               <p>
-                In this model, ℝ is not the ontology. ℝ is one possible
-                projection of the generator. The generator is the real object.
-                The real number is the encoding. Changing base is changing
-                coordinate charts on generator space — the underlying object
-                does not change, only the representation does.
+                In this model, ℝ is not the ontology. ℝ is one possible projection of the generator.
+                The generator is the real object. The real number is the encoding. Changing base is
+                changing coordinate charts on generator space — the underlying object does not
+                change, only the representation does.
               </p>
             </div>
           </section>
@@ -3495,11 +3230,7 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
           <!-- ================================================
                      SECTION 10: BBP Formulas Explained
                      ================================================ -->
-          <section
-            class="article-section"
-            id="bbp-formulas"
-            aria-labelledby="heading-bbp-formulas"
-          >
+          <section class="article-section" id="bbp-formulas" aria-labelledby="heading-bbp-formulas">
             <div class="section-header">
               <span class="section-number">10</span>
               <h2 class="section-title" id="heading-bbp-formulas">
@@ -3508,31 +3239,27 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                The Bailey-Borwein-Plouffe formula for π in base 16 allows
-                computing the n-th hexadecimal digit of π without computing the
-                preceding digits. The generator-VM model contributes a
-                <strong class="key-concept"
-                  >first-class library primitive</strong
-                >
-                that lifts this phenomenon out of one-off optimizations and into
-                the ABI.
+                The Bailey-Borwein-Plouffe formula for π in base 16 allows computing the n-th
+                hexadecimal digit of π without computing the preceding digits. The generator-VM
+                model contributes a
+                <strong class="key-concept">first-class library primitive</strong>
+                that lifts this phenomenon out of one-off optimizations and into the ABI.
               </p>
 
               <!-- BBP theorem highlight -->
               <div class="theorem-block" aria-label="BBP theorem statement">
                 <div class="theorem-label">Key Insight</div>
                 <p class="theorem-statement">
-                  A BBP-type formula exists exactly when the generator automaton
-                  has a
+                  A BBP-type formula exists exactly when the generator automaton has a
                   <strong>periodic orbit under the chosen codec</strong>.
                 </p>
               </div>
 
               <p>
-                In base 16, the π-generator VM has a periodic sub-automaton. The
-                codec (base 16) aligns with that periodic structure, exposing a
-                fast-forward opcode. In base 10, the same automaton has no such
-                periodic orbit under that codec. No fast-forward is possible.
+                In base 16, the π-generator VM has a periodic sub-automaton. The codec (base 16)
+                aligns with that periodic structure, exposing a fast-forward opcode. In base 10, the
+                same automaton has no such periodic orbit under that codec. No fast-forward is
+                possible.
               </p>
 
               <!-- BBP examples list -->
@@ -3541,32 +3268,25 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
                 <ul class="examples-list">
                   <li class="examples-item">BBP for π in base 16</li>
                   <li class="examples-item">BBP for log(2) in base 2</li>
-                  <li class="examples-item">
-                    BBP for polylogarithms in various bases
-                  </li>
+                  <li class="examples-item">BBP for polylogarithms in various bases</li>
                   <li class="examples-item">Certain p-adic expansions</li>
-                  <li class="examples-item">
-                    Certain Mahler-function expansions
-                  </li>
+                  <li class="examples-item">Certain Mahler-function expansions</li>
                 </ul>
               </div>
 
               <!-- Skip primitive -->
               <figure class="code-figure" aria-label="Skip-ahead primitive">
-                <figcaption class="code-caption">
-                  The Skip-Ahead Primitive
-                </figcaption>
+                <figcaption class="code-caption">The Skip-Ahead Primitive</figcaption>
                 <pre
                   class="code-block"
                 ><code class="code-content">skip(n, state) → state'</code></pre>
               </figure>
               <p>
-                Available only when the automaton has a periodic orbit under the
-                current codec. This is the computational form of a BBP formula.
-                The skip function cannot be synthesized automatically — it
-                requires per-constant manual derivation — but once written, it
-                becomes a first-class operation that LLVM optimizes alongside
-                the rest of the generator graph.
+                Available only when the automaton has a periodic orbit under the current codec. This
+                is the computational form of a BBP formula. The skip function cannot be synthesized
+                automatically — it requires per-constant manual derivation — but once written, it
+                becomes a first-class operation that LLVM optimizes alongside the rest of the
+                generator graph.
               </p>
             </div>
           </section>
@@ -3587,58 +3307,40 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                Runtime is elastic — you can trade time for algorithms,
-                parallelize, precompute.
-                <strong class="key-concept"
-                  >Memory (state size) is structural.</strong
-                >
-                It is tied to the Kolmogorov complexity of the number and to the
-                order and dimension of the recurrence or automaton.
+                Runtime is elastic — you can trade time for algorithms, parallelize, precompute.
+                <strong class="key-concept">Memory (state size) is structural.</strong>
+                It is tied to the Kolmogorov complexity of the number and to the order and dimension
+                of the recurrence or automaton.
               </p>
               <p>
-                In the nano-VM model, the memory cost of a number is the size of
-                its VM state — specifically, the number of independent fields
-                and the bit-width required for each.
+                In the nano-VM model, the memory cost of a number is the size of its VM state —
+                specifically, the number of independent fields and the bit-width required for each.
               </p>
 
               <!-- Conjecture callout -->
-              <aside
-                class="callout callout--info"
-                aria-label="Working conjecture note"
-              >
+              <aside class="callout callout--info" aria-label="Working conjecture note">
                 <div class="callout-icon" aria-hidden="true">~</div>
                 <div class="callout-content">
                   <p class="callout-text">
                     The hierarchy below is presented as a
                     <strong
-                      >working conjecture grounded in observed
-                      minimal-recurrence orders</strong
-                    >, not as proven lower bounds. Proving that π
-                    <em>requires</em> at least four coupled accumulators is an
-                    open problem.
+                      >working conjecture grounded in observed minimal-recurrence orders</strong
+                    >, not as proven lower bounds. Proving that π <em>requires</em> at least four
+                    coupled accumulators is an open problem.
                   </p>
                 </div>
               </aside>
 
               <!-- Complexity hierarchy table -->
-              <div
-                class="table-wrapper"
-                role="region"
-                aria-label="Numerical complexity hierarchy"
-              >
-                <table
-                  class="data-table"
-                  aria-label="Generator complexity classes"
-                >
+              <div class="table-wrapper" role="region" aria-label="Numerical complexity hierarchy">
+                <table class="data-table" aria-label="Generator complexity classes">
                   <caption class="table-caption">
                     Generator Complexity Hierarchy
                   </caption>
                   <thead class="table-head">
                     <tr>
                       <th class="table-th" scope="col">Class</th>
-                      <th class="table-th" scope="col">
-                        Minimal VM State Dimension
-                      </th>
+                      <th class="table-th" scope="col">Minimal VM State Dimension</th>
                       <th class="table-th" scope="col">Memory Growth</th>
                       <th class="table-th" scope="col">Examples</th>
                     </tr>
@@ -3648,74 +3350,51 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
                       <td class="table-td table-td--class">Rationals</td>
                       <td class="table-td table-td--dim">1</td>
                       <td class="table-td">
-                        <span class="growth-badge growth-badge--constant"
-                          >constant</span
-                        >
+                        <span class="growth-badge growth-badge--constant">constant</span>
                       </td>
                       <td class="table-td table-td--examples">1/7, 3/8</td>
                     </tr>
                     <tr class="table-row">
-                      <td class="table-td table-td--class">
-                        Quadratic irrationals
-                      </td>
+                      <td class="table-td table-td--class">Quadratic irrationals</td>
                       <td class="table-td table-td--dim">2</td>
                       <td class="table-td">
-                        <span class="growth-badge growth-badge--log"
-                          >O(log n)</span
-                        >
+                        <span class="growth-badge growth-badge--log">O(log n)</span>
                       </td>
                       <td class="table-td table-td--examples">√2, φ</td>
                     </tr>
                     <tr class="table-row">
-                      <td class="table-td table-td--class">
-                        Classical transcendentals
-                      </td>
+                      <td class="table-td table-td--class">Classical transcendentals</td>
                       <td class="table-td table-td--dim">3–4</td>
                       <td class="table-td">
-                        <span class="growth-badge growth-badge--log"
-                          >O(log n)</span
-                        >
+                        <span class="growth-badge growth-badge--log">O(log n)</span>
                       </td>
                       <td class="table-td table-td--examples">π, e</td>
                     </tr>
                     <tr class="table-row">
-                      <td class="table-td table-td--class">
-                        Higher transcendentals
-                      </td>
+                      <td class="table-td table-td--class">Higher transcendentals</td>
                       <td class="table-td table-td--dim">4–6+</td>
                       <td class="table-td">
-                        <span class="growth-badge growth-badge--log"
-                          >O(log n)</span
-                        >
+                        <span class="growth-badge growth-badge--log">O(log n)</span>
                       </td>
-                      <td class="table-td table-td--examples">
-                        ζ(3), polylogs
-                      </td>
+                      <td class="table-td table-td--examples">ζ(3), polylogs</td>
                     </tr>
                     <tr class="table-row">
-                      <td class="table-td table-td--class">
-                        Inaccessible generators
-                      </td>
+                      <td class="table-td table-td--class">Inaccessible generators</td>
                       <td class="table-td table-td--dim">unbounded</td>
                       <td class="table-td">
-                        <span class="growth-badge growth-badge--linear"
-                          >O(n)</span
-                        >
+                        <span class="growth-badge growth-badge--linear">O(n)</span>
                       </td>
-                      <td class="table-td table-td--examples">
-                        encrypted/random streams
-                      </td>
+                      <td class="table-td table-td--examples">encrypted/random streams</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
               <p>
-                π and e are not just "more complicated" than √2 in some informal
-                sense. They appear to be the first two members of an ascending
-                sequence of irreducible generator-complexity classes, each
-                requiring genuinely more state to maintain correctness over an
-                unbounded digit stream.
+                π and e are not just "more complicated" than √2 in some informal sense. They appear
+                to be the first two members of an ascending sequence of irreducible
+                generator-complexity classes, each requiring genuinely more state to maintain
+                correctness over an unbounded digit stream.
               </p>
             </div>
           </section>
@@ -3723,11 +3402,7 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
           <!-- ================================================
                      SECTION 12: Randomness as Encrypted Determinism
                      ================================================ -->
-          <section
-            class="article-section"
-            id="randomness"
-            aria-labelledby="heading-randomness"
-          >
+          <section class="article-section" id="randomness" aria-labelledby="heading-randomness">
             <div class="section-header">
               <span class="section-number">12</span>
               <h2 class="section-title" id="heading-randomness">
@@ -3736,66 +3411,52 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                In this ontology, randomness does not exist as a fundamental
-                phenomenon. Every number is a deterministic generator VM. What
-                people call "random" is a number whose generator is
-                <strong class="key-concept">inaccessible</strong> — not absent,
-                not large, but hidden.
+                In this ontology, randomness does not exist as a fundamental phenomenon. Every
+                number is a deterministic generator VM. What people call "random" is a number whose
+                generator is
+                <strong class="key-concept">inaccessible</strong> — not absent, not large, but
+                hidden.
               </p>
 
               <!-- Accessibility classification -->
-              <div
-                class="classification-grid"
-                aria-label="Generator accessibility classification"
-              >
-                <div
-                  class="classification-card classification-card--accessible"
-                >
+              <div class="classification-grid" aria-label="Generator accessibility classification">
+                <div class="classification-card classification-card--accessible">
                   <div class="classification-icon" aria-hidden="true">🔓</div>
                   <h3 class="classification-title">Accessible</h3>
                   <p class="classification-desc">
-                    The generator can be derived from the number. Rationals,
-                    algebraic irrationals, classical transcendentals with known
-                    recurrences.
+                    The generator can be derived from the number. Rationals, algebraic irrationals,
+                    classical transcendentals with known recurrences.
                   </p>
                 </div>
                 <div class="classification-card classification-card--crypto">
                   <div class="classification-icon" aria-hidden="true">🔑</div>
-                  <h3 class="classification-title">
-                    Cryptographically Inaccessible
-                  </h3>
+                  <h3 class="classification-title">Cryptographically Inaccessible</h3>
                   <p class="classification-desc">
-                    The generator exists and is small, but is hidden by a
-                    one-way function. AES-CTR, ChaCha20, hash-based PRNGs.
+                    The generator exists and is small, but is hidden by a one-way function. AES-CTR,
+                    ChaCha20, hash-based PRNGs.
                   </p>
                 </div>
-                <div
-                  class="classification-card classification-card--uncomputable"
-                >
+                <div class="classification-card classification-card--uncomputable">
                   <div class="classification-icon" aria-hidden="true">∅</div>
                   <h3 class="classification-title">Computably Inaccessible</h3>
                   <p class="classification-desc">
-                    The generator exists but is provably uncomputable. Chaitin
-                    Ω, Martin-Löf random reals.
+                    The generator exists but is provably uncomputable. Chaitin Ω, Martin-Löf random
+                    reals.
                   </p>
                 </div>
               </div>
 
               <!-- Philosophical caveat -->
-              <aside
-                class="callout callout--caveat"
-                aria-label="Philosophical caveat"
-              >
+              <aside class="callout callout--caveat" aria-label="Philosophical caveat">
                 <div class="callout-icon" aria-hidden="true">φ</div>
                 <div class="callout-content">
                   <h3 class="callout-title">Philosophical Caveat</h3>
                   <p class="callout-text">
-                    The claim "randomness is encrypted determinism" is a working
-                    stance, not a settled theorem. The library does not require
-                    this metaphysical commitment to function — it requires only
-                    that every input it accepts implements the step interface.
-                    The framing is offered as a useful organizing principle
-                    rather than a proof.
+                    The claim "randomness is encrypted determinism" is a working stance, not a
+                    settled theorem. The library does not require this metaphysical commitment to
+                    function — it requires only that every input it accepts implements the step
+                    interface. The framing is offered as a useful organizing principle rather than a
+                    proof.
                   </p>
                 </div>
               </aside>
@@ -3818,19 +3479,14 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                In this ontology, a random program is a perfectly valid number —
-                not metaphorically, but literally. Any program that has a finite
-                state representation, implements
-                <code class="inline-code"
-                  >step(state) → (digit, next_state)</code
-                >, and does not halt, is a number.
+                In this ontology, a random program is a perfectly valid number — not metaphorically,
+                but literally. Any program that has a finite state representation, implements
+                <code class="inline-code">step(state) → (digit, next_state)</code>, and does not
+                halt, is a number.
               </p>
 
               <!-- Program = Number collapse -->
-              <div
-                class="collapse-block"
-                aria-label="Program equals number collapse"
-              >
+              <div class="collapse-block" aria-label="Program equals number collapse">
                 <div class="collapse-item">
                   <span class="collapse-arrow" aria-hidden="true">→</span>
                   <p><strong>Numbers are programs</strong> (operationally)</p>
@@ -3841,18 +3497,14 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
                 </div>
                 <div class="collapse-item">
                   <span class="collapse-arrow" aria-hidden="true">→</span>
-                  <p>
-                    The difference is only in how you interpret the generator
-                  </p>
+                  <p>The difference is only in how you interpret the generator</p>
                 </div>
               </div>
 
               <p>
-                The space of numbers, as the library exposes it, is the space of
-                all possible infinite computations. This is the most general
-                possible <em>operational</em>
-                number ontology — a strict superset of all existing
-                computational frameworks.
+                The space of numbers, as the library exposes it, is the space of all possible
+                infinite computations. This is the most general possible <em>operational</em>
+                number ontology — a strict superset of all existing computational frameworks.
               </p>
             </div>
           </section>
@@ -3873,46 +3525,34 @@ define %NumVMStep @num_step(%AutomatonVM %s) { ... }</code></pre>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                The natural equivalence relation on generator VMs is
-                extensional: two VMs are equal iff they produce identical digit
-                streams on every query. This relation is
-                <strong class="key-concept">not computably decidable</strong> —
-                it is the canonical example of an undecidable semantic property
-                of programs (Rice's theorem).
+                The natural equivalence relation on generator VMs is extensional: two VMs are equal
+                iff they produce identical digit streams on every query. This relation is
+                <strong class="key-concept">not computably decidable</strong> — it is the canonical
+                example of an undecidable semantic property of programs (Rice's theorem).
               </p>
 
               <!-- Undecidability callout -->
-              <aside
-                class="callout callout--critical"
-                aria-label="Undecidability constraint"
-              >
+              <aside class="callout callout--critical" aria-label="Undecidability constraint">
                 <div class="callout-icon" aria-hidden="true">✗</div>
                 <div class="callout-content">
                   <p class="callout-text">
                     The library cannot ship an
-                    <code class="inline-code">equals(x, y)</code> operation that
-                    returns <code class="inline-code">true</code> or
-                    <code class="inline-code">false</code> in finite time for
-                    arbitrary inputs. This is forced by mathematics, not by
-                    implementation laziness.
+                    <code class="inline-code">equals(x, y)</code> operation that returns
+                    <code class="inline-code">true</code> or
+                    <code class="inline-code">false</code> in finite time for arbitrary inputs. This
+                    is forced by mathematics, not by implementation laziness.
                   </p>
                 </div>
               </aside>
 
               <p>
                 What it ships instead is a family of
-                <strong>interval-based and bounded-precision predicates</strong
-                >:
+                <strong>interval-based and bounded-precision predicates</strong>:
               </p>
 
               <!-- Honest comparison API -->
-              <figure
-                class="code-figure"
-                aria-label="Honest comparison predicates"
-              >
-                <figcaption class="code-caption">
-                  Interval-Honest Comparison Predicates
-                </figcaption>
+              <figure class="code-figure" aria-label="Honest comparison predicates">
+                <figcaption class="code-caption">Interval-Honest Comparison Predicates</figcaption>
                 <pre
                   class="code-block code-block--c"
                 ><code class="code-content">bool definitely_less_than(VM x, VM y);          // true / false / pending
@@ -3925,32 +3565,21 @@ Trit compare(VM x, VM y, int max_digits);       // Less | Greater | Indistinguis
           <!-- ================================================
                      SECTION 15: The User-Facing API
                      ================================================ -->
-          <section
-            class="article-section"
-            id="user-api"
-            aria-labelledby="heading-user-api"
-          >
+          <section class="article-section" id="user-api" aria-labelledby="heading-user-api">
             <div class="section-header">
               <span class="section-number">15</span>
-              <h2 class="section-title" id="heading-user-api">
-                The User-Facing API
-              </h2>
+              <h2 class="section-title" id="heading-user-api">The User-Facing API</h2>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                A substrate is not a library. The ABI is the foundation, but
-                users interact with a stratified API that hides the substrate
-                where appropriate and exposes it where necessary.
+                A substrate is not a library. The ABI is the foundation, but users interact with a
+                stratified API that hides the substrate where appropriate and exposes it where
+                necessary.
               </p>
 
               <!-- Python API example -->
-              <figure
-                class="code-figure"
-                aria-label="User-facing Python API examples"
-              >
-                <figcaption class="code-caption">
-                  User-Facing API (Python)
-                </figcaption>
+              <figure class="code-figure" aria-label="User-facing Python API examples">
+                <figcaption class="code-caption">User-Facing API (Python)</figcaption>
                 <pre
                   class="code-block code-block--python"
                 ><code class="code-content"># Precision context — establishes target accuracy for a region of code
@@ -3977,25 +3606,23 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
                 <div class="api-layer api-layer--user">
                   <div class="api-layer-label">Layer 3: User Layer</div>
                   <p class="api-layer-desc">
-                    Operator overloading, precision contexts, ergonomic
-                    constructors. Natural to anyone who has used mpmath, MPFR,
-                    or Decimal.
+                    Operator overloading, precision contexts, ergonomic constructors. Natural to
+                    anyone who has used mpmath, MPFR, or Decimal.
                   </p>
                 </div>
                 <div class="api-layer-arrow" aria-hidden="true">↓</div>
                 <div class="api-layer api-layer--combinator">
                   <div class="api-layer-label">Layer 2: Combinator Layer</div>
                   <p class="api-layer-desc">
-                    Arithmetic, comparison, codec, memoization wrappers. The
-                    contract.
+                    Arithmetic, comparison, codec, memoization wrappers. The contract.
                   </p>
                 </div>
                 <div class="api-layer-arrow" aria-hidden="true">↓</div>
                 <div class="api-layer api-layer--primitive">
                   <div class="api-layer-label">Layer 1: Primitive Layer</div>
                   <p class="api-layer-desc">
-                    The raw <code class="inline-code">NumVMFn</code> ABI, used
-                    by combinator authors.
+                    The raw <code class="inline-code">NumVMFn</code> ABI, used by combinator
+                    authors.
                   </p>
                 </div>
               </div>
@@ -4005,41 +3632,29 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
           <!-- ================================================
                      SECTION 16: Implementation Roadmap
                      ================================================ -->
-          <section
-            class="article-section"
-            id="roadmap"
-            aria-labelledby="heading-roadmap"
-          >
+          <section class="article-section" id="roadmap" aria-labelledby="heading-roadmap">
             <div class="section-header">
               <span class="section-number">16</span>
-              <h2 class="section-title" id="heading-roadmap">
-                Implementation Roadmap
-              </h2>
+              <h2 class="section-title" id="heading-roadmap">Implementation Roadmap</h2>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                The architecture admits a staged build, with each phase
-                delivering value and informing the next.
+                The architecture admits a staged build, with each phase delivering value and
+                informing the next.
               </p>
 
               <!-- Roadmap phases -->
-              <div
-                class="roadmap-phases"
-                aria-label="Implementation roadmap phases"
-              >
+              <div class="roadmap-phases" aria-label="Implementation roadmap phases">
                 <div class="roadmap-phase" id="phase-1">
                   <div class="roadmap-phase-header">
                     <span class="phase-number">Phase 1</span>
-                    <span class="phase-confidence phase-confidence--high"
-                      >High Confidence</span
-                    >
+                    <span class="phase-confidence phase-confidence--high">High Confidence</span>
                   </div>
                   <h3 class="phase-title">Automaton Tier</h3>
                   <p class="phase-desc">
-                    Rationals, quadratic irrationals, p-adic numbers,
-                    base-conversion codecs, matrix-exponentiation skip-ahead.
-                    The struct-copy fork story is exact. LLVM inlines across the
-                    whole graph. This phase ships a working library for the
+                    Rationals, quadratic irrationals, p-adic numbers, base-conversion codecs,
+                    matrix-exponentiation skip-ahead. The struct-copy fork story is exact. LLVM
+                    inlines across the whole graph. This phase ships a working library for the
                     entire algebraic and p-adic universe.
                   </p>
                   <ul class="phase-deliverables">
@@ -4053,16 +3668,13 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
                 <div class="roadmap-phase" id="phase-2">
                   <div class="roadmap-phase-header">
                     <span class="phase-number">Phase 2</span>
-                    <span class="phase-confidence phase-confidence--research"
-                      >Research-Grade</span
-                    >
+                    <span class="phase-confidence phase-confidence--research">Research-Grade</span>
                   </div>
                   <h3 class="phase-title">Series Tier</h3>
                   <p class="phase-desc">
-                    Classical transcendentals with built-in tail bound oracles.
-                    Signed-digit internal arithmetic for carry locality. Bounded
-                    LRU memoization. Interval-based comparison. Requires
-                    per-constant convergence proofs and careful engineering of
+                    Classical transcendentals with built-in tail bound oracles. Signed-digit
+                    internal arithmetic for carry locality. Bounded LRU memoization. Interval-based
+                    comparison. Requires per-constant convergence proofs and careful engineering of
                     the deep-copy fork path.
                   </p>
                   <ul class="phase-deliverables">
@@ -4082,9 +3694,8 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
                   </div>
                   <h3 class="phase-title">User-Facing API</h3>
                   <p class="phase-desc">
-                    Operator overloading, precision contexts, explicit
-                    memoization modes, honest comparison predicates.
-                    Documentation that makes the tier distinction visible to
+                    Operator overloading, precision contexts, explicit memoization modes, honest
+                    comparison predicates. Documentation that makes the tier distinction visible to
                     users who care and invisible to users who don't.
                   </p>
                   <ul class="phase-deliverables">
@@ -4098,15 +3709,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
                 <div class="roadmap-phase" id="phase-4">
                   <div class="roadmap-phase-header">
                     <span class="phase-number">Phase 4</span>
-                    <span class="phase-confidence phase-confidence--future"
-                      >Future</span
-                    >
+                    <span class="phase-confidence phase-confidence--future">Future</span>
                   </div>
                   <h3 class="phase-title">JIT Compilation Path</h3>
                   <p class="phase-desc">
-                    Expression-tree compilation for runtime-constructed
-                    formulas. Struct-of-arrays layout for vector and matrix
-                    operations. Batched digit computation API for SIMD.
+                    Expression-tree compilation for runtime-constructed formulas. Struct-of-arrays
+                    layout for vector and matrix operations. Batched digit computation API for SIMD.
                   </p>
                   <ul class="phase-deliverables">
                     <li>Expression-tree JIT compilation</li>
@@ -4117,15 +3725,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
               </div>
 
               <!-- Each phase is independently useful note -->
-              <aside
-                class="callout callout--info"
-                aria-label="Phase independence note"
-              >
+              <aside class="callout callout--info" aria-label="Phase independence note">
                 <div class="callout-icon" aria-hidden="true">ℹ</div>
                 <div class="callout-content">
                   <p class="callout-text">
-                    Each phase is independently useful. The full system is the
-                    union, but no phase is wasted if a later one is delayed.
+                    Each phase is independently useful. The full system is the union, but no phase
+                    is wasted if a later one is delayed.
                   </p>
                 </div>
               </aside>
@@ -4142,16 +3747,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
           >
             <div class="section-header">
               <span class="section-number">17</span>
-              <h2 class="section-title" id="heading-what-this-is">
-                What This Is
-              </h2>
+              <h2 class="section-title" id="heading-what-this-is">What This Is</h2>
             </div>
             <div class="section-body">
               <p class="section-intro">
-                This is not a numerics library in the conventional sense. It is
-                a
-                <strong class="key-concept"
-                  >coinductive computational substrate for numbers</strong
+                This is not a numerics library in the conventional sense. It is a
+                <strong class="key-concept">coinductive computational substrate for numbers</strong
                 >.
               </p>
 
@@ -4159,13 +3760,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
               <ul class="manifesto-list" aria-label="System summary">
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
-                  Numbers are forkable, deterministic nano-VMs, split honestly
-                  into automaton and series tiers
+                  Numbers are forkable, deterministic nano-VMs, split honestly into automaton and
+                  series tiers
                 </li>
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
-                  Arithmetic is VM composition over a signed-digit internal
-                  alphabet
+                  Arithmetic is VM composition over a signed-digit internal alphabet
                 </li>
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
@@ -4181,18 +3781,17 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
                 </li>
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
-                  BBP formulas are automaton-codec resonances exposed as a
-                  first-class <code class="inline-code">skip</code> primitive
+                  BBP formulas are automaton-codec resonances exposed as a first-class
+                  <code class="inline-code">skip</code> primitive
                 </li>
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
-                  Randomness is operationally indistinguishable from
-                  inaccessible determinism
+                  Randomness is operationally indistinguishable from inaccessible determinism
                 </li>
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
-                  Memory complexity is generator state dimension, a proposed
-                  numerical complexity metric
+                  Memory complexity is generator state dimension, a proposed numerical complexity
+                  metric
                 </li>
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
@@ -4200,28 +3799,22 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
                 </li>
                 <li class="manifesto-item">
                   <span class="manifesto-bullet" aria-hidden="true">→</span>
-                  The real line is the space of digit-generating computations
-                  under a chosen codec
+                  The real line is the space of digit-generating computations under a chosen codec
                 </li>
               </ul>
 
               <!-- Novelty callout -->
-              <aside
-                class="callout callout--insight"
-                aria-label="Genuine novelty statement"
-              >
+              <aside class="callout callout--insight" aria-label="Genuine novelty statement">
                 <div class="callout-icon" aria-hidden="true">★</div>
                 <div class="callout-content">
                   <h3 class="callout-title">The Genuine Novelty</h3>
                   <p class="callout-text">
-                    The <strong>unified protocol</strong>: rationals, algebraic
-                    numbers, p-adic numbers, and transcendentals all compose
-                    through the same interface, rather than living in separate
-                    libraries with incompatible representations. Combined with
-                    the codec/base separation and the first-class skip
-                    primitive, this is a real advance over existing systems
-                    (MPFR, iRRAM, mpmath) even where it builds on their
-                    mathematical foundations.
+                    The <strong>unified protocol</strong>: rationals, algebraic numbers, p-adic
+                    numbers, and transcendentals all compose through the same interface, rather than
+                    living in separate libraries with incompatible representations. Combined with
+                    the codec/base separation and the first-class skip primitive, this is a real
+                    advance over existing systems (MPFR, iRRAM, mpmath) even where it builds on
+                    their mathematical foundations.
                   </p>
                 </div>
               </aside>
@@ -4229,9 +3822,8 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
               <!-- Closing statement -->
               <blockquote class="closing-quote">
                 <p class="closing-quote-text">
-                  Alpha to omega: from mathematical definitions to compiled
-                  digit streams, with the approximations made explicit, the
-                  costs made honest, and the limits made visible.
+                  Alpha to omega: from mathematical definitions to compiled digit streams, with the
+                  approximations made explicit, the costs made honest, and the limits made visible.
                 </p>
               </blockquote>
             </div>
@@ -4251,11 +3843,9 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
           <div class="footer-col footer-col--about">
             <h3 class="footer-col-title">About This Work</h3>
             <p class="footer-col-body">
-              A coinductive computational substrate for numbers, where every
-              mathematical object is represented uniformly as a tiny machine
-              with the same interface, composable with every other machine,
-              projectable into any coordinate system, and executable at native
-              speed.
+              A coinductive computational substrate for numbers, where every mathematical object is
+              represented uniformly as a tiny machine with the same interface, composable with every
+              other machine, projectable into any coordinate system, and executable at native speed.
             </p>
           </div>
 
@@ -4264,27 +3854,19 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
             <h3 class="footer-col-title">Related Systems</h3>
             <ul class="footer-link-list">
               <li class="footer-link-item">
-                <span class="footer-link-text"
-                  >iRRAM — Exact Real Arithmetic</span
-                >
+                <span class="footer-link-text">iRRAM — Exact Real Arithmetic</span>
               </li>
               <li class="footer-link-item">
-                <span class="footer-link-text"
-                  >MPFR — Multiple Precision Floating-Point</span
-                >
+                <span class="footer-link-text">MPFR — Multiple Precision Floating-Point</span>
               </li>
               <li class="footer-link-item">
-                <span class="footer-link-text"
-                  >mpmath — Python Arbitrary Precision</span
-                >
+                <span class="footer-link-text">mpmath — Python Arbitrary Precision</span>
               </li>
               <li class="footer-link-item">
                 <span class="footer-link-text">Haskell Data.Number.CReal</span>
               </li>
               <li class="footer-link-item">
-                <span class="footer-link-text"
-                  >Type-2 Theory of Effectivity</span
-                >
+                <span class="footer-link-text">Type-2 Theory of Effectivity</span>
               </li>
             </ul>
           </div>
@@ -4310,8 +3892,8 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         <!-- Footer bottom bar -->
         <div class="footer-bottom">
           <p class="footer-bottom-text">
-            Numbers as Machines: A Generator-Based Numerics Library. A unified
-            protocol for coinductive numerical computation.
+            Numbers as Machines: A Generator-Based Numerics Library. A unified protocol for
+            coinductive numerical computation.
           </p>
         </div>
       </div>
@@ -4325,7 +3907,7 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
       // ============================================================
 
       (function () {
-        "use strict";
+        'use strict';
 
         // ============================================================
         // UTILITY HELPERS
@@ -4361,32 +3943,32 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initMobileNav() {
-          const toggle = document.querySelector(".mobile-menu-toggle");
-          const nav = document.querySelector(".header-nav");
+          const toggle = document.querySelector('.mobile-menu-toggle');
+          const nav = document.querySelector('.header-nav');
           if (!toggle || !nav) return;
 
-          toggle.addEventListener("click", () => {
-            const isExpanded = toggle.getAttribute("aria-expanded") === "true";
-            toggle.setAttribute("aria-expanded", String(!isExpanded));
-            nav.classList.toggle("header-nav--open", !isExpanded);
-            toggle.classList.toggle("mobile-menu-toggle--active", !isExpanded);
+          toggle.addEventListener('click', () => {
+            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', String(!isExpanded));
+            nav.classList.toggle('header-nav--open', !isExpanded);
+            toggle.classList.toggle('mobile-menu-toggle--active', !isExpanded);
           });
 
           // Close nav when a link is clicked (mobile UX)
-          nav.querySelectorAll(".header-nav-link").forEach((link) => {
-            link.addEventListener("click", () => {
-              toggle.setAttribute("aria-expanded", "false");
-              nav.classList.remove("header-nav--open");
-              toggle.classList.remove("mobile-menu-toggle--active");
+          nav.querySelectorAll('.header-nav-link').forEach((link) => {
+            link.addEventListener('click', () => {
+              toggle.setAttribute('aria-expanded', 'false');
+              nav.classList.remove('header-nav--open');
+              toggle.classList.remove('mobile-menu-toggle--active');
             });
           });
 
           // Close nav on outside click
-          document.addEventListener("click", (e) => {
+          document.addEventListener('click', (e) => {
             if (!nav.contains(e.target) && !toggle.contains(e.target)) {
-              toggle.setAttribute("aria-expanded", "false");
-              nav.classList.remove("header-nav--open");
-              toggle.classList.remove("mobile-menu-toggle--active");
+              toggle.setAttribute('aria-expanded', 'false');
+              nav.classList.remove('header-nav--open');
+              toggle.classList.remove('mobile-menu-toggle--active');
             }
           });
         }
@@ -4396,17 +3978,14 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initStickyHeader() {
-          const header = document.querySelector(".site-header");
+          const header = document.querySelector('.site-header');
           if (!header) return;
 
           const onScroll = throttle(() => {
-            header.classList.toggle(
-              "site-header--scrolled",
-              window.scrollY > 60,
-            );
+            header.classList.toggle('site-header--scrolled', window.scrollY > 60);
           }, 100);
 
-          window.addEventListener("scroll", onScroll, { passive: true });
+          window.addEventListener('scroll', onScroll, { passive: true });
         }
 
         // ============================================================
@@ -4414,18 +3993,16 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initReadingProgress() {
-          const bar = document.querySelector(".toc-progress-bar");
+          const bar = document.querySelector('.toc-progress-bar');
           if (!bar) return;
 
           const onScroll = throttle(() => {
-            const docHeight =
-              document.documentElement.scrollHeight - window.innerHeight;
-            const progress =
-              docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
             bar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
           }, 50);
 
-          window.addEventListener("scroll", onScroll, { passive: true });
+          window.addEventListener('scroll', onScroll, { passive: true });
         }
 
         // ============================================================
@@ -4433,15 +4010,15 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initTocHighlight() {
-          const tocLinks = document.querySelectorAll(".toc-link");
-          const sections = document.querySelectorAll(".article-section[id]");
+          const tocLinks = document.querySelectorAll('.toc-link');
+          const sections = document.querySelectorAll('.article-section[id]');
           if (!tocLinks.length || !sections.length) return;
 
           // Build a map: section id → toc link(s)
           const linkMap = new Map();
           tocLinks.forEach((link) => {
-            const href = link.getAttribute("href");
-            if (href && href.startsWith("#")) {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
               const id = href.slice(1);
               if (!linkMap.has(id)) linkMap.set(id, []);
               linkMap.get(id).push(link);
@@ -4457,8 +4034,7 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
             let currentId = null;
 
             sections.forEach((section) => {
-              const top =
-                section.getBoundingClientRect().top + scrollY - offset;
+              const top = section.getBoundingClientRect().top + scrollY - offset;
               if (scrollY >= top) {
                 currentId = section.id;
               }
@@ -4468,20 +4044,16 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
               activeId = currentId;
 
               // Remove all active states
-              tocLinks.forEach((link) =>
-                link.classList.remove("toc-link--active"),
-              );
+              tocLinks.forEach((link) => link.classList.remove('toc-link--active'));
 
               // Set active state on matching links
               if (activeId && linkMap.has(activeId)) {
-                linkMap
-                  .get(activeId)
-                  .forEach((link) => link.classList.add("toc-link--active"));
+                linkMap.get(activeId).forEach((link) => link.classList.add('toc-link--active'));
               }
             }
           }, 80);
 
-          window.addEventListener("scroll", onScroll, { passive: true });
+          window.addEventListener('scroll', onScroll, { passive: true });
           onScroll(); // run once on load
         }
 
@@ -4491,28 +4063,24 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
 
         function initSmoothScroll() {
           document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-            anchor.addEventListener("click", (e) => {
-              const targetId = anchor.getAttribute("href").slice(1);
+            anchor.addEventListener('click', (e) => {
+              const targetId = anchor.getAttribute('href').slice(1);
               const target = document.getElementById(targetId);
               if (!target) return;
 
               e.preventDefault();
 
-              const headerHeight =
-                document.querySelector(".site-header")?.offsetHeight ?? 0;
+              const headerHeight = document.querySelector('.site-header')?.offsetHeight ?? 0;
               const targetTop =
-                target.getBoundingClientRect().top +
-                window.scrollY -
-                headerHeight -
-                16;
+                target.getBoundingClientRect().top + window.scrollY - headerHeight - 16;
 
-              window.scrollTo({ top: targetTop, behavior: "smooth" });
+              window.scrollTo({ top: targetTop, behavior: 'smooth' });
 
               // Update URL hash without jumping
-              history.pushState(null, "", `#${targetId}`);
+              history.pushState(null, '', `#${targetId}`);
 
               // Move focus to target for accessibility
-              target.setAttribute("tabindex", "-1");
+              target.setAttribute('tabindex', '-1');
               target.focus({ preventScroll: true });
             });
           });
@@ -4523,30 +4091,30 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initSectionAnimations() {
-          if (!("IntersectionObserver" in window)) return;
+          if (!('IntersectionObserver' in window)) return;
 
           const animatables = document.querySelectorAll(
-            ".article-section, .property-card, .roadmap-phase, .classification-card, " +
-              ".primitive-block, .hero-stat-badge, .api-layer, .ontology-item",
+            '.article-section, .property-card, .roadmap-phase, .classification-card, ' +
+              '.primitive-block, .hero-stat-badge, .api-layer, .ontology-item'
           );
 
           // Add initial hidden state via JS (so CSS-only users still see content)
-          animatables.forEach((el) => el.classList.add("js-animate-hidden"));
+          animatables.forEach((el) => el.classList.add('js-animate-hidden'));
 
           const observer = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                  entry.target.classList.remove("js-animate-hidden");
-                  entry.target.classList.add("js-animate-visible");
+                  entry.target.classList.remove('js-animate-hidden');
+                  entry.target.classList.add('js-animate-visible');
                   observer.unobserve(entry.target);
                 }
               });
             },
             {
               threshold: 0.08,
-              rootMargin: "0px 0px -40px 0px",
-            },
+              rootMargin: '0px 0px -40px 0px',
+            }
           );
 
           animatables.forEach((el) => observer.observe(el));
@@ -4557,45 +4125,43 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initCodeCopy() {
-          document.querySelectorAll(".code-block").forEach((block) => {
+          document.querySelectorAll('.code-block').forEach((block) => {
             // Wrap in a relative container if not already
-            const figure = block.closest(".code-figure");
+            const figure = block.closest('.code-figure');
             const wrapper = figure || block.parentElement;
 
             // Avoid adding duplicate buttons
-            if (wrapper.querySelector(".code-copy-btn")) return;
+            if (wrapper.querySelector('.code-copy-btn')) return;
 
-            const btn = document.createElement("button");
-            btn.className = "code-copy-btn";
-            btn.setAttribute("aria-label", "Copy code to clipboard");
-            btn.textContent = "Copy";
+            const btn = document.createElement('button');
+            btn.className = 'code-copy-btn';
+            btn.setAttribute('aria-label', 'Copy code to clipboard');
+            btn.textContent = 'Copy';
 
-            btn.addEventListener("click", async () => {
-              const code =
-                block.querySelector(".code-content")?.textContent ??
-                block.textContent;
+            btn.addEventListener('click', async () => {
+              const code = block.querySelector('.code-content')?.textContent ?? block.textContent;
               try {
                 await navigator.clipboard.writeText(code.trim());
-                btn.textContent = "Copied!";
-                btn.classList.add("code-copy-btn--success");
+                btn.textContent = 'Copied!';
+                btn.classList.add('code-copy-btn--success');
                 setTimeout(() => {
-                  btn.textContent = "Copy";
-                  btn.classList.remove("code-copy-btn--success");
+                  btn.textContent = 'Copy';
+                  btn.classList.remove('code-copy-btn--success');
                 }, 2000);
               } catch {
-                btn.textContent = "Failed";
+                btn.textContent = 'Failed';
                 setTimeout(() => {
-                  btn.textContent = "Copy";
+                  btn.textContent = 'Copy';
                 }, 2000);
               }
             });
 
             // Position button inside the figure/wrapper
             if (figure) {
-              figure.style.position = "relative";
+              figure.style.position = 'relative';
               figure.appendChild(btn);
             } else {
-              block.style.position = "relative";
+              block.style.position = 'relative';
               block.appendChild(btn);
             }
           });
@@ -4606,59 +4172,55 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initTocCollapse() {
-          const tocInner = document.querySelector(".toc-inner");
-          const tocHeading = document.querySelector(".toc-heading");
+          const tocInner = document.querySelector('.toc-inner');
+          const tocHeading = document.querySelector('.toc-heading');
           if (!tocInner || !tocHeading) return;
 
           // Only activate on smaller screens
-          const mq = window.matchMedia("(max-width: 1024px)");
+          const mq = window.matchMedia('(max-width: 1024px)');
 
           function applyCollapse(matches) {
             if (matches) {
-              tocHeading.setAttribute("role", "button");
-              tocHeading.setAttribute("tabindex", "0");
-              tocHeading.setAttribute("aria-expanded", "false");
-              tocHeading.setAttribute("aria-controls", "toc-nav-list");
+              tocHeading.setAttribute('role', 'button');
+              tocHeading.setAttribute('tabindex', '0');
+              tocHeading.setAttribute('aria-expanded', 'false');
+              tocHeading.setAttribute('aria-controls', 'toc-nav-list');
 
-              const tocNav = tocInner.querySelector(".toc-nav");
+              const tocNav = tocInner.querySelector('.toc-nav');
               if (tocNav) {
-                tocNav.id = "toc-nav-list";
-                tocNav.classList.add("toc-nav--collapsible");
-                tocNav.classList.remove("toc-nav--expanded");
+                tocNav.id = 'toc-nav-list';
+                tocNav.classList.add('toc-nav--collapsible');
+                tocNav.classList.remove('toc-nav--expanded');
               }
 
               function toggleToc() {
-                const isExpanded =
-                  tocHeading.getAttribute("aria-expanded") === "true";
-                tocHeading.setAttribute("aria-expanded", String(!isExpanded));
-                tocNav?.classList.toggle("toc-nav--expanded", !isExpanded);
+                const isExpanded = tocHeading.getAttribute('aria-expanded') === 'true';
+                tocHeading.setAttribute('aria-expanded', String(!isExpanded));
+                tocNav?.classList.toggle('toc-nav--expanded', !isExpanded);
               }
 
-              tocHeading.addEventListener("click", toggleToc);
-              tocHeading.addEventListener("keydown", (e) => {
-                if (e.key === "Enter" || e.key === " ") {
+              tocHeading.addEventListener('click', toggleToc);
+              tocHeading.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   toggleToc();
                 }
               });
             } else {
               // Reset for desktop
-              tocHeading.removeAttribute("role");
-              tocHeading.removeAttribute("tabindex");
-              tocHeading.removeAttribute("aria-expanded");
-              tocHeading.removeAttribute("aria-controls");
-              const tocNav = tocInner.querySelector(".toc-nav");
+              tocHeading.removeAttribute('role');
+              tocHeading.removeAttribute('tabindex');
+              tocHeading.removeAttribute('aria-expanded');
+              tocHeading.removeAttribute('aria-controls');
+              const tocNav = tocInner.querySelector('.toc-nav');
               if (tocNav) {
-                tocNav.classList.remove(
-                  "toc-nav--collapsible",
-                  "toc-nav--expanded",
-                );
+                tocNav.classList.remove('toc-nav--collapsible', 'toc-nav--expanded');
               }
             }
           }
 
           applyCollapse(mq.matches);
-          mq.addEventListener("change", (e) => applyCollapse(e.matches));
+          mq.addEventListener('change', (e) => applyCollapse(e.matches));
         }
 
         // ============================================================
@@ -4667,35 +4229,32 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
 
         function initHeroAnimation() {
           const primitiveCode = document.querySelector(
-            ".hero-primitive-block .primitive-code code",
+            '.hero-primitive-block .primitive-code code'
           );
           if (!primitiveCode) return;
 
           const originalText = primitiveCode.textContent;
 
           // Simulate a "typing" reveal on first load
-          primitiveCode.textContent = "";
-          primitiveCode.setAttribute("aria-label", originalText);
+          primitiveCode.textContent = '';
+          primitiveCode.setAttribute('aria-label', originalText);
 
           let i = 0;
-          const cursor = document.createElement("span");
-          cursor.className = "typing-cursor";
-          cursor.setAttribute("aria-hidden", "true");
-          cursor.textContent = "▌";
+          const cursor = document.createElement('span');
+          cursor.className = 'typing-cursor';
+          cursor.setAttribute('aria-hidden', 'true');
+          cursor.textContent = '▌';
           primitiveCode.appendChild(cursor);
 
           const typeInterval = setInterval(() => {
             if (i < originalText.length) {
-              primitiveCode.insertBefore(
-                document.createTextNode(originalText[i]),
-                cursor,
-              );
+              primitiveCode.insertBefore(document.createTextNode(originalText[i]), cursor);
               i++;
             } else {
               clearInterval(typeInterval);
               // Blink cursor then fade it out
               setTimeout(() => {
-                cursor.classList.add("typing-cursor--fade");
+                cursor.classList.add('typing-cursor--fade');
                 setTimeout(() => cursor.remove(), 1000);
               }, 1500);
             }
@@ -4709,12 +4268,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         function initStatBadges() {
           // The stat badges have symbolic values (∞, O(1), etc.) — we animate
           // their entrance with a subtle scale+fade rather than counting.
-          const badges = document.querySelectorAll(".hero-stat-badge");
-          if (!badges.length || !("IntersectionObserver" in window)) return;
+          const badges = document.querySelectorAll('.hero-stat-badge');
+          if (!badges.length || !('IntersectionObserver' in window)) return;
 
           badges.forEach((badge, i) => {
-            badge.style.opacity = "0";
-            badge.style.transform = "translateY(16px)";
+            badge.style.opacity = '0';
+            badge.style.transform = 'translateY(16px)';
             badge.style.transition = `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`;
           });
 
@@ -4722,13 +4281,13 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
             (entries) => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                  entry.target.style.opacity = "1";
-                  entry.target.style.transform = "translateY(0)";
+                  entry.target.style.opacity = '1';
+                  entry.target.style.transform = 'translateY(0)';
                   observer.unobserve(entry.target);
                 }
               });
             },
-            { threshold: 0.3 },
+            { threshold: 0.3 }
           );
 
           badges.forEach((badge) => observer.observe(badge));
@@ -4739,39 +4298,34 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initRoadmapPhases() {
-          const phases = document.querySelectorAll(".roadmap-phase");
+          const phases = document.querySelectorAll('.roadmap-phase');
           if (!phases.length) return;
 
           phases.forEach((phase) => {
-            const header = phase.querySelector(".roadmap-phase-header");
-            const deliverables = phase.querySelector(".phase-deliverables");
-            const desc = phase.querySelector(".phase-desc");
+            const header = phase.querySelector('.roadmap-phase-header');
+            const deliverables = phase.querySelector('.phase-deliverables');
+            const desc = phase.querySelector('.phase-desc');
             if (!header || !deliverables) return;
 
-            header.setAttribute("role", "button");
-            header.setAttribute("tabindex", "0");
-            header.setAttribute("aria-expanded", "true");
+            header.setAttribute('role', 'button');
+            header.setAttribute('tabindex', '0');
+            header.setAttribute('aria-expanded', 'true');
 
             const phaseId = `phase-deliverables-${phase.id || Math.random().toString(36).slice(2)}`;
             deliverables.id = phaseId;
             if (desc) desc.id = `${phaseId}-desc`;
-            header.setAttribute("aria-controls", phaseId);
+            header.setAttribute('aria-controls', phaseId);
 
             function togglePhase() {
-              const isExpanded =
-                header.getAttribute("aria-expanded") === "true";
-              header.setAttribute("aria-expanded", String(!isExpanded));
-              deliverables.classList.toggle(
-                "phase-deliverables--collapsed",
-                isExpanded,
-              );
-              if (desc)
-                desc.classList.toggle("phase-desc--collapsed", isExpanded);
+              const isExpanded = header.getAttribute('aria-expanded') === 'true';
+              header.setAttribute('aria-expanded', String(!isExpanded));
+              deliverables.classList.toggle('phase-deliverables--collapsed', isExpanded);
+              if (desc) desc.classList.toggle('phase-desc--collapsed', isExpanded);
             }
 
-            header.addEventListener("click", togglePhase);
-            header.addEventListener("keydown", (e) => {
-              if (e.key === "Enter" || e.key === " ") {
+            header.addEventListener('click', togglePhase);
+            header.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 togglePhase();
               }
@@ -4784,21 +4338,15 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initTableInteractions() {
-          document.querySelectorAll(".data-table tbody tr").forEach((row) => {
-            row.setAttribute("tabindex", "0");
+          document.querySelectorAll('.data-table tbody tr').forEach((row) => {
+            row.setAttribute('tabindex', '0');
 
-            row.addEventListener("mouseenter", () =>
-              row.classList.add("table-row--highlighted"),
+            row.addEventListener('mouseenter', () => row.classList.add('table-row--highlighted'));
+            row.addEventListener('mouseleave', () =>
+              row.classList.remove('table-row--highlighted')
             );
-            row.addEventListener("mouseleave", () =>
-              row.classList.remove("table-row--highlighted"),
-            );
-            row.addEventListener("focus", () =>
-              row.classList.add("table-row--highlighted"),
-            );
-            row.addEventListener("blur", () =>
-              row.classList.remove("table-row--highlighted"),
-            );
+            row.addEventListener('focus', () => row.classList.add('table-row--highlighted'));
+            row.addEventListener('blur', () => row.classList.remove('table-row--highlighted'));
           });
         }
 
@@ -4808,21 +4356,19 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
 
         function initCalloutDismiss() {
           // Only dismissible callouts get a close button (info and caveat types)
-          document
-            .querySelectorAll(".callout--info, .callout--caveat")
-            .forEach((callout) => {
-              const btn = document.createElement("button");
-              btn.className = "callout-dismiss";
-              btn.setAttribute("aria-label", "Dismiss this note");
-              btn.innerHTML = "&times;";
+          document.querySelectorAll('.callout--info, .callout--caveat').forEach((callout) => {
+            const btn = document.createElement('button');
+            btn.className = 'callout-dismiss';
+            btn.setAttribute('aria-label', 'Dismiss this note');
+            btn.innerHTML = '&times;';
 
-              btn.addEventListener("click", () => {
-                callout.classList.add("callout--dismissed");
-                setTimeout(() => callout.remove(), 300);
-              });
-
-              callout.appendChild(btn);
+            btn.addEventListener('click', () => {
+              callout.classList.add('callout--dismissed');
+              setTimeout(() => callout.remove(), 300);
             });
+
+            callout.appendChild(btn);
+          });
         }
 
         // ============================================================
@@ -4830,20 +4376,20 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initBackToTop() {
-          const btn = document.createElement("button");
-          btn.className = "back-to-top";
-          btn.setAttribute("aria-label", "Back to top");
-          btn.innerHTML = "↑";
+          const btn = document.createElement('button');
+          btn.className = 'back-to-top';
+          btn.setAttribute('aria-label', 'Back to top');
+          btn.innerHTML = '↑';
           document.body.appendChild(btn);
 
           const onScroll = throttle(() => {
-            btn.classList.toggle("back-to-top--visible", window.scrollY > 500);
+            btn.classList.toggle('back-to-top--visible', window.scrollY > 500);
           }, 150);
 
-          window.addEventListener("scroll", onScroll, { passive: true });
+          window.addEventListener('scroll', onScroll, { passive: true });
 
-          btn.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+          btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           });
         }
 
@@ -4852,10 +4398,10 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initSkipLink() {
-          const skip = document.createElement("a");
-          skip.href = "#main-content";
-          skip.className = "skip-link";
-          skip.textContent = "Skip to main content";
+          const skip = document.createElement('a');
+          skip.href = '#main-content';
+          skip.className = 'skip-link';
+          skip.textContent = 'Skip to main content';
           document.body.insertBefore(skip, document.body.firstChild);
         }
 
@@ -4864,15 +4410,13 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initSectionNumberTooltips() {
-          document.querySelectorAll(".section-number").forEach((num) => {
-            const section = num.closest(".article-section");
-            const title = section
-              ?.querySelector(".section-title")
-              ?.textContent?.trim();
+          document.querySelectorAll('.section-number').forEach((num) => {
+            const section = num.closest('.article-section');
+            const title = section?.querySelector('.section-title')?.textContent?.trim();
             if (!title) return;
 
-            num.setAttribute("title", `Section: ${title}`);
-            num.setAttribute("aria-label", `Section number for: ${title}`);
+            num.setAttribute('title', `Section: ${title}`);
+            num.setAttribute('aria-label', `Section number for: ${title}`);
           });
         }
 
@@ -4881,21 +4425,17 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initPrimitiveBlocks() {
-          document.querySelectorAll(".primitive-block").forEach((block) => {
-            block.setAttribute("tabindex", "0");
+          document.querySelectorAll('.primitive-block').forEach((block) => {
+            block.setAttribute('tabindex', '0');
 
-            block.addEventListener("mouseenter", () =>
-              block.classList.add("primitive-block--active"),
+            block.addEventListener('mouseenter', () =>
+              block.classList.add('primitive-block--active')
             );
-            block.addEventListener("mouseleave", () =>
-              block.classList.remove("primitive-block--active"),
+            block.addEventListener('mouseleave', () =>
+              block.classList.remove('primitive-block--active')
             );
-            block.addEventListener("focus", () =>
-              block.classList.add("primitive-block--active"),
-            );
-            block.addEventListener("blur", () =>
-              block.classList.remove("primitive-block--active"),
-            );
+            block.addEventListener('focus', () => block.classList.add('primitive-block--active'));
+            block.addEventListener('blur', () => block.classList.remove('primitive-block--active'));
           });
         }
 
@@ -4904,12 +4444,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initOntologyAnimation() {
-          const items = document.querySelectorAll(".ontology-item");
-          if (!items.length || !("IntersectionObserver" in window)) return;
+          const items = document.querySelectorAll('.ontology-item');
+          if (!items.length || !('IntersectionObserver' in window)) return;
 
           items.forEach((item, i) => {
-            item.style.opacity = "0";
-            item.style.transform = "translateX(-20px)";
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-20px)';
             item.style.transition = `opacity 0.4s ease ${i * 0.15}s, transform 0.4s ease ${i * 0.15}s`;
           });
 
@@ -4917,13 +4457,13 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
             (entries) => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                  entry.target.style.opacity = "1";
-                  entry.target.style.transform = "translateX(0)";
+                  entry.target.style.opacity = '1';
+                  entry.target.style.transform = 'translateX(0)';
                   observer.unobserve(entry.target);
                 }
               });
             },
-            { threshold: 0.4 },
+            { threshold: 0.4 }
           );
 
           items.forEach((item) => observer.observe(item));
@@ -4934,12 +4474,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initManifestoAnimation() {
-          const items = document.querySelectorAll(".manifesto-item");
-          if (!items.length || !("IntersectionObserver" in window)) return;
+          const items = document.querySelectorAll('.manifesto-item');
+          if (!items.length || !('IntersectionObserver' in window)) return;
 
           items.forEach((item, i) => {
-            item.style.opacity = "0";
-            item.style.transform = "translateX(-12px)";
+            item.style.opacity = '0';
+            item.style.transform = 'translateX(-12px)';
             item.style.transition = `opacity 0.35s ease ${i * 0.07}s, transform 0.35s ease ${i * 0.07}s`;
           });
 
@@ -4948,18 +4488,18 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                   // Trigger all items in the list together when the list enters view
-                  const list = entry.target.closest(".manifesto-list");
+                  const list = entry.target.closest('.manifesto-list');
                   if (list) {
-                    list.querySelectorAll(".manifesto-item").forEach((item) => {
-                      item.style.opacity = "1";
-                      item.style.transform = "translateX(0)";
+                    list.querySelectorAll('.manifesto-item').forEach((item) => {
+                      item.style.opacity = '1';
+                      item.style.transform = 'translateX(0)';
                     });
                   }
                   observer.unobserve(entry.target);
                 }
               });
             },
-            { threshold: 0.1 },
+            { threshold: 0.1 }
           );
 
           // Observe the first item as a proxy for the whole list
@@ -4971,11 +4511,11 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function initHeaderNavHighlight() {
-          const navLinks = document.querySelectorAll(".header-nav-link");
+          const navLinks = document.querySelectorAll('.header-nav-link');
           if (!navLinks.length) return;
 
           const sectionIds = Array.from(navLinks)
-            .map((link) => link.getAttribute("href")?.slice(1))
+            .map((link) => link.getAttribute('href')?.slice(1))
             .filter(Boolean);
 
           const onScroll = throttle(() => {
@@ -4991,15 +4531,12 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
             });
 
             navLinks.forEach((link) => {
-              const href = link.getAttribute("href")?.slice(1);
-              link.classList.toggle(
-                "header-nav-link--active",
-                href === activeId,
-              );
+              const href = link.getAttribute('href')?.slice(1);
+              link.classList.toggle('header-nav-link--active', href === activeId);
             });
           }, 100);
 
-          window.addEventListener("scroll", onScroll, { passive: true });
+          window.addEventListener('scroll', onScroll, { passive: true });
           onScroll();
         }
 
@@ -5008,7 +4545,7 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
         // ============================================================
 
         function injectDynamicStyles() {
-          const style = document.createElement("style");
+          const style = document.createElement('style');
           style.textContent = `
               /* Skip link */
               .skip-link {
@@ -5198,8 +4735,8 @@ digit_billion = pi.in_base(16).skip(10**9).next_digit()</code></pre>
           initHeaderNavHighlight();
         }
 
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", init);
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init);
         } else {
           init();
         }

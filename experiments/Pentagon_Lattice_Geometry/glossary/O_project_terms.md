@@ -68,7 +68,7 @@ name.
 ### Comparison
 
 | Lattice              | Distance rings               | Direction density              |
-|----------------------|------------------------------|--------------------------------|
+| -------------------- | ---------------------------- | ------------------------------ |
 | $\mathbb{Z}^2$       | Sparse (sums of two squares) | $\pi/2$-discrete               |
 | $\mathbb{Z}[i]$      | Same as $\mathbb{Z}^2$       | $\pi/2$-discrete               |
 | Hexagonal lattice    | Moderate (Eisenstein norms)  | $\pi/3$-discrete               |
@@ -170,7 +170,7 @@ pentagon framework. It demonstrates that:
 ### Discrete vs. Continuous
 
 | Property             | Continuous spinor | Discrete spinor-like           |
-|----------------------|-------------------|--------------------------------|
+| -------------------- | ----------------- | ------------------------------ |
 | Domain               | $SU(2)$-rep       | $\mathbb{Z}_{10}$ sheet bundle |
 | Single loop          | $-1$ rotation     | Sheet parity flip              |
 | Double loop          | $+1$ (identity)   | Sheet parity restored          |

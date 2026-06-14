@@ -1,6 +1,6 @@
-import { OptimizerLbfgs } from "./js/optimizer-lbfgs.js";
-import { OptimizerAdam } from "./js/optimizer-adam.js";
-import { OptimizerQQN } from "./js/optimizer-qqn.js";
+import { OptimizerLbfgs } from './js/optimizer-lbfgs.js';
+import { OptimizerAdam } from './js/optimizer-adam.js';
+import { OptimizerQQN } from './js/optimizer-qqn.js';
 
 /**
  * Knot Topology Lab
@@ -36,9 +36,9 @@ const state = {
     redistributeLr: 0.05,
     redistributeEvery: 1,
     c: 1.0,
-    knotType: "random",
-    metricMode: "euclidean",
-    optimizerType: "adam",
+    knotType: 'random',
+    metricMode: 'euclidean',
+    optimizerType: 'adam',
   },
   metrics: {
     totalLoss: 0,
@@ -56,67 +56,67 @@ const state = {
 };
 
 const els = {
-  knotCanvas: document.getElementById("knot-canvas"),
-  matrixCanvas: document.getElementById("matrix-canvas"),
-  loading: document.getElementById("loading"),
-  knotSelect: document.getElementById("knot-select"),
-  optimizerSelect: document.getElementById("opt-optimizer"),
-  metricSelect: document.getElementById("metric-select"),
-  grpC: document.getElementById("grp-c"),
-  cInput: document.getElementById("param-c"),
-  valC: document.getElementById("val-c"),
-  nInput: document.getElementById("param-n"),
-  valN: document.getElementById("val-n"),
-  ctrlInput: document.getElementById("param-ctrl"),
-  valCtrl: document.getElementById("val-ctrl"),
-  edgeInput: document.getElementById("param-edge"),
-  valEdge: document.getElementById("val-edge"),
-  stiffInput: document.getElementById("param-stiff"),
-  valStiff: document.getElementById("val-stiff"),
-  repelInput: document.getElementById("param-repel"),
-  valRepel: document.getElementById("val-repel"),
-  cutoffInput: document.getElementById("param-cutoff"),
-  valCutoff: document.getElementById("val-cutoff"),
-  lrInput: document.getElementById("param-lr"),
-  valLr: document.getElementById("val-lr"),
-  redistInput: document.getElementById("param-redist"),
-  valRedist: document.getElementById("val-redist"),
-  redistItersInput: document.getElementById("param-redist-iters"),
-  valRedistIters: document.getElementById("val-redist-iters"),
-  chkAutoRotate: document.getElementById("chk-autorotate"),
-  chkEdges: document.getElementById("chk-edges"),
-  btnToggle: document.getElementById("btn-toggle"),
-  chkSolid: document.getElementById("chk-solid"),
-  btnExportStl: document.getElementById("btn-export-stl"),
-  btnReset: document.getElementById("btn-reset"),
-  btnStep: document.getElementById("btn-step"),
-  btnDistribute: document.getElementById("btn-distribute"),
-  btnCopy: document.getElementById("btn-copy"),
-  btnPaste: document.getElementById("btn-paste"),
-  btnOrbitKnot: document.getElementById("btn-orbit-knot"),
-  btnOptTime: document.getElementById("btn-opt-time"),
-  btnOptSpace: document.getElementById("btn-opt-space"),
-  btnOptLight: document.getElementById("btn-opt-light"),
-  btnAlignTime: document.getElementById("btn-align-time"),
-  metricLoss: document.getElementById("metric-loss"),
-  metricEdge: document.getElementById("metric-edge"),
-  metricRepel: document.getElementById("metric-repel"),
-  metricStep: document.getElementById("metric-step"),
-  metricMinDist: document.getElementById("metric-min-dist"),
-  metricMaxDist: document.getElementById("metric-max-dist"),
-  metricAvgDist: document.getElementById("metric-avg-dist"),
-  colorbarMax: document.getElementById("colorbar-max"),
-  colorbarMid: document.getElementById("colorbar-mid"),
-  colorbarMin: document.getElementById("colorbar-min"),
-  colorbarGrad: document.getElementById("colorbar-grad"),
+  knotCanvas: document.getElementById('knot-canvas'),
+  matrixCanvas: document.getElementById('matrix-canvas'),
+  loading: document.getElementById('loading'),
+  knotSelect: document.getElementById('knot-select'),
+  optimizerSelect: document.getElementById('opt-optimizer'),
+  metricSelect: document.getElementById('metric-select'),
+  grpC: document.getElementById('grp-c'),
+  cInput: document.getElementById('param-c'),
+  valC: document.getElementById('val-c'),
+  nInput: document.getElementById('param-n'),
+  valN: document.getElementById('val-n'),
+  ctrlInput: document.getElementById('param-ctrl'),
+  valCtrl: document.getElementById('val-ctrl'),
+  edgeInput: document.getElementById('param-edge'),
+  valEdge: document.getElementById('val-edge'),
+  stiffInput: document.getElementById('param-stiff'),
+  valStiff: document.getElementById('val-stiff'),
+  repelInput: document.getElementById('param-repel'),
+  valRepel: document.getElementById('val-repel'),
+  cutoffInput: document.getElementById('param-cutoff'),
+  valCutoff: document.getElementById('val-cutoff'),
+  lrInput: document.getElementById('param-lr'),
+  valLr: document.getElementById('val-lr'),
+  redistInput: document.getElementById('param-redist'),
+  valRedist: document.getElementById('val-redist'),
+  redistItersInput: document.getElementById('param-redist-iters'),
+  valRedistIters: document.getElementById('val-redist-iters'),
+  chkAutoRotate: document.getElementById('chk-autorotate'),
+  chkEdges: document.getElementById('chk-edges'),
+  btnToggle: document.getElementById('btn-toggle'),
+  chkSolid: document.getElementById('chk-solid'),
+  btnExportStl: document.getElementById('btn-export-stl'),
+  btnReset: document.getElementById('btn-reset'),
+  btnStep: document.getElementById('btn-step'),
+  btnDistribute: document.getElementById('btn-distribute'),
+  btnCopy: document.getElementById('btn-copy'),
+  btnPaste: document.getElementById('btn-paste'),
+  btnOrbitKnot: document.getElementById('btn-orbit-knot'),
+  btnOptTime: document.getElementById('btn-opt-time'),
+  btnOptSpace: document.getElementById('btn-opt-space'),
+  btnOptLight: document.getElementById('btn-opt-light'),
+  btnAlignTime: document.getElementById('btn-align-time'),
+  metricLoss: document.getElementById('metric-loss'),
+  metricEdge: document.getElementById('metric-edge'),
+  metricRepel: document.getElementById('metric-repel'),
+  metricStep: document.getElementById('metric-step'),
+  metricMinDist: document.getElementById('metric-min-dist'),
+  metricMaxDist: document.getElementById('metric-max-dist'),
+  metricAvgDist: document.getElementById('metric-avg-dist'),
+  colorbarMax: document.getElementById('colorbar-max'),
+  colorbarMid: document.getElementById('colorbar-mid'),
+  colorbarMin: document.getElementById('colorbar-min'),
+  colorbarGrad: document.getElementById('colorbar-grad'),
 };
 
-const knotCtx = els.knotCanvas.getContext("2d");
-const matrixCtx = els.matrixCanvas.getContext("2d");
+const knotCtx = els.knotCanvas.getContext('2d');
+const matrixCtx = els.matrixCanvas.getContext('2d');
 function createOptimizer() {
-  if (state.params.optimizerType === "adam") {
+  if (state.params.optimizerType === 'adam') {
     return new OptimizerAdam(state.params.lr);
-  } else if (state.params.optimizerType === "qqn") {
+  } else if (state.params.optimizerType === 'qqn') {
     return new OptimizerQQN(state.params.lr);
   }
   return new OptimizerLbfgs(state.params.lr);
@@ -127,9 +127,9 @@ function createOptimizer() {
  */
 function createRedistributeOptimizer() {
   const lr = state.params.redistributeLr;
-  if (state.params.optimizerType === "adam") {
+  if (state.params.optimizerType === 'adam') {
     return new OptimizerAdam(lr);
-  } else if (state.params.optimizerType === "qqn") {
+  } else if (state.params.optimizerType === 'qqn') {
     return new OptimizerQQN(lr);
   }
   return new OptimizerLbfgs(lr);
@@ -141,17 +141,17 @@ async function optimizeRotation(target) {
   if (!state.points) return;
   // Ensure Minkowski mode
   let mode = state.params.metricMode;
-  if (!mode.startsWith("minkowski")) {
-    mode = "minkowski";
+  if (!mode.startsWith('minkowski')) {
+    mode = 'minkowski';
     state.params.metricMode = mode;
     els.metricSelect.value = mode;
-    els.grpC.style.display = "flex";
+    els.grpC.style.display = 'flex';
   }
   const angles = tf.variable(tf.tensor1d([0, 0, 0]));
   const optimizer = tf.train.adam(0.05);
   const initialPoints = state.points.clone();
-  els.loading.classList.remove("hidden");
-  const loadingText = els.loading.querySelector("div:last-child");
+  els.loading.classList.remove('hidden');
+  const loadingText = els.loading.querySelector('div:last-child');
   const originalText = loadingText.textContent;
   loadingText.textContent = `Optimizing Rotation (${target})...`;
   // Helper to build rotation matrix
@@ -185,10 +185,10 @@ async function optimizeRotation(target) {
       const R = getRotationMatrix(rx, ry, rz);
       const rotatedPoints = tf.matMul(initialPoints, R);
       let spatial, temporal;
-      if (mode === "minkowski-x") {
+      if (mode === 'minkowski-x') {
         temporal = rotatedPoints.slice([0, 0], [-1, 1]);
         spatial = rotatedPoints.slice([0, 1], [-1, 2]);
-      } else if (mode === "minkowski-y") {
+      } else if (mode === 'minkowski-y') {
         const x = rotatedPoints.slice([0, 0], [-1, 1]);
         const z = rotatedPoints.slice([0, 2], [-1, 1]);
         temporal = rotatedPoints.slice([0, 1], [-1, 1]);
@@ -201,23 +201,23 @@ async function optimizeRotation(target) {
       const rS = tf.sum(tf.square(spatial), 1, true);
       const drSq = tf.add(
         tf.sub(rS, tf.mul(2, tf.matMul(spatial, spatial, false, true))),
-        tf.transpose(rS),
+        tf.transpose(rS)
       );
       const dr = tf.sqrt(tf.maximum(drSq, 1e-6));
       const rT = tf.square(temporal);
       const dtSq = tf.add(
         tf.sub(rT, tf.mul(2, tf.matMul(temporal, temporal, false, true))),
-        tf.transpose(rT),
+        tf.transpose(rT)
       );
       const dt = tf.sqrt(tf.maximum(dtSq, 1e-6));
       const n = initialPoints.shape[0];
       const mask = tf.sub(tf.ones([n, n]), tf.eye(n));
-      if (target === "timelike") {
+      if (target === 'timelike') {
         // Minimize c_req = dr/dt -> Maximize timelikeness
         // Use dr / (dt + eps)
         const ratio = tf.div(dr, tf.add(dt, 1e-4));
         return tf.mean(tf.mul(ratio, mask));
-      } else if (target === "lightlike") {
+      } else if (target === 'lightlike') {
         // Minimize |dr - dt| -> Maximize lightlikeness
         const diff = tf.abs(tf.sub(dr, dt));
         return tf.mean(tf.mul(diff, mask));
@@ -242,7 +242,7 @@ async function optimizeRotation(target) {
   initialPoints.dispose();
   optimizer.dispose();
   loadingText.textContent = originalText;
-  els.loading.classList.add("hidden");
+  els.loading.classList.add('hidden');
   updateDistanceMatrix();
 }
 
@@ -399,9 +399,7 @@ function redistributePoints() {
   const n = controlPoints.length;
   const newPoints = [];
   // Generate random sorted parameters to preserve topology
-  const tValues = Array.from({ length: n }, () => Math.random()).sort(
-    (a, b) => a - b,
-  );
+  const tValues = Array.from({ length: n }, () => Math.random()).sort((a, b) => a - b);
   for (let i = 0; i < n; i++) {
     const t = tValues[i];
     const segment = Math.floor(t * n);
@@ -431,23 +429,21 @@ function initializeKnot() {
   let pointsArray;
 
   switch (state.params.knotType) {
-    case "trefoil":
+    case 'trefoil':
       pointsArray = generateTrefoil(state.params.n);
       break;
-    case "figure8":
+    case 'figure8':
       pointsArray = generateFigure8(state.params.n);
       break;
-    case "cinquefoil":
+    case 'cinquefoil':
       pointsArray = generateCinquefoil(state.params.n);
       break;
-    case "unknot":
+    case 'unknot':
       pointsArray = generateUnknot(state.params.n);
       break;
-    case "random":
+    case 'random':
     default:
-      const controlPoints = generateRandomControlPoints(
-        state.params.controlPoints,
-      );
+      const controlPoints = generateRandomControlPoints(state.params.controlPoints);
       pointsArray = generateSplinePoints(controlPoints, state.params.n);
       break;
   }
@@ -478,7 +474,7 @@ function computeDistanceMatrix(points) {
     const r = tf.sum(tf.square(points), 1, true);
     const distSq = tf.add(
       tf.sub(r, tf.mul(2, tf.matMul(points, points, false, true))),
-      tf.transpose(r),
+      tf.transpose(r)
     );
     return tf.sqrt(tf.maximum(distSq, 1e-10));
   });
@@ -490,10 +486,10 @@ function computeMinkowskiComponents(points) {
   return tf.tidy(() => {
     let spatial, temporal;
 
-    if (state.params.metricMode === "minkowski-x") {
+    if (state.params.metricMode === 'minkowski-x') {
       temporal = points.slice([0, 0], [-1, 1]);
       spatial = points.slice([0, 1], [-1, 2]);
-    } else if (state.params.metricMode === "minkowski-y") {
+    } else if (state.params.metricMode === 'minkowski-y') {
       const x = points.slice([0, 0], [-1, 1]);
       const z = points.slice([0, 2], [-1, 1]);
       temporal = points.slice([0, 1], [-1, 1]);
@@ -511,17 +507,14 @@ function computeMinkowskiComponents(points) {
     const rS = tf.sum(tf.square(spatial), 1, true);
     const drSq = tf.add(
       tf.sub(rS, tf.mul(2, tf.matMul(spatial, spatial, false, true))),
-      tf.transpose(rS),
+      tf.transpose(rS)
     );
     const dr = tf.sqrt(tf.maximum(drSq, 0));
     // Temporal distance squared
     const rT = tf.square(scaledTemporal);
     const dtSq = tf.add(
-      tf.sub(
-        rT,
-        tf.mul(2, tf.matMul(scaledTemporal, scaledTemporal, false, true)),
-      ),
-      tf.transpose(rT),
+      tf.sub(rT, tf.mul(2, tf.matMul(scaledTemporal, scaledTemporal, false, true))),
+      tf.transpose(rT)
     );
     const dt = tf.sqrt(tf.maximum(dtSq, 0));
 
@@ -544,7 +537,7 @@ function computeEdgeLoss(points, targetLength, stiffness) {
 
     // Compute edge lengths
     const diff = tf.sub(p1, p2);
-    const lengths = tf.norm(diff, "euclidean", 1);
+    const lengths = tf.norm(diff, 'euclidean', 1);
 
     // Squared difference from target
     const deviation = tf.sub(lengths, targetLength);
@@ -563,21 +556,18 @@ function computeRepulsionLoss(points, strength, cutoff) {
     const r = tf.sum(tf.square(points), 1, true);
     const distSq = tf.add(
       tf.sub(r, tf.mul(2, tf.matMul(points, points, false, true))),
-      tf.transpose(r),
+      tf.transpose(r)
     );
 
     // Create adjacency mask (1 for non-adjacent, 0 for adjacent and self)
-    const indices = tf.range(0, n, 1, "int32");
+    const indices = tf.range(0, n, 1, 'int32');
     const i = tf.expandDims(indices, 1);
     const j = tf.expandDims(indices, 0);
 
     // Adjacent if |i - j| <= 1 or |i - j| >= n-1 (circular)
     const diff = tf.abs(tf.sub(i, j));
-    const isAdjacent = tf.logicalOr(
-      tf.lessEqual(diff, 1),
-      tf.greaterEqual(diff, n - 1),
-    );
-    const mask = tf.cast(tf.logicalNot(isAdjacent), "float32");
+    const isAdjacent = tf.logicalOr(tf.lessEqual(diff, 1), tf.greaterEqual(diff, n - 1));
+    const mask = tf.cast(tf.logicalNot(isAdjacent), 'float32');
 
     // Soft cutoff using sigmoid
     const cutoffSq = cutoff * cutoff;
@@ -622,9 +612,7 @@ function buildArcLengthTable(controlPoints, resolution) {
     const p = sampleSpline(controlPoints, t % 1);
     samples.push(p);
     tValues.push(t);
-    const d = Math.sqrt(
-      (p[0] - prev[0]) ** 2 + (p[1] - prev[1]) ** 2 + (p[2] - prev[2]) ** 2,
-    );
+    const d = Math.sqrt((p[0] - prev[0]) ** 2 + (p[1] - prev[1]) ** 2 + (p[2] - prev[2]) ** 2);
     cumLen.push(cumLen[i - 1] + d);
     prev = p;
   }
@@ -704,11 +692,7 @@ function pointAtArcLength(table, s, controlPoints) {
   const frac = segLen > 1e-9 ? (s - cumLen[lo]) / segLen : 0;
   const a = samples[lo],
     b = samples[hi];
-  return [
-    a[0] + (b[0] - a[0]) * frac,
-    a[1] + (b[1] - a[1]) * frac,
-    a[2] + (b[2] - a[2]) * frac,
-  ];
+  return [a[0] + (b[0] - a[0]) * frac, a[1] + (b[1] - a[1]) * frac, a[2] + (b[2] - a[2]) * frac];
 }
 /**
  * Step 2 of optimization: freeze the spline implied by current points,
@@ -783,7 +767,7 @@ function redistributeAlongFrozenSpline() {
     state.redistributeOptimizer.applyGradients(grads, lossFn);
   } catch (e) {
     // If the optimizer chokes (e.g. LBFGS on a degenerate problem), skip silently.
-    console.warn("Redistribute optimizer step failed:", e);
+    console.warn('Redistribute optimizer step failed:', e);
   }
   // Read back updated arc-length positions
   const updatedArc = state.arcLengthVar.dataSync();
@@ -809,12 +793,12 @@ function trainStep() {
       const edgeLoss = computeEdgeLoss(
         state.points,
         state.params.targetEdgeLength,
-        state.params.edgeStiffness,
+        state.params.edgeStiffness
       );
       const repulsionLoss = computeRepulsionLoss(
         state.points,
         state.params.repulsionStrength,
-        state.params.repulsionCutoff,
+        state.params.repulsionCutoff
       );
       return tf.add(edgeLoss, repulsionLoss);
     };
@@ -835,12 +819,12 @@ function trainStep() {
     const edgeLoss = computeEdgeLoss(
       state.points,
       state.params.targetEdgeLength,
-      state.params.edgeStiffness,
+      state.params.edgeStiffness
     );
     const repulsionLoss = computeRepulsionLoss(
       state.points,
       state.params.repulsionStrength,
-      state.params.repulsionCutoff,
+      state.params.repulsionCutoff
     );
     const total = tf.add(edgeLoss, repulsionLoss);
     state.metrics.edgeLoss = edgeLoss.dataSync()[0];
@@ -866,7 +850,7 @@ function updateDistanceMatrix() {
       for (let j = 0; j < n; j++) {}
     }
 
-    if (state.params.metricMode.startsWith("minkowski")) {
+    if (state.params.metricMode.startsWith('minkowski')) {
       const [dr, dt, tDiff] = computeMinkowskiComponents(state.points);
       const drData = dr.dataSync();
       const dtData = dt.dataSync();
@@ -875,8 +859,7 @@ function updateDistanceMatrix() {
 
       // Use max spatial distance for scaling reference
       let max = 0;
-      for (let i = 0; i < drData.length; i++)
-        if (drData[i] > max) max = drData[i];
+      for (let i = 0; i < drData.length; i++) if (drData[i] > max) max = drData[i];
       state.metrics.maxDist = max;
       state.metrics.minDist = 0;
       state.metrics.avgDist = 0;
@@ -986,9 +969,7 @@ function minkowskiToColor(dr, dt, tDiff) {
 
   const r = Math.floor(255 * (isTimelike * isFuture + light * 0.5) * intensity);
   const g = Math.floor(255 * (isSpacelike * 0.8 + light * 0.5) * intensity);
-  const b = Math.floor(
-    255 * (isTimelike * isPast + isSpacelike * 0.2 + light * 0.5) * intensity,
-  );
+  const b = Math.floor(255 * (isTimelike * isPast + isSpacelike * 0.2 + light * 0.5) * intensity);
 
   return `rgb(${Math.min(255, r)}, ${Math.min(255, g)}, ${Math.min(255, b)})`;
 }
@@ -1040,10 +1021,7 @@ function generateTubeMesh(points, radius, segments) {
   let n_end = vec3.sub(lastFrame.n, vec3.scale(t0, vec3.dot(lastFrame.n, t0)));
   n_end = vec3.normalize(n_end);
   // Calculate angle between transported last normal and first normal
-  let totalTwist = Math.atan2(
-    vec3.dot(n_end, frames[0].b),
-    vec3.dot(n_end, frames[0].n),
-  );
+  let totalTwist = Math.atan2(vec3.dot(n_end, frames[0].b), vec3.dot(n_end, frames[0].n));
   // Generate vertices
   const meshVertices = []; // [ring][segment]
   for (let i = 0; i < n; i++) {
@@ -1089,7 +1067,7 @@ function exportSTL() {
   for (let i = 0; i < state.params.n; i++)
     points.push([data[i * 3], data[i * 3 + 1], data[i * 3 + 2]]);
   const faces = generateTubeMesh(points, 0.08, 16);
-  let stl = "solid knot\n";
+  let stl = 'solid knot\n';
   faces.forEach((quad) => {
     const tris = [
       [quad[0], quad[1], quad[2]],
@@ -1100,20 +1078,20 @@ function exportSTL() {
       const v = vec3.sub(tri[2].pos, tri[0].pos);
       const n = vec3.normalize(vec3.cross(u, v));
       stl += `facet normal ${n[0].toExponential()} ${n[1].toExponential()} ${n[2].toExponential()}\n`;
-      stl += "  outer loop\n";
+      stl += '  outer loop\n';
       tri.forEach(
         (vert) =>
-          (stl += `    vertex ${vert.pos[0].toExponential()} ${vert.pos[1].toExponential()} ${vert.pos[2].toExponential()}\n`),
+          (stl += `    vertex ${vert.pos[0].toExponential()} ${vert.pos[1].toExponential()} ${vert.pos[2].toExponential()}\n`)
       );
-      stl += "  endloop\nendfacet\n";
+      stl += '  endloop\nendfacet\n';
     });
   });
-  stl += "endsolid knot";
-  const blob = new Blob([stl], { type: "text/plain" });
+  stl += 'endsolid knot';
+  const blob = new Blob([stl], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
-  a.download = "knot.stl";
+  a.download = 'knot.stl';
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -1122,7 +1100,7 @@ function drawKnot() {
   const w = els.knotCanvas.width;
   const h = els.knotCanvas.height;
 
-  knotCtx.fillStyle = "#1a1d24";
+  knotCtx.fillStyle = '#1a1d24';
   knotCtx.fillRect(0, 0, w, h);
 
   if (!state.points) return;
@@ -1132,17 +1110,11 @@ function drawKnot() {
   const scale = Math.min(w, h) * 0.4 * state.zoom;
   const pointsVec = [];
   for (let i = 0; i < n; i++)
-    pointsVec.push([
-      pointsArr[i * 3],
-      pointsArr[i * 3 + 1],
-      pointsArr[i * 3 + 2],
-    ]);
+    pointsVec.push([pointsArr[i * 3], pointsArr[i * 3 + 1], pointsArr[i * 3 + 2]]);
   if (state.solidView) {
     const faces = generateTubeMesh(pointsVec, 0.05, 8);
     const projectedFaces = faces.map((quad) => {
-      const proj = quad.map((v) =>
-        project3D(v.pos[0], v.pos[1], v.pos[2], w, h, scale),
-      );
+      const proj = quad.map((v) => project3D(v.pos[0], v.pos[1], v.pos[2], w, h, scale));
       const z = (proj[0].z + proj[1].z + proj[2].z + proj[3].z) / 4;
       const n0 = quad[0].normal;
       const rotY = state.rotation.y;
@@ -1215,12 +1187,8 @@ function drawKnot() {
     // Color based on position along curve
     const t = p.idx / n;
     const r = Math.floor(255 * (0.5 + 0.5 * Math.sin(t * Math.PI * 2)));
-    const g = Math.floor(
-      255 * (0.5 + 0.5 * Math.sin(t * Math.PI * 2 + (Math.PI * 2) / 3)),
-    );
-    const b = Math.floor(
-      255 * (0.5 + 0.5 * Math.sin(t * Math.PI * 2 + (Math.PI * 4) / 3)),
-    );
+    const g = Math.floor(255 * (0.5 + 0.5 * Math.sin(t * Math.PI * 2 + (Math.PI * 2) / 3)));
+    const b = Math.floor(255 * (0.5 + 0.5 * Math.sin(t * Math.PI * 2 + (Math.PI * 4) / 3)));
 
     knotCtx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
     knotCtx.beginPath();
@@ -1242,7 +1210,7 @@ function drawKnot() {
     const p2 = projected.find((p) => p.idx === j);
     if (p1 && p2) {
       // Draw connecting line
-      knotCtx.strokeStyle = "#ffffff";
+      knotCtx.strokeStyle = '#ffffff';
       knotCtx.lineWidth = 2;
       knotCtx.setLineDash([4, 4]);
       knotCtx.beginPath();
@@ -1252,13 +1220,13 @@ function drawKnot() {
       knotCtx.setLineDash([]);
       // Highlight endpoints
       [p1, p2].forEach((p) => {
-        knotCtx.fillStyle = "#ffffff";
+        knotCtx.fillStyle = '#ffffff';
         knotCtx.beginPath();
         knotCtx.arc(p.x, p.y, 6 * p.scale, 0, Math.PI * 2);
         knotCtx.fill();
         // Label
-        knotCtx.fillStyle = "#ffffff";
-        knotCtx.font = "12px JetBrains Mono";
+        knotCtx.fillStyle = '#ffffff';
+        knotCtx.font = '12px JetBrains Mono';
         knotCtx.fillText(p.idx, p.x + 10, p.y - 10);
       });
     }
@@ -1267,9 +1235,9 @@ function drawKnot() {
   // Draw coordinate axes
   const axisLength = 0.3;
   const axes = [
-    { dir: [axisLength, 0, 0], color: "#ff4444", label: "X" },
-    { dir: [0, axisLength, 0], color: "#44ff44", label: "Y" },
-    { dir: [0, 0, axisLength], color: "#4444ff", label: "Z" },
+    { dir: [axisLength, 0, 0], color: '#ff4444', label: 'X' },
+    { dir: [0, axisLength, 0], color: '#44ff44', label: 'Y' },
+    { dir: [0, 0, axisLength], color: '#4444ff', label: 'Z' },
   ];
 
   const origin = project3D(0, 0, 0, w, h, scale);
@@ -1283,7 +1251,7 @@ function drawKnot() {
     knotCtx.stroke();
 
     knotCtx.fillStyle = axis.color;
-    knotCtx.font = "10px JetBrains Mono";
+    knotCtx.font = '10px JetBrains Mono';
     knotCtx.fillText(axis.label, end.x + 5, end.y);
   });
 }
@@ -1292,12 +1260,11 @@ function drawDistanceMatrix() {
   const w = els.matrixCanvas.width;
   const h = els.matrixCanvas.height;
 
-  matrixCtx.fillStyle = "#1a1d24";
+  matrixCtx.fillStyle = '#1a1d24';
   matrixCtx.fillRect(0, 0, w, h);
 
-  if (state.params.metricMode === "euclidean" && !state.distanceMatrix) return;
-  if (state.params.metricMode.startsWith("minkowski") && !state.minkowskiData)
-    return;
+  if (state.params.metricMode === 'euclidean' && !state.distanceMatrix) return;
+  if (state.params.metricMode.startsWith('minkowski') && !state.minkowskiData) return;
 
   const n = state.params.n;
   const margin = 40;
@@ -1313,7 +1280,7 @@ function drawDistanceMatrix() {
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
       let color;
-      if (state.params.metricMode.startsWith("minkowski")) {
+      if (state.params.metricMode.startsWith('minkowski')) {
         const dr = state.minkowskiData.dr[i * n + j];
         const dt = state.minkowskiData.dt[i * n + j];
         const tDiff = state.minkowskiData.tDiff[i * n + j];
@@ -1328,7 +1295,7 @@ function drawDistanceMatrix() {
         offsetX + j * cellSize,
         offsetY + i * cellSize,
         cellSize + 0.5,
-        cellSize + 0.5,
+        cellSize + 0.5
       );
     }
   }
@@ -1336,7 +1303,7 @@ function drawDistanceMatrix() {
   if (state.hoveredPair) {
     const { i, j } = state.hoveredPair;
     // Crosshairs
-    matrixCtx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+    matrixCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
     matrixCtx.lineWidth = 1;
     matrixCtx.beginPath();
     matrixCtx.moveTo(offsetX, offsetY + i * cellSize + cellSize / 2);
@@ -1345,18 +1312,13 @@ function drawDistanceMatrix() {
     matrixCtx.lineTo(offsetX + j * cellSize + cellSize / 2, offsetY + size);
     matrixCtx.stroke();
     // Cell highlight
-    matrixCtx.strokeStyle = "#ffffff";
+    matrixCtx.strokeStyle = '#ffffff';
     matrixCtx.lineWidth = 2;
-    matrixCtx.strokeRect(
-      offsetX + j * cellSize,
-      offsetY + i * cellSize,
-      cellSize,
-      cellSize,
-    );
+    matrixCtx.strokeRect(offsetX + j * cellSize, offsetY + i * cellSize, cellSize, cellSize);
   }
 
   // Draw diagonal line indicator
-  matrixCtx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+  matrixCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
   matrixCtx.lineWidth = 1;
   matrixCtx.setLineDash([4, 4]);
   matrixCtx.beginPath();
@@ -1366,26 +1328,26 @@ function drawDistanceMatrix() {
   matrixCtx.setLineDash([]);
 
   // Draw axis labels
-  matrixCtx.fillStyle = "#6b7280";
-  matrixCtx.font = "10px JetBrains Mono";
-  matrixCtx.textAlign = "center";
+  matrixCtx.fillStyle = '#6b7280';
+  matrixCtx.font = '10px JetBrains Mono';
+  matrixCtx.textAlign = 'center';
 
   // X axis label
-  matrixCtx.fillText("Point Index j", offsetX + size / 2, offsetY + size + 25);
+  matrixCtx.fillText('Point Index j', offsetX + size / 2, offsetY + size + 25);
 
   // Y axis label (rotated)
   matrixCtx.save();
   matrixCtx.translate(offsetX - 25, offsetY + size / 2);
   matrixCtx.rotate(-Math.PI / 2);
-  matrixCtx.fillText("Point Index i", 0, 0);
+  matrixCtx.fillText('Point Index i', 0, 0);
   matrixCtx.restore();
 
   // Update colorbar
 
-  if (state.params.metricMode.startsWith("minkowski")) {
-    els.colorbarMax.textContent = "Space";
-    els.colorbarMid.textContent = "Light";
-    els.colorbarMin.textContent = "Time";
+  if (state.params.metricMode.startsWith('minkowski')) {
+    els.colorbarMax.textContent = 'Space';
+    els.colorbarMid.textContent = 'Light';
+    els.colorbarMin.textContent = 'Time';
     els.colorbarGrad.style.background = `linear-gradient(to bottom, 
                 rgb(0, 200, 50), 
                 rgb(255, 255, 255), 
@@ -1460,11 +1422,11 @@ function alignViewToTime() {
   const mode = state.params.metricMode;
   state.autoRotate = false;
   els.chkAutoRotate.checked = false;
-  if (mode === "minkowski-x") {
+  if (mode === 'minkowski-x') {
     // Time is X. Look along X (X becomes depth)
     state.rotation.x = 0;
     state.rotation.y = -Math.PI / 2;
-  } else if (mode === "minkowski-y") {
+  } else if (mode === 'minkowski-y') {
     // Time is Y. Look along Y (Y becomes depth)
     state.rotation.x = Math.PI / 2;
     state.rotation.y = 0;
@@ -1478,29 +1440,29 @@ function alignViewToTime() {
 // --- Event Handlers ---
 
 function setupEventListeners() {
-  els.knotSelect.addEventListener("change", (e) => {
+  els.knotSelect.addEventListener('change', (e) => {
     state.params.knotType = e.target.value;
     initializeKnot();
     updateDistanceMatrix();
   });
-  els.metricSelect.addEventListener("change", (e) => {
+  els.metricSelect.addEventListener('change', (e) => {
     state.params.metricMode = e.target.value;
-    if (state.params.metricMode.startsWith("minkowski")) {
-      els.grpC.style.display = "flex";
+    if (state.params.metricMode.startsWith('minkowski')) {
+      els.grpC.style.display = 'flex';
     } else {
-      els.grpC.style.display = "none";
+      els.grpC.style.display = 'none';
     }
     updateDistanceMatrix();
   });
 
   // Slider/input pairs
   const setupSlider = (slider, input, param, transform = (v) => v) => {
-    slider.addEventListener("input", (e) => {
+    slider.addEventListener('input', (e) => {
       const val = transform(parseFloat(e.target.value));
       state.params[param] = val;
       input.value = val;
     });
-    input.addEventListener("change", (e) => {
+    input.addEventListener('change', (e) => {
       const val = parseFloat(e.target.value);
       if (!isNaN(val)) {
         state.params[param] = val;
@@ -1509,128 +1471,118 @@ function setupEventListeners() {
     });
   };
 
-  setupSlider(els.nInput, els.valN, "n", (v) => Math.floor(v));
-  setupSlider(els.ctrlInput, els.valCtrl, "controlPoints", (v) =>
-    Math.floor(v),
-  );
-  setupSlider(els.edgeInput, els.valEdge, "targetEdgeLength");
-  setupSlider(els.stiffInput, els.valStiff, "edgeStiffness");
-  setupSlider(els.repelInput, els.valRepel, "repulsionStrength");
-  setupSlider(els.cutoffInput, els.valCutoff, "repulsionCutoff");
-  setupSlider(els.lrInput, els.valLr, "lr");
-  setupSlider(els.cInput, els.valC, "c");
+  setupSlider(els.nInput, els.valN, 'n', (v) => Math.floor(v));
+  setupSlider(els.ctrlInput, els.valCtrl, 'controlPoints', (v) => Math.floor(v));
+  setupSlider(els.edgeInput, els.valEdge, 'targetEdgeLength');
+  setupSlider(els.stiffInput, els.valStiff, 'edgeStiffness');
+  setupSlider(els.repelInput, els.valRepel, 'repulsionStrength');
+  setupSlider(els.cutoffInput, els.valCutoff, 'repulsionCutoff');
+  setupSlider(els.lrInput, els.valLr, 'lr');
+  setupSlider(els.cInput, els.valC, 'c');
   if (els.redistInput && els.valRedist) {
-    setupSlider(els.redistInput, els.valRedist, "redistributeLr");
-    els.redistInput.addEventListener("input", () => {
+    setupSlider(els.redistInput, els.valRedist, 'redistributeLr');
+    els.redistInput.addEventListener('input', () => {
       if (
         state.redistributeOptimizer &&
-        typeof state.redistributeOptimizer.setLearningRate === "function"
+        typeof state.redistributeOptimizer.setLearningRate === 'function'
       ) {
-        state.redistributeOptimizer.setLearningRate(
-          state.params.redistributeLr,
-        );
+        state.redistributeOptimizer.setLearningRate(state.params.redistributeLr);
       } else {
         state.redistributeOptimizer = createRedistributeOptimizer();
       }
     });
   }
   if (els.redistItersInput && els.valRedistIters) {
-    setupSlider(
-      els.redistItersInput,
-      els.valRedistIters,
-      "redistributeEvery",
-      (v) => Math.floor(v),
+    setupSlider(els.redistItersInput, els.valRedistIters, 'redistributeEvery', (v) =>
+      Math.floor(v)
     );
   }
 
   // N change requires reinitialization
-  els.nInput.addEventListener("change", () => {
+  els.nInput.addEventListener('change', () => {
     if (!state.isTraining) initializeKnot();
     updateDistanceMatrix();
   });
-  els.cInput.addEventListener("input", updateDistanceMatrix);
-  els.valC.addEventListener("change", updateDistanceMatrix);
-  els.valN.addEventListener("change", () => {
+  els.cInput.addEventListener('input', updateDistanceMatrix);
+  els.valC.addEventListener('change', updateDistanceMatrix);
+  els.valN.addEventListener('change', () => {
     if (!state.isTraining) initializeKnot();
     updateDistanceMatrix();
   });
 
-  els.ctrlInput.addEventListener("change", () => {
-    if (!state.isTraining && state.params.knotType === "random") {
+  els.ctrlInput.addEventListener('change', () => {
+    if (!state.isTraining && state.params.knotType === 'random') {
       initializeKnot();
       updateDistanceMatrix();
     }
   });
-  els.optimizerSelect.addEventListener("change", (e) => {
+  els.optimizerSelect.addEventListener('change', (e) => {
     state.params.optimizerType = e.target.value;
     state.optimizer = createOptimizer();
     state.redistributeOptimizer = createRedistributeOptimizer();
   });
 
-  els.lrInput.addEventListener("input", () => {
-    if (
-      state.optimizer &&
-      typeof state.optimizer.setLearningRate === "function"
-    ) {
+  els.lrInput.addEventListener('input', () => {
+    if (state.optimizer && typeof state.optimizer.setLearningRate === 'function') {
       state.optimizer.setLearningRate(state.params.lr);
     } else {
       state.optimizer = createOptimizer();
     }
   });
 
-  els.chkAutoRotate.addEventListener("change", (e) => {
+  els.chkAutoRotate.addEventListener('change', (e) => {
     state.autoRotate = e.target.checked;
   });
 
-  els.chkEdges.addEventListener("change", (e) => {
+  els.chkEdges.addEventListener('change', (e) => {
     state.showEdges = e.target.checked;
   });
-  els.chkSolid.addEventListener("change", (e) => {
+  els.chkSolid.addEventListener('change', (e) => {
     state.solidView = e.target.checked;
   });
-  els.btnExportStl.addEventListener("click", () => {
+  els.btnExportStl.addEventListener('click', () => {
     exportSTL();
   });
 
-  els.btnToggle.addEventListener("click", () => {
+  els.btnToggle.addEventListener('click', () => {
     state.isTraining = !state.isTraining;
-    els.btnToggle.textContent = state.isTraining ? "Stop" : "Start";
-    els.btnToggle.classList.toggle("btn-primary", !state.isTraining);
-    els.btnToggle.classList.toggle("btn-danger", state.isTraining);
+    els.btnToggle.textContent = state.isTraining ? 'Stop' : 'Start';
+    els.btnToggle.classList.toggle('btn-primary', !state.isTraining);
+    els.btnToggle.classList.toggle('btn-danger', state.isTraining);
   });
 
-  els.btnReset.addEventListener("click", () => {
+  els.btnReset.addEventListener('click', () => {
     state.isTraining = false;
-    els.btnToggle.textContent = "Start";
-    els.btnToggle.classList.add("btn-primary");
-    els.btnToggle.classList.remove("btn-danger");
+    els.btnToggle.textContent = 'Start';
+    els.btnToggle.classList.add('btn-primary');
+    els.btnToggle.classList.remove('btn-danger');
     initializeKnot();
     updateDistanceMatrix();
   });
 
-  els.btnStep.addEventListener("click", () => {
+  els.btnStep.addEventListener('click', () => {
     trainStep();
   });
-  els.btnDistribute.addEventListener("click", () => {
+  els.btnDistribute.addEventListener('click', () => {
     redistributePoints();
   });
 
-  els.btnCopy.addEventListener("click", () => {
+  els.btnCopy.addEventListener('click', () => {
     if (!state.points) return;
     const data = state.points.arraySync();
     const text = JSON.stringify(data, null, 2);
     navigator.clipboard.writeText(text).then(() => {
       const original = els.btnCopy.textContent;
-      els.btnCopy.textContent = "Copied!";
+      els.btnCopy.textContent = 'Copied!';
       setTimeout(() => (els.btnCopy.textContent = original), 1500);
     });
   });
-  els.btnOrbitKnot.addEventListener("click", () => {
+  els.btnOrbitKnot.addEventListener('click', () => {
     state.isOrbitingKnot = !state.isOrbitingKnot;
-    els.btnOrbitKnot.classList.toggle("btn-primary", state.isOrbitingKnot);
-    els.btnOrbitKnot.classList.toggle("btn-secondary", !state.isOrbitingKnot);
+    els.btnOrbitKnot.classList.toggle('btn-primary', state.isOrbitingKnot);
+    els.btnOrbitKnot.classList.toggle('btn-secondary', !state.isOrbitingKnot);
   });
-  els.btnPaste.addEventListener("click", async () => {
+  els.btnPaste.addEventListener('click', async () => {
     try {
       const text = await navigator.clipboard.readText();
       const data = JSON.parse(text);
@@ -1655,38 +1607,34 @@ function setupEventListeners() {
         state.step = 0;
         updateDistanceMatrix();
         const original = els.btnPaste.textContent;
-        els.btnPaste.textContent = "Pasted!";
+        els.btnPaste.textContent = 'Pasted!';
         setTimeout(() => (els.btnPaste.textContent = original), 1500);
       } else {
-        alert("Invalid knot data format");
+        alert('Invalid knot data format');
       }
     } catch (err) {
       console.error(err);
-      alert("Failed to paste: " + err.message);
+      alert('Failed to paste: ' + err.message);
     }
   });
-  els.btnOptTime.addEventListener("click", () => optimizeRotation("timelike"));
-  els.btnOptSpace.addEventListener("click", () =>
-    optimizeRotation("spacelike"),
-  );
-  els.btnOptLight.addEventListener("click", () =>
-    optimizeRotation("lightlike"),
-  );
-  els.btnAlignTime.addEventListener("click", alignViewToTime);
+  els.btnOptTime.addEventListener('click', () => optimizeRotation('timelike'));
+  els.btnOptSpace.addEventListener('click', () => optimizeRotation('spacelike'));
+  els.btnOptLight.addEventListener('click', () => optimizeRotation('lightlike'));
+  els.btnAlignTime.addEventListener('click', alignViewToTime);
 
-  window.addEventListener("resize", resizeCanvases);
+  window.addEventListener('resize', resizeCanvases);
 
   // Mouse interaction for rotation
   let lastX = 0,
     lastY = 0;
 
-  els.knotCanvas.addEventListener("mousedown", (e) => {
+  els.knotCanvas.addEventListener('mousedown', (e) => {
     state.isDragging = true;
     lastX = e.clientX;
     lastY = e.clientY;
   });
 
-  window.addEventListener("mousemove", (e) => {
+  window.addEventListener('mousemove', (e) => {
     if (state.isDragging) {
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
@@ -1703,21 +1651,21 @@ function setupEventListeners() {
     }
   });
 
-  window.addEventListener("mouseup", () => {
+  window.addEventListener('mouseup', () => {
     state.isDragging = false;
   });
 
   els.knotCanvas.addEventListener(
-    "wheel",
+    'wheel',
     (e) => {
       e.preventDefault();
       const delta = e.deltaY * -0.001;
       state.zoom = Math.max(0.3, Math.min(3.0, state.zoom + delta));
     },
-    { passive: false },
+    { passive: false }
   );
   // Matrix hover interaction
-  els.matrixCanvas.addEventListener("mousemove", (e) => {
+  els.matrixCanvas.addEventListener('mousemove', (e) => {
     const rect = els.matrixCanvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -1729,12 +1677,7 @@ function setupEventListeners() {
     const cellSize = size / n;
     const offsetX = (w - size) / 2;
     const offsetY = (h - size) / 2;
-    if (
-      x >= offsetX &&
-      x <= offsetX + size &&
-      y >= offsetY &&
-      y <= offsetY + size
-    ) {
+    if (x >= offsetX && x <= offsetX + size && y >= offsetY && y <= offsetY + size) {
       const j = Math.floor((x - offsetX) / cellSize);
       const i = Math.floor((y - offsetY) / cellSize);
       if (i >= 0 && i < n && j >= 0 && j < n) {
@@ -1746,7 +1689,7 @@ function setupEventListeners() {
       state.hoveredPair = null;
     }
   });
-  els.matrixCanvas.addEventListener("mouseleave", () => {
+  els.matrixCanvas.addEventListener('mouseleave', () => {
     state.hoveredPair = null;
   });
 }
@@ -1754,7 +1697,7 @@ function setupEventListeners() {
 async function init() {
   try {
     await tf.ready();
-    els.loading.classList.add("hidden");
+    els.loading.classList.add('hidden');
     setupEventListeners();
     resizeCanvases();
     initializeKnot();

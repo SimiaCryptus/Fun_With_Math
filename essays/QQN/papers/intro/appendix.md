@@ -11,6 +11,7 @@
 ### B.1.1 The Direction Combination Problem
 
 Consider the fundamental problem of combining multiple optimization directions. Given:
+
 - Gradient direction: $-\nabla f(\mathbf{x})$ providing guaranteed descent
 - Quasi-Newton direction: $\mathbf{d}_{\text{QN}}$ offering potential superlinear convergence
 
@@ -50,13 +51,13 @@ $$\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}}$$
 **Lemma B.1** (Universal Descent): For any direction $\mathbf{d}_{\text{L-BFGS}} \in \mathbb{R}^n$, the QQN path satisfies:
 $$\mathbf{d}'(0) = -\nabla f(\mathbf{x})$$
 
-*Proof*: Direct differentiation of $\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}}$ gives:
+_Proof_: Direct differentiation of $\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}}$ gives:
 $$\mathbf{d}'(t) = (1-2t)(-\nabla f) + 2t\mathbf{d}_{\text{L-BFGS}}$$
 
 Evaluating at $t=0$: $\mathbf{d}'(0) = -\nabla f(\mathbf{x})$. $\square$
 **Theorem B.1** (Descent Property): For any $\mathbf{d}_{\text{L-BFGS}}$, there exists $\bar{t} > 0$ such that $\phi(t) = f(\mathbf{x} + \mathbf{d}(t))$ satisfies $\phi(t) < \phi(0)$ for all $t \in (0, \bar{t}]$.
 
-*Proof*: Since $\mathbf{d}'(0) = -\nabla f(\mathbf{x})$:
+_Proof_: Since $\mathbf{d}'(0) = -\nabla f(\mathbf{x})$:
 $$\phi'(0) = \nabla f(\mathbf{x})^T(-\nabla f(\mathbf{x})) = -\|\nabla f(\mathbf{x})\|^2 < 0$$
 
 By continuity of $\phi'$ (assuming $f$ is continuously differentiable), there exists $\bar{t} > 0$ such that $\phi'(t) < 0$ for all $t \in (0, \bar{t}]$. By the fundamental theorem of calculus:
@@ -76,7 +77,7 @@ for all $t \in (0, \bar{t}]$. $\square$
 QQN generates iterates satisfying:
 $$\liminf_{k \to \infty} \|\nabla f(\mathbf{x}_k)\| = 0$$
 
-*Proof*: We establish convergence through a descent lemma approach.
+_Proof_: We establish convergence through a descent lemma approach.
 
 **Step 1: Monotonic Decrease**
 
@@ -126,7 +127,7 @@ $$\lim_{k \to \infty} \frac{\|(\mathbf{H}_k - (H^*)^{-1})(\mathbf{x}_{k+1} - \ma
 
 Then QQN converges superlinearly: $\|\mathbf{x}_{k+1} - \mathbf{x}^*\| = o(\|\mathbf{x}_k - \mathbf{x}^*\|)$.
 
-*Proof*: We analyze the behavior near the optimum.
+_Proof_: We analyze the behavior near the optimum.
 
 **Step 1: Neighborhood Properties**
 
@@ -183,7 +184,7 @@ establishing superlinear convergence. $\square$
 
 **Theorem B.4** (Graceful Degradation): Let $\theta_k$ be the angle between $-\nabla f(\mathbf{x}_k)$ and $\mathbf{d}_{\text{L-BFGS}}$. If $\theta_k > \pi/2$ (obtuse angle), then the optimal parameter satisfies $t^* \in [0, 1/2]$, ensuring gradient-dominated steps.
 
-*Proof*: When $\theta_k > \pi/2$, we have $\nabla f(\mathbf{x}_k)^T \mathbf{d}_{\text{L-BFGS}} > 0$.
+_Proof_: When $\theta_k > \pi/2$, we have $\nabla f(\mathbf{x}_k)^T \mathbf{d}_{\text{L-BFGS}} > 0$.
 
 The derivative of our objective along the path is:
 $$\frac{d}{dt}f(\mathbf{x}_k + \mathbf{d}(t)) = \nabla f(\mathbf{x}_k + \mathbf{d}(t))^T \mathbf{d}'(t)$$
@@ -215,7 +216,7 @@ $$\tilde{\mathbf{d}}(t) = t(1-t)(-\nabla f) + t^2 \tilde{\mathbf{d}}_{\text{L-BF
 satisfies:
 $$\|\tilde{\mathbf{d}}(t) - \mathbf{d}(t)\| \leq t^2\delta$$
 
-*Proof*: Direct computation:
+_Proof_: Direct computation:
 
 $$\|\tilde{\mathbf{d}}(t) - \mathbf{d}(t)\| = \|t^2(\tilde{\mathbf{d}}_{\text{L-BFGS}} - \mathbf{d}_{\text{L-BFGS}})\| = t^2\|\boldsymbol{\epsilon}\| \leq t^2\delta$$
 
@@ -231,7 +232,7 @@ For small $t$ (near the initial descent phase), the error is $O(t^2\delta)$, pro
 
 where $n$ is the dimension, $m$ is the L-BFGS memory size, and $k$ is typically small (3-10).
 
-*Proof*:
+_Proof_:
 
 1. **Path construction**: Computing $\mathbf{d}(t) = t(1-t)(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}}$ requires $O(n)$ operations for vector arithmetic.
 2. **L-BFGS direction**: The two-loop recursion requires $O(mn)$ operations to compute $\mathbf{H}_k\nabla f(\mathbf{x}_k)$.
@@ -250,7 +251,7 @@ where $\alpha > 0$ is a scaling factor.
 
 **Proposition B.1** (Scaling Invariance): The set of points reachable by the QQN path is invariant to the choice of $\alpha$. Only the parametrization changes.
 
-*Proof*: Consider the mapping $s = \beta(t)$ where $\beta$ is chosen such that:
+_Proof_: Consider the mapping $s = \beta(t)$ where $\beta$ is chosen such that:
 $$t(1-t)\alpha(-\nabla f) + t^2 \mathbf{d}_{\text{L-BFGS}} = s(1-s)(-\nabla f) + s^2 \mathbf{d}_{\text{L-BFGS}}$$
 
 This gives a bijection between parametrizations, showing that any point reachable with one $\alpha$ is reachable with another. $\square$
@@ -280,7 +281,7 @@ where $\Delta$ is the trust region radius.
 
 **Proposition B.2** (Trust Region Feasibility): For any $\Delta > 0$, there exists $t_{\max} > 0$ such that $\|\mathbf{d}(t)\| \leq \Delta$ for all $t \in [0, t_{\max}]$.
 
-*Proof*: Since $\mathbf{d}(0) = \mathbf{0}$ and $\mathbf{d}$ is continuous, by the intermediate value theorem, the set $\{t : \|\mathbf{d}(t)\| \leq \Delta\}$ contains an interval $[0, t_{\max}]$ for some $t_{\max} > 0$. $\square$
+_Proof_: Since $\mathbf{d}(0) = \mathbf{0}$ and $\mathbf{d}$ is continuous, by the intermediate value theorem, the set $\{t : \|\mathbf{d}(t)\| \leq \Delta\}$ contains an interval $[0, t_{\max}]$ for some $t_{\max} > 0$. $\square$
 
 ## B.6 Comparison with Related Methods
 
@@ -313,9 +314,12 @@ The key insight is that the direction itself changes with the parameter, providi
 ### B.6.3 Relationship to Hybrid Methods
 
 Previous hybrid approaches typically use discrete switching:
-$$\mathbf{d} = \begin{cases}
+
+$$
+\mathbf{d} = \begin{cases}
 \mathbf{d}_{\text{gradient}} & \text{if condition A} \\
 \mathbf{d}_{\text{quasi-Newton}} & \text{if condition B}
-\end{cases}$$
+\end{cases}
+$$
 
 QQN provides continuous interpolation, eliminating discontinuities and the need for switching logic.

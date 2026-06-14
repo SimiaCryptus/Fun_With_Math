@@ -3,6 +3,7 @@
 ## Technical Documentation
 
 ### Table of Contents
+
 1. [System Overview](#system-overview)
 2. [Architecture](#architecture)
 3. [Core Components](#core-components)
@@ -172,6 +173,7 @@ pub struct ProblemWrapper {
 ```
 
 This wrapper:
+
 - Tracks function and gradient evaluation counts
 - Converts between tensor and f64 vector formats
 - Provides thread-safe evaluation counting
@@ -226,6 +228,7 @@ The system employs multiple convergence criteria:
 #### Error Handling
 
 Robust error handling includes:
+
 - **Numerical Error Tracking**: Count and limit non-finite values
 - **Graceful Degradation**: Continue with valid results when possible
 - **Detailed Logging**: Record error conditions and recovery attempts
@@ -372,16 +375,19 @@ pub struct PerformanceMetrics {
 The `ReportGenerator` creates comprehensive HTML reports with:
 
 #### Executive Summary
+
 - Total problems and runs
 - Overall success rates by optimizer
 - Family-specific performance breakdowns
 
 #### Problem-Specific Analysis
+
 - Performance tables with statistical highlighting
 - Convergence plots (linear and logarithmic scales)
 - Detailed metrics comparison
 
 #### Statistical Analysis Section
+
 - Pairwise comparison matrices
 - Significance testing results
 - Effect size interpretations
@@ -391,18 +397,20 @@ The `ReportGenerator` creates comprehensive HTML reports with:
 ```html
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>QQN Optimizer Benchmark Results</title>
-    <style>/* Academic styling */</style>
-</head>
-<body>
+    <style>
+      /* Academic styling */
+    </style>
+  </head>
+  <body>
     <div class="header"><!-- Title and metadata --></div>
     <div class="section"><!-- Executive Summary --></div>
     <div class="section"><!-- Problem Analysis --></div>
     <div class="section"><!-- Statistical Analysis --></div>
     <div class="section"><!-- Conclusions --></div>
     <footer><!-- Generation info --></footer>
-</body>
+  </body>
 </html>
 ```
 
@@ -411,12 +419,14 @@ The `ReportGenerator` creates comprehensive HTML reports with:
 Multiple CSV formats for different analysis needs:
 
 #### Detailed Results (`detailed_results.csv`)
+
 ```csv
 Problem,ProblemFamily,Dimension,Optimizer,Run,FinalValue,FinalGradientNorm,
 Iterations,FunctionEvals,GradientEvals,Time,Converged,ConvergenceReason
 ```
 
 #### Summary Statistics (`summary_statistics.csv`)
+
 ```csv
 Problem,ProblemFamily,Dimension,Optimizer,MeanFinalValue,MeanFinalValueSuccess,
 MeanFinalValueFail,StdFinalValue,BestValue,WorstValue,MeanIterations,
@@ -424,6 +434,7 @@ MeanFunctionEvals,MeanTime,SuccessRate,NumRuns
 ```
 
 #### Statistical Analysis (`statistical_analysis_raw_data.csv`)
+
 ```csv
 Problem,QQN_Optimizer,NonQQN_Optimizer,Metric,Winner,Test_Statistic,
 P_Value,Significant,Effect_Size
@@ -434,11 +445,13 @@ P_Value,Significant,Effect_Size
 The `PlottingManager` generates visualizations:
 
 #### Convergence Plots
+
 - Linear and logarithmic scales
 - Multiple optimizers per plot
 - Median convergence curves with confidence intervals
 
 #### Performance Comparisons
+
 - Bar charts of success rates
 - Box plots of performance distributions
 - Scatter plots of efficiency metrics
@@ -566,6 +579,7 @@ impl OptimizationProblem for MyProblem {
 ### Adding New Optimizers
 
 1. **Implement the Optimizer Trait**:
+
    ```rust
    impl Optimizer for NewOptimizer {
        fn step(&mut self, params: &mut [Tensor], function: Arc<dyn DifferentiableFunction>)
@@ -594,6 +608,7 @@ impl OptimizationProblem for MyProblem {
 ### Adding New Benchmark Problems
 
 1. **Implement OptimizationProblem**:
+
    ```rust
    #[derive(Debug, Clone)]
    pub struct NewFunction {
@@ -640,6 +655,7 @@ impl OptimizationProblem for MyProblem {
 ### Extending Statistical Analysis
 
 1. **Add New Statistical Tests**:
+
    ```rust
    impl StatisticalAnalysis {
        pub fn mann_whitney_u_test(&self, sample_a: &[f64], sample_b: &[f64])
@@ -674,6 +690,7 @@ impl ReportGenerator {
 ### Memory Management
 
 1. **Trace Data**: Large optimization traces can consume significant memory
+
    ```rust
    // Consider limiting trace size for long runs
    if trace.iterations.len() > MAX_TRACE_SIZE {
@@ -689,6 +706,7 @@ impl ReportGenerator {
 ### Computational Efficiency
 
 1. **Parallel Execution**: Runs are independent and can be parallelized
+
    ```rust
    // Future enhancement: parallel run execution
    let futures: Vec<_> = (0..num_runs)
@@ -720,6 +738,7 @@ impl ReportGenerator {
 
 **Symptoms**: Non-finite function values, gradient explosion
 **Solutions**:
+
 - Adjust initial point randomization range
 - Implement gradient clipping
 - Use more robust line search parameters
@@ -738,6 +757,7 @@ if gradient_norm > MAX_GRADIENT_NORM {
 
 **Symptoms**: No convergence achieved, excessive iterations
 **Solutions**:
+
 - Relax convergence criteria
 - Adjust stagnation parameters
 - Check problem scaling
@@ -751,6 +771,7 @@ let adaptive_tolerance = base_tolerance * (1.0 + problem_scale_factor);
 
 **Symptoms**: Out of memory errors, slow performance
 **Solutions**:
+
 - Limit trace storage
 - Use streaming I/O
 - Reduce number of runs
@@ -759,6 +780,7 @@ let adaptive_tolerance = base_tolerance * (1.0 + problem_scale_factor);
 
 **Symptoms**: Invalid t-test results, NaN values
 **Solutions**:
+
 - Check sample sizes (minimum 2 per group)
 - Verify data validity (no infinite values)
 - Use non-parametric alternatives for skewed data
@@ -853,4 +875,3 @@ The system automatically tracks function and gradient evaluations through the `P
 - **Documentation**: Maintain clear documentation and comments
 - **Testing**: Include unit tests for critical components
 - **Version Control**: Track all changes and configurations
-

@@ -48,10 +48,7 @@ export function buildBinaryPowers(model, N, d = 2) {
       // A_{k,r+1} = Aprev @ Aprev
       const Anext = tf.matMul(Aprev, Aprev);
       // b_{k,r+1} = Aprev @ bprev + bprev
-      const bnext = tf.add(
-        tf.matMul(Aprev, bprev.reshape([d, 1])).reshape([d]),
-        bprev,
-      );
+      const bnext = tf.add(tf.matMul(Aprev, bprev.reshape([d, 1])).reshape([d]), bprev);
       Arow.push(Anext);
       brow.push(bnext);
     }
@@ -88,10 +85,7 @@ export function powerMap(Aksr_k, bksr_k, n, d = 2) {
         b_acc = b_kr;
       } else {
         const newA = tf.matMul(A_acc, A_kr);
-        const newB = tf.add(
-          tf.matMul(A_acc, b_kr.reshape([d, 1])).reshape([d]),
-          b_acc,
-        );
+        const newB = tf.add(tf.matMul(A_acc, b_kr.reshape([d, 1])).reshape([d]), b_acc);
         A_acc = newA;
         b_acc = newB;
       }

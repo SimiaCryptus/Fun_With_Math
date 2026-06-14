@@ -14,18 +14,21 @@ The OneDNN implementation provides the same interface as the Candle-based implem
 ## Key Features
 
 ### Performance Optimizations
+
 - **Optimized GEMM operations**: OneDNN provides highly optimized general matrix multiplication routines
 - **Efficient activation functions**: Hardware-optimized ReLU, Tanh, and Logistic implementations
 - **Memory layout optimization**: OneDNN automatically chooses optimal memory formats
 - **CPU architecture awareness**: Automatically detects and uses CPU features like AVX, AVX2, AVX-512
 
 ### Network Architectures Supported
+
 - Fully connected (dense) layers
 - Multiple activation functions: ReLU, Tanh, Logistic
 - Configurable network depth and width
 - Batch processing support
 
 ### Activation Functions
+
 - **ReLU**: `f(x) = max(0, x)` - Uses OneDNN's optimized element-wise ReLU primitive
 - **Tanh**: `f(x) = tanh(x)` - Uses OneDNN's optimized hyperbolic tangent
 - **Logistic**: `f(x) = 1 / (1 + exp(-x))` - Sigmoid activation for output layers
@@ -37,11 +40,13 @@ The OneDNN implementation provides the same interface as the Candle-based implem
 OneDNN must be installed on your system before building with the `onednn` feature.
 
 #### Option 1: Using the installation script (Ubuntu/Debian)
+
 ```bash
 python3 install_onednn.py
 ```
 
 #### Option 2: Manual installation with Intel oneAPI
+
 ```bash
 # Install Intel oneAPI
 wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
@@ -56,6 +61,7 @@ export LD_LIBRARY_PATH=$DNNL_ROOT/lib:$LD_LIBRARY_PATH
 ```
 
 #### Option 3: From source
+
 ```bash
 git clone https://github.com/oneapi-src/oneDNN.git
 cd oneDNN
@@ -66,6 +72,7 @@ sudo make install
 ```
 
 ### Building with OneDNN
+
 ```bash
 # Build with OneDNN support
 cargo build --features onednn
@@ -80,6 +87,7 @@ cargo build --features "onednn,plotting"
 ## Usage
 
 ### Basic Usage
+
 ```rust
 use qqn_optimizer::MnistOneDnnNeuralNetwork;
 use qqn_optimizer::benchmarks::mnist_onednn::ActivationType;
@@ -102,6 +110,7 @@ let gradient = network.gradient_f64(&initial_params)?;
 ```
 
 ### Integration with QQN Optimizer
+
 ```rust
 use qqn_optimizer::{QQNOptimizer, MnistOneDnnNeuralNetwork};
 use qqn_optimizer::line_search::strong_wolfe::StrongWolfeLineSearch;
@@ -130,6 +139,7 @@ let result = optimizer.optimize(
 ```
 
 ### Benchmarking OneDNN vs Candle
+
 ```rust
 use qqn_optimizer::experiment_runner::problem_sets::{mnist_problems, mnist_onednn_problems};
 
@@ -145,18 +155,19 @@ let onednn_problems = mnist_onednn_problems(1000);
 
 ### OneDNN vs Candle Implementation
 
-| Aspect | OneDNN Implementation | Candle Implementation |
-|--------|----------------------|----------------------|
-| **Backend** | Intel OneDNN primitives | Candle tensor operations |
-| **Optimization** | CPU-optimized BLAS | General tensor operations |
-| **Memory** | OneDNN memory formats | Standard tensor layouts |
-| **Activation** | Hardware-optimized | Software implementation |
-| **Parallelism** | OneDNN threading | Rayon parallel processing |
-| **Platform** | Intel CPU optimized | Cross-platform |
+| Aspect           | OneDNN Implementation   | Candle Implementation     |
+| ---------------- | ----------------------- | ------------------------- |
+| **Backend**      | Intel OneDNN primitives | Candle tensor operations  |
+| **Optimization** | CPU-optimized BLAS      | General tensor operations |
+| **Memory**       | OneDNN memory formats   | Standard tensor layouts   |
+| **Activation**   | Hardware-optimized      | Software implementation   |
+| **Parallelism**  | OneDNN threading        | Rayon parallel processing |
+| **Platform**     | Intel CPU optimized     | Cross-platform            |
 
 ### Performance Characteristics
 
 **OneDNN Advantages:**
+
 - Significantly faster on Intel CPUs
 - Better cache utilization
 - Optimized for specific instruction sets (AVX, AVX2, AVX-512)
@@ -164,6 +175,7 @@ let onednn_problems = mnist_onednn_problems(1000);
 - Mature, production-tested optimizations
 
 **Candle Advantages:**
+
 - More portable across different hardware
 - Easier to debug and profile
 - More flexible for custom operations
@@ -173,6 +185,7 @@ let onednn_problems = mnist_onednn_problems(1000);
 ## Configuration Options
 
 ### Network Architecture
+
 ```rust
 // Single hidden layer
 let network = MnistOneDnnNeuralNetwork::create_single_hidden(
@@ -194,6 +207,7 @@ let network = MnistOneDnnNeuralNetwork::create(
 ```
 
 ### Activation Functions
+
 ```rust
 // ReLU activation (recommended for hidden layers)
 ActivationType::ReLU     // f(x) = max(0, x)
@@ -206,6 +220,7 @@ ActivationType::Logistic // f(x) = 1 / (1 + exp(-x))
 ```
 
 ### Training Configuration
+
 ```rust
 let network = MnistOneDnnNeuralNetwork::new(
     x_data,          // Training images
@@ -247,12 +262,14 @@ export OMP_NUM_THREADS=4
 ### Common Issues
 
 1. **OneDNN not found**
+
    ```
    Solution: Ensure PKG_CONFIG_PATH includes OneDNN pkgconfig directory
    export PKG_CONFIG_PATH=/opt/intel/oneapi/dnnl/latest/lib/pkgconfig:$PKG_CONFIG_PATH
    ```
 
 2. **Runtime library errors**
+
    ```
    Solution: Add OneDNN lib to LD_LIBRARY_PATH
    export LD_LIBRARY_PATH=/opt/intel/oneapi/dnnl/latest/lib:$LD_LIBRARY_PATH
@@ -267,6 +284,7 @@ export OMP_NUM_THREADS=4
 ### Performance Issues
 
 1. **Slow execution**: Check that OneDNN is using optimized kernels
+
    ```bash
    DNNL_VERBOSE=1 ./your_program
    ```
@@ -295,7 +313,7 @@ cargo test --features onednn --release performance_comparison
 When contributing to the OneDNN implementation:
 
 1. Ensure compatibility with the existing OptimizationProblem interface
-2. Maintain feature parity with the Candle implementation  
+2. Maintain feature parity with the Candle implementation
 3. Add appropriate conditional compilation for the `onednn` feature
 4. Include performance benchmarks for significant changes
 5. Test on multiple Intel CPU architectures when possible

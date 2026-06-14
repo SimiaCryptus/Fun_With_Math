@@ -18,8 +18,7 @@ body {
   padding: 0;
   background: var(--bg);
   color: var(--fg);
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   min-height: 100vh;
 }
 
@@ -42,7 +41,7 @@ header h1 {
 }
 
 .math {
-  font-family: "Cambria Math", "STIX Two Math", Georgia, serif;
+  font-family: 'Cambria Math', 'STIX Two Math', Georgia, serif;
   color: var(--accent);
 }
 
@@ -124,7 +123,7 @@ canvas {
 .int-stepper button:hover {
   filter: brightness(1.2);
 }
-.int-stepper input[type="number"] {
+.int-stepper input[type='number'] {
   flex: 1 1 0;
   width: 100%;
   min-width: 0;
@@ -169,14 +168,7 @@ canvas {
   width: 220px;
   height: 12px;
   border-radius: 2px;
-  background: linear-gradient(
-    to right,
-    #440154,
-    #3b528b,
-    #21918c,
-    #5ec962,
-    #fde725
-  );
+  background: linear-gradient(to right, #440154, #3b528b, #21918c, #5ec962, #fde725);
 }
 
 .controls {
@@ -208,7 +200,7 @@ canvas {
 }
 
 select,
-input[type="range"] {
+input[type='range'] {
   width: 100%;
   background: var(--panel-2);
   color: var(--fg);
@@ -218,7 +210,7 @@ input[type="range"] {
   font-size: 0.85rem;
 }
 
-input[type="range"] {
+input[type='range'] {
   padding: 0;
   accent-color: var(--accent);
 }
@@ -259,7 +251,7 @@ button:hover {
 
 .stats {
   margin-top: 0.6rem;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.75rem;
   color: var(--fg);
   background: var(--panel-2);
@@ -345,6 +337,6 @@ button:hover {
   font-size: 0.72rem;
   color: var(--muted);
 }
-.fw-controls input[type="range"] {
+.fw-controls input[type='range'] {
   flex: 1;
 }

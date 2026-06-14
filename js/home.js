@@ -8,15 +8,12 @@
 /* ── Background canvas: drifting particles + constellation ── */
 
 (function initBackgroundCanvas() {
-  const canvas = document.getElementById("bgCanvas");
+  const canvas = document.getElementById('bgCanvas');
   if (!canvas) return;
-  if (
-    window.matchMedia &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ) {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext('2d');
   let width = 0;
   let height = 0;
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -28,8 +25,8 @@
     height = window.innerHeight;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px";
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const targetCount = Math.min(120, Math.floor((width * height) / 14000));
     if (particles.length !== targetCount) {
@@ -113,13 +110,13 @@
     requestAnimationFrame(step);
   }
 
-  window.addEventListener("resize", resize);
-  window.addEventListener("mousemove", (e) => {
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
     mouse.active = true;
   });
-  window.addEventListener("mouseleave", () => {
+  window.addEventListener('mouseleave', () => {
     mouse.active = false;
   });
   resize();
@@ -138,9 +135,9 @@ if (window.marked) {
   const mermaidRenderer = new marked.Renderer();
   const defaultCodeRenderer = mermaidRenderer.code.bind(mermaidRenderer);
   mermaidRenderer.code = function (code, infostring, escaped) {
-    const lang = (infostring || "").trim().split(/\s+/)[0];
-    if (lang === "mermaid") {
-      return '<div class="mermaid tex2jax_ignore">' + code + "</div>";
+    const lang = (infostring || '').trim().split(/\s+/)[0];
+    if (lang === 'mermaid') {
+      return '<div class="mermaid tex2jax_ignore">' + code + '</div>';
     }
     return defaultCodeRenderer(code, infostring, escaped);
   };
@@ -150,8 +147,8 @@ if (window.marked) {
 if (window.mermaid) {
   mermaid.initialize({
     startOnLoad: false,
-    theme: "dark",
-    securityLevel: "loose",
+    theme: 'dark',
+    securityLevel: 'loose',
   });
 }
 
@@ -160,23 +157,21 @@ let mermaidCounter = 0;
 async function renderMathAndDiagrams(rootEl) {
   if (!rootEl) return;
   if (window.mermaid) {
-    const blocks = rootEl.querySelectorAll(
-      ".mermaid:not([data-processed='true'])",
-    );
+    const blocks = rootEl.querySelectorAll(".mermaid:not([data-processed='true'])");
     for (const el of blocks) {
       const src = el.textContent;
-      const id = "mermaid-svg-" + ++mermaidCounter;
+      const id = 'mermaid-svg-' + ++mermaidCounter;
       try {
         const { svg, bindFunctions } = await mermaid.render(id, src);
         el.innerHTML = svg;
         if (bindFunctions) bindFunctions(el);
-        el.setAttribute("data-processed", "true");
+        el.setAttribute('data-processed', 'true');
       } catch (err) {
         el.innerHTML =
           '<pre style="color:#f97583">Mermaid render error: ' +
           (err && err.message ? err.message : String(err)) +
-          "</pre>";
-        console.warn("Mermaid render failed:", err);
+          '</pre>';
+        console.warn('Mermaid render failed:', err);
       }
     }
   }
@@ -184,7 +179,7 @@ async function renderMathAndDiagrams(rootEl) {
     try {
       await window.MathJax.typesetPromise([rootEl]);
     } catch (err) {
-      console.warn("MathJax typeset failed:", err);
+      console.warn('MathJax typeset failed:', err);
     }
   }
 }
@@ -192,29 +187,21 @@ async function renderMathAndDiagrams(rootEl) {
 /* ── Relative-link rewriting for embedded READMEs ──────────── */
 
 function rewriteRelative(html, baseDir) {
-  const tmp = document.createElement("div");
+  const tmp = document.createElement('div');
   tmp.innerHTML = html;
-  tmp.querySelectorAll("img[src]").forEach((img) => {
-    const src = img.getAttribute("src");
-    if (
-      !/^([a-z]+:)?\/\//i.test(src) &&
-      !src.startsWith("/") &&
-      !src.startsWith("data:")
-    ) {
-      img.setAttribute("src", baseDir + src);
+  tmp.querySelectorAll('img[src]').forEach((img) => {
+    const src = img.getAttribute('src');
+    if (!/^([a-z]+:)?\/\//i.test(src) && !src.startsWith('/') && !src.startsWith('data:')) {
+      img.setAttribute('src', baseDir + src);
     }
-    img.setAttribute("loading", "lazy");
+    img.setAttribute('loading', 'lazy');
   });
-  tmp.querySelectorAll("a[href]").forEach((a) => {
-    const href = a.getAttribute("href");
-    if (
-      !/^([a-z]+:)?\/\//i.test(href) &&
-      !href.startsWith("#") &&
-      !href.startsWith("/")
-    ) {
-      a.setAttribute("href", baseDir + href);
+  tmp.querySelectorAll('a[href]').forEach((a) => {
+    const href = a.getAttribute('href');
+    if (!/^([a-z]+:)?\/\//i.test(href) && !href.startsWith('#') && !href.startsWith('/')) {
+      a.setAttribute('href', baseDir + href);
     }
-    a.addEventListener("click", (e) => e.stopPropagation());
+    a.addEventListener('click', (e) => e.stopPropagation());
   });
   return tmp.innerHTML;
 }
@@ -224,14 +211,14 @@ function rewriteRelative(html, baseDir) {
 const readmeCache = new Map();
 
 async function loadReadmes() {
-  const cards = document.querySelectorAll(".featured-card[data-readme]");
+  const cards = document.querySelectorAll('.featured-card[data-readme]');
   for (const card of cards) {
     const path = card.dataset.readme;
-    const baseDir = path.substring(0, path.lastIndexOf("/") + 1);
-    const target = card.querySelector(".readme-preview");
+    const baseDir = path.substring(0, path.lastIndexOf('/') + 1);
+    const target = card.querySelector('.readme-preview');
     try {
       const res = await fetch(path);
-      if (!res.ok) throw new Error("HTTP " + res.status);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
       const md = await res.text();
       const html = marked.parse(md);
       const rendered = rewriteRelative(html, baseDir);
@@ -241,26 +228,26 @@ async function loadReadmes() {
     } catch (err) {
       target.innerHTML =
         '<p class="readme-loading">Description unavailable. Click to launch the lab.</p>';
-      console.warn("Failed to load README:", path, err);
+      console.warn('Failed to load README:', path, err);
     }
   }
 }
 
 loadReadmes();
 
-const overlay = document.getElementById("modalOverlay");
-const modalIcon = document.getElementById("modalIcon");
-const modalTitle = document.getElementById("modalTitle");
-const modalLaunch = document.getElementById("modalLaunch");
-const modalBody = document.getElementById("modalBody");
-const modalClose = document.getElementById("modalClose");
+const overlay = document.getElementById('modalOverlay');
+const modalIcon = document.getElementById('modalIcon');
+const modalTitle = document.getElementById('modalTitle');
+const modalLaunch = document.getElementById('modalLaunch');
+const modalBody = document.getElementById('modalBody');
+const modalClose = document.getElementById('modalClose');
 
 function openModal(card) {
   const href = card.dataset.href;
   const path = card.dataset.readme;
-  const baseDir = path.substring(0, path.lastIndexOf("/") + 1);
-  const icon = card.querySelector(".featured-card-icon")?.textContent || "";
-  const title = card.querySelector(".featured-card-title")?.textContent || "";
+  const baseDir = path.substring(0, path.lastIndexOf('/') + 1);
+  const icon = card.querySelector('.featured-card-icon')?.textContent || '';
+  const title = card.querySelector('.featured-card-title')?.textContent || '';
   modalIcon.textContent = icon;
   modalTitle.textContent = title;
   modalLaunch.href = href;
@@ -271,7 +258,7 @@ function openModal(card) {
     modalBody.innerHTML = '<p class="readme-loading">Loading description…</p>';
     fetch(path)
       .then((r) => {
-        if (!r.ok) throw new Error("HTTP " + r.status);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.text();
       })
       .then((md) => {
@@ -281,43 +268,41 @@ function openModal(card) {
         renderMathAndDiagrams(modalBody);
       })
       .catch((err) => {
-        modalBody.innerHTML =
-          '<p class="readme-loading">Description unavailable.</p>';
-        console.warn("Failed to load README:", path, err);
+        modalBody.innerHTML = '<p class="readme-loading">Description unavailable.</p>';
+        console.warn('Failed to load README:', path, err);
       });
   }
-  overlay.classList.add("open");
-  overlay.setAttribute("aria-hidden", "false");
-  document.body.classList.add("modal-open");
+  overlay.classList.add('open');
+  overlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('modal-open');
   overlay.scrollTop = 0;
 }
 
 function closeModal() {
-  overlay.classList.remove("open");
-  overlay.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("modal-open");
+  overlay.classList.remove('open');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('modal-open');
 }
 
-document.querySelectorAll(".featured-card[data-readme]").forEach((card) => {
-  card.addEventListener("click", (e) => {
-    if (e.target.closest(".featured-card-launch")) return;
-    if (e.target.closest("a") && !e.target.closest(".featured-card-launch"))
-      return;
+document.querySelectorAll('.featured-card[data-readme]').forEach((card) => {
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.featured-card-launch')) return;
+    if (e.target.closest('a') && !e.target.closest('.featured-card-launch')) return;
     e.preventDefault();
     openModal(card);
   });
-  card.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       openModal(card);
     }
   });
 });
 
-modalClose.addEventListener("click", closeModal);
-overlay.addEventListener("click", (e) => {
+modalClose.addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => {
   if (e.target === overlay) closeModal();
 });
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && overlay.classList.contains("open")) closeModal();
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
 });

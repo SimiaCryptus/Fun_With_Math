@@ -2,9 +2,9 @@
 
 You must get an endorsement from another user to submit an article to category cs.LG (Learning).
 
-*arXiv is an openly accessible, moderated repository for scholarly articles in specific scientific disciplines. Material submitted to arXiv is expected to be of interest, relevance, and value to those disciplines. Endorsement is necessary but not sufficient to have a article accepted in arXiv. All submissions are subject to [moderation](https://arxiv.org/help/moderation) and arXiv reserves the right to reject or reclassify any submission.*
+_arXiv is an openly accessible, moderated repository for scholarly articles in specific scientific disciplines. Material submitted to arXiv is expected to be of interest, relevance, and value to those disciplines. Endorsement is necessary but not sufficient to have a article accepted in arXiv. All submissions are subject to [moderation](https://arxiv.org/help/moderation) and arXiv reserves the right to reject or reclassify any submission._
 
-We've sent an email message to **andrew@simiacryptus.com** with a unique *endorsement code*; please forward this e-mail to someone authorized to endorse you for category cs.LG (Learning.)
+We've sent an email message to **andrew@simiacryptus.com** with a unique _endorsement code_; please forward this e-mail to someone authorized to endorse you for category cs.LG (Learning.)
 
 **Who is qualified to endorse?**
 
@@ -81,7 +81,7 @@ This tier includes individuals who are foundational but deceased (Charles George
 
 **Candidates for Tier 3:**
 
-1. **Dong C. Liu** (Original L-BFGS author, Northwestern, *current active research in optimization unclear*): Foundational L-BFGS author.
+1. **Dong C. Liu** (Original L-BFGS author, Northwestern, _current active research in optimization unclear_): Foundational L-BFGS author.
 2. **Steven Vander Eeckt** (KU Leuven): PhD student, recent work on Quasi-Newton for Continual Learning.
 3. **Andre Carlon** (RWTH Aachen University): Co-author on recent stochastic BFGS/L-BFGS methods.
 4. **Luis Espath** (University of Nottingham): Co-author on recent stochastic BFGS/L-BFGS methods.
@@ -112,26 +112,26 @@ Securing an arXiv endorsement requires a structured, respectful, and persistent 
 ### Candidate Identification
 
 1. **Find N Candidates (N=10-15)**: Your primary goal is to identify a pool of potential endorsers.
-    - Start with your paper's references. Look for authors of foundational work in quasi-Newton methods, L-BFGS, and benchmarking.
-    - Search Google Scholar for recent papers that cite key optimization methods like L-BFGS or Adam. This helps find researchers currently active in your field.
-    - Look for professors or senior researchers at reputable universities who specialize in optimization, numerical analysis, or machine learning.
+   - Start with your paper's references. Look for authors of foundational work in quasi-Newton methods, L-BFGS, and benchmarking.
+   - Search Google Scholar for recent papers that cite key optimization methods like L-BFGS or Adam. This helps find researchers currently active in your field.
+   - Look for professors or senior researchers at reputable universities who specialize in optimization, numerical analysis, or machine learning.
 
 2. **Sort by X (Relevance & Recency)**: Prioritize your list of candidates.
-    - **Tier 1 (Top 3-5)**: Researchers whose work is most directly related to the core concepts of your paper (e.g., they have published on L-BFGS or on benchmarking frameworks).
-    - **Tier 2 (Next 5-7)**: Researchers who work in the broader field (e.g., general machine learning optimization).
-    - **Tier 3 (Remaining)**: Anyone else who fits the criteria but is a less obvious fit.
+   - **Tier 1 (Top 3-5)**: Researchers whose work is most directly related to the core concepts of your paper (e.g., they have published on L-BFGS or on benchmarking frameworks).
+   - **Tier 2 (Next 5-7)**: Researchers who work in the broader field (e.g., general machine learning optimization).
+   - **Tier 3 (Remaining)**: Anyone else who fits the criteria but is a less obvious fit.
 
 ### Initial Outreach
 
 1. **Select Top M (M=3)**: Choose the top 3-5 candidates from your Tier 1 list to contact first. You should only send a few emails at a time to avoid spamming the community and to allow you to manage responses effectively.
 
 2. **Draft Emails**: Create a professional, concise email template (under 200 words). The email should include:
-    - A brief, polite introduction and a clear statement of your purpose (e.g., "I am writing to respectfully request an endorsement for a paper I've authored for arXiv").
-    - A brief summary of your paper's main contribution, highlighting its novelty. Use a sentence like, "The paper introduces QQN, a new optimization method that combines gradient descent and quasi-Newton directions through quadratic interpolation, demonstrating statistically significant performance gains across 62 benchmark problems."
-    - A reference to your rigorous methodology. Mention that the work includes theoretical convergence guarantees (global and local superlinear convergence) and is supported by a comprehensive benchmarking framework with statistical analysis.
-    - Include a link to the paper and the reproducible code repository.
-    - A brief, professional statement about your status as an independent researcher to explain why you are seeking an endorsement.
-    - Express appreciation for their time and consideration.
+   - A brief, polite introduction and a clear statement of your purpose (e.g., "I am writing to respectfully request an endorsement for a paper I've authored for arXiv").
+   - A brief summary of your paper's main contribution, highlighting its novelty. Use a sentence like, "The paper introduces QQN, a new optimization method that combines gradient descent and quasi-Newton directions through quadratic interpolation, demonstrating statistically significant performance gains across 62 benchmark problems."
+   - A reference to your rigorous methodology. Mention that the work includes theoretical convergence guarantees (global and local superlinear convergence) and is supported by a comprehensive benchmarking framework with statistical analysis.
+   - Include a link to the paper and the reproducible code repository.
+   - A brief, professional statement about your status as an independent researcher to explain why you are seeking an endorsement.
+   - Express appreciation for their time and consideration.
 
 3. **Send Emails**: Send personalized emails to your initial M candidates.
 
@@ -140,16 +140,16 @@ Securing an arXiv endorsement requires a structured, respectful, and persistent 
 1. **Wait for T Days (T=5-7)**: Wait for 5-7 days. Acknowledge that researchers are busy and may not respond immediately. However, endorsement requests are often time-sensitive, so a slightly shorter wait period is appropriate.
 
 2. **Look for Y Event(s)**: Assess the responses.
-    - **Success**: If a researcher agrees to endorse you, send a thank you email, provide any information they request, and proceed with your submission.
-    - **Rejection**: If a researcher declines, thank them for their response and ask if they could suggest someone else who might be appropriate.
-    - **No Response**: If you receive no response after the waiting period, move to the next set of candidates.
+   - **Success**: If a researcher agrees to endorse you, send a thank you email, provide any information they request, and proceed with your submission.
+   - **Rejection**: If a researcher declines, thank them for their response and ask if they could suggest someone else who might be appropriate.
+   - **No Response**: If you receive no response after the waiting period, move to the next set of candidates.
 
 3. **Fall Back onto Another Lead**: If your initial M candidates do not yield an endorsement, select the next 3-5 candidates from your prioritized list (Tier 2). Repeat the email drafting and sending process, personalizing each message. Refine your email based on any feedback received. Continue this process with remaining candidates if necessary, maintaining professionalism and avoiding mass emails.
 
 4. **Alternative Strategies**: If direct outreach proves challenging:
-    - Consider posting about your work on relevant academic forums or social media (Twitter/X academic community)
-    - Attend virtual conferences or seminars in your field to network
-    - Look for researchers who have recently endorsed similar work on arXiv
+   - Consider posting about your work on relevant academic forums or social media (Twitter/X academic community)
+   - Attend virtual conferences or seminars in your field to network
+   - Look for researchers who have recently endorsed similar work on arXiv
 
 By following this protocol, you maximize your chances of securing an endorsement while maintaining professional standards and respect for the academic community.
 
@@ -192,10 +192,11 @@ This email is short, direct, and respectful of the recipient's time. It serves a
 I am writing to request your endorsement for an arXiv cs.LG submission that may interest you.
 
 My paper introduces QQN (Quadratic Quasi-Newton), which combines gradient descent and L-BFGS through quadratic interpolation. Results:
-* 50-80% fewer function evaluations on 62 benchmarks
-* Proven convergence guarantees (global + superlinear local)
-* Outperforms L-BFGS on ill-conditioned problems (100% vs 0% on Rosenbrock)
-* Full open-source implementation
+
+- 50-80% fewer function evaluations on 62 benchmarks
+- Proven convergence guarantees (global + superlinear local)
+- Outperforms L-BFGS on ill-conditioned problems (100% vs 0% on Rosenbrock)
+- Full open-source implementation
 
 Your work on [specific area] directly inspired this approach.
 
@@ -228,10 +229,11 @@ I'm writing to request your endorsement for work that extends your seminal L-BFG
 QQN (Quadratic Quasi-Newton) creates a quadratic path from gradient descent to L-BFGS directions, solving a key limitation: when L-BFGS produces poor directions, QQN gracefully degrades to gradient descent rather than failing.
 
 Key results:
-* Maintains L-BFGS's superlinear convergence when applicable
-* 100% success on Rosenbrock variants (vs 0% for standard L-BFGS)
-* 50-80% fewer evaluations across standard benchmarks
-* Proven convergence even with indefinite Hessian approximations
+
+- Maintains L-BFGS's superlinear convergence when applicable
+- 100% success on Rosenbrock variants (vs 0% for standard L-BFGS)
+- 50-80% fewer evaluations across standard benchmarks
+- Proven convergence even with indefinite Hessian approximations
 
 **Paper:** [https://github.com/SimiaCryptus/qqn-optimizer/blob/master/papers/intro/paper.pdf](https://github.com/SimiaCryptus/qqn-optimizer/blob/master/papers/intro/paper.pdf)
 
@@ -240,7 +242,6 @@ Key results:
 Your endorsement would mean a great deal. Code: **MNI48E**
 
 Best regards,
-
 
 Andrew Charneski  
 [andrew@simiacryptus.com](mailto:andrew@simiacryptus.com)
@@ -258,11 +259,12 @@ This email emphasizes the paper's rigorous benchmarking methodology, directly ap
 Your work on COCO has set the gold standard for optimization benchmarking. I'm writing to request your endorsement for a paper that follows these principles rigorously.
 
 Our evaluation of QQN (Quadratic Quasi-Newton) includes:
-* 62 problems × 25 optimizers × 50 runs = 77,500 experiments
-* Statistical significance via Welch's t-test + Bonferroni correction
-* Effect sizes (Cohen's d) to ensure practical significance
-* Complete reproducibility: fixed seeds, deterministic algorithms
-* Win/loss matrices showing QQN dominates 72.6% of problems
+
+- 62 problems × 25 optimizers × 50 runs = 77,500 experiments
+- Statistical significance via Welch's t-test + Bonferroni correction
+- Effect sizes (Cohen's d) to ensure practical significance
+- Complete reproducibility: fixed seeds, deterministic algorithms
+- Win/loss matrices showing QQN dominates 72.6% of problems
 
 The framework generates automated reports with convergence plots, statistical tables, and LaTeX-ready results.
 
@@ -291,11 +293,11 @@ Your Adam optimizer revolutionized deep learning. I'm writing about a complement
 
 QQN (Quadratic Quasi-Newton) takes a geometric rather than adaptive approach:
 
-* Quadratic interpolation between gradient and quasi-Newton directions
-* No moment estimation—uses curvature information directly
-* Deterministic convergence (vs stochastic for Adam)
-* Excels where Adam struggles: 100% success on Rosenbrock (Adam: 0%)
-* Competitive on neural networks when using full batches
+- Quadratic interpolation between gradient and quasi-Newton directions
+- No moment estimation—uses curvature information directly
+- Deterministic convergence (vs stochastic for Adam)
+- Excels where Adam struggles: 100% success on Rosenbrock (Adam: 0%)
+- Competitive on neural networks when using full batches
 
 While Adam dominates mini-batch settings, QQN offers advantages for full-batch optimization and theoretical analysis.
 
@@ -307,7 +309,7 @@ Endorsement code: **MNI48E**
 
 Best,
 
-Andrew Charneski  
+Andrew Charneski
 
 [andrew@simiacryptus.com](mailto:andrew@simiacryptus.com)
 
@@ -324,10 +326,11 @@ This template is for researchers you've identified through recent relevant publi
 Your recent paper on [specific topic] caught my attention—we're tackling similar optimization challenges from different angles.
 
 My work on QQN (Quadratic Quasi-Newton) shares your interest in [specific challenge]:
-* Your approach: [their method in 1 line]
-* QQN approach: Quadratic interpolation between gradient and L-BFGS
-* Both achieve: [shared goal]
-* Potential synergy: [how methods could work together]
+
+- Your approach: [their method in 1 line]
+- QQN approach: Quadratic interpolation between gradient and L-BFGS
+- Both achieve: [shared goal]
+- Potential synergy: [how methods could work together]
 
 Results show 50-80% fewer evaluations than standard methods, with particular strength on [relevant problem type].
 
@@ -394,6 +397,7 @@ Andrew Charneski
 ### Quick Personalization Checklist
 
 Before sending each email, ensure you've:
+
 - [ ] Addressed the recipient with correct title (Dr./Professor)
 - [ ] Referenced at least one specific paper or contribution
 - [ ] Explained why your work relates to their expertise
@@ -401,8 +405,6 @@ Before sending each email, ensure you've:
 - [ ] Proofread for typos and formatting
 - [ ] Verified all links work correctly
 - [ ] Kept the email under 200 words
-
-
 
 # Tier 1 arXiv Endorsers for Quasi-Newton Optimization
 
@@ -413,6 +415,7 @@ The research confirms that each candidate maintains active research programs wit
 ## Jorge Nocedal: Premier endorsement target
 
 **Contact Information:**
+
 - **Position**: Walter P. Murphy Professor, Industrial Engineering and Management Sciences
 - **Institution**: Northwestern University
 - **Email**: j-nocedal@northwestern.edu
@@ -425,7 +428,9 @@ His arXiv presence spans influential papers including "Optimization Methods for 
 ## Nikolaus Hansen and Anne Auger: COCO benchmarking leaders
 
 ### Nikolaus Hansen
+
 **Contact Information:**
+
 - **Position**: Senior Researcher (Directeur de Recherche)
 - **Institutions**: Joint appointment at Inria Saclay and École Polytechnique (CMAP)
 - **Email**: nikolaus.hansen@inria.fr
@@ -434,7 +439,9 @@ His arXiv presence spans influential papers including "Optimization Methods for 
 Hansen co-leads the RandOpt team and serves as **co-creator of the COCO benchmarking platform**, the gold standard for optimization algorithm evaluation. His **2024 publications include "LB+IC-CMA-ES: Two Simple Modifications of CMA-ES to Handle Mixed-Integer Problems"** and ongoing CMA-ES developments. He maintains extensive arXiv activity in cs.NE and cs.LG categories, with 35,000+ citations and regular GECCO tutorial presentations.
 
 ### Anne Auger
+
 **Contact Information:**
+
 - **Position**: Research Director (DR2) and RandOpt Team Leader
 - **Institution**: Inria Saclay - Ile-de-France
 - **Email**: anne.auger@inria.fr
@@ -445,6 +452,7 @@ Auger leads the premier optimization research team in Europe and served as **Gen
 ## Diederik Kingma: Stochastic optimization authority
 
 **Contact Information:**
+
 - **Current Position**: Research Scientist at Anthropic (2024-present)
 - **Personal Website**: https://dpkingma.com/
 - **Research Profile**: Available through personal website and Google Scholar
@@ -456,6 +464,7 @@ Despite his industry position, Kingma's 307,000+ citations and continued academi
 ## Raul Tempone: Stochastic quasi-Newton specialist
 
 **Contact Information:**
+
 - **Primary Position**: Professor of Applied Mathematics, KAUST
 - **Secondary Position**: Alexander von Humboldt Professor, RWTH Aachen University
 - **Emails**: raul.tempone@kaust.edu.sa, tempone@uq.rwth-aachen.de
@@ -466,6 +475,7 @@ Tempone offers **the most directly relevant recent research** with his 2025 pape
 ## Alberto Bemporad: L-BFGS applications expert
 
 **Contact Information:**
+
 - **Position**: Full Professor of Control Systems
 - **Institution**: IMT School for Advanced Studies Lucca
 - **Email**: alberto.bemporad@imtlucca.it
@@ -479,7 +489,7 @@ Bemporad published **"An L-BFGS-B approach for linear and nonlinear system ident
 
 **Secondary targets**: Tempone offers direct stochastic quasi-Newton expertise, while Bemporad provides recent L-BFGS-B application experience. Kingma, despite industry position, maintains exceptional research activity and optimization authority.
 
-**arXiv eligibility confirmation**: All candidates demonstrate extensive arXiv publication histories in relevant cs.* categories (cs.LG, cs.NE, cs.SY, math.OC) with multiple papers exceeding the 3+ paper threshold for endorsement eligibility. Their combined research spans the full spectrum of quasi-Newton methods, from theoretical foundations to practical applications and benchmarking methodologies.
+**arXiv eligibility confirmation**: All candidates demonstrate extensive arXiv publication histories in relevant cs.\* categories (cs.LG, cs.NE, cs.SY, math.OC) with multiple papers exceeding the 3+ paper threshold for endorsement eligibility. Their combined research spans the full spectrum of quasi-Newton methods, from theoretical foundations to practical applications and benchmarking methodologies.
 
 # Revised Tier 1 Endorsement Request Emails
 
@@ -494,9 +504,10 @@ Your L-BFGS algorithm has been foundational to my work in optimization. I'm writ
 My paper introduces QQN, which uses quadratic interpolation to blend gradient descent with quasi-Newton directions. The goal is to handle cases where quasi-Newton methods need additional robustness, while preserving the excellent convergence properties you established.
 
 The work includes:
-* Theoretical analysis building on your convergence frameworks
-* Extensive benchmarking (62 problems, 25 optimizers)
-* Open-source implementation for reproducibility
+
+- Theoretical analysis building on your convergence frameworks
+- Extensive benchmarking (62 problems, 25 optimizers)
+- Open-source implementation for reproducibility
 
 I would be honored to have your perspective on this work.
 
@@ -523,25 +534,11 @@ Thank you for considering my request. I look forward to sharing this work with t
 
 Best regards,
 
-   Andrew Charneski
-   
-   Independent Researcher
-   
-   andrew@simiacryptus.com
+Andrew Charneski
 
+Independent Researcher
 
-
-
-
-
-
-
-
-
-
-
-
-
+andrew@simiacryptus.com
 
 ## Email to Nikolaus Hansen
 
@@ -552,10 +549,11 @@ Dear Dr. Hansen,
 Your COCO platform has taught me the importance of rigorous benchmarking. I'm writing to request your endorsement for a paper that strives to meet these high standards.
 
 My work on QQN (Quadratic Quasi-Newton) includes:
-* Comprehensive evaluation: 77,500 experiments across standard test problems
-* Statistical analysis following best practices (Welch's t-test, Bonferroni correction)
-* Full reproducibility with fixed seeds and open-source code
-* Automated reporting inspired by COCO's approach
+
+- Comprehensive evaluation: 77,500 experiments across standard test problems
+- Statistical analysis following best practices (Welch's t-test, Bonferroni correction)
+- Full reproducibility with fixed seeds and open-source code
+- Automated reporting inspired by COCO's approach
 
 The method itself explores quadratic interpolation between optimization directions, aiming to combine robustness with efficiency.
 
@@ -583,30 +581,12 @@ Endorsement Code: MNI48E
 Thank you for considering my request. I look forward to sharing this work with the community and hope to have your endorsement to facilitate its publication on arXiv.
 
 Best regards,
-   
-   Andrew Charneski
-   
-   Independent Researcher
-   
-   andrew@simiacryptus.com
-   
 
+Andrew Charneski
 
+Independent Researcher
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+andrew@simiacryptus.com
 
 ## Email to Anne Auger
 
@@ -617,9 +597,10 @@ Dear Dr. Auger,
 Your leadership in optimization benchmarking through COCO has been invaluable to our field. I'm requesting your endorsement for a paper that aims to contribute to the optimization community.
 
 My work explores QQN (Quadratic Quasi-Newton), which combines classical optimization ideas in a new way:
-* Geometric interpolation between gradient and quasi-Newton directions
-* Theoretical convergence analysis
-* Extensive empirical validation across diverse problem types
+
+- Geometric interpolation between gradient and quasi-Newton directions
+- Theoretical convergence analysis
+- Extensive empirical validation across diverse problem types
 
 Following your emphasis on reproducible research, all code and results are openly available with detailed statistical analysis.
 
@@ -646,26 +627,13 @@ Endorsement Code: MNI48E
 
 Thank you for considering my request. I look forward to sharing this work with the community and hope to have your endorsement to facilitate its publication on arXiv.
 
-
 Best regards,
-   
-   Andrew Charneski
-   
-   Independent Researcher
-   
-   andrew@simiacryptus.com
 
+Andrew Charneski
 
+Independent Researcher
 
-
-
-
-
-
-
-
-
-
+andrew@simiacryptus.com
 
 ## Email to Diederik Kingma
 
@@ -676,9 +644,10 @@ Dear Dr. Kingma,
 Your Adam optimizer has transformed how we approach optimization in machine learning. I'm writing to request your endorsement for work that explores a different but complementary direction.
 
 My paper on QQN (Quadratic Quasi-Newton) investigates deterministic optimization through:
-* Geometric interpolation between gradient and quasi-Newton directions
-* Focus on problems where full-batch methods are applicable
-* Theoretical convergence guarantees for smooth optimization
+
+- Geometric interpolation between gradient and quasi-Newton directions
+- Focus on problems where full-batch methods are applicable
+- Theoretical convergence guarantees for smooth optimization
 
 While Adam excels in stochastic settings, this work explores what's possible when we have access to exact gradients and can leverage curvature information differently.
 
@@ -705,35 +674,13 @@ Endorsement Code: MNI48E
 
 Thank you for considering my request. I look forward to sharing this work with the community and hope to have your endorsement to facilitate its publication on arXiv.
 
-
 Best regards,
 
-   Andrew Charneski
-   
-   Independent Researcher
-   
-   andrew@simiacryptus.com
+Andrew Charneski
 
+Independent Researcher
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+andrew@simiacryptus.com
 
 ## Email to Raul Tempone
 
@@ -744,9 +691,10 @@ Dear Professor Tempone,
 Your recent work on Bayesian-inspired BFGS methods resonates with my research interests. I'm requesting your endorsement for a paper that addresses quasi-Newton robustness from a geometric perspective.
 
 Where your approach uses Bayesian principles for Hessian approximation, my work (QQN) explores:
-* Quadratic interpolation to blend optimization directions
-* Handling indefinite approximations without restarts
-* Deterministic guarantees complementing your stochastic framework
+
+- Quadratic interpolation to blend optimization directions
+- Handling indefinite approximations without restarts
+- Deterministic guarantees complementing your stochastic framework
 
 Both approaches aim to make quasi-Newton methods more reliable in challenging scenarios.
 
@@ -773,22 +721,13 @@ Endorsement Code: MNI48E
 
 Thank you for considering my request. I look forward to sharing this work with the community and hope to have your endorsement to facilitate its publication on arXiv.
 
-
 Best regards,
 
-   Andrew Charneski
-   
-   Independent Researcher
-   
-   andrew@simiacryptus.com
+Andrew Charneski
 
+Independent Researcher
 
-
-
-
-
-
-
+andrew@simiacryptus.com
 
 ## Email to Alberto Bemporad
 
@@ -799,9 +738,10 @@ Dear Professor Bemporad,
 Your recent work applying L-BFGS-B to system identification demonstrates the continued relevance of quasi-Newton methods. I'm requesting your endorsement for related research.
 
 My paper introduces QQN, which enhances L-BFGS robustness through:
-* Quadratic interpolation when standard directions are unreliable
-* Parameter-free operation (no tuning required)
-* Comprehensive benchmarking across optimization landscapes
+
+- Quadratic interpolation when standard directions are unreliable
+- Parameter-free operation (no tuning required)
+- Comprehensive benchmarking across optimization landscapes
 
 Like your jax-sysid package, the work emphasizes practical implementation and reproducibility.
 
@@ -830,9 +770,8 @@ Thank you for considering my request. I look forward to sharing this work with t
 
 Best regards,
 
-   Andrew Charneski
-   
-   Independent Researcher
-   
-   andrew@simiacryptus.com
-   
+Andrew Charneski
+
+Independent Researcher
+
+andrew@simiacryptus.com

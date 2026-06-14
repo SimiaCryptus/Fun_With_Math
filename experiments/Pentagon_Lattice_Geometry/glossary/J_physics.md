@@ -232,6 +232,7 @@ tetrahedral constraints.
 Pyrochlore systems host **spin liquids**, **spin ice**, and emergent **magnetic
 monopole** excitations — phenomena that parallel the project's themes of topological
 defects and emergent gauge structure on frustrated geometries.
+
 ---
 
 ## Quantum Gravity and Renormalization

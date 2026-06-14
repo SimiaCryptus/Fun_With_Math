@@ -103,9 +103,11 @@ function golden_section_search(f, a, b, tol):
 ```
 
 #### Brent's Method
+
 Combines golden section search with parabolic interpolation for faster convergence when the function is smooth.
 
 ### B.3 Memory Update
+
 After each iteration, update the L-BFGS memory:
 
 ```
@@ -211,7 +213,7 @@ Total: $O(mn + kn)$ operations plus $k$ function evaluations, where the function
 ### F.3 Comparison with Other Methods
 
 | Method           | Per-iteration ops | Memory   | Function evals | Robustness |
-|------------------|-------------------|----------|----------------|------------|
+| ---------------- | ----------------- | -------- | -------------- | ---------- |
 | Gradient Descent | $O(n)$            | $O(n)$   | 1-5            | High       |
 | L-BFGS           | $O(mn)$           | $O(mn)$  | 3-20           | Medium     |
 | QQN              | $O(mn)$           | $O(mn)$  | 3-10           | High       |

@@ -33,22 +33,22 @@ def html_table_to_latex(html_file, output_file):
     """Convert HTML tables to LaTeX format"""
     with open(html_file, 'r') as f:
         soup = BeautifulSoup(f.read(), 'html.parser')
-    
+
     tables = soup.find_all('table')
     latex_tables = []
-    
+
     for i, table in enumerate(tables):
         # Extract table data
         rows = []
         for tr in table.find_all('tr'):
             row = [td.get_text().strip() for td in tr.find_all(['td', 'th'])]
             rows.append(row)
-        
+
         # Convert to DataFrame for easier LaTeX conversion
         if rows:
             df = pd.DataFrame(rows[1:], columns=rows[0])
             latex_table = df.to_latex(index=False, escape=False)
-            
+
             # Wrap in proper LaTeX table environment
             latex_output = f"""
 \\begin{{table}}[htbp]
@@ -59,7 +59,7 @@ def html_table_to_latex(html_file, output_file):
 \\end{{table}}
 """
             latex_tables.append(latex_output)
-    
+
     # Save to file
     with open(output_file, 'w') as f:
         f.write('\n'.join(latex_tables))
@@ -73,6 +73,7 @@ html_table_to_latex('results.html', 'tables.tex')
 Choose your target venue:
 
 #### Option A: arXiv (Recommended for your case)
+
 ```latex
 \documentclass{article}
 \usepackage[utf8]{inputenc}
@@ -100,6 +101,7 @@ Choose your target venue:
 ```
 
 #### Option B: IEEE Format
+
 ```latex
 \documentclass[conference]{IEEEtran}
 \usepackage{cite}
@@ -192,13 +194,13 @@ import re
 def clean_html_to_latex(html_file):
     with open(html_file, 'r') as f:
         content = f.read()
-    
+
     soup = BeautifulSoup(content, 'html.parser')
-    
+
     # Extract tables and convert to LaTeX
     tables = soup.find_all('table')
     latex_content = []
-    
+
     for i, table in enumerate(tables):
         rows = []
         for tr in table.find_all('tr'):
@@ -212,11 +214,11 @@ def clean_html_to_latex(html_file):
                 cells.append(text)
             if cells:
                 rows.append(' & '.join(cells) + ' \\\\')
-        
+
         if rows:
             ncols = len(rows[0].split(' & ')) if rows else 1
             col_spec = 'l' * ncols
-            
+
             latex_table = f"""
 \\begin{{table}}[htbp]
 \\centering
@@ -232,7 +234,7 @@ def clean_html_to_latex(html_file):
 \\end{{table}}
 """
             latex_content.append(latex_table)
-    
+
     # Save tables
     with open('tables.tex', 'w') as f:
         f.write('\n'.join(latex_content))
@@ -264,6 +266,7 @@ echo "- paper.pdf (final PDF)"
 After automated conversion, manually fix:
 
 ### 1. Citations
+
 ```latex
 % Convert from markdown citations
 [Smith et al. 2020] → \citep{smith2020}
@@ -271,9 +274,10 @@ After automated conversion, manually fix:
 ```
 
 ### 2. Math Equations
+
 ```latex
 % Ensure equations are properly formatted
-$$f(x) = x^2$$ → 
+$$f(x) = x^2$$ →
 \begin{equation}
 f(x) = x^2
 \label{eq:example}
@@ -281,9 +285,10 @@ f(x) = x^2
 ```
 
 ### 3. Figures
+
 ```latex
 % Replace markdown figures with LaTeX
-![Caption](figure.png) → 
+![Caption](figure.png) →
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.8\textwidth]{figure.png}
@@ -293,6 +298,7 @@ f(x) = x^2
 ```
 
 ### 4. Algorithm Blocks
+
 ```latex
 \begin{algorithm}
 \caption{QQN Algorithm}

@@ -152,24 +152,14 @@ export const colormaps = {
   // Cycling / disco maps take an optional phase argument.
   rainbow: (t, phase = 0) => hsv2rgb(clamp01(t) + phase, 0.9, 1.0),
   disco: (t, phase = 0) =>
-    hsv2rgb(
-      clamp01(t) * 3 + phase,
-      1.0,
-      0.5 + 0.5 * Math.abs(Math.sin((t + phase) * Math.PI * 4)),
-    ),
-  neon: (t, phase = 0) =>
-    hsv2rgb(clamp01(t) * 0.8 + 0.5 + phase, 1.0, clamp01(0.3 + 0.7 * t)),
+    hsv2rgb(clamp01(t) * 3 + phase, 1.0, 0.5 + 0.5 * Math.abs(Math.sin((t + phase) * Math.PI * 4))),
+  neon: (t, phase = 0) => hsv2rgb(clamp01(t) * 0.8 + 0.5 + phase, 1.0, clamp01(0.3 + 0.7 * t)),
 };
 // 2D colormaps: map (u, v) in [0,1]^2 -> [r,g,b]. phase shifts hue.
 export const colormaps2d = {
   // u drives hue, v drives brightness.
   snap: (u, v, phase = 0) => hsv2rgb(u + phase, 0.85, clamp01(0.15 + 0.85 * v)),
   rational_irrational: (u, v, phase = 0) =>
-    hsv2rgb(
-      0.6 * u + 0.15 + phase,
-      clamp01(0.4 + 0.6 * v),
-      clamp01(0.25 + 0.75 * v),
-    ),
-  xy_phase: (u, v, phase = 0) =>
-    hsv2rgb(u + phase, 0.7, clamp01(0.2 + 0.8 * v)),
+    hsv2rgb(0.6 * u + 0.15 + phase, clamp01(0.4 + 0.6 * v), clamp01(0.25 + 0.75 * v)),
+  xy_phase: (u, v, phase = 0) => hsv2rgb(u + phase, 0.7, clamp01(0.2 + 0.8 * v)),
 };

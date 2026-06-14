@@ -14,7 +14,7 @@
  */
 export class OptimizerQQN {
   constructor(opts = {}) {
-    this.name = "qqn";
+    this.name = 'qqn';
     this.m = opts.historySize ?? 10;
     this.maxLineSearch = opts.maxLineSearch ?? 20;
     this.c1 = opts.c1 ?? 1e-4;
@@ -173,8 +173,7 @@ export class OptimizerQQN {
       if (dQN) {
         const a = t * (1 - t),
           b = t * t;
-        for (let j = 0; j < x.length; j++)
-          xNew[j] = x[j] + (-a * gHat[j] + b * dQN[j]);
+        for (let j = 0; j < x.length; j++) xNew[j] = x[j] + (-a * gHat[j] + b * dQN[j]);
       } else {
         for (let j = 0; j < x.length; j++) xNew[j] = x[j] - t * gHat[j];
       }

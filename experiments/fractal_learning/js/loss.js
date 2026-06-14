@@ -63,7 +63,7 @@ export function chamferLoss(P, Q, alpha = 1, beta = 1) {
     for (let p = 0; p < pairs.length; p++) {
       flatIdx[p] = pairs[p][0] * M + pairs[p][1];
     }
-    const idxT = tf.tensor1d(flatIdx, "int32");
+    const idxT = tf.tensor1d(flatIdx, 'int32');
     const Dflat2 = tf.reshape(D, [Np * M]);
     const matched = tf.gather(Dflat2, idxT); // [pairs.length]
 
@@ -78,10 +78,7 @@ export function chamferLoss(P, Q, alpha = 1, beta = 1) {
  * Regularizers on the IFS transforms.
  * @param {IFSModel} model
  */
-export function regularizers(
-  model,
-  { lamA = 0, lamb = 0, lamC = 0, eps = 0.02 } = {},
-) {
+export function regularizers(model, { lamA = 0, lamb = 0, lamC = 0, eps = 0.02 } = {}) {
   return tf.tidy(() => {
     let r = tf.scalar(0);
     const sqrt2 = Math.SQRT2;
@@ -113,9 +110,7 @@ export function makeLossFn(model, targetArr, words, hparams) {
   const lossFn = () => {
     return tf.tidy(() => {
       const P =
-        words === null
-          ? model.computeCommutativeOrbit(hparams.N)
-          : model.computeOrbit(words);
+        words === null ? model.computeCommutativeOrbit(hparams.N) : model.computeOrbit(words);
       const chamfer = chamferLoss(P, Q, hparams.alpha, hparams.beta);
       const reg = regularizers(model, hparams);
       return tf.add(chamfer, reg);

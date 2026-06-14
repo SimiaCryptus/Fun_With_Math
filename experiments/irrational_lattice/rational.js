@@ -78,27 +78,23 @@ export function reduce(num, den) {
  * @param {number} [opts.maxDen=100] - denominator bound for slider->fraction.
  * @returns {object} a small API for reading/setting state.
  */
-export function wireRationalControls({
-  onChange,
-  onZoomChange,
-  maxDen = 100,
-} = {}) {
+export function wireRationalControls({ onChange, onZoomChange, maxDen = 100 } = {}) {
   const $ = (id) => document.getElementById(id);
 
-  const sizeValue = $("size"); // hidden mirror read by main.js
-  const sizeInput = $("sizeInput"); // visible slider control
-  const sizeMinus = $("sizeMinus");
-  const sizePlus = $("sizePlus");
-  const sizeOut = $("sizeOut");
+  const sizeValue = $('size'); // hidden mirror read by main.js
+  const sizeInput = $('sizeInput'); // visible slider control
+  const sizeMinus = $('sizeMinus');
+  const sizePlus = $('sizePlus');
+  const sizeOut = $('sizeOut');
 
-  const zoomSlider = $("zoomStep");
-  const zoomNum = $("zoomNum");
-  const zoomDen = $("zoomDen");
-  const zoomNumMinus = $("zoomNumMinus");
-  const zoomNumPlus = $("zoomNumPlus");
-  const zoomDenMinus = $("zoomDenMinus");
-  const zoomDenPlus = $("zoomDenPlus");
-  const zoomOut = $("zoomStepOut");
+  const zoomSlider = $('zoomStep');
+  const zoomNum = $('zoomNum');
+  const zoomDen = $('zoomDen');
+  const zoomNumMinus = $('zoomNumMinus');
+  const zoomNumPlus = $('zoomNumPlus');
+  const zoomDenMinus = $('zoomDenMinus');
+  const zoomDenPlus = $('zoomDenPlus');
+  const zoomOut = $('zoomStepOut');
 
   function clampInt(v, lo, hi) {
     v = Math.round(Number(v));
@@ -129,21 +125,21 @@ export function wireRationalControls({
   }
 
   // --- Grid size integer stepper ---
-  sizeMinus.addEventListener("click", () => {
+  sizeMinus.addEventListener('click', () => {
     sizeInput.value = clampInt(sizeInput.value, 1, 4096) - 1;
     emit();
   });
-  sizePlus.addEventListener("click", () => {
+  sizePlus.addEventListener('click', () => {
     sizeInput.value = clampInt(sizeInput.value, 1, 4096) + 1;
     emit();
   });
-  sizeInput.addEventListener("input", () => {
+  sizeInput.addEventListener('input', () => {
     sizeInput.value = clampInt(sizeInput.value, 1, 4096);
     emit();
   });
 
   // --- Zoom slider -> continued fraction approximation ---
-  zoomSlider.addEventListener("input", () => {
+  zoomSlider.addEventListener('input', () => {
     const x = Number(zoomSlider.value);
     const { num, den } = rationalApprox(x, maxDen);
     zoomNum.value = Math.max(1, Math.abs(num));
@@ -184,28 +180,28 @@ export function wireRationalControls({
     if (onZoomChange) onZoomChange(readState());
   }
 
-  zoomNumMinus.addEventListener("click", () => bumpNum(-1));
-  zoomNumPlus.addEventListener("click", () => bumpNum(1));
-  zoomDenMinus.addEventListener("click", () => bumpDen(-1));
-  zoomDenPlus.addEventListener("click", () => bumpDen(1));
+  zoomNumMinus.addEventListener('click', () => bumpNum(-1));
+  zoomNumPlus.addEventListener('click', () => bumpNum(1));
+  zoomDenMinus.addEventListener('click', () => bumpDen(-1));
+  zoomDenPlus.addEventListener('click', () => bumpDen(1));
 
-  zoomNum.addEventListener("input", () => {
+  zoomNum.addEventListener('input', () => {
     syncSliderFromFraction();
     applyZoom();
     emit();
   });
-  zoomDen.addEventListener("input", () => {
+  zoomDen.addEventListener('input', () => {
     syncSliderFromFraction();
     applyZoom();
     emit();
   });
-  zoomNum.addEventListener("change", () => {
+  zoomNum.addEventListener('change', () => {
     zoomNum.value = clampInt(zoomNum.value, 1, 100000);
     syncSliderFromFraction();
     applyZoom();
     emit();
   });
-  zoomDen.addEventListener("change", () => {
+  zoomDen.addEventListener('change', () => {
     zoomDen.value = clampInt(zoomDen.value, 1, 100000);
     syncSliderFromFraction();
     applyZoom();

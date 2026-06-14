@@ -11,7 +11,7 @@ spaces for the project's flat-space constructions.
 There are exactly **six convex regular 4-polytopes** (4D analogues of Platonic solids):
 
 | Polytope                 | Cells | Cell type    | Symmetry order |
-|--------------------------|-------|--------------|----------------|
+| ------------------------ | ----- | ------------ | -------------- |
 | 5-cell (simplex)         | 5     | tetrahedron  | 120            |
 | 8-cell (tesseract)       | 8     | cube         | 384            |
 | 16-cell (cross-polytope) | 16    | tetrahedron  | 384            |

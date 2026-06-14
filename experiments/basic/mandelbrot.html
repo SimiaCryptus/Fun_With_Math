@@ -19,7 +19,7 @@
       #coords {
         font-size: 0.75rem;
         color: var(--text-muted);
-        font-family: "Fira Code", Consolas, monospace;
+        font-family: 'Fira Code', Consolas, monospace;
         min-height: 1.4em;
         padding: 0.3rem 0 0;
         text-align: center;
@@ -58,14 +58,7 @@
 
         <label>
           Max Iterations: <span id="iterLabel">200</span>
-          <input
-            type="range"
-            id="iterRange"
-            min="50"
-            max="2000"
-            step="50"
-            value="200"
-          />
+          <input type="range" id="iterRange" min="50" max="2000" step="50" value="200" />
         </label>
 
         <label>
@@ -85,10 +78,9 @@
 
         <div class="info-box">
           <h4>About</h4>
-          The Mandelbrot set contains every complex number <code>c</code> for
-          which the sequence <code>z₀=0, zₙ₊₁=zₙ²+c</code> stays bounded. Points
-          inside are coloured black; outside points are coloured by escape
-          speed.
+          The Mandelbrot set contains every complex number <code>c</code> for which the sequence
+          <code>z₀=0, zₙ₊₁=zₙ²+c</code> stays bounded. Points inside are coloured black; outside
+          points are coloured by escape speed.
         </div>
 
         <div class="info-box">
@@ -108,16 +100,16 @@
 
     <script>
       (function () {
-        const canvas = document.getElementById("canvas");
-        const ctx = canvas.getContext("2d");
-        const wrap = document.getElementById("canvasWrap");
-        const iterRange = document.getElementById("iterRange");
-        const iterLabel = document.getElementById("iterLabel");
-        const colorSelect = document.getElementById("colorScheme");
-        const renderBtn = document.getElementById("renderBtn");
-        const resetBtn = document.getElementById("resetBtn");
-        const coords = document.getElementById("coords");
-        const progress = document.getElementById("progress");
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const wrap = document.getElementById('canvasWrap');
+        const iterRange = document.getElementById('iterRange');
+        const iterLabel = document.getElementById('iterLabel');
+        const colorSelect = document.getElementById('colorScheme');
+        const renderBtn = document.getElementById('renderBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const coords = document.getElementById('coords');
+        const progress = document.getElementById('progress');
 
         // Viewport in complex-plane coordinates
         let view = { xMin: -2.5, xMax: 1.0, yMin: -1.25, yMax: 1.25 };
@@ -134,23 +126,17 @@
         function palette(scheme, t) {
           // t in [0,1]
           switch (scheme) {
-            case "fire": {
+            case 'fire': {
               const r = Math.min(255, Math.round(t * 3 * 255));
-              const g = Math.min(
-                255,
-                Math.max(0, Math.round((t * 3 - 1) * 255)),
-              );
-              const b = Math.min(
-                255,
-                Math.max(0, Math.round((t * 3 - 2) * 255)),
-              );
+              const g = Math.min(255, Math.max(0, Math.round((t * 3 - 1) * 255)));
+              const b = Math.min(255, Math.max(0, Math.round((t * 3 - 2) * 255)));
               return [r, g, b];
             }
-            case "greyscale": {
+            case 'greyscale': {
               const v = Math.round(t * 255);
               return [v, v, v];
             }
-            case "rainbow": {
+            case 'rainbow': {
               const h6 = t * 6;
               const s = Math.floor(h6);
               const f = h6 - s;
@@ -193,7 +179,7 @@
           const data = imgData.data;
 
           renderBtn.disabled = true;
-          progress.style.width = "0%";
+          progress.style.width = '0%';
 
           const CHUNK = 32; // rows per chunk
           let row = 0;
@@ -229,15 +215,15 @@
             }
             ctx.putImageData(imgData, 0, 0);
             row = endRow;
-            progress.style.width = (row / H) * 100 + "%";
+            progress.style.width = (row / H) * 100 + '%';
 
             if (row < H) {
               requestAnimationFrame(processChunk);
             } else {
               renderBtn.disabled = false;
-              progress.style.width = "100%";
+              progress.style.width = '100%';
               setTimeout(() => {
-                progress.style.width = "0%";
+                progress.style.width = '0%';
               }, 400);
             }
           }
@@ -268,7 +254,7 @@
 
         // ── Scroll to zoom ───────────────────────────────────────
         canvas.addEventListener(
-          "wheel",
+          'wheel',
           (e) => {
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
@@ -277,11 +263,11 @@
             const factor = e.deltaY > 0 ? 1.3 : 0.77;
             zoomAt(px, py, factor);
           },
-          { passive: false },
+          { passive: false }
         );
 
         // ── Double-click zoom ────────────────────────────────────
-        canvas.addEventListener("dblclick", (e) => {
+        canvas.addEventListener('dblclick', (e) => {
           const rect = canvas.getBoundingClientRect();
           const px = (e.clientX - rect.left) * (canvas.width / rect.width);
           const py = (e.clientY - rect.top) * (canvas.height / rect.height);
@@ -290,10 +276,10 @@
 
         // ── Drag to pan ──────────────────────────────────────────
         let drag = null;
-        canvas.addEventListener("mousedown", (e) => {
+        canvas.addEventListener('mousedown', (e) => {
           drag = { x: e.clientX, y: e.clientY, view: { ...view } };
         });
-        window.addEventListener("mousemove", (e) => {
+        window.addEventListener('mousemove', (e) => {
           if (!drag) {
             const rect = canvas.getBoundingClientRect();
             const px = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -304,10 +290,8 @@
             }
             return;
           }
-          const dx =
-            (e.clientX - drag.x) / canvas.getBoundingClientRect().width;
-          const dy =
-            (e.clientY - drag.y) / canvas.getBoundingClientRect().height;
+          const dx = (e.clientX - drag.x) / canvas.getBoundingClientRect().width;
+          const dy = (e.clientY - drag.y) / canvas.getBoundingClientRect().height;
           const dRe = dx * (drag.view.xMax - drag.view.xMin);
           const dIm = dy * (drag.view.yMax - drag.view.yMin);
           view = {
@@ -318,16 +302,16 @@
           };
           render();
         });
-        window.addEventListener("mouseup", () => {
+        window.addEventListener('mouseup', () => {
           drag = null;
         });
 
         // ── Buttons ──────────────────────────────────────────────
-        iterRange.addEventListener("input", () => {
+        iterRange.addEventListener('input', () => {
           iterLabel.textContent = iterRange.value;
         });
-        renderBtn.addEventListener("click", render);
-        resetBtn.addEventListener("click", () => {
+        renderBtn.addEventListener('click', render);
+        resetBtn.addEventListener('click', () => {
           view = { xMin: -2.5, xMax: 1.0, yMin: -1.25, yMax: 1.25 };
           render();
         });

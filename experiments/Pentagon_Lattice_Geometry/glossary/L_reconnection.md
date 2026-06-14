@@ -219,7 +219,7 @@ set of vortex vertices.
 ### 2D
 
 | Polygon           | Interior angle | Deficit | Level                 | Field                  |
-|-------------------|----------------|---------|-----------------------|------------------------|
+| ----------------- | -------------- | ------- | --------------------- | ---------------------- |
 | Triangle          | $60°$          | $0$     | 0                     | $\mathbb{Q}(\sqrt{3})$ |
 | Square            | $90°$          | $0$     | 0                     | $\mathbb{Q}$           |
 | Pentagon          | $108°$         | $36°$   | 1                     | $\mathbb{Q}(\sqrt{5})$ |
@@ -230,7 +230,7 @@ set of vortex vertices.
 ### 3D
 
 | Polyhedron           | Dihedral angle | Level                             | Field                  |
-|----------------------|----------------|-----------------------------------|------------------------|
+| -------------------- | -------------- | --------------------------------- | ---------------------- |
 | Tetrahedron          | $70.53°$       | 3 (irrational $\pi$ multiple)     | $\mathbb{Q}(\sqrt{2})$ |
 | Cube                 | $90°$          | 0 (with $\mathbb{Z}^3$)           | $\mathbb{Q}$           |
 | Octahedron           | $109.47°$      | 1 (via tet-oct honeycomb partner) | $\mathbb{Q}(\sqrt{2})$ |

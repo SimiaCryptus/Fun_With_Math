@@ -1,37 +1,37 @@
 // Entry point: wires UI controls to the field generator and renderer.
 
-import { computeField } from "./field.js";
-import { renderField } from "./render.js";
-import { computeFFT2D, renderFFT3D } from "./fft.js";
-import { topAutocorrVectors } from "./autocorr.js";
-import { wireRationalControls } from "./rational.js";
+import { computeField } from './field.js';
+import { renderField } from './render.js';
+import { computeFFT2D, renderFFT3D } from './fft.js';
+import { topAutocorrVectors } from './autocorr.js';
+import { wireRationalControls } from './rational.js';
 
-const canvas = document.getElementById("field");
-const statsEl = document.getElementById("stats");
+const canvas = document.getElementById('field');
+const statsEl = document.getElementById('stats');
 
 const controls = {
-  D: document.getElementById("D"),
-  mode: document.getElementById("mode"),
-  K: document.getElementById("K"),
-  alpha: document.getElementById("alpha"),
-  eps: document.getElementById("eps"),
-  size: document.getElementById("size"),
-  cmap: document.getElementById("cmap"),
-  cmap2d: document.getElementById("cmap2d"),
-  cycle: document.getElementById("cycle"),
-  seed: document.getElementById("seed"),
-  zoomStep: document.getElementById("zoomStep"),
+  D: document.getElementById('D'),
+  mode: document.getElementById('mode'),
+  K: document.getElementById('K'),
+  alpha: document.getElementById('alpha'),
+  eps: document.getElementById('eps'),
+  size: document.getElementById('size'),
+  cmap: document.getElementById('cmap'),
+  cmap2d: document.getElementById('cmap2d'),
+  cycle: document.getElementById('cycle'),
+  seed: document.getElementById('seed'),
+  zoomStep: document.getElementById('zoomStep'),
 };
 
 const outputs = {
-  K: document.getElementById("kOut"),
-  alpha: document.getElementById("alphaOut"),
-  eps: document.getElementById("epsOut"),
-  size: document.getElementById("sizeOut"),
-  seed: document.getElementById("seedOut"),
-  cycle: document.getElementById("cycleOut"),
-  offset: document.getElementById("offsetOut"),
-  zoomStep: document.getElementById("zoomStepOut"),
+  K: document.getElementById('kOut'),
+  alpha: document.getElementById('alphaOut'),
+  eps: document.getElementById('epsOut'),
+  size: document.getElementById('sizeOut'),
+  seed: document.getElementById('seedOut'),
+  cycle: document.getElementById('cycleOut'),
+  offset: document.getElementById('offsetOut'),
+  zoomStep: document.getElementById('zoomStepOut'),
 };
 // Viewport state for pan & zoom (rational lattice coordinates).
 const view = {
@@ -49,8 +49,8 @@ function effectiveZoom(size) {
 }
 // The active zoom granularity is a rational p/q controlled by the
 // numerator/denominator steppers (the slider only seeds an approximation).
-const zoomNumEl = document.getElementById("zoomNum");
-const zoomDenEl = document.getElementById("zoomDen");
+const zoomNumEl = document.getElementById('zoomNum');
+const zoomDenEl = document.getElementById('zoomDen');
 function zoomGranularity() {
   const num = parseFloat(zoomNumEl.value) || 1;
   const den = parseFloat(zoomDenEl.value) || 1;
@@ -75,28 +75,28 @@ function stateToHash() {
   for (const key of Object.keys(controls)) {
     params.set(key, controls[key].value);
   }
-  params.set("cycleSpeed", controls.cycle.value);
-  params.set("panX", view.panX.toFixed(3));
-  params.set("panY", view.panY.toFixed(3));
-  params.set("zoom", view.zoom.toFixed(5));
-  params.set("offsetX", offset.x);
-  params.set("offsetY", offset.y);
+  params.set('cycleSpeed', controls.cycle.value);
+  params.set('panX', view.panX.toFixed(3));
+  params.set('panY', view.panY.toFixed(3));
+  params.set('zoom', view.zoom.toFixed(5));
+  params.set('offsetX', offset.x);
+  params.set('offsetY', offset.y);
   // Replace (not push) so we don't spam browser history during drags.
-  history.replaceState(null, "", "#" + params.toString());
+  history.replaceState(null, '', '#' + params.toString());
 }
 function hashToState() {
-  const hash = window.location.hash.replace(/^#/, "");
+  const hash = window.location.hash.replace(/^#/, '');
   if (!hash) return false;
   const params = new URLSearchParams(hash);
   restoringFromHash = true;
   for (const key of Object.keys(controls)) {
     if (params.has(key)) controls[key].value = params.get(key);
   }
-  if (params.has("panX")) view.panX = parseFloat(params.get("panX"));
-  if (params.has("panY")) view.panY = parseFloat(params.get("panY"));
-  if (params.has("zoom")) view.zoom = parseFloat(params.get("zoom"));
-  if (params.has("offsetX")) offset.x = parseInt(params.get("offsetX"), 10);
-  if (params.has("offsetY")) offset.y = parseInt(params.get("offsetY"), 10);
+  if (params.has('panX')) view.panX = parseFloat(params.get('panX'));
+  if (params.has('panY')) view.panY = parseFloat(params.get('panY'));
+  if (params.has('zoom')) view.zoom = parseFloat(params.get('zoom'));
+  if (params.has('offsetX')) offset.x = parseInt(params.get('offsetX'), 10);
+  if (params.has('offsetY')) offset.y = parseInt(params.get('offsetY'), 10);
   restoringFromHash = false;
   return true;
 }
@@ -192,11 +192,11 @@ function rerenderColor() {
 for (const key of Object.keys(controls)) {
   // `size` and `zoomStep` are managed by the rational view controls, which
   // update the hidden inputs and emit their own change events.
-  if (key === "size" || key === "zoomStep") continue;
-  controls[key].addEventListener("input", regenerate);
-  controls[key].addEventListener("change", regenerate);
+  if (key === 'size' || key === 'zoomStep') continue;
+  controls[key].addEventListener('input', regenerate);
+  controls[key].addEventListener('change', regenerate);
 }
-document.getElementById("regen").addEventListener("click", regenerate);
+document.getElementById('regen').addEventListener('click', regenerate);
 // Wire the rational view controls (integer grid size + rational zoom
 // granularity p/q seeded from the slider via continued fractions).
 const rationalControls = wireRationalControls({
@@ -209,7 +209,7 @@ const rationalControls = wireRationalControls({
     regenerate();
   },
 });
-document.getElementById("resetView").addEventListener("click", () => {
+document.getElementById('resetView').addEventListener('click', () => {
   view.panX = 0;
   view.panY = 0;
   view.zoom = 1;
@@ -217,9 +217,9 @@ document.getElementById("resetView").addEventListener("click", () => {
 });
 
 // --- Export to PNG ---
-document.getElementById("exportPng").addEventListener("click", () => {
-  const url = canvas.toDataURL("image/png");
-  const a = document.createElement("a");
+document.getElementById('exportPng').addEventListener('click', () => {
+  const url = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
   const o = lastOpts || readOpts();
   a.href = url;
   a.download = `irrational_lattice_D${o.D}_K${o.K}_seed${o.seed}.png`;
@@ -234,18 +234,10 @@ function bumpOffset(dx, dy) {
   offset.y += dy;
   regenerate();
 }
-document
-  .getElementById("offsetXMinus")
-  .addEventListener("click", () => bumpOffset(-1, 0));
-document
-  .getElementById("offsetXPlus")
-  .addEventListener("click", () => bumpOffset(1, 0));
-document
-  .getElementById("offsetYMinus")
-  .addEventListener("click", () => bumpOffset(0, -1));
-document
-  .getElementById("offsetYPlus")
-  .addEventListener("click", () => bumpOffset(0, 1));
+document.getElementById('offsetXMinus').addEventListener('click', () => bumpOffset(-1, 0));
+document.getElementById('offsetXPlus').addEventListener('click', () => bumpOffset(1, 0));
+document.getElementById('offsetYMinus').addEventListener('click', () => bumpOffset(0, -1));
+document.getElementById('offsetYPlus').addEventListener('click', () => bumpOffset(0, 1));
 
 // --- Parameter sweep buttons ---
 // Each sweep slowly animates a range slider back and forth.
@@ -258,7 +250,7 @@ function stepSweeps() {
     // Zoom sweep is special: zoom lives in `view`, not in a range control.
     // Use the zoom granularity slider as a per-frame rate multiplier so the
     // sweep speed respects the same control as manual wheel zooming.
-    if (target === "zoom") {
+    if (target === 'zoom') {
       const zoomStep = zoomGranularity();
       // Per-frame multiplier derived from the granularity (gentler than a
       // full wheel notch so the animation stays smooth).
@@ -294,32 +286,32 @@ function stepSweeps() {
   }
   if (any) regenerate();
 }
-document.querySelectorAll(".sweep-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
+document.querySelectorAll('.sweep-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
     const target = btn.dataset.target;
     // Zoom has two buttons (in/out) sharing the "zoom" target. Each button
     // selects a fixed direction; clicking the active one stops the sweep.
-    if (target === "zoom") {
-      const dir = btn.dataset.dir === "out" ? -1 : 1;
+    if (target === 'zoom') {
+      const dir = btn.dataset.dir === 'out' ? -1 : 1;
       const alreadyActive = sweeping[target] && sweeping[target].dir === dir;
       // Clear any active zoom button state first.
       document
         .querySelectorAll('.sweep-btn[data-target="zoom"]')
-        .forEach((b) => b.classList.remove("active"));
+        .forEach((b) => b.classList.remove('active'));
       if (alreadyActive) {
         delete sweeping[target];
       } else {
         sweeping[target] = { dir };
-        btn.classList.add("active");
+        btn.classList.add('active');
       }
       return;
     }
     if (sweeping[target]) {
       delete sweeping[target];
-      btn.classList.remove("active");
+      btn.classList.remove('active');
     } else {
       sweeping[target] = { dir: 1 };
-      btn.classList.add("active");
+      btn.classList.add('active');
     }
   });
 });
@@ -367,10 +359,10 @@ function fitCanvas() {
   // Keep it square; cap by viewport height too.
   const maxH = window.innerHeight * 0.9;
   const dim = Math.max(64, Math.min(avail, maxH));
-  canvas.style.width = dim + "px";
-  canvas.style.height = dim + "px";
+  canvas.style.width = dim + 'px';
+  canvas.style.height = dim + 'px';
 }
-window.addEventListener("resize", fitCanvas);
+window.addEventListener('resize', fitCanvas);
 
 // --- Pan & zoom interaction on the canvas ---
 // The canvas is displayed scaled (CSS) relative to its pixel resolution
@@ -393,22 +385,22 @@ function pixelToLattice(fx, fy) {
 let dragging = false;
 let dragStart = null;
 let panStart = null;
-canvas.addEventListener("mousedown", (ev) => {
+canvas.addEventListener('mousedown', (ev) => {
   // First check whether we're grabbing an autocorrelation vector endpoint.
   const fp = clientToFieldPixel(ev);
   const hit = acHitTest(fp.fx, fp.fy);
   if (hit) {
     acDragging = hit;
-    canvas.style.cursor = "crosshair";
+    canvas.style.cursor = 'crosshair';
     ev.preventDefault();
     return;
   }
   dragging = true;
   dragStart = clientToFieldPixel(ev);
   panStart = { x: view.panX, y: view.panY };
-  canvas.style.cursor = "grabbing";
+  canvas.style.cursor = 'grabbing';
 });
-window.addEventListener("mousemove", (ev) => {
+window.addEventListener('mousemove', (ev) => {
   // Editing an autocorrelation vector endpoint.
   if (acDragging) {
     const { fx, fy } = clientToFieldPixel(ev);
@@ -426,7 +418,7 @@ window.addEventListener("mousemove", (ev) => {
     // Update the readout and redraw.
     acOut.textContent = acVectors
       .map((vv) => `(${vv.dx.toFixed(2)}, ${vv.dy.toFixed(2)})`)
-      .join("  ");
+      .join('  ');
     regenerate();
     return;
   }
@@ -441,24 +433,24 @@ window.addEventListener("mousemove", (ev) => {
   regenerate();
 });
 // Cursor feedback: show a pointer over draggable endpoint handles.
-canvas.addEventListener("mousemove", (ev) => {
+canvas.addEventListener('mousemove', (ev) => {
   if (dragging || acDragging) return;
   const { fx, fy } = clientToFieldPixel(ev);
-  canvas.style.cursor = acHitTest(fx, fy) ? "pointer" : "grab";
+  canvas.style.cursor = acHitTest(fx, fy) ? 'pointer' : 'grab';
 });
-window.addEventListener("mouseup", () => {
+window.addEventListener('mouseup', () => {
   if (acDragging) {
     acDragging = null;
-    canvas.style.cursor = "grab";
+    canvas.style.cursor = 'grab';
     return;
   }
   if (!dragging) return;
   dragging = false;
-  canvas.style.cursor = "grab";
+  canvas.style.cursor = 'grab';
 });
 // Wheel to zoom, keeping the lattice point under the cursor fixed.
 canvas.addEventListener(
-  "wheel",
+  'wheel',
   (ev) => {
     ev.preventDefault();
     const { fx, fy } = clientToFieldPixel(ev);
@@ -477,22 +469,22 @@ canvas.addEventListener(
     view.panY = before.y - (fy - size / 2) * z;
     regenerate();
   },
-  { passive: false },
+  { passive: false }
 );
-canvas.style.cursor = "grab";
+canvas.style.cursor = 'grab';
 // --- 3D FFT floating subwindow ---
-const fftWindow = document.getElementById("fftWindow");
-const fftTitlebar = document.getElementById("fftTitlebar");
-const fftBody = document.getElementById("fftBody");
-const fftCanvas = document.getElementById("fftCanvas");
-const fftCollapse = document.getElementById("fftCollapse");
-const fftRefresh = document.getElementById("fftRefresh");
-const fftRot = document.getElementById("fftRot");
-const fftTilt = document.getElementById("fftTilt");
-const fftScale = document.getElementById("fftScale");
+const fftWindow = document.getElementById('fftWindow');
+const fftTitlebar = document.getElementById('fftTitlebar');
+const fftBody = document.getElementById('fftBody');
+const fftCanvas = document.getElementById('fftCanvas');
+const fftCollapse = document.getElementById('fftCollapse');
+const fftRefresh = document.getElementById('fftRefresh');
+const fftRot = document.getElementById('fftRot');
+const fftTilt = document.getElementById('fftTilt');
+const fftScale = document.getElementById('fftScale');
 let lastFFT = null;
 function updateFFT() {
-  if (fftWindow.classList.contains("collapsed")) return;
+  if (fftWindow.classList.contains('collapsed')) return;
   if (!lastResult) return;
   lastFFT = computeFFT2D(lastResult.data, lastOpts.size, 64);
   drawFFT();
@@ -506,54 +498,52 @@ function drawFFT() {
   });
 }
 for (const el of [fftRot, fftTilt, fftScale]) {
-  el.addEventListener("input", drawFFT);
+  el.addEventListener('input', drawFFT);
 }
-fftRefresh.addEventListener("click", updateFFT);
-fftCollapse.addEventListener("click", () => {
-  fftWindow.classList.toggle("collapsed");
-  fftCollapse.textContent = fftWindow.classList.contains("collapsed")
-    ? "▸"
-    : "▾";
+fftRefresh.addEventListener('click', updateFFT);
+fftCollapse.addEventListener('click', () => {
+  fftWindow.classList.toggle('collapsed');
+  fftCollapse.textContent = fftWindow.classList.contains('collapsed') ? '▸' : '▾';
   updateFFT();
 });
 // Dragging the subwindow by its titlebar.
 let fwDragging = false;
 let fwStart = null;
 let fwOrigin = null;
-fftTitlebar.addEventListener("mousedown", (ev) => {
+fftTitlebar.addEventListener('mousedown', (ev) => {
   // Ignore drags that start on a button.
-  if (ev.target.closest("button")) return;
+  if (ev.target.closest('button')) return;
   fwDragging = true;
   const rect = fftWindow.getBoundingClientRect();
   fwStart = { x: ev.clientX, y: ev.clientY };
   fwOrigin = { x: rect.left, y: rect.top };
   // Switch from right-anchored to left/top positioning.
-  fftWindow.style.left = rect.left + "px";
-  fftWindow.style.top = rect.top + "px";
-  fftWindow.style.right = "auto";
+  fftWindow.style.left = rect.left + 'px';
+  fftWindow.style.top = rect.top + 'px';
+  fftWindow.style.right = 'auto';
   ev.preventDefault();
 });
-window.addEventListener("mousemove", (ev) => {
+window.addEventListener('mousemove', (ev) => {
   if (!fwDragging) return;
   const dx = ev.clientX - fwStart.x;
   const dy = ev.clientY - fwStart.y;
-  fftWindow.style.left = Math.max(0, fwOrigin.x + dx) + "px";
-  fftWindow.style.top = Math.max(0, fwOrigin.y + dy) + "px";
+  fftWindow.style.left = Math.max(0, fwOrigin.x + dx) + 'px';
+  fftWindow.style.top = Math.max(0, fwOrigin.y + dy) + 'px';
 });
-window.addEventListener("mouseup", () => {
+window.addEventListener('mouseup', () => {
   fwDragging = false;
 });
 // --- Autocorrelation-driven random walk ---
 // Compute the two strongest autocorrelation displacement vectors, then
 // step the pan by a randomly-signed combination of them. This nudges the
 // viewport toward self-similar features in the field.
-const acCompute = document.getElementById("acCompute");
-const acStep = document.getElementById("acStep");
-const acPlay = document.getElementById("acPlay");
-const acSpeed = document.getElementById("acSpeed");
-const acSpeedOut = document.getElementById("acSpeedOut");
-const acOut = document.getElementById("acOut");
-const acShow = document.getElementById("acShow");
+const acCompute = document.getElementById('acCompute');
+const acStep = document.getElementById('acStep');
+const acPlay = document.getElementById('acPlay');
+const acSpeed = document.getElementById('acSpeed');
+const acSpeedOut = document.getElementById('acSpeedOut');
+const acOut = document.getElementById('acOut');
+const acShow = document.getElementById('acShow');
 let acVectors = null;
 let acPlaying = false;
 let acAccum = 0; // seconds accumulated toward the next step
@@ -591,12 +581,12 @@ function acHitTest(fx, fy) {
 // Draw the autocorrelation vectors as overlay arrows from the canvas center.
 function drawAcVectors() {
   if (!acShowVectors || !acVectors || acVectors.length === 0) return;
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext('2d');
   const size = canvas.width;
   const cx = size / 2;
   const cy = size / 2;
   // Vectors are in lattice units; convert to field pixels via the zoom.
-  const colors = ["#ff3b6b", "#3bff9d", "#3b9dff", "#ffd23b"];
+  const colors = ['#ff3b6b', '#3bff9d', '#3b9dff', '#ffd23b'];
   ctx.save();
   ctx.lineWidth = Math.max(1, size / 256);
   const z = effectiveZoom(size);
@@ -619,21 +609,15 @@ function drawAcVectors() {
       const head = Math.max(5, size / 80);
       ctx.beginPath();
       ctx.moveTo(ex, ey);
-      ctx.lineTo(
-        ex - head * Math.cos(ang - Math.PI / 6),
-        ey - head * Math.sin(ang - Math.PI / 6),
-      );
-      ctx.lineTo(
-        ex - head * Math.cos(ang + Math.PI / 6),
-        ey - head * Math.sin(ang + Math.PI / 6),
-      );
+      ctx.lineTo(ex - head * Math.cos(ang - Math.PI / 6), ey - head * Math.sin(ang - Math.PI / 6));
+      ctx.lineTo(ex - head * Math.cos(ang + Math.PI / 6), ey - head * Math.sin(ang + Math.PI / 6));
       ctx.closePath();
       ctx.fill();
       // Draggable endpoint handle (hollow circle).
       const handleR = Math.max(4, size / 160);
       ctx.beginPath();
       ctx.arc(ex, ey, handleR, 0, Math.PI * 2);
-      ctx.fillStyle = "#0e0f13";
+      ctx.fillStyle = '#0e0f13';
       ctx.fill();
       ctx.lineWidth = Math.max(1, size / 320);
       ctx.strokeStyle = color;
@@ -642,7 +626,7 @@ function drawAcVectors() {
     }
   });
   // Center marker.
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = '#ffffff';
   ctx.beginPath();
   ctx.arc(cx, cy, Math.max(2, size / 256) * 1.5, 0, Math.PI * 2);
   ctx.fill();
@@ -650,19 +634,13 @@ function drawAcVectors() {
 }
 function computeAutocorrVectors() {
   if (!lastResult || !lastOpts) return;
-  acVectors = topAutocorrVectors(
-    lastResult.data,
-    lastOpts.size,
-    effectiveZoom(lastOpts.size),
-  );
+  acVectors = topAutocorrVectors(lastResult.data, lastOpts.size, effectiveZoom(lastOpts.size));
   if (!acVectors || acVectors.length === 0) {
-    acOut.textContent = "no vectors";
+    acOut.textContent = 'no vectors';
     acVectors = null;
     return;
   }
-  acOut.textContent = acVectors
-    .map((v) => `(${v.dx.toFixed(2)}, ${v.dy.toFixed(2)})`)
-    .join("  ");
+  acOut.textContent = acVectors.map((v) => `(${v.dx.toFixed(2)}, ${v.dy.toFixed(2)})`).join('  ');
   drawAcVectors();
 }
 function acWalkStep() {
@@ -681,20 +659,20 @@ function acWalkStep() {
   }
   regenerate();
 }
-acCompute.addEventListener("click", computeAutocorrVectors);
-acStep.addEventListener("click", acWalkStep);
-acSpeed.addEventListener("input", () => {
+acCompute.addEventListener('click', computeAutocorrVectors);
+acStep.addEventListener('click', acWalkStep);
+acSpeed.addEventListener('input', () => {
   acSpeedOut.textContent = parseFloat(acSpeed.value).toFixed(1);
 });
-acPlay.addEventListener("click", () => {
+acPlay.addEventListener('click', () => {
   acPlaying = !acPlaying;
-  acPlay.textContent = acPlaying ? "❚❚ pause" : "▶ play";
+  acPlay.textContent = acPlaying ? '❚❚ pause' : '▶ play';
   acAccum = 0;
 });
-acShow.addEventListener("click", () => {
+acShow.addEventListener('click', () => {
   acShowVectors = !acShowVectors;
-  acShow.textContent = acShowVectors ? "hide vectors" : "show vectors";
-  acShow.classList.toggle("active", acShowVectors);
+  acShow.textContent = acShowVectors ? 'hide vectors' : 'show vectors';
+  acShow.classList.toggle('active', acShowVectors);
   if (acShowVectors && !acVectors) {
     computeAutocorrVectors();
   } else {
@@ -710,7 +688,7 @@ hashToState();
 if (rationalControls && rationalControls.refresh) rationalControls.refresh();
 regenerate();
 // Respond to external hash changes (shared link pasted, back/forward nav).
-window.addEventListener("hashchange", () => {
+window.addEventListener('hashchange', () => {
   if (restoringFromHash) return;
   if (hashToState()) regenerate();
 });

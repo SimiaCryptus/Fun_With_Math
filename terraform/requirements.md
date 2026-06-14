@@ -1,5 +1,4 @@
-
-* create math.cognotik.com - a new s3-backed https website
+- create math.cognotik.com - a new s3-backed https website
 
 Hosted zone name
 cognotik.com

@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────
 
 (function () {
-  "use strict";
+  'use strict';
   // Available rotation angles (degrees). Each is an independent toggle.
   const ROT_ANGLES = [15, 30, 45, 60, 72, 90, 120, 135, 144, 180, 225, 270];
 
@@ -14,7 +14,7 @@
   let displayScale = 1;
 
   const state = {
-    tool: "draw",
+    tool: 'draw',
     color: [1, 0.27, 0.27],
     brushSize: 2,
     showGrid: false,
@@ -26,16 +26,16 @@
     gridSize: 64,
     aspectRatio: 1.0, // width / height  (e.g. 2.0 = landscape)
     // Diffusion mode: 'local' | 'spectral' | 'reaction'
-    diffMode: "local",
+    diffMode: 'local',
     // Spectral parameters
-    spectralFilter: "invsqrt", // 'heat' | 'tikhonov' | 'invsqrt' | 'wave'
+    spectralFilter: 'invsqrt', // 'heat' | 'tikhonov' | 'invsqrt' | 'wave'
     spectralT: 0.5, // time/strength parameter
     spectralK: 64, // number of eigenvectors
     // Reaction-diffusion parameters (Gray-Scott-ish, applied per channel pair)
     rdFeed: 0.055,
     rdKill: 0.062,
     // Lattice geometry: 'euclidean' | 'circular' | 'hyperbolic' | 'spherical'
-    lattice: "euclidean",
+    lattice: 'euclidean',
     // For non-euclidean modes, the grid is bounded by a disk; cells outside
     // the disk are inactive (masked). Radius is in cells, defaults to half
     // the smaller grid dimension.
@@ -125,7 +125,7 @@
     return perm[c];
   }
   function permSignature(p) {
-    return p.map((e) => `${e.sign > 0 ? "+" : "-"}${e.src}`).join(",");
+    return p.map((e) => `${e.sign > 0 ? '+' : '-'}${e.src}`).join(',');
   }
 
   let animHandle = null;
@@ -160,13 +160,13 @@
     if (!isActive(x1, y1) || !isActive(x2, y2)) return Infinity;
     const k = state.latticeCurvature || 1;
     switch (state.lattice) {
-      case "circular": {
+      case 'circular': {
         // Plain Euclidean distance (the disk is just a clipped Cartesian grid).
         const dx = x2 - x1,
           dy = y2 - y1;
         return Math.sqrt(dx * dx + dy * dy);
       }
-      case "hyperbolic": {
+      case 'hyperbolic': {
         // Poincaré disk distance: d = arccosh(1 + 2|a-b|² / ((1-|a|²)(1-|b|²)))
         const [u1, v1] = diskCoords(x1, y1);
         const [u2, v2] = diskCoords(x2, y2);
@@ -179,7 +179,7 @@
         const arg = 1 + num / den;
         return k * Math.acosh(Math.max(1, arg));
       }
-      case "spherical": {
+      case 'spherical': {
         // Map disk → sphere via stereographic projection (north-pole based):
         //   (u,v) ∈ unit disk → 3D point on unit sphere.
         // Then return the great-circle (geodesic) distance.
@@ -194,7 +194,7 @@
         if (dot < -1) dot = -1;
         return k * Math.acos(dot);
       }
-      case "euclidean":
+      case 'euclidean':
       default: {
         const dx = x2 - x1,
           dy = y2 - y1;
@@ -205,7 +205,7 @@
   function rebuildLatticeMask() {
     const N = GRID_W * GRID_H;
     activeMask = new Uint8Array(N);
-    if (state.lattice === "euclidean") {
+    if (state.lattice === 'euclidean') {
       activeMask.fill(1);
       return;
     }
@@ -238,15 +238,15 @@
     K: 0,
     eigvals: null, // Float32Array length K
     eigvecs: null, // Float32Array length N*K  (column-major: vec k at offset k*N)
-    signature: "",
+    signature: '',
   };
   function invalidateSpectral() {
     spectralCache.valid = false;
   }
 
   // ── Canvas setup ───────────────────────────
-  const canvas = document.getElementById("main-canvas");
-  const ctx = canvas.getContext("2d");
+  const canvas = document.getElementById('main-canvas');
+  const ctx = canvas.getContext('2d');
   let imageData = null;
 
   function recomputeGridDims() {
@@ -267,7 +267,7 @@
   }
 
   function resizeCanvas() {
-    const area = document.getElementById("canvas-area");
+    const area = document.getElementById('canvas-area');
     const maxW = area.clientWidth - 20;
     const maxH = area.clientHeight - 20;
     // Fit the grid (GRID_W x GRID_H) into the available area
@@ -276,8 +276,8 @@
     displayScale = Math.max(1, Math.min(scaleX, scaleY));
     canvas.width = GRID_W;
     canvas.height = GRID_H;
-    canvas.style.width = GRID_W * displayScale + "px";
-    canvas.style.height = GRID_H * displayScale + "px";
+    canvas.style.width = GRID_W * displayScale + 'px';
+    canvas.style.height = GRID_H * displayScale + 'px';
   }
 
   // ── Pixel helpers ──────────────────────────
@@ -337,7 +337,7 @@
     const cy = state.symmetry.translationY ? wrapY(iy) : iy;
     if (cx < 0 || cx >= GRID_W || cy < 0 || cy >= GRID_H) return;
     if (activeMask && !activeMask[cy * GRID_W + cx]) return;
-    positions.add(cx + "," + cy);
+    positions.add(cx + ',' + cy);
   }
 
   // Returns list of [x,y] mirror positions for a given (x,y)
@@ -376,11 +376,7 @@
         const ang = (angDeg * Math.PI) / 180;
         const cos = Math.cos(ang),
           sin = Math.sin(ang);
-        seeds.push([
-          Math.round(cx + dx * cos - dy * sin),
-          Math.round(cy + dx * sin + dy * cos),
-          P,
-        ]);
+        seeds.push([Math.round(cx + dx * cos - dy * sin), Math.round(cy + dx * sin + dy * cos), P]);
       }
     }
 
@@ -403,16 +399,8 @@
         const maxK = 8;
         for (const [bx, by, bp] of baseSeeds) {
           for (let k = 1; k <= maxK; k++) {
-            seeds.push([
-              bx + dxCells * k,
-              by + dyCells * k,
-              composePerm(bp, permPow(P, k)),
-            ]);
-            seeds.push([
-              bx - dxCells * k,
-              by - dyCells * k,
-              composePerm(bp, permPow(P, -k)),
-            ]);
+            seeds.push([bx + dxCells * k, by + dyCells * k, composePerm(bp, permPow(P, k))]);
+            seeds.push([bx - dxCells * k, by - dyCells * k, composePerm(bp, permPow(P, -k))]);
           }
         }
       }
@@ -425,7 +413,7 @@
       const cyw = state.symmetry.translationY ? wrapY(iy) : iy;
       if (cxw < 0 || cxw >= GRID_W || cyw < 0 || cyw >= GRID_H) return;
       if (activeMask && !activeMask[cyw * GRID_W + cxw]) return;
-      const key = cxw + "," + cyw;
+      const key = cxw + ',' + cyw;
       if (!seen.has(key)) seen.set(key, perm);
     };
     for (const [sx, sy, perm] of seeds) {
@@ -442,7 +430,7 @@
 
     const result = [];
     for (const [key, perm] of seen) {
-      const [xs, ys] = key.split(",").map(Number);
+      const [xs, ys] = key.split(',').map(Number);
       result.push({ x: xs, y: ys, perm });
     }
     return result;
@@ -460,7 +448,7 @@
         if (dx * dx + dy * dy < bs * bs) {
           const tx = (((x + dx) % GRID_W) + GRID_W) % GRID_W;
           const ty = (((y + dy) % GRID_H) + GRID_H) % GRID_H;
-          if (state.tool === "erase") {
+          if (state.tool === 'erase') {
             setPixel(tx, ty, 0, 0, 0);
           } else {
             setPixel(tx, ty, r, g, b);
@@ -474,12 +462,7 @@
     const [tr, tg, tb] = getPixel(x, y);
     const [fr, fg, fb] = state.color;
     const eps = 0.01;
-    if (
-      Math.abs(tr - fr) < eps &&
-      Math.abs(tg - fg) < eps &&
-      Math.abs(tb - fb) < eps
-    )
-      return;
+    if (Math.abs(tr - fr) < eps && Math.abs(tg - fg) < eps && Math.abs(tb - fb) < eps) return;
 
     const stack = [[x, y]];
     const visited = new Uint8Array(GRID_W * GRID_H);
@@ -489,11 +472,7 @@
       if (cx < 0 || cx >= GRID_W || cy < 0 || cy >= GRID_H) continue;
       if (visited[cy * GRID_W + cx]) continue;
       const [pr, pg, pb] = getPixel(cx, cy);
-      if (
-        Math.abs(pr - tr) > 0.05 ||
-        Math.abs(pg - tg) > 0.05 ||
-        Math.abs(pb - tb) > 0.05
-      )
+      if (Math.abs(pr - tr) > 0.05 || Math.abs(pg - tg) > 0.05 || Math.abs(pb - tb) > 0.05)
         continue;
       visited[cy * GRID_W + cx] = 1;
       setPixel(cx, cy, fr, fg, fb);
@@ -567,8 +546,7 @@
       }
     }
     if (sym.diagonal) symPeers.push([y, x, P]); // already integer
-    if (sym.diagonal && sym.mirrorX && sym.mirrorY)
-      symPeers.push([my, mx, composePerm(P, P)]);
+    if (sym.diagonal && sym.mirrorX && sym.mirrorY) symPeers.push([my, mx, composePerm(P, P)]);
     // Lattice translation symmetry peers: ±k * (tx*W, ty*H)
     {
       const latTrans = sym.latticeTranslations || [];
@@ -713,14 +691,9 @@
           const raw = next[i * 3 + c];
           // Standardise with new moments, then rescale to original moments
           const rescaled =
-            std[c] > 1e-9
-              ? mean[c] + (raw - newMean[c]) * (std[c] / newStd[c])
-              : mean[c];
+            std[c] > 1e-9 ? mean[c] + (raw - newMean[c]) * (std[c] / newStd[c]) : mean[c];
           // Blend: renorm=0 → keep raw diffused; renorm=1 → fully moment-matched
-          next[i * 3 + c] = Math.max(
-            0,
-            Math.min(1, raw * (1 - renorm) + rescaled * renorm),
-          );
+          next[i * 3 + c] = Math.max(0, Math.min(1, raw * (1 - renorm) + rescaled * renorm));
         }
       }
     } else {
@@ -865,8 +838,7 @@
       let a = 0;
       for (let i = 0; i < N; i++) a += w[i] * v[i];
       alpha[j] = a;
-      for (let i = 0; i < N; i++)
-        w[i] -= a * v[i] + (j > 0 ? beta[j] * vPrev[i] : 0);
+      for (let i = 0; i < N; i++) w[i] -= a * v[i] + (j > 0 ? beta[j] * vPrev[i] : 0);
       // Full reorthogonalisation against all previous V columns
       for (let r = 0; r <= j; r++) {
         let dot = 0;
@@ -950,10 +922,7 @@
           const theta = (aqq - app) / (2 * apq);
           let t;
           if (Math.abs(theta) > 1e15) t = 1 / (2 * theta);
-          else
-            t =
-              Math.sign(theta) /
-              (Math.abs(theta) + Math.sqrt(1 + theta * theta));
+          else t = Math.sign(theta) / (Math.abs(theta) + Math.sqrt(1 + theta * theta));
           if (theta === 0) t = 1;
           const c = 1 / Math.sqrt(1 + t * t);
           const s = t * c;
@@ -985,10 +954,10 @@
   }
   function symmetrySignature() {
     const s = state.symmetry;
-    const rotKey = ROT_ANGLES.map((a) => (s.rotations[a] ? a : "")).join(",");
+    const rotKey = ROT_ANGLES.map((a) => (s.rotations[a] ? a : '')).join(',');
     const latKey = (s.latticeTranslations || [])
       .map((t) => `${t.x.toFixed(4)},${t.y.toFixed(4)}`)
-      .join("|");
+      .join('|');
     return [
       GRID_W,
       GRID_H,
@@ -1002,7 +971,7 @@
       latKey,
       permSignature(state.colorPerm),
       state.spectralK,
-    ].join(":");
+    ].join(':');
   }
   function ensureSpectral() {
     const sig = symmetrySignature();
@@ -1020,7 +989,7 @@
     spectralCache.K = Keff;
     spectralCache.eigvals = eigvals;
     spectralCache.eigvecs = eigvecs;
-    const info = document.getElementById("info-text");
+    const info = document.getElementById('info-text');
     if (info)
       info.textContent =
         `Spectral: ${Keff} eigvecs of ${N}-node graph in ${(t1 - t0).toFixed(0)} ms\n` +
@@ -1069,13 +1038,13 @@
     switch (state.spectralFilter) {
       // Multiply t by a constant so the slider's 0.01-5 range covers a useful
       // span for each filter shape.
-      case "heat":
+      case 'heat':
         return (lam) => Math.exp(-10 * t * lam);
-      case "tikhonov":
+      case 'tikhonov':
         return (lam) => 1 / (1 + 10 * t * lam);
-      case "invsqrt":
+      case 'invsqrt':
         return (lam) => (lam < 1e-6 ? 1 : Math.pow(lam, -0.5 * t));
-      case "wave": {
+      case 'wave': {
         return (lam) => {
           if (lam < 1e-6) return 1;
           const s = t * Math.sqrt(lam);
@@ -1122,10 +1091,10 @@
   }
   function step() {
     switch (state.diffMode) {
-      case "spectral":
+      case 'spectral':
         spectralStep();
         break;
-      case "reaction":
+      case 'reaction':
         reactionDiffusionStep();
         break;
       default:
@@ -1156,7 +1125,7 @@
 
     if (state.showGrid && displayScale >= 4) {
       ctx.save();
-      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
       ctx.lineWidth = 1 / displayScale;
       for (let x = 0; x <= GRID_W; x++) {
         ctx.beginPath();
@@ -1208,10 +1177,7 @@
     const scaleY = GRID_H / rect.height;
     const x = Math.floor((e.clientX - rect.left) * scaleX);
     const y = Math.floor((e.clientY - rect.top) * scaleY);
-    return [
-      Math.max(0, Math.min(GRID_W - 1, x)),
-      Math.max(0, Math.min(GRID_H - 1, y)),
-    ];
+    return [Math.max(0, Math.min(GRID_W - 1, x)), Math.max(0, Math.min(GRID_H - 1, y))];
   }
 
   function lerp2D(x0, y0, x1, y1, callback) {
@@ -1224,11 +1190,11 @@
     }
   }
 
-  canvas.addEventListener("mousedown", (e) => {
+  canvas.addEventListener('mousedown', (e) => {
     isDrawing = true;
     const [x, y] = canvasPos(e);
     lastDrawPos = [x, y];
-    if (state.tool === "fill") {
+    if (state.tool === 'fill') {
       floodFill(x, y);
     } else {
       paintAt(x, y);
@@ -1236,13 +1202,13 @@
     render();
   });
 
-  canvas.addEventListener("mousemove", (e) => {
+  canvas.addEventListener('mousemove', (e) => {
     const [x, y] = canvasPos(e);
     const [r, g, b] = getPixel(x, y);
-    document.getElementById("info-text").textContent =
+    document.getElementById('info-text').textContent =
       `Pos: (${x}, ${y})\nRGB: (${(r * 255) | 0}, ${(g * 255) | 0}, ${(b * 255) | 0})`;
 
-    if (!isDrawing || state.tool === "fill") return;
+    if (!isDrawing || state.tool === 'fill') return;
     if (lastDrawPos) {
       lerp2D(lastDrawPos[0], lastDrawPos[1], x, y, (lx, ly) => paintAt(lx, ly));
     }
@@ -1250,53 +1216,53 @@
     render();
   });
 
-  canvas.addEventListener("mouseup", () => {
+  canvas.addEventListener('mouseup', () => {
     isDrawing = false;
     lastDrawPos = null;
   });
-  canvas.addEventListener("mouseleave", () => {
+  canvas.addEventListener('mouseleave', () => {
     isDrawing = false;
     lastDrawPos = null;
   });
 
   // Touch support
   canvas.addEventListener(
-    "touchstart",
+    'touchstart',
     (e) => {
       e.preventDefault();
       const touch = e.touches[0];
       canvas.dispatchEvent(
-        new MouseEvent("mousedown", {
+        new MouseEvent('mousedown', {
           clientX: touch.clientX,
           clientY: touch.clientY,
-        }),
+        })
       );
     },
-    { passive: false },
+    { passive: false }
   );
 
   canvas.addEventListener(
-    "touchmove",
+    'touchmove',
     (e) => {
       e.preventDefault();
       const touch = e.touches[0];
       canvas.dispatchEvent(
-        new MouseEvent("mousemove", {
+        new MouseEvent('mousemove', {
           clientX: touch.clientX,
           clientY: touch.clientY,
-        }),
+        })
       );
     },
-    { passive: false },
+    { passive: false }
   );
 
   canvas.addEventListener(
-    "touchend",
+    'touchend',
     (e) => {
       e.preventDefault();
-      canvas.dispatchEvent(new MouseEvent("mouseup"));
+      canvas.dispatchEvent(new MouseEvent('mouseup'));
     },
-    { passive: false },
+    { passive: false }
   );
 
   // ── UI wiring ──────────────────────────────
@@ -1308,77 +1274,71 @@
   }
 
   // Tool buttons
-  document.querySelectorAll(".tool-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      document
-        .querySelectorAll(".tool-btn")
-        .forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
+  document.querySelectorAll('.tool-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tool-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
       state.tool = btn.dataset.tool;
     });
   });
 
   // Color picker
-  const colorPicker = document.getElementById("color-picker");
-  colorPicker.addEventListener("input", () => {
+  const colorPicker = document.getElementById('color-picker');
+  colorPicker.addEventListener('input', () => {
     state.color = hexToRgb(colorPicker.value);
-    document
-      .querySelectorAll(".swatch")
-      .forEach((s) => s.classList.remove("active"));
+    document.querySelectorAll('.swatch').forEach((s) => s.classList.remove('active'));
   });
 
   // Palette swatches
-  document.querySelectorAll(".swatch").forEach((swatch) => {
-    swatch.addEventListener("click", () => {
+  document.querySelectorAll('.swatch').forEach((swatch) => {
+    swatch.addEventListener('click', () => {
       const hex = swatch.dataset.color;
       colorPicker.value = hex;
       state.color = hexToRgb(hex);
-      document
-        .querySelectorAll(".swatch")
-        .forEach((s) => s.classList.remove("active"));
-      swatch.classList.add("active");
+      document.querySelectorAll('.swatch').forEach((s) => s.classList.remove('active'));
+      swatch.classList.add('active');
     });
   });
 
   // Brush size
-  const brushSlider = document.getElementById("brush-size");
-  brushSlider.addEventListener("input", () => {
+  const brushSlider = document.getElementById('brush-size');
+  brushSlider.addEventListener('input', () => {
     state.brushSize = parseInt(brushSlider.value);
-    document.getElementById("brush-size-val").textContent = state.brushSize;
+    document.getElementById('brush-size-val').textContent = state.brushSize;
   });
 
   // Symmetry checkboxes
   const symMap = {
-    "sym-translation-x": "translationX",
-    "sym-translation-y": "translationY",
-    "sym-mirror-x": "mirrorX",
-    "sym-mirror-y": "mirrorY",
-    "sym-diagonal": "diagonal",
+    'sym-translation-x': 'translationX',
+    'sym-translation-y': 'translationY',
+    'sym-mirror-x': 'mirrorX',
+    'sym-mirror-y': 'mirrorY',
+    'sym-diagonal': 'diagonal',
   };
   Object.entries(symMap).forEach(([id, key]) => {
-    document.getElementById(id).addEventListener("change", (e) => {
+    document.getElementById(id).addEventListener('change', (e) => {
       state.symmetry[key] = e.target.checked;
       invalidateSpectral();
     });
   });
   // Build per-angle rotation toggles
-  const rotContainer = document.getElementById("rot-toggles");
+  const rotContainer = document.getElementById('rot-toggles');
   const rotCheckboxes = {};
   for (const angDeg of ROT_ANGLES) {
-    const label = document.createElement("label");
-    label.className = "rot-toggle";
-    const cb = document.createElement("input");
-    cb.type = "checkbox";
+    const label = document.createElement('label');
+    label.className = 'rot-toggle';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
     cb.dataset.angle = angDeg;
-    cb.addEventListener("change", () => {
+    cb.addEventListener('change', () => {
       state.symmetry.rotations[angDeg] = cb.checked;
-      label.classList.toggle("active", cb.checked);
+      label.classList.toggle('active', cb.checked);
       invalidateSpectral();
     });
     rotCheckboxes[angDeg] = cb;
     label.appendChild(cb);
-    const span = document.createElement("span");
-    span.textContent = angDeg + "°";
+    const span = document.createElement('span');
+    span.textContent = angDeg + '°';
     label.appendChild(span);
     rotContainer.appendChild(label);
   }
@@ -1387,7 +1347,7 @@
       const on = anglesSet.has(a);
       state.symmetry.rotations[a] = on;
       rotCheckboxes[a].checked = on;
-      rotCheckboxes[a].parentElement.classList.toggle("active", on);
+      rotCheckboxes[a].parentElement.classList.toggle('active', on);
     }
     invalidateSpectral();
   }
@@ -1400,45 +1360,43 @@
     }
     return out;
   }
+  document.getElementById('btn-rot-clear').addEventListener('click', () => setRotations(new Set()));
   document
-    .getElementById("btn-rot-clear")
-    .addEventListener("click", () => setRotations(new Set()));
+    .getElementById('btn-rot-c4')
+    .addEventListener('click', () => setRotations(cyclicAngles(4)));
   document
-    .getElementById("btn-rot-c4")
-    .addEventListener("click", () => setRotations(cyclicAngles(4)));
+    .getElementById('btn-rot-c6')
+    .addEventListener('click', () => setRotations(cyclicAngles(6)));
   document
-    .getElementById("btn-rot-c6")
-    .addEventListener("click", () => setRotations(cyclicAngles(6)));
+    .getElementById('btn-rot-c8')
+    .addEventListener('click', () => setRotations(cyclicAngles(8)));
   document
-    .getElementById("btn-rot-c8")
-    .addEventListener("click", () => setRotations(cyclicAngles(8)));
-  document
-    .getElementById("btn-rot-c12")
-    .addEventListener("click", () => setRotations(cyclicAngles(12)));
+    .getElementById('btn-rot-c12')
+    .addEventListener('click', () => setRotations(cyclicAngles(12)));
   // ── Lattice translation symmetries ────────
-  const latTransListEl = document.getElementById("lat-trans-list");
+  const latTransListEl = document.getElementById('lat-trans-list');
   function renderLatTransList() {
-    latTransListEl.innerHTML = "";
+    latTransListEl.innerHTML = '';
     const list = state.symmetry.latticeTranslations;
     if (!list.length) {
-      const empty = document.createElement("div");
-      empty.style.cssText = "opacity:0.5; font-size:11px; padding:2px 0;";
-      empty.textContent = "(none)";
+      const empty = document.createElement('div');
+      empty.style.cssText = 'opacity:0.5; font-size:11px; padding:2px 0;';
+      empty.textContent = '(none)';
       latTransListEl.appendChild(empty);
       return;
     }
     list.forEach((t, i) => {
-      const row = document.createElement("div");
-      row.className = "lat-trans-item";
+      const row = document.createElement('div');
+      row.className = 'lat-trans-item';
       row.style.cssText =
-        "display:flex; gap:6px; align-items:center; font-size:11px; padding:1px 0;";
-      const lab = document.createElement("span");
-      lab.style.flex = "1";
+        'display:flex; gap:6px; align-items:center; font-size:11px; padding:1px 0;';
+      const lab = document.createElement('span');
+      lab.style.flex = '1';
       lab.textContent = `(${t.x.toFixed(3)}, ${t.y.toFixed(3)})`;
-      const rm = document.createElement("button");
-      rm.className = "mini-btn";
-      rm.textContent = "✕";
-      rm.addEventListener("click", () => {
+      const rm = document.createElement('button');
+      rm.className = 'mini-btn';
+      rm.textContent = '✕';
+      rm.addEventListener('click', () => {
         state.symmetry.latticeTranslations.splice(i, 1);
         invalidateSpectral();
         renderLatTransList();
@@ -1465,61 +1423,59 @@
     invalidateSpectral();
     renderLatTransList();
   }
-  document.getElementById("btn-lat-trans-add").addEventListener("click", () => {
-    const x = parseFloat(document.getElementById("lat-trans-x").value);
-    const y = parseFloat(document.getElementById("lat-trans-y").value);
+  document.getElementById('btn-lat-trans-add').addEventListener('click', () => {
+    const x = parseFloat(document.getElementById('lat-trans-x').value);
+    const y = parseFloat(document.getElementById('lat-trans-y').value);
     addLatTrans(x, y);
   });
-  document
-    .getElementById("btn-lat-trans-clear")
-    .addEventListener("click", () => setLatTrans([]));
-  document.getElementById("btn-lat-half").addEventListener("click", () =>
+  document.getElementById('btn-lat-trans-clear').addEventListener('click', () => setLatTrans([]));
+  document.getElementById('btn-lat-half').addEventListener('click', () =>
     setLatTrans([
       [0.5, 0],
       [0, 0.5],
-    ]),
+    ])
   );
-  document.getElementById("btn-lat-third").addEventListener("click", () =>
+  document.getElementById('btn-lat-third').addEventListener('click', () =>
     setLatTrans([
       [1 / 3, 0],
       [0, 1 / 3],
-    ]),
+    ])
   );
-  document.getElementById("btn-lat-quarter").addEventListener("click", () =>
+  document.getElementById('btn-lat-quarter').addEventListener('click', () =>
     setLatTrans([
       [0.25, 0],
       [0, 0.25],
-    ]),
+    ])
   );
   // Hexagonal-ish: two vectors at 60° apart
-  document.getElementById("btn-lat-hex").addEventListener("click", () =>
+  document.getElementById('btn-lat-hex').addEventListener('click', () =>
     setLatTrans([
       [0.5, 0],
       [0.25, Math.sqrt(3) / 4],
-    ]),
+    ])
   );
   renderLatTransList();
   // ── Color permutation UI ──────────────────
   const PERM_OPTIONS = [
-    { v: "+0", label: "+r" },
-    { v: "-0", label: "−r" },
-    { v: "+1", label: "+g" },
-    { v: "-1", label: "−g" },
-    { v: "+2", label: "+b" },
-    { v: "-2", label: "−b" },
+    { v: '+0', label: '+r' },
+    { v: '-0', label: '−r' },
+    { v: '+1', label: '+g' },
+    { v: '-1', label: '−g' },
+    { v: '+2', label: '+b' },
+    { v: '-2', label: '−b' },
   ];
-  const permSelects = document.querySelectorAll(".perm-sel");
+  const permSelects = document.querySelectorAll('.perm-sel');
   permSelects.forEach((sel) => {
     for (const opt of PERM_OPTIONS) {
-      const o = document.createElement("option");
+      const o = document.createElement('option');
       o.value = opt.v;
       o.textContent = opt.label;
       sel.appendChild(o);
     }
-    sel.addEventListener("change", () => {
+    sel.addEventListener('change', () => {
       const out = parseInt(sel.dataset.out);
       const v = sel.value;
-      const sign = v[0] === "-" ? -1 : 1;
+      const sign = v[0] === '-' ? -1 : 1;
       const src = parseInt(v.slice(1));
       state.colorPerm[out] = { src, sign };
       invalidateSpectral();
@@ -1529,7 +1485,7 @@
     permSelects.forEach((sel) => {
       const out = parseInt(sel.dataset.out);
       const e = state.colorPerm[out];
-      sel.value = (e.sign > 0 ? "+" : "-") + e.src;
+      sel.value = (e.sign > 0 ? '+' : '-') + e.src;
     });
   }
   function setPerm(arr) {
@@ -1538,139 +1494,130 @@
     invalidateSpectral();
   }
   syncPermUI();
-  document.getElementById("btn-perm-id").addEventListener("click", () =>
+  document.getElementById('btn-perm-id').addEventListener('click', () =>
     setPerm([
       { src: 0, sign: 1 },
       { src: 1, sign: 1 },
       { src: 2, sign: 1 },
-    ]),
+    ])
   );
-  document.getElementById("btn-perm-negate").addEventListener("click", () =>
+  document.getElementById('btn-perm-negate').addEventListener('click', () =>
     setPerm([
       { src: 0, sign: -1 },
       { src: 1, sign: -1 },
       { src: 2, sign: -1 },
-    ]),
+    ])
   );
-  document.getElementById("btn-perm-rgb-rot").addEventListener("click", () =>
+  document.getElementById('btn-perm-rgb-rot').addEventListener('click', () =>
     setPerm([
       { src: 1, sign: 1 },
       { src: 2, sign: 1 },
       { src: 0, sign: 1 },
-    ]),
+    ])
   );
-  document.getElementById("btn-perm-swap-rg").addEventListener("click", () =>
+  document.getElementById('btn-perm-swap-rg').addEventListener('click', () =>
     setPerm([
       { src: 1, sign: 1 },
       { src: 0, sign: 1 },
       { src: 2, sign: 1 },
-    ]),
+    ])
   );
-  document.getElementById("btn-perm-neg-g").addEventListener("click", () =>
+  document.getElementById('btn-perm-neg-g').addEventListener('click', () =>
     setPerm([
       { src: 0, sign: 1 },
       { src: 1, sign: -1 },
       { src: 2, sign: 1 },
-    ]),
+    ])
   );
 
   // Diffusion controls
-  const diffRateSlider = document.getElementById("diff-rate");
-  diffRateSlider.addEventListener("input", () => {
+  const diffRateSlider = document.getElementById('diff-rate');
+  diffRateSlider.addEventListener('input', () => {
     state.diffRate = parseInt(diffRateSlider.value) / 100;
-    document.getElementById("diff-rate-val").textContent =
-      state.diffRate.toFixed(2);
+    document.getElementById('diff-rate-val').textContent = state.diffRate.toFixed(2);
   });
 
-  const diffRenormSlider = document.getElementById("diff-renorm");
-  diffRenormSlider.addEventListener("input", () => {
+  const diffRenormSlider = document.getElementById('diff-renorm');
+  diffRenormSlider.addEventListener('input', () => {
     state.diffRenorm = parseInt(diffRenormSlider.value) / 100;
-    document.getElementById("diff-renorm-val").textContent =
-      state.diffRenorm.toFixed(2);
+    document.getElementById('diff-renorm-val').textContent = state.diffRenorm.toFixed(2);
   });
 
-  document
-    .getElementById("diff-neighborhood")
-    .addEventListener("change", (e) => {
-      state.neighborhood = parseInt(e.target.value);
-      invalidateSpectral();
-    });
+  document.getElementById('diff-neighborhood').addEventListener('change', (e) => {
+    state.neighborhood = parseInt(e.target.value);
+    invalidateSpectral();
+  });
 
-  document.getElementById("btn-step").addEventListener("click", () => {
+  document.getElementById('btn-step').addEventListener('click', () => {
     step();
     render();
   });
 
-  document.getElementById("btn-play").addEventListener("click", startPlay);
-  document.getElementById("btn-stop").addEventListener("click", stopPlay);
+  document.getElementById('btn-play').addEventListener('click', startPlay);
+  document.getElementById('btn-stop').addEventListener('click', stopPlay);
 
-  const speedSlider = document.getElementById("diff-speed");
-  speedSlider.addEventListener("input", () => {
+  const speedSlider = document.getElementById('diff-speed');
+  speedSlider.addEventListener('input', () => {
     state.fps = parseInt(speedSlider.value);
-    document.getElementById("diff-speed-val").textContent = state.fps;
+    document.getElementById('diff-speed-val').textContent = state.fps;
   });
 
   // ── Spectral / mode controls ──────────────
-  document.getElementById("diff-mode").addEventListener("change", (e) => {
+  document.getElementById('diff-mode').addEventListener('change', (e) => {
     state.diffMode = e.target.value;
-    document.getElementById("spectral-controls").style.display =
-      state.diffMode === "spectral" ? "" : "none";
-    document.getElementById("reaction-controls").style.display =
-      state.diffMode === "reaction" ? "" : "none";
+    document.getElementById('spectral-controls').style.display =
+      state.diffMode === 'spectral' ? '' : 'none';
+    document.getElementById('reaction-controls').style.display =
+      state.diffMode === 'reaction' ? '' : 'none';
     // Local-mode controls (rate, renorm, neighborhood) are hidden in spectral mode
-    document.getElementById("local-controls").style.display =
-      state.diffMode === "local" ? "" : "none";
+    document.getElementById('local-controls').style.display =
+      state.diffMode === 'local' ? '' : 'none';
   });
 
-  document.getElementById("spectral-filter").addEventListener("change", (e) => {
+  document.getElementById('spectral-filter').addEventListener('change', (e) => {
     state.spectralFilter = e.target.value;
   });
 
-  const spectralTSlider = document.getElementById("spectral-t");
-  spectralTSlider.addEventListener("input", () => {
+  const spectralTSlider = document.getElementById('spectral-t');
+  spectralTSlider.addEventListener('input', () => {
     state.spectralT = parseInt(spectralTSlider.value) / 100;
-    document.getElementById("spectral-t-val").textContent =
-      state.spectralT.toFixed(2);
+    document.getElementById('spectral-t-val').textContent = state.spectralT.toFixed(2);
   });
 
-  const spectralKSlider = document.getElementById("spectral-k");
-  spectralKSlider.addEventListener("input", () => {
+  const spectralKSlider = document.getElementById('spectral-k');
+  spectralKSlider.addEventListener('input', () => {
     state.spectralK = parseInt(spectralKSlider.value);
-    document.getElementById("spectral-k-val").textContent = state.spectralK;
+    document.getElementById('spectral-k-val').textContent = state.spectralK;
     invalidateSpectral();
   });
 
-  document
-    .getElementById("btn-recompute-spectral")
-    .addEventListener("click", () => {
-      invalidateSpectral();
-      ensureSpectral();
-    });
-
-  const rdFeedSlider = document.getElementById("rd-feed");
-  rdFeedSlider.addEventListener("input", () => {
-    state.rdFeed = parseInt(rdFeedSlider.value) / 1000;
-    document.getElementById("rd-feed-val").textContent =
-      state.rdFeed.toFixed(3);
+  document.getElementById('btn-recompute-spectral').addEventListener('click', () => {
+    invalidateSpectral();
+    ensureSpectral();
   });
-  const rdKillSlider = document.getElementById("rd-kill");
-  rdKillSlider.addEventListener("input", () => {
+
+  const rdFeedSlider = document.getElementById('rd-feed');
+  rdFeedSlider.addEventListener('input', () => {
+    state.rdFeed = parseInt(rdFeedSlider.value) / 1000;
+    document.getElementById('rd-feed-val').textContent = state.rdFeed.toFixed(3);
+  });
+  const rdKillSlider = document.getElementById('rd-kill');
+  rdKillSlider.addEventListener('input', () => {
     state.rdKill = parseInt(rdKillSlider.value) / 1000;
-    document.getElementById("rd-kill-val").textContent =
-      state.rdKill.toFixed(3);
+    document.getElementById('rd-kill-val').textContent = state.rdKill.toFixed(3);
   });
 
   // Canvas / grid controls
-  document.getElementById("grid-size").addEventListener("change", (e) => {
+  document.getElementById('grid-size').addEventListener('change', (e) => {
     stopPlay();
     state.gridSize = parseInt(e.target.value);
     initGrid();
   });
 
   // Aspect ratio
-  const aspectSlider = document.getElementById("aspect-ratio");
-  const aspectVal = document.getElementById("aspect-ratio-val");
-  aspectSlider.addEventListener("input", () => {
+  const aspectSlider = document.getElementById('aspect-ratio');
+  const aspectVal = document.getElementById('aspect-ratio-val');
+  aspectSlider.addEventListener('input', () => {
     // Slider range 25–400, value = ratio * 100
     state.aspectRatio = parseInt(aspectSlider.value) / 100;
     aspectVal.textContent = state.aspectRatio.toFixed(2);
@@ -1678,50 +1625,50 @@
     initGrid();
   });
 
-  document.getElementById("btn-clear").addEventListener("click", clearPixels);
-  document.getElementById("btn-random").addEventListener("click", randomPixels);
+  document.getElementById('btn-clear').addEventListener('click', clearPixels);
+  document.getElementById('btn-random').addEventListener('click', randomPixels);
   // ── Lattice geometry controls ──────────────
-  const latticeSelect = document.getElementById("lattice-mode");
-  latticeSelect.addEventListener("change", (e) => {
+  const latticeSelect = document.getElementById('lattice-mode');
+  latticeSelect.addEventListener('change', (e) => {
     state.lattice = e.target.value;
     rebuildLatticeMask();
     invalidateSpectral();
     render();
   });
-  const latticeCurvSlider = document.getElementById("lattice-curvature");
+  const latticeCurvSlider = document.getElementById('lattice-curvature');
   if (latticeCurvSlider) {
-    latticeCurvSlider.addEventListener("input", () => {
+    latticeCurvSlider.addEventListener('input', () => {
       state.latticeCurvature = parseInt(latticeCurvSlider.value) / 100;
-      document.getElementById("lattice-curvature-val").textContent =
+      document.getElementById('lattice-curvature-val').textContent =
         state.latticeCurvature.toFixed(2);
       invalidateSpectral();
     });
   }
-  const latticeRadSlider = document.getElementById("lattice-radius");
+  const latticeRadSlider = document.getElementById('lattice-radius');
   if (latticeRadSlider) {
-    latticeRadSlider.addEventListener("input", () => {
+    latticeRadSlider.addEventListener('input', () => {
       state.latticeRadius = parseInt(latticeRadSlider.value);
-      document.getElementById("lattice-radius-val").textContent =
-        state.latticeRadius === 0 ? "auto" : state.latticeRadius;
+      document.getElementById('lattice-radius-val').textContent =
+        state.latticeRadius === 0 ? 'auto' : state.latticeRadius;
       rebuildLatticeMask();
       invalidateSpectral();
       render();
     });
   }
 
-  document.getElementById("btn-save").addEventListener("click", () => {
-    const link = document.createElement("a");
-    link.download = "symmetry_diffusion.png";
-    link.href = canvas.toDataURL("image/png");
+  document.getElementById('btn-save').addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = 'symmetry_diffusion.png';
+    link.href = canvas.toDataURL('image/png');
     link.click();
   });
 
-  document.getElementById("show-grid").addEventListener("change", (e) => {
+  document.getElementById('show-grid').addEventListener('change', (e) => {
     state.showGrid = e.target.checked;
     render();
   });
 
-  window.addEventListener("resize", () => {
+  window.addEventListener('resize', () => {
     resizeCanvas();
     render();
   });

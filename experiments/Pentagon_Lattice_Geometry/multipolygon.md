@@ -3,11 +3,11 @@
 ## Overview
 
 The pinwheel construction of `pinwheels.md` produces a single composite tile (base + fins)
-that tiles the plane by isometry. But when we look closely at the *traversal* through a
+that tiles the plane by isometry. But when we look closely at the _traversal_ through a
 pinwheel tiling — say, walking from the centroid of one pinwheel to a neighbor — we notice
 something striking: the walk **is not direct**. To get from centroid $A$ of pinwheel $P_A$
-to centroid $B$ of pinwheel $P_B$, the path passes through *two distinct geometric regions
-in sequence*:
+to centroid $B$ of pinwheel $P_B$, the path passes through _two distinct geometric regions
+in sequence_:
 
 1. From centroid $A$ outward through the **fin region** of $P_A$ (the appendage on the
    side facing $P_B$),
@@ -15,13 +15,13 @@ in sequence*:
 3. Then inward from $P_B$'s fin to centroid $B$.
 
 In other words, the adjacency relation $A \sim B$ is mediated by a **pair of fins**, and
-the walk has a natural **four-stage structure**: *centroid-base → fin → fin → centroid-base*.
+the walk has a natural **four-stage structure**: _centroid-base → fin → fin → centroid-base_.
 
 This observation is the seed of a generalization. If we view the pinwheel not as a single
 polygon but as a **graph of two tile types** (base + fin) glued in a specific schedule, we
 can ask: what happens if we replace the schedule with an arbitrary one? What if the
-sequence of tile types along a walk is *base-A, base-B, base-A, base-B, ...* (alternating)?
-Or *base-A, base-B, base-C* (cyclic three-coloring)? Or, most generally, a walk on an
+sequence of tile types along a walk is _base-A, base-B, base-A, base-B, ..._ (alternating)?
+Or _base-A, base-B, base-C_ (cyclic three-coloring)? Or, most generally, a walk on an
 arbitrary **type graph** where each step selects the next tile type from a finite set?
 
 This document develops this generalization. The pinwheel becomes a special case of a much
@@ -63,9 +63,9 @@ We can summarize the adjacency structure of pinwheel tilings as a **type graph**
 
 - **Vertices** of $\mathcal{T}$: tile types $\{B, F\}$ (base, fin).
 - **Edges** of $\mathcal{T}$: allowed type-to-type adjacencies. In a pinwheel:
-    - $B \sim F$ (a base is adjacent to its own fins),
-    - $F \sim F$ (two fins from adjacent pinwheels share a hypotenuse),
-    - $B \sim B$ does **not** occur (no two bases share a boundary directly).
+  - $B \sim F$ (a base is adjacent to its own fins),
+  - $F \sim F$ (two fins from adjacent pinwheels share a hypotenuse),
+  - $B \sim B$ does **not** occur (no two bases share a boundary directly).
 
 Equivalently, in the language of walks: starting at type $B$, the allowed type-transitions
 are $B \to F$ and $F \to F$ and $F \to B$, but never $B \to B$ directly. The walk pattern
@@ -117,16 +117,16 @@ $\mathcal{T}$: each step in the dual graph corresponds to one edge of $\mathcal{
 
 Different choices of $\mathcal{T}$ recover or generalize many familiar tiling families:
 
-| $\mathcal{T}$                            | Tile types                | Example tiling                         |
-|------------------------------------------|---------------------------|----------------------------------------|
-| Single vertex with self-loop             | $\{P\}$                   | Square, hexagonal, pinwheel (as monotile) |
-| Two vertices, bipartite                  | $\{A, B\}$                | Checkerboard, truncated square tiling  |
-| Two vertices, pinwheel rules             | $\{B, F\}$                | Pinwheel polygon (as 2-tile system)    |
-| Three vertices, cyclic                   | $\{A, B, C\}$             | Trihexagonal, snub square              |
-| $k$-cycle on $k$ vertices                | $\{A_1, \dots, A_k\}$     | $k$-coloring tilings                   |
-| Complete graph $K_n$                     | $\{P_1, \dots, P_n\}$     | Arbitrary $n$-coloring tilings         |
-| Penrose substitution graph               | $\{\text{thin}, \text{thick}\}$ | Penrose rhombus tiling           |
-| Ammann–Beenker substitution graph        | $\{\text{rhomb}, \text{sq.}\}$  | Ammann–Beenker tiling            |
+| $\mathcal{T}$                     | Tile types                      | Example tiling                            |
+| --------------------------------- | ------------------------------- | ----------------------------------------- |
+| Single vertex with self-loop      | $\{P\}$                         | Square, hexagonal, pinwheel (as monotile) |
+| Two vertices, bipartite           | $\{A, B\}$                      | Checkerboard, truncated square tiling     |
+| Two vertices, pinwheel rules      | $\{B, F\}$                      | Pinwheel polygon (as 2-tile system)       |
+| Three vertices, cyclic            | $\{A, B, C\}$                   | Trihexagonal, snub square                 |
+| $k$-cycle on $k$ vertices         | $\{A_1, \dots, A_k\}$           | $k$-coloring tilings                      |
+| Complete graph $K_n$              | $\{P_1, \dots, P_n\}$           | Arbitrary $n$-coloring tilings            |
+| Penrose substitution graph        | $\{\text{thin}, \text{thick}\}$ | Penrose rhombus tiling                    |
+| Ammann–Beenker substitution graph | $\{\text{rhomb}, \text{sq.}\}$  | Ammann–Beenker tiling                     |
 
 Note that **substitution tilings** fit naturally into this framework when the type graph
 is decorated with **scale-change edges** (an edge $A \to B$ means "after inflation, a tile
@@ -139,10 +139,10 @@ An equivalent formulation views the type graph as the state-transition diagram o
 
 - **States** of $\mathcal{A}$: tile types $t \in V(\mathcal{T})$.
 - **Transitions** of $\mathcal{A}$: allowed type-to-type transitions $(t \to t') \in E(\mathcal{T})$.
-- **Input symbol** at each transition: the *direction* (or edge-class) along which the
+- **Input symbol** at each transition: the _direction_ (or edge-class) along which the
   transition occurs (e.g., "north", "across hypotenuse", "fin-side", etc.).
 
-A valid tiling is then a *labeling* of $\mathbb{R}^2$ by states of $\mathcal{A}$ such that
+A valid tiling is then a _labeling_ of $\mathbb{R}^2$ by states of $\mathcal{A}$ such that
 adjacent labels are consistent with the transitions of $\mathcal{A}$. This is the
 **shift-of-finite-type (SFT)** view of multi-polygon tilings, and it connects the
 framework directly to symbolic dynamics and Wang tile systems.
@@ -161,7 +161,7 @@ following structure.
 
 ### 3.2 Edges
 
-Each edge of $\mathcal{T}$ is labeled by the *boundary class* along which the transition
+Each edge of $\mathcal{T}$ is labeled by the _boundary class_ along which the transition
 occurs. For the rectangular pinwheel:
 
 - $(B, F, \text{leg-1})$: a base shares its short fin-leg edge with a fin.
@@ -239,13 +239,13 @@ common abstract pattern.
 The reconnection criteria of `affine.md` extend naturally:
 
 - **Criterion 1** (finite orientation group): both $P_A$ and $P_B$ must individually have
-  finite orientation groups, *and* the composite group generated by edge-reflections of
+  finite orientation groups, _and_ the composite group generated by edge-reflections of
   both tiles must be finite. For Archimedean tilings, this is automatic.
 - **Criterion 2** (single quadratic field): the coordinate field $\mathbb{F}$ must remain
   a simple quadratic extension. This restricts the pair $(P_A, P_B)$ — e.g., the pair
   (square, regular octagon) gives $\mathbb{F} = \mathbb{Q}(\sqrt{2})$ (one quadratic),
   but a pair (square, regular pentagon) would give $\mathbb{F} = \mathbb{Q}(\sqrt{5})$
-  *combined with* the square's $\mathbb{Q}$, still a single quadratic field — admissible.
+  _combined with_ the square's $\mathbb{Q}$, still a single quadratic field — admissible.
   A pair (regular pentagon, regular hexagon) would give $\mathbb{F} = \mathbb{Q}(\sqrt{3},
   \sqrt{5})$, a degree-4 extension — **inadmissible** by Criterion 2.
 
@@ -279,7 +279,7 @@ the type graph is the directed 3-cycle. Realizations include:
 - **Rhombitrihexagonal tiling**: triangles, squares, hexagons in a 3-coloring.
 - **Color-rotated pinwheel**: three pinwheels per supercell, related by $C_3$ symmetry.
 
-The reconnection criterion now requires the coordinate field of *all three* tiles to lie
+The reconnection criterion now requires the coordinate field of _all three_ tiles to lie
 in a single quadratic extension. For Archimedean tilings using $\{$triangle, square,
 hexagon$\}$, the union is $\mathbb{Q}(\sqrt{3})$, which is a single quadratic — admissible.
 
@@ -293,7 +293,7 @@ $\{S_1, S_2, \dots, S_k\}$, with no direct spoke-to-spoke adjacencies:
 
 This is reminiscent of the pinwheel architecture (base + multiple fins, each fin different)
 but generalized to allow $k$ distinct fin types per base. The walk pattern between two
-hubs is always *hub-spoke-hub*, a length-2 traversal — but the spoke can be of any of
+hubs is always _hub-spoke-hub_, a length-2 traversal — but the spoke can be of any of
 $k$ types.
 
 Star schedules naturally model **decorated pinwheels** where each fin carries a different
@@ -320,8 +320,8 @@ it models random tilings with $n$ tile types and unrestricted local adjacencies.
 
 A key conceptual point: in the pinwheel, the **centroid** of the base plays a privileged
 role as the "vertex" of the dual adjacency graph, and the fins are bridge regions between
-centroids. But in a general multi-polygon system, we can ask: *which tiles are centroid-
-bearing and which are bridges?*
+centroids. But in a general multi-polygon system, we can ask: _which tiles are centroid-
+bearing and which are bridges?_
 
 This is a **role assignment** on the type graph:
 
@@ -329,7 +329,7 @@ This is a **role assignment** on the type graph:
 - **Bridge types**: tiles whose presence is only as a "passage" between centroids.
 
 In the pinwheel, $B$ is a centroid type and $F$ is a bridge type. In a checkerboard, both
-$A$ and $B$ are centroid types (the dual graph has vertices for *every* tile).
+$A$ and $B$ are centroid types (the dual graph has vertices for _every_ tile).
 
 The role assignment changes the effective adjacency graph dramatically:
 
@@ -346,7 +346,7 @@ a tunable parameter for the effective dimension and spectral properties of the d
 
 In the pinwheel, contracting all $F$-tiles to "boundary regions" between $B$-tiles gives
 the dual adjacency graph of the base squares — a periodic 2D lattice with valence 4 (or
-higher, depending on how interlocking fins are counted). The fin tiles are *implicit* in
+higher, depending on how interlocking fins are counted). The fin tiles are _implicit_ in
 this view; they appear only as the "thickness" of the bonds between bases.
 
 Equivalently, one can keep the fins as explicit vertices of the dual graph, giving a
@@ -368,7 +368,7 @@ AdjacencyOracle(t, x, theta):
             yield (t', x', theta')   # placement of neighbor
 ```
 
-The oracle thus enumerates not just *positions* but also *types*. This makes the expansion
+The oracle thus enumerates not just _positions_ but also _types_. This makes the expansion
 family a walk on a **typed labeled graph**, with the type graph $\mathcal{T}$ providing the
 discrete combinatorial backbone and the matching rules providing the geometric realization.
 
@@ -396,7 +396,7 @@ measures the "depth" of the walk pattern:
 - $k$-fin pinwheel: type-distance $d(B, B) = 2k + 1$.
 
 Hitting times on the dual adjacency graph scale as the type-distance multiplied by the
-geometric walk length, giving a clean separation of *combinatorial* and *geometric*
+geometric walk length, giving a clean separation of _combinatorial_ and _geometric_
 contributions to spectral quantities.
 
 ---
@@ -406,7 +406,7 @@ contributions to spectral quantities.
 The framework of `affine.md` extends:
 
 - **Criterion 1'** (finite orientation group on $\mathcal{T}$): the orientation group
-  generated by the union of edge-reflections across *all* tile types must be finite.
+  generated by the union of edge-reflections across _all_ tile types must be finite.
 - **Criterion 2'** (single quadratic field): the union of coordinate fields of all tile
   types must lie in a single quadratic extension $\mathbb{F}$ of $\mathbb{Q}$.
 
@@ -417,7 +417,7 @@ These criteria interact subtly with the type graph $\mathcal{T}$:
   compactness is independent.
 - If $\mathcal{T}$ is connected but contains both "rational" and "irrational" tile types
   (e.g., a square base and a pentagonal fin), the combined field is determined by the
-  *union* of their fields. For a square + pentagon system, $\mathbb{F} = \mathbb{Q}(\sqrt{5})$,
+  _union_ of their fields. For a square + pentagon system, $\mathbb{F} = \mathbb{Q}(\sqrt{5})$,
   a single quadratic — admissible.
 - If $\mathcal{T}$ contains tile types from incompatible quadratic extensions (e.g., a
   pentagonal base and a hexagonal fin), $\mathbb{F} = \mathbb{Q}(\sqrt{3}, \sqrt{5})$, a
@@ -433,12 +433,12 @@ multi-polygon system can reconnect.
 Combining the type graph $\mathcal{T}$ with the algebraic criteria yields a refined
 hierarchy (compare `pinwheels.md` Section 6):
 
-| Level | $\mathcal{T}$ structure | Algebraic compatibility | Example |
-|-------|------------------------|-------------------------|---------|
-| 0     | Connected, finite      | All tiles in $\mathbb{Q}$ or single $\mathbb{Q}(\sqrt{d})$ | Square checkerboard, trihexagonal tiling |
-| 1     | Connected, finite      | Single quadratic, but angular deficit forces multi-sheeted cover | Penrose tiling (thin + thick rhombs in $\mathbb{Q}(\sqrt{5})$) |
-| 2     | Connected, finite      | Compatible quadratics on a subset; restrict to that subset | Mixed Archimedean tilings with one "free" tile type dropped |
-| 3     | Connected, infinite or incompatible quadratics | — | Random multi-tile system with arbitrary fins |
+| Level | $\mathcal{T}$ structure                        | Algebraic compatibility                                          | Example                                                        |
+| ----- | ---------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------- |
+| 0     | Connected, finite                              | All tiles in $\mathbb{Q}$ or single $\mathbb{Q}(\sqrt{d})$       | Square checkerboard, trihexagonal tiling                       |
+| 1     | Connected, finite                              | Single quadratic, but angular deficit forces multi-sheeted cover | Penrose tiling (thin + thick rhombs in $\mathbb{Q}(\sqrt{5})$) |
+| 2     | Connected, finite                              | Compatible quadratics on a subset; restrict to that subset       | Mixed Archimedean tilings with one "free" tile type dropped    |
+| 3     | Connected, infinite or incompatible quadratics | —                                                                | Random multi-tile system with arbitrary fins                   |
 
 The pinwheel ($\mathcal{T} = \{B, F\}$ with the pinwheel rules) is a Level 0 or Level 1
 instance depending on the symmetry order, as in `pinwheels.md` Section 6. The
@@ -468,7 +468,7 @@ square tiling. $\mathbb{F} = \mathbb{Q}(\sqrt{2})$. Level 0 reconnective.
 
 Type graph: $\{B, F_1, F_2\}$ with linear adjacency $B \leftrightarrow F_1 \leftrightarrow
 F_2 \leftrightarrow F_2 \leftrightarrow F_1 \leftrightarrow B$. The walk from base to base
-passes through *two* fin layers per side, giving type-distance 5.
+passes through _two_ fin layers per side, giving type-distance 5.
 
 Geometrically: a base polygon surrounded by a first fin ring, then a second fin ring, with
 the second fins of adjacent pinwheels sharing hypotenuses. The interior architecture is
@@ -558,7 +558,7 @@ Key subtleties:
    type graph?
 
 4. **Stochastic schedules**: When the type graph is decorated with transition
-   *probabilities* rather than allowed/forbidden edges, what is the typical behavior of
+   _probabilities_ rather than allowed/forbidden edges, what is the typical behavior of
    random multi-polygon tilings? Connections to random tilings, dimers, and statistical
    mechanics.
 

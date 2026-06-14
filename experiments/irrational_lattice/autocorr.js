@@ -5,7 +5,7 @@
 // those peaks (in lattice units) make natural "step" directions for a
 // random walk that tends to land the viewport on self-similar features.
 
-import { computeFFT2D } from "./fft.js";
+import { computeFFT2D } from './fft.js';
 
 // Radix-2 in-place FFT (re/im arrays). Mirrors the one in fft.js but kept
 // local so this module is self-contained for inverse transforms.

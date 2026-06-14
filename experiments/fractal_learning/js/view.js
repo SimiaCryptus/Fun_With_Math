@@ -3,9 +3,9 @@
 export class View {
   constructor(canvas, lossCanvas) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
+    this.ctx = canvas.getContext('2d');
     this.lossCanvas = lossCanvas;
-    this.lctx = lossCanvas.getContext("2d");
+    this.lctx = lossCanvas.getContext('2d');
     this.world = { cx: 0, cy: 0, scale: 200 };
     this.resize();
   }
@@ -35,9 +35,9 @@ export class View {
   drawGrid() {
     const ctx = this.ctx,
       c = this.canvas;
-    ctx.fillStyle = "#0a0d12";
+    ctx.fillStyle = '#0a0d12';
     ctx.fillRect(0, 0, c.width, c.height);
-    ctx.strokeStyle = "#161b22";
+    ctx.strokeStyle = '#161b22';
     ctx.lineWidth = 1;
     const step = 0.25;
     const [x0, y0] = this.s2w(0, c.height);
@@ -54,7 +54,7 @@ export class View {
       ctx.lineTo(c.width, sy);
     }
     ctx.stroke();
-    ctx.strokeStyle = "#30363d";
+    ctx.strokeStyle = '#30363d';
     ctx.beginPath();
     const [, sy0] = this.w2s(0, 0);
     const [sx0] = this.w2s(0, 0);
@@ -75,7 +75,7 @@ export class View {
     const dpr = window.devicePixelRatio || 1;
     // Halo pass (low alpha, larger)
     ctx.save();
-    ctx.globalCompositeOperation = "lighter";
+    ctx.globalCompositeOperation = 'lighter';
     ctx.fillStyle = color;
     ctx.globalAlpha = 0.35;
     const haloR = Math.max(r * 1.8, 2.5 * dpr);
@@ -130,9 +130,9 @@ export class View {
       const [sxy, syy] = this.w2s(fx + ey[0], fy + ey[1]);
       const [spx, spy] = this.w2s(fx + ex[0] + ey[0], fy + ex[1] + ey[1]);
 
-      const baseColor = frozen ? "#d29922" : "#ff7b72";
-      const exColor = frozen ? "#f0b429" : "#ff9d8a"; // x-basis (along A col1)
-      const eyColor = frozen ? "#b8860b" : "#ff5f74"; // y-basis (along A col2)
+      const baseColor = frozen ? '#d29922' : '#ff7b72';
+      const exColor = frozen ? '#f0b429' : '#ff9d8a'; // x-basis (along A col1)
+      const eyColor = frozen ? '#b8860b' : '#ff5f74'; // y-basis (along A col2)
 
       // Parallelogram outline (image of unit square under A, translated to p*)
       ctx.save();
@@ -158,7 +158,7 @@ export class View {
 
       // Fixed point marker
       ctx.fillStyle = baseColor;
-      ctx.strokeStyle = "#0a0d12";
+      ctx.strokeStyle = '#0a0d12';
       ctx.lineWidth = 1.5 * dpr;
       ctx.beginPath();
       ctx.arc(sx, sy, 5 * dpr, 0, Math.PI * 2);
@@ -168,11 +168,7 @@ export class View {
       // Label
       ctx.fillStyle = baseColor;
       ctx.font = `${11 * dpr}px ui-monospace, monospace`;
-      ctx.fillText(
-        "T" + (k + 1) + (frozen ? " ❄" : ""),
-        sx + 8 * dpr,
-        sy - 8 * dpr,
-      );
+      ctx.fillText('T' + (k + 1) + (frozen ? ' ❄' : ''), sx + 8 * dpr, sy - 8 * dpr);
     }
   }
 
@@ -189,7 +185,7 @@ export class View {
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
     ctx.lineWidth = width;
-    ctx.lineCap = "round";
+    ctx.lineCap = 'round';
     ctx.beginPath();
     ctx.moveTo(x0, y0);
     ctx.lineTo(x1, y1);
@@ -212,14 +208,14 @@ export class View {
     const w = this.lossCanvas.width,
       h = this.lossCanvas.height;
     const lctx = this.lctx;
-    lctx.fillStyle = "#0d1117";
+    lctx.fillStyle = '#0d1117';
     lctx.fillRect(0, 0, w, h);
     if (history.length < 2) return;
     const logs = history.map((v) => Math.log10(Math.max(v, 1e-10)));
     let lo = Math.min(...logs),
       hi = Math.max(...logs);
     if (hi - lo < 1e-6) hi = lo + 1e-6;
-    lctx.strokeStyle = "#58a6ff";
+    lctx.strokeStyle = '#58a6ff';
     lctx.lineWidth = 1.5;
     lctx.beginPath();
     for (let i = 0; i < logs.length; i++) {
@@ -229,8 +225,8 @@ export class View {
       else lctx.lineTo(x, y);
     }
     lctx.stroke();
-    lctx.fillStyle = "#7d8590";
-    lctx.font = "10px ui-monospace";
+    lctx.fillStyle = '#7d8590';
+    lctx.font = '10px ui-monospace';
     lctx.fillText(`log10 loss [${lo.toFixed(2)}, ${hi.toFixed(2)}]`, 4, 12);
   }
 }

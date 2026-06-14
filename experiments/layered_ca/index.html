@@ -10,7 +10,7 @@
         padding: 20px;
         background: linear-gradient(135deg, #0f0f23, #1a1a2e);
         color: #e0e0e0;
-        font-family: "Courier New", monospace;
+        font-family: 'Courier New', monospace;
         min-height: 100vh;
         overflow-x: auto;
       }
@@ -68,7 +68,7 @@
       }
 
       .binary-display {
-        font-family: "Courier New", monospace;
+        font-family: 'Courier New', monospace;
         font-size: 18px;
         color: #00ff88;
         background: rgba(0, 0, 0, 0.3);
@@ -113,7 +113,7 @@
         transform: scale(1.1);
       }
 
-      input[type="range"] {
+      input[type='range'] {
         width: 100%;
         height: 8px;
         border-radius: 4px;
@@ -122,7 +122,7 @@
         -webkit-appearance: none;
       }
 
-      input[type="range"]::-webkit-slider-thumb {
+      input[type='range']::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
         width: 20px;
@@ -133,7 +133,7 @@
         box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
       }
 
-      input[type="range"]::-moz-range-thumb {
+      input[type='range']::-moz-range-thumb {
         width: 20px;
         height: 20px;
         border-radius: 50%;
@@ -144,8 +144,8 @@
       }
 
       select,
-      input[type="number"],
-      input[type="text"] {
+      input[type='number'],
+      input[type='text'] {
         padding: 8px;
         border-radius: 8px;
         border: 1px solid #444;
@@ -155,8 +155,8 @@
         transition: all 0.3s ease;
       }
       select:focus,
-      input[type="number"]:focus,
-      input[type="text"]:focus {
+      input[type='number']:focus,
+      input[type='text']:focus {
         outline: none;
         border-color: #00ff88;
         box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
@@ -479,50 +479,32 @@
 
       /* Enhanced visual effects */
       .container::before {
-        content: "";
+        content: '';
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         background:
-          radial-gradient(
-            circle at 20% 50%,
-            rgba(0, 255, 136, 0.1) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 80% 20%,
-            rgba(0, 255, 136, 0.05) 0%,
-            transparent 50%
-          ),
-          radial-gradient(
-            circle at 40% 80%,
-            rgba(0, 255, 136, 0.03) 0%,
-            transparent 50%
-          );
+          radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(0, 255, 136, 0.03) 0%, transparent 50%);
         pointer-events: none;
         z-index: -1;
       }
 
       /* Improved slider styling */
-      input[type="range"] {
+      input[type='range'] {
         width: 100%;
         height: 8px;
         border-radius: 4px;
-        background: linear-gradient(
-          to right,
-          #333 0%,
-          #333 50%,
-          #555 50%,
-          #555 100%
-        );
+        background: linear-gradient(to right, #333 0%, #333 50%, #555 50%, #555 100%);
         outline: none;
         -webkit-appearance: none;
         position: relative;
       }
 
-      input[type="range"]::-webkit-slider-track {
+      input[type='range']::-webkit-slider-track {
         height: 8px;
         border-radius: 4px;
         background: linear-gradient(
@@ -533,35 +515,35 @@
           #333 100%
         );
       }
-       .home-link {
-         position: fixed;
-         top: 12px;
-         left: 12px;
-         z-index: 9999;
-         display: inline-flex;
-         align-items: center;
-         gap: 6px;
-         padding: 8px 14px;
-         font-family: "Courier New", monospace;
-         font-size: 13px;
-         font-weight: bold;
-         color: #00ff88;
-         background: rgba(15, 15, 35, 0.92);
-         border: 1px solid rgba(0, 255, 136, 0.3);
-         border-radius: 8px;
-         text-decoration: none;
-         backdrop-filter: blur(8px);
-         transition: all 0.15s ease;
-       }
-       .home-link:hover {
-         background: rgba(0, 255, 136, 0.15);
-         border-color: #00ff88;
-         box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
-       }
+      .home-link {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 9999;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        font-weight: bold;
+        color: #00ff88;
+        background: rgba(15, 15, 35, 0.92);
+        border: 1px solid rgba(0, 255, 136, 0.3);
+        border-radius: 8px;
+        text-decoration: none;
+        backdrop-filter: blur(8px);
+        transition: all 0.15s ease;
+      }
+      .home-link:hover {
+        background: rgba(0, 255, 136, 0.15);
+        border-color: #00ff88;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      }
     </style>
   </head>
   <body>
-   <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
+    <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
     <div class="container">
       <h1>Binary Coded Layered Autonoma</h1>
 
@@ -644,25 +626,13 @@
 
         <div class="control-group">
           <label>Ant Activation Radius</label>
-          <input
-            type="range"
-            id="antActivationRadius"
-            min="0"
-            max="5"
-            value="2"
-          />
+          <input type="range" id="antActivationRadius" min="0" max="5" value="2" />
           <span id="antRadiusValue">2</span>
         </div>
 
         <div class="control-group">
           <label>Activation Probability</label>
-          <input
-            type="range"
-            id="activationProbability"
-            min="0"
-            max="100"
-            value="40"
-          />
+          <input type="range" id="activationProbability" min="0" max="100" value="40" />
           <span id="activationProbValue">40%</span>
         </div>
 
@@ -732,43 +702,37 @@
       <div class="info">
         <h3>Binary Coded Autonoma System</h3>
         <p>
-          <strong>Multi-Color Substrate:</strong> The ant moves on a grid with
-          2-8 different colored states. Each color corresponds to a bit in the
-          ant's movement rule.
+          <strong>Multi-Color Substrate:</strong> The ant moves on a grid with 2-8 different colored
+          states. Each color corresponds to a bit in the ant's movement rule.
         </p>
         <p>
-          <strong>Binary Movement Rule:</strong> For each substrate color, the
-          ant either turns Left (0) or Right (1) according to the binary rule.
-          The rule advances through bits modularly as the ant encounters
-          different colors.
+          <strong>Binary Movement Rule:</strong> For each substrate color, the ant either turns Left
+          (0) or Right (1) according to the binary rule. The rule advances through bits modularly as
+          the ant encounters different colors.
         </p>
         <p>
-          <strong>Life Activation System:</strong> A binary mask determines
-          which substrate colors can activate life, with two modes: Positive (+)
-          activation creates and sustains life while removing inhibition, while
-          Negative (-) activation kills life and creates inhibition zones that
-          prevent life from spawning. Inhibited cells decay over time with a 10%
-          probability per generation.
+          <strong>Life Activation System:</strong> A binary mask determines which substrate colors
+          can activate life, with two modes: Positive (+) activation creates and sustains life while
+          removing inhibition, while Negative (-) activation kills life and creates inhibition zones
+          that prevent life from spawning. Inhibited cells decay over time with a 10% probability
+          per generation.
         </p>
         <p>
-          <strong>Multi-Ant System:</strong> Support for 1-8 ants with different
-          spawn patterns (center, corners, edges, random, grid) and
-          synchronization modes. Ants can share rules (synchronized), have
-          completely independent rules, or use offset versions of the main rule
+          <strong>Multi-Ant System:</strong> Support for 1-8 ants with different spawn patterns
+          (center, corners, edges, random, grid) and synchronization modes. Ants can share rules
+          (synchronized), have completely independent rules, or use offset versions of the main rule
           set.
         </p>
         <p>
-          <strong>Advanced Conway's Life:</strong> Life evolves only on marked
-          substrate cells, using extended neighborhood radius and customizable
-          birth/survival rules to account for the sparse, multi-colored topology
-          created by multiple ant interactions.
+          <strong>Advanced Conway's Life:</strong> Life evolves only on marked substrate cells,
+          using extended neighborhood radius and customizable birth/survival rules to account for
+          the sparse, multi-colored topology created by multiple ant interactions.
         </p>
         <p>
-          <strong>Emergent Complexity:</strong> The interplay between binary
-          movement rules, multi-color substrates, and selective life activation
-          creates incredibly rich and diverse patterns that can exhibit
-          highway-like structures, fractal boundaries, and complex life colonies
-          adapted to specific color patterns.
+          <strong>Emergent Complexity:</strong> The interplay between binary movement rules,
+          multi-color substrates, and selective life activation creates incredibly rich and diverse
+          patterns that can exhibit highway-like structures, fractal boundaries, and complex life
+          colonies adapted to specific color patterns.
         </p>
       </div>
     </div>
@@ -776,8 +740,8 @@
     <script>
       class BinaryCodedAutomata {
         constructor() {
-          this.canvas = document.getElementById("canvas");
-          this.ctx = this.canvas.getContext("2d");
+          this.canvas = document.getElementById('canvas');
+          this.ctx = this.canvas.getContext('2d');
           this.imageData = null;
           this.pixelData = null;
           this.gridSize = 150;
@@ -787,8 +751,8 @@
           this.isZoomed = false;
           // Multi-ant system
           this.numAnts = 1;
-          this.antSpawnMode = "center";
-          this.antSync = "synchronized";
+          this.antSpawnMode = 'center';
+          this.antSync = 'synchronized';
           this.ants = [];
 
           // Binary system parameters
@@ -797,18 +761,16 @@
           this.activationMask = [1, 0, 1, 0];
           this.activationMode = [1, 0, 1, 0]; // 1 = positive activation, 0 = negative activation
           this.colorPalette = [
-            "#000000",
-            "#333333",
-            "#666666",
-            "#999999",
-            "#cc3333",
-            "#3333cc",
-            "#33cc33",
-            "#cccc33",
+            '#000000',
+            '#333333',
+            '#666666',
+            '#999999',
+            '#cc3333',
+            '#3333cc',
+            '#33cc33',
+            '#cccc33',
           ];
-          this.colorPaletteRGB = this.colorPalette.map((hex) =>
-            this.hexToRgb(hex),
-          );
+          this.colorPaletteRGB = this.colorPalette.map((hex) => this.hexToRgb(hex));
 
           // Grid states
           this.substrateGrid = [];
@@ -845,129 +807,100 @@
 
         setupEventListeners() {
           document
-            .getElementById("startStop")
-            .addEventListener("click", () => this.toggleSimulation());
+            .getElementById('startStop')
+            .addEventListener('click', () => this.toggleSimulation());
+          document.getElementById('step').addEventListener('click', () => this.step());
+          document.getElementById('reset').addEventListener('click', () => this.reset());
+          document.getElementById('randomize').addEventListener('click', () => this.randomize());
           document
-            .getElementById("step")
-            .addEventListener("click", () => this.step());
+            .getElementById('randomizeRule')
+            .addEventListener('click', () => this.randomizeRule());
           document
-            .getElementById("reset")
-            .addEventListener("click", () => this.reset());
-          document
-            .getElementById("randomize")
-            .addEventListener("click", () => this.randomize());
-          document
-            .getElementById("randomizeRule")
-            .addEventListener("click", () => this.randomizeRule());
-          document
-            .getElementById("randomizeMask")
-            .addEventListener("click", () => this.randomizeMask());
+            .getElementById('randomizeMask')
+            .addEventListener('click', () => this.randomizeMask());
           // Canvas zoom functionality
-          this.canvas.addEventListener("click", (e) => {
+          this.canvas.addEventListener('click', (e) => {
             e.preventDefault();
             this.toggleZoom();
           });
           // ESC key to exit zoom
-          document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && this.isZoomed) {
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isZoomed) {
               this.toggleZoom();
             }
           });
           // Handle window resize when zoomed
-          window.addEventListener("resize", () => {
+          window.addEventListener('resize', () => {
             if (this.isZoomed) {
               this.updateZoomedCanvasSize();
             }
           });
 
-          document.getElementById("speed").addEventListener("input", (e) => {
+          document.getElementById('speed').addEventListener('input', (e) => {
             this.speed = parseInt(e.target.value);
             const speedText =
-              this.speed >= 1000
-                ? (this.speed / 1000).toFixed(1) + " s"
-                : this.speed + " ms";
-            document.getElementById("speedValue").textContent = speedText;
+              this.speed >= 1000 ? (this.speed / 1000).toFixed(1) + ' s' : this.speed + ' ms';
+            document.getElementById('speedValue').textContent = speedText;
           });
 
-          document
-            .getElementById("numColors")
-            .addEventListener("input", (e) => {
-              this.numColors = parseInt(e.target.value);
-              document.getElementById("numColorsValue").textContent =
-                this.numColors;
-              this.resizeRules();
-              this.updateColorGrid();
-              this.updateRuleEditors();
-            });
+          document.getElementById('numColors').addEventListener('input', (e) => {
+            this.numColors = parseInt(e.target.value);
+            document.getElementById('numColorsValue').textContent = this.numColors;
+            this.resizeRules();
+            this.updateColorGrid();
+            this.updateRuleEditors();
+          });
 
-          document.getElementById("numAnts").addEventListener("input", (e) => {
+          document.getElementById('numAnts').addEventListener('input', (e) => {
             this.numAnts = parseInt(e.target.value);
-            document.getElementById("numAntsValue").textContent = this.numAnts;
+            document.getElementById('numAntsValue').textContent = this.numAnts;
             this.initializeAnts();
           });
 
-          document
-            .getElementById("antSpawnMode")
-            .addEventListener("change", (e) => {
-              this.antSpawnMode = e.target.value;
-              this.initializeAnts();
-            });
+          document.getElementById('antSpawnMode').addEventListener('change', (e) => {
+            this.antSpawnMode = e.target.value;
+            this.initializeAnts();
+          });
 
-          document.getElementById("antSync").addEventListener("change", (e) => {
+          document.getElementById('antSync').addEventListener('change', (e) => {
             this.antSync = e.target.value;
             this.initializeAnts();
           });
 
-          document
-            .getElementById("lifeRadius")
-            .addEventListener("input", (e) => {
-              this.lifeRadius = parseInt(e.target.value);
-              document.getElementById("radiusValue").textContent =
-                this.lifeRadius;
-            });
+          document.getElementById('lifeRadius').addEventListener('input', (e) => {
+            this.lifeRadius = parseInt(e.target.value);
+            document.getElementById('radiusValue').textContent = this.lifeRadius;
+          });
 
-          document
-            .getElementById("birthRule")
-            .addEventListener("input", (e) => {
-              this.birthRule = parseInt(e.target.value);
-            });
+          document.getElementById('birthRule').addEventListener('input', (e) => {
+            this.birthRule = parseInt(e.target.value);
+          });
 
-          document
-            .getElementById("survivalMin")
-            .addEventListener("input", (e) => {
-              this.survivalMin = parseInt(e.target.value);
-            });
+          document.getElementById('survivalMin').addEventListener('input', (e) => {
+            this.survivalMin = parseInt(e.target.value);
+          });
 
-          document
-            .getElementById("survivalMax")
-            .addEventListener("input", (e) => {
-              this.survivalMax = parseInt(e.target.value);
-            });
+          document.getElementById('survivalMax').addEventListener('input', (e) => {
+            this.survivalMax = parseInt(e.target.value);
+          });
 
-          document
-            .getElementById("antActivationRadius")
-            .addEventListener("input", (e) => {
-              this.antActivationRadius = parseInt(e.target.value);
-              document.getElementById("antRadiusValue").textContent =
-                this.antActivationRadius;
-            });
+          document.getElementById('antActivationRadius').addEventListener('input', (e) => {
+            this.antActivationRadius = parseInt(e.target.value);
+            document.getElementById('antRadiusValue').textContent = this.antActivationRadius;
+          });
 
-          document
-            .getElementById("activationProbability")
-            .addEventListener("input", (e) => {
-              this.activationProbability = parseInt(e.target.value) / 100;
-              document.getElementById("activationProbValue").textContent =
-                parseInt(e.target.value) + "%";
-            });
+          document.getElementById('activationProbability').addEventListener('input', (e) => {
+            this.activationProbability = parseInt(e.target.value) / 100;
+            document.getElementById('activationProbValue').textContent =
+              parseInt(e.target.value) + '%';
+          });
 
-          document
-            .getElementById("gridSize")
-            .addEventListener("change", (e) => {
-              this.gridSize = parseInt(e.target.value);
-              this.updateCanvasSize();
-              this.initializeAnts();
-              this.reset();
-            });
+          document.getElementById('gridSize').addEventListener('change', (e) => {
+            this.gridSize = parseInt(e.target.value);
+            this.updateCanvasSize();
+            this.initializeAnts();
+            this.reset();
+          });
         }
 
         initializeAnts() {
@@ -996,7 +929,7 @@
           const centerY = Math.floor(this.gridSize / 2);
 
           switch (this.antSpawnMode) {
-            case "center":
+            case 'center':
               for (let i = 0; i < this.numAnts; i++) {
                 const angle = (i / this.numAnts) * 2 * Math.PI;
                 const radius = Math.min(5, i * 2);
@@ -1007,7 +940,7 @@
               }
               break;
 
-            case "corners":
+            case 'corners':
               const corners = [
                 { x: 10, y: 10 },
                 { x: this.gridSize - 10, y: 10 },
@@ -1023,7 +956,7 @@
               }
               break;
 
-            case "edges":
+            case 'edges':
               for (let i = 0; i < this.numAnts; i++) {
                 const edge = i % 4;
                 const progress = (i / this.numAnts) * 0.8 + 0.1;
@@ -1056,7 +989,7 @@
               }
               break;
 
-            case "grid":
+            case 'grid':
               const gridSize = Math.ceil(Math.sqrt(this.numAnts));
               const spacing = Math.floor(this.gridSize / (gridSize + 1));
               for (let i = 0; i < this.numAnts; i++) {
@@ -1069,7 +1002,7 @@
               }
               break;
 
-            case "random":
+            case 'random':
             default:
               for (let i = 0; i < this.numAnts; i++) {
                 positions.push({
@@ -1085,27 +1018,25 @@
 
         getAntColor(index) {
           const colors = [
-            "#ff3333",
-            "#33ff33",
-            "#3333ff",
-            "#ffff33",
-            "#ff33ff",
-            "#33ffff",
-            "#ff8833",
-            "#8833ff",
+            '#ff3333',
+            '#33ff33',
+            '#3333ff',
+            '#ffff33',
+            '#ff33ff',
+            '#33ffff',
+            '#ff8833',
+            '#8833ff',
           ];
           return colors[index % colors.length];
         }
 
         getAntRule(index) {
           switch (this.antSync) {
-            case "synchronized":
+            case 'synchronized':
               return [...this.antRule];
-            case "independent":
-              return Array.from({ length: this.numColors }, () =>
-                Math.floor(Math.random() * 2),
-              );
-            case "offset":
+            case 'independent':
+              return Array.from({ length: this.numColors }, () => Math.floor(Math.random() * 2));
+            case 'offset':
               const offsetRule = [...this.antRule];
               for (let i = 0; i < index; i++) {
                 offsetRule.push(offsetRule.shift());
@@ -1118,13 +1049,11 @@
 
         getAntActivationMask(index) {
           switch (this.antSync) {
-            case "synchronized":
+            case 'synchronized':
               return [...this.activationMask];
-            case "independent":
-              return Array.from({ length: this.numColors }, () =>
-                Math.floor(Math.random() * 2),
-              );
-            case "offset":
+            case 'independent':
+              return Array.from({ length: this.numColors }, () => Math.floor(Math.random() * 2));
+            case 'offset':
               const offsetMask = [...this.activationMask];
               for (let i = 0; i < index; i++) {
                 offsetMask.push(offsetMask.shift());
@@ -1136,13 +1065,11 @@
         }
         getAntActivationMode(index) {
           switch (this.antSync) {
-            case "synchronized":
+            case 'synchronized':
               return [...this.activationMode];
-            case "independent":
-              return Array.from({ length: this.numColors }, () =>
-                Math.floor(Math.random() * 2),
-              );
-            case "offset":
+            case 'independent':
+              return Array.from({ length: this.numColors }, () => Math.floor(Math.random() * 2));
+            case 'offset':
               const offsetMode = [...this.activationMode];
               for (let i = 0; i < index; i++) {
                 offsetMode.push(offsetMode.shift());
@@ -1173,12 +1100,12 @@
         }
 
         updateColorGrid() {
-          const grid = document.getElementById("colorGrid");
-          grid.innerHTML = "";
+          const grid = document.getElementById('colorGrid');
+          grid.innerHTML = '';
 
           for (let i = 0; i < this.numColors; i++) {
-            const cell = document.createElement("div");
-            cell.className = "color-cell";
+            const cell = document.createElement('div');
+            cell.className = 'color-cell';
             cell.style.backgroundColor = this.colorPalette[i];
             cell.title = `Color ${i}`;
             grid.appendChild(cell);
@@ -1186,54 +1113,50 @@
         }
 
         updateRuleEditors() {
+          this.updateRuleEditor('antRuleEditor', 'antRuleDisplay', this.antRule);
           this.updateRuleEditor(
-            "antRuleEditor",
-            "antRuleDisplay",
-            this.antRule,
-          );
-          this.updateRuleEditor(
-            "activationMaskEditor",
-            "activationMaskDisplay",
-            this.activationMask,
+            'activationMaskEditor',
+            'activationMaskDisplay',
+            this.activationMask
           );
           this.updateActivationModeEditor();
         }
 
         updateRuleEditor(editorId, displayId, rule) {
           const editor = document.getElementById(editorId);
-          editor.innerHTML = "";
+          editor.innerHTML = '';
 
           for (let i = 0; i < this.numColors; i++) {
-            const row = document.createElement("div");
-            row.className = "rule-row";
+            const row = document.createElement('div');
+            row.className = 'rule-row';
 
-            const colorIndicator = document.createElement("div");
-            colorIndicator.style.width = "20px";
-            colorIndicator.style.height = "20px";
+            const colorIndicator = document.createElement('div');
+            colorIndicator.style.width = '20px';
+            colorIndicator.style.height = '20px';
             colorIndicator.style.backgroundColor = this.colorPalette[i];
-            colorIndicator.style.border = "1px solid #666";
-            colorIndicator.style.borderRadius = "3px";
+            colorIndicator.style.border = '1px solid #666';
+            colorIndicator.style.borderRadius = '3px';
 
-            const bit = document.createElement("div");
-            bit.className = `rule-bit ${rule[i] ? "active" : ""}`;
+            const bit = document.createElement('div');
+            bit.className = `rule-bit ${rule[i] ? 'active' : ''}`;
             bit.textContent = rule[i];
-            bit.addEventListener("click", () => {
+            bit.addEventListener('click', () => {
               rule[i] = 1 - rule[i];
               bit.textContent = rule[i];
-              bit.className = `rule-bit ${rule[i] ? "active" : ""}`;
+              bit.className = `rule-bit ${rule[i] ? 'active' : ''}`;
 
-              if (editorId === "antRuleEditor") {
+              if (editorId === 'antRuleEditor') {
                 this.antRule[i] = rule[i];
-              } else if (editorId === "activationMaskEditor") {
+              } else if (editorId === 'activationMaskEditor') {
                 this.activationMask[i] = rule[i];
               }
               this.updateRuleDisplay();
 
-              label.textContent = `Color ${i}: ${editorId.includes("antRule") ? (rule[i] ? "Right" : "Left") : rule[i] ? "Activate" : "No Effect"}`;
+              label.textContent = `Color ${i}: ${editorId.includes('antRule') ? (rule[i] ? 'Right' : 'Left') : rule[i] ? 'Activate' : 'No Effect'}`;
             });
 
-            const label = document.createElement("span");
-            label.textContent = `Color ${i}: ${editorId.includes("antRule") ? (rule[i] ? "Right" : "Left") : rule[i] ? "Activate" : "No Effect"}`;
+            const label = document.createElement('span');
+            label.textContent = `Color ${i}: ${editorId.includes('antRule') ? (rule[i] ? 'Right' : 'Left') : rule[i] ? 'Activate' : 'No Effect'}`;
 
             row.appendChild(colorIndicator);
             row.appendChild(bit);
@@ -1242,60 +1165,54 @@
           }
         }
         updateActivationModeEditor() {
-          const container = document.getElementById(
-            "activationMaskEditor",
-          ).parentElement;
-          let modeEditor = document.getElementById("activationModeEditor");
+          const container = document.getElementById('activationMaskEditor').parentElement;
+          let modeEditor = document.getElementById('activationModeEditor');
           if (!modeEditor) {
-            const modeGroup = document.createElement("div");
-            modeGroup.style.marginTop = "15px";
-            const modeLabel = document.createElement("label");
-            modeLabel.textContent = "Activation Mode (+/-)";
-            modeLabel.style.color = "#00ff88";
-            modeLabel.style.fontWeight = "bold";
-            modeLabel.style.fontSize = "13px";
-            modeLabel.style.textTransform = "uppercase";
-            modeLabel.style.letterSpacing = "0.5px";
-            modeLabel.style.marginBottom = "5px";
-            modeLabel.style.display = "block";
-            modeEditor = document.createElement("div");
-            modeEditor.id = "activationModeEditor";
-            modeEditor.className = "rule-editor";
+            const modeGroup = document.createElement('div');
+            modeGroup.style.marginTop = '15px';
+            const modeLabel = document.createElement('label');
+            modeLabel.textContent = 'Activation Mode (+/-)';
+            modeLabel.style.color = '#00ff88';
+            modeLabel.style.fontWeight = 'bold';
+            modeLabel.style.fontSize = '13px';
+            modeLabel.style.textTransform = 'uppercase';
+            modeLabel.style.letterSpacing = '0.5px';
+            modeLabel.style.marginBottom = '5px';
+            modeLabel.style.display = 'block';
+            modeEditor = document.createElement('div');
+            modeEditor.id = 'activationModeEditor';
+            modeEditor.className = 'rule-editor';
             modeGroup.appendChild(modeLabel);
             modeGroup.appendChild(modeEditor);
             container.appendChild(modeGroup);
           }
-          modeEditor.innerHTML = "";
+          modeEditor.innerHTML = '';
           for (let i = 0; i < this.numColors; i++) {
-            const row = document.createElement("div");
-            row.className = "rule-row";
-            const colorIndicator = document.createElement("div");
-            colorIndicator.style.width = "20px";
-            colorIndicator.style.height = "20px";
+            const row = document.createElement('div');
+            row.className = 'rule-row';
+            const colorIndicator = document.createElement('div');
+            colorIndicator.style.width = '20px';
+            colorIndicator.style.height = '20px';
             colorIndicator.style.backgroundColor = this.colorPalette[i];
-            colorIndicator.style.border = "1px solid #666";
-            colorIndicator.style.borderRadius = "3px";
-            const modeButton = document.createElement("div");
-            modeButton.className = "rule-bit";
-            modeButton.style.width = "30px";
-            modeButton.textContent = this.activationMode[i] ? "+" : "-";
-            modeButton.style.backgroundColor = this.activationMode[i]
-              ? "#00ff88"
-              : "#ff3333";
-            modeButton.style.color = this.activationMode[i] ? "#000" : "#fff";
-            modeButton.style.fontWeight = "bold";
-            modeButton.style.fontSize = "16px";
-            modeButton.addEventListener("click", () => {
+            colorIndicator.style.border = '1px solid #666';
+            colorIndicator.style.borderRadius = '3px';
+            const modeButton = document.createElement('div');
+            modeButton.className = 'rule-bit';
+            modeButton.style.width = '30px';
+            modeButton.textContent = this.activationMode[i] ? '+' : '-';
+            modeButton.style.backgroundColor = this.activationMode[i] ? '#00ff88' : '#ff3333';
+            modeButton.style.color = this.activationMode[i] ? '#000' : '#fff';
+            modeButton.style.fontWeight = 'bold';
+            modeButton.style.fontSize = '16px';
+            modeButton.addEventListener('click', () => {
               this.activationMode[i] = 1 - this.activationMode[i];
-              modeButton.textContent = this.activationMode[i] ? "+" : "-";
-              modeButton.style.backgroundColor = this.activationMode[i]
-                ? "#00ff88"
-                : "#ff3333";
-              modeButton.style.color = this.activationMode[i] ? "#000" : "#fff";
-              label.textContent = `Color ${i}: ${this.activationMode[i] ? "Positive" : "Negative"}`;
+              modeButton.textContent = this.activationMode[i] ? '+' : '-';
+              modeButton.style.backgroundColor = this.activationMode[i] ? '#00ff88' : '#ff3333';
+              modeButton.style.color = this.activationMode[i] ? '#000' : '#fff';
+              label.textContent = `Color ${i}: ${this.activationMode[i] ? 'Positive' : 'Negative'}`;
             });
-            const label = document.createElement("span");
-            label.textContent = `Color ${i}: ${this.activationMode[i] ? "Positive (Normal)" : "Negative (Isolated)"}`;
+            const label = document.createElement('span');
+            label.textContent = `Color ${i}: ${this.activationMode[i] ? 'Positive (Normal)' : 'Negative (Isolated)'}`;
             row.appendChild(colorIndicator);
             row.appendChild(modeButton);
             row.appendChild(label);
@@ -1304,12 +1221,10 @@
         }
 
         updateRuleDisplay() {
-          document.getElementById("antRuleDisplay").textContent =
-            this.antRule.join("");
-          document.getElementById("activationMaskDisplay").textContent =
-            this.activationMask.join("");
-          document.getElementById("currentMask").textContent =
-            this.activationMask.join("");
+          document.getElementById('antRuleDisplay').textContent = this.antRule.join('');
+          document.getElementById('activationMaskDisplay').textContent =
+            this.activationMask.join('');
+          document.getElementById('currentMask').textContent = this.activationMask.join('');
         }
 
         updateCanvasSize() {
@@ -1321,22 +1236,12 @@
         }
 
         updateNormalCanvasSize() {
-          const maxCanvasSize = Math.min(
-            window.innerWidth * 0.8,
-            window.innerHeight * 0.6,
-            800,
-          );
-          this.cellSize = Math.max(
-            1,
-            Math.floor(maxCanvasSize / this.gridSize),
-          );
+          const maxCanvasSize = Math.min(window.innerWidth * 0.8, window.innerHeight * 0.6, 800);
+          this.cellSize = Math.max(1, Math.floor(maxCanvasSize / this.gridSize));
           const actualCanvasSize = this.gridSize * this.cellSize;
           this.canvas.width = actualCanvasSize;
           this.canvas.height = actualCanvasSize;
-          this.imageData = this.ctx.createImageData(
-            actualCanvasSize,
-            actualCanvasSize,
-          );
+          this.imageData = this.ctx.createImageData(actualCanvasSize, actualCanvasSize);
           this.pixelData = this.imageData.data;
         }
 
@@ -1344,32 +1249,26 @@
           const maxWidth = window.innerWidth - 40;
           const maxHeight = window.innerHeight - 40;
           const maxCanvasSize = Math.min(maxWidth, maxHeight);
-          this.cellSize = Math.max(
-            1,
-            Math.floor(maxCanvasSize / this.gridSize),
-          );
+          this.cellSize = Math.max(1, Math.floor(maxCanvasSize / this.gridSize));
           const actualCanvasSize = this.gridSize * this.cellSize;
           this.canvas.width = actualCanvasSize;
           this.canvas.height = actualCanvasSize;
-          this.imageData = this.ctx.createImageData(
-            actualCanvasSize,
-            actualCanvasSize,
-          );
+          this.imageData = this.ctx.createImageData(actualCanvasSize, actualCanvasSize);
           this.pixelData = this.imageData.data;
         }
         toggleZoom() {
           this.isZoomed = !this.isZoomed;
-          const container = document.querySelector(".canvas-container");
-          const hint = document.querySelector(".zoom-hint");
+          const container = document.querySelector('.canvas-container');
+          const hint = document.querySelector('.zoom-hint');
           if (this.isZoomed) {
-            container.classList.add("zoomed");
-            hint.textContent = "Click or press ESC to exit zoom";
-            document.body.style.overflow = "hidden";
+            container.classList.add('zoomed');
+            hint.textContent = 'Click or press ESC to exit zoom';
+            document.body.style.overflow = 'hidden';
             this.updateZoomedCanvasSize();
           } else {
-            container.classList.remove("zoomed");
-            hint.textContent = "Click to zoom";
-            document.body.style.overflow = "";
+            container.classList.remove('zoomed');
+            hint.textContent = 'Click to zoom';
+            document.body.style.overflow = '';
             this.updateNormalCanvasSize();
           }
           // Redraw with new size
@@ -1395,7 +1294,7 @@
             .fill(null)
             .map(() => new Array(this.gridSize).fill(0));
 
-          document.getElementById("startStop").textContent = "Start";
+          document.getElementById('startStop').textContent = 'Start';
           this.updateStats();
           this.draw();
         }
@@ -1405,40 +1304,34 @@
           this.randomizeMask();
 
           this.lifeRadius = Math.floor(Math.random() * 5) + 1;
-          document.getElementById("lifeRadius").value = this.lifeRadius;
-          document.getElementById("radiusValue").textContent = this.lifeRadius;
+          document.getElementById('lifeRadius').value = this.lifeRadius;
+          document.getElementById('radiusValue').textContent = this.lifeRadius;
 
           this.birthRule = Math.floor(Math.random() * 8) + 1;
-          document.getElementById("birthRule").value = this.birthRule;
+          document.getElementById('birthRule').value = this.birthRule;
 
           this.survivalMin = Math.floor(Math.random() * 4) + 1;
-          document.getElementById("survivalMin").value = this.survivalMin;
+          document.getElementById('survivalMin').value = this.survivalMin;
 
-          this.survivalMax =
-            this.survivalMin +
-            Math.floor(Math.random() * (8 - this.survivalMin));
-          document.getElementById("survivalMax").value = this.survivalMax;
+          this.survivalMax = this.survivalMin + Math.floor(Math.random() * (8 - this.survivalMin));
+          document.getElementById('survivalMax').value = this.survivalMax;
 
           this.antActivationRadius = Math.floor(Math.random() * 4) + 1;
-          document.getElementById("antActivationRadius").value =
-            this.antActivationRadius;
-          document.getElementById("antRadiusValue").textContent =
-            this.antActivationRadius;
+          document.getElementById('antActivationRadius').value = this.antActivationRadius;
+          document.getElementById('antRadiusValue').textContent = this.antActivationRadius;
 
           this.activationProbability = Math.random() * 0.8 + 0.1;
-          document.getElementById("activationProbability").value = Math.floor(
-            this.activationProbability * 100,
+          document.getElementById('activationProbability').value = Math.floor(
+            this.activationProbability * 100
           );
-          document.getElementById("activationProbValue").textContent =
-            Math.floor(this.activationProbability * 100) + "%";
+          document.getElementById('activationProbValue').textContent =
+            Math.floor(this.activationProbability * 100) + '%';
 
           this.speed = Math.floor(Math.random() * 500) + 10;
-          document.getElementById("speed").value = this.speed;
+          document.getElementById('speed').value = this.speed;
           const speedText =
-            this.speed >= 1000
-              ? (this.speed / 1000).toFixed(1) + " s"
-              : this.speed + " ms";
-          document.getElementById("speedValue").textContent = speedText;
+            this.speed >= 1000 ? (this.speed / 1000).toFixed(1) + ' s' : this.speed + ' ms';
+          document.getElementById('speedValue').textContent = speedText;
         }
 
         randomizeRule() {
@@ -1470,9 +1363,7 @@
 
         toggleSimulation() {
           this.running = !this.running;
-          document.getElementById("startStop").textContent = this.running
-            ? "Stop"
-            : "Start";
+          document.getElementById('startStop').textContent = this.running ? 'Stop' : 'Start';
 
           if (this.running) {
             this.run();
@@ -1561,10 +1452,7 @@
               const distance = Math.sqrt(distanceSquared);
               const activationChance = Math.max(0, 1 - distance / (radius + 1));
 
-              if (
-                Math.random() <
-                activationChance * this.activationProbability
-              ) {
+              if (Math.random() < activationChance * this.activationProbability) {
                 if (isPositiveMode) {
                   // Positive activation: create life and remove inhibition
                   this.lifeGrid[ny][nx] = 1;
@@ -1608,12 +1496,7 @@
                 continue;
               }
 
-              const neighbors = this.countLifeNeighbors(
-                x,
-                y,
-                radius,
-                radiusSquared,
-              );
+              const neighbors = this.countLifeNeighbors(x, y, radius, radiusSquared);
               const isAlive = this.lifeGrid[y][x] === 1;
               // Get the activation mode for this cell's substrate
               const cellMode = this.activationMode[substrateColor];
@@ -1621,21 +1504,15 @@
               if (isAlive) {
                 // For negative mode cells, they might need different survival rules
                 // or be more fragile
-                const survivalMin = cellMode
-                  ? this.survivalMin
-                  : Math.max(1, this.survivalMin - 1);
-                const survivalMax = cellMode
-                  ? this.survivalMax
-                  : this.survivalMax - 1;
+                const survivalMin = cellMode ? this.survivalMin : Math.max(1, this.survivalMin - 1);
+                const survivalMax = cellMode ? this.survivalMax : this.survivalMax - 1;
 
                 if (neighbors >= survivalMin && neighbors <= survivalMax) {
                   newLifeGrid[y][x] = 1;
                 }
               } else {
                 // Birth rules might also differ based on mode
-                const birthRule = cellMode
-                  ? this.birthRule
-                  : Math.max(2, this.birthRule - 1);
+                const birthRule = cellMode ? this.birthRule : Math.max(2, this.birthRule - 1);
 
                 if (neighbors === birthRule) {
                   newLifeGrid[y][x] = 1;
@@ -1689,10 +1566,10 @@
         }
 
         updateStats() {
-          document.getElementById("generation").textContent = this.generation;
+          document.getElementById('generation').textContent = this.generation;
 
           const totalSteps = this.ants.reduce((sum, ant) => sum + ant.steps, 0);
-          document.getElementById("antSteps").textContent = totalSteps;
+          document.getElementById('antSteps').textContent = totalSteps;
 
           let markedCount = 0;
           for (let y = 0; y < this.gridSize; y++) {
@@ -1700,7 +1577,7 @@
               if (this.markedGrid[y][x]) markedCount++;
             }
           }
-          document.getElementById("markedCells").textContent = markedCount;
+          document.getElementById('markedCells').textContent = markedCount;
 
           let liveCells = 0;
           for (let y = 0; y < this.gridSize; y++) {
@@ -1708,16 +1585,15 @@
               if (this.lifeGrid[y][x] === 1) liveCells++;
             }
           }
-          document.getElementById("liveCells").textContent = liveCells;
-          document.getElementById("numAntsDisplay").textContent = this.numAnts;
+          document.getElementById('liveCells').textContent = liveCells;
+          document.getElementById('numAntsDisplay').textContent = this.numAnts;
           let inhibitedCells = 0;
           for (let y = 0; y < this.gridSize; y++) {
             for (let x = 0; x < this.gridSize; x++) {
               if (this.inhibitionGrid[y][x] === 1) inhibitedCells++;
             }
           }
-          document.getElementById("inhibitedCells").textContent =
-            inhibitedCells;
+          document.getElementById('inhibitedCells').textContent = inhibitedCells;
         }
 
         draw() {
@@ -1751,18 +1627,10 @@
           for (let y = 0; y < this.gridSize; y++) {
             for (let x = 0; x < this.gridSize; x++) {
               if (this.lifeGrid[y][x] === 1) {
-                const startX = Math.floor(
-                  x * this.cellSize + this.cellSize * 0.1,
-                );
-                const startY = Math.floor(
-                  y * this.cellSize + this.cellSize * 0.1,
-                );
-                const endX = Math.floor(
-                  x * this.cellSize + this.cellSize * 0.9,
-                );
-                const endY = Math.floor(
-                  y * this.cellSize + this.cellSize * 0.9,
-                );
+                const startX = Math.floor(x * this.cellSize + this.cellSize * 0.1);
+                const startY = Math.floor(y * this.cellSize + this.cellSize * 0.1);
+                const endX = Math.floor(x * this.cellSize + this.cellSize * 0.9);
+                const endY = Math.floor(y * this.cellSize + this.cellSize * 0.9);
 
                 for (let py = startY; py < endY; py++) {
                   for (let px = startX; px < endX; px++) {
@@ -1786,18 +1654,9 @@
                     const pixelY = y * this.cellSize + py;
                     const index = (pixelY * this.canvas.width + pixelX) * 4;
                     // Blend with existing color
-                    this.pixelData[index] = Math.min(
-                      255,
-                      this.pixelData[index] + 80,
-                    ); // R
-                    this.pixelData[index + 1] = Math.max(
-                      0,
-                      this.pixelData[index + 1] - 40,
-                    ); // G
-                    this.pixelData[index + 2] = Math.max(
-                      0,
-                      this.pixelData[index + 2] - 40,
-                    ); // B
+                    this.pixelData[index] = Math.min(255, this.pixelData[index] + 80); // R
+                    this.pixelData[index + 1] = Math.max(0, this.pixelData[index + 1] - 40); // G
+                    this.pixelData[index + 2] = Math.max(0, this.pixelData[index + 2] - 40); // B
                   }
                 }
               }
@@ -1816,49 +1675,35 @@
               ant.x * this.cellSize + this.cellSize * 0.2,
               ant.y * this.cellSize + this.cellSize * 0.2,
               this.cellSize * 0.6,
-              this.cellSize * 0.6,
+              this.cellSize * 0.6
             );
 
-            this.ctx.fillStyle = "#ffff00";
-            this.ctx.shadowColor = "#ffff00";
+            this.ctx.fillStyle = '#ffff00';
+            this.ctx.shadowColor = '#ffff00';
             const centerX = ant.x * this.cellSize + this.cellSize * 0.5;
             const centerY = ant.y * this.cellSize + this.cellSize * 0.5;
             const dx = [0, 1, 0, -1][ant.dir] * this.cellSize * 0.3;
             const dy = [-1, 0, 1, 0][ant.dir] * this.cellSize * 0.3;
 
             this.ctx.beginPath();
-            this.ctx.arc(
-              centerX + dx,
-              centerY + dy,
-              this.cellSize * 0.1,
-              0,
-              2 * Math.PI,
-            );
+            this.ctx.arc(centerX + dx, centerY + dy, this.cellSize * 0.1, 0, 2 * Math.PI);
             this.ctx.fill();
 
             if (this.numAnts > 1) {
-              this.ctx.fillStyle = "#ffffff";
+              this.ctx.fillStyle = '#ffffff';
               this.ctx.font = `${Math.max(8, this.cellSize * 0.4)}px monospace`;
-              this.ctx.textAlign = "center";
-              this.ctx.fillText(
-                ant.id.toString(),
-                centerX,
-                centerY + this.cellSize * 0.15,
-              );
+              this.ctx.textAlign = 'center';
+              this.ctx.fillText(ant.id.toString(), centerX, centerY + this.cellSize * 0.15);
             }
           }
           this.ctx.shadowBlur = 0;
 
-          if (
-            !this.running &&
-            this.antActivationRadius > 0 &&
-            this.ants.length > 0
-          ) {
+          if (!this.running && this.antActivationRadius > 0 && this.ants.length > 0) {
             const firstAnt = this.ants[0];
             const centerX = firstAnt.x * this.cellSize + this.cellSize * 0.5;
             const centerY = firstAnt.y * this.cellSize + this.cellSize * 0.5;
 
-            this.ctx.strokeStyle = "rgba(255, 255, 0, 0.3)";
+            this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)';
             this.ctx.lineWidth = 1;
             this.ctx.beginPath();
             this.ctx.arc(
@@ -1866,7 +1711,7 @@
               centerY,
               this.antActivationRadius * this.cellSize,
               0,
-              2 * Math.PI,
+              2 * Math.PI
             );
             this.ctx.stroke();
           }

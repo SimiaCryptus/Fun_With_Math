@@ -2,10 +2,10 @@
 
 This document summarizes the computational experiments performed in
 `experiment.mac` (output recorded in `logs/experiment_*.log`) for the
-paper *Emergent Fractional Dimensionality and Spinor-Like Holonomy in
-Multi-Sheeted Pentagon Tilings* (`idea.md`). While `analysis.mac`
-verifies the *symbolic identities* underpinning the construction,
-`experiment.mac` performs *constructive numerical experiments* on
+paper _Emergent Fractional Dimensionality and Spinor-Like Holonomy in
+Multi-Sheeted Pentagon Tilings_ (`idea.md`). While `analysis.mac`
+verifies the _symbolic identities_ underpinning the construction,
+`experiment.mac` performs _constructive numerical experiments_ on
 concrete instances of the multi-sheeted n-gon graph, built in exact
 $\mathbb{Q}(\sqrt{5})$ arithmetic (for $n = 5$).
 
@@ -32,7 +32,7 @@ pentagon, BFS expansion to depth 3 under the **signed-3** vortex
 rule produced:
 
 | Quantity                   | Value                                 |
-|----------------------------|---------------------------------------|
+| -------------------------- | ------------------------------------- |
 | Cluster size $N$           | 156 cells                             |
 | Sheets occupied            | $\{-3,-2,-1,0,1,2,3\}$ (7 sheets)     |
 | Min / mean / max degree    | 1 / 1.99 / 6                          |
@@ -43,9 +43,9 @@ rule produced:
 
 Per-sheet cell counts:
 
-| Sheet | $-3$ | $-2$ | $-1$ | 0  | 1  | 2  | 3 |
-|-------|------|------|------|----|----|----|---|
-| Cells | 4    | 20   | 38   | 47 | 31 | 15 | 1 |
+| Sheet | $-3$ | $-2$ | $-1$ | 0   | 1   | 2   | 3   |
+| ----- | ---- | ---- | ---- | --- | --- | --- | --- |
+| Cells | 4    | 20   | 38   | 47  | 31  | 15  | 1   |
 
 The signed-3 rule produces a genuinely bidirectional sheet spread
 (both $\pm$ shifts), giving 7 occupied sheets — substantially more
@@ -60,7 +60,7 @@ edges detected).
 The graph Laplacian $L = D - A$ was diagonalized in full:
 
 | Quantity                                    | Value     |
-|---------------------------------------------|-----------|
+| ------------------------------------------- | --------- |
 | Number of eigenvalues                       | 156       |
 | Smallest positive eigenvalue                | $0.02656$ |
 | **Spectral gap** (algebraic connectivity)   | $0.02656$ |
@@ -75,9 +75,9 @@ multi-sheet graph with weak inter-sheet bridges.
 
 Cumulative BFS volumes $N(\le r)$ from the origin:
 
-| $r$        | 0 | 1 | 2  | 3   |
-|------------|---|---|----|-----|
-| $N(\le r)$ | 1 | 6 | 31 | 156 |
+| $r$        | 0   | 1   | 2   | 3   |
+| ---------- | --- | --- | --- | --- |
+| $N(\le r)$ | 1   | 6   | 31  | 156 |
 
 Log-log fits:
 
@@ -94,7 +94,7 @@ two shells; the larger `xhuge` preset should give a much tighter fit.
 1000 walks of length 60 from the origin produced:
 
 | Quantity                                | Value                                     |
-|-----------------------------------------|-------------------------------------------|
+| --------------------------------------- | ----------------------------------------- |
 | MSD early-time slope                    | 0.262 ⇒ $d_w \approx 7.62$                |
 | MSD late-time slope                     | $\approx -0.017$ (boundary-saturated)     |
 | $P_0$ early-time slope                  | $-1.407$ ⇒ $d_{\text{spec}} \approx 2.81$ |
@@ -115,7 +115,7 @@ The cluster is locally tree-like at this depth: 0 triangles,
 mean clustering coefficient 0.0.
 
 Holonomy cannot be measured without cycles. The signed-3 rule
-achieves its rich sheet structure by *spreading* the cluster across
+achieves its rich sheet structure by _spreading_ the cluster across
 7 sheets in a tree pattern, deferring loop closure to larger BFS
 depths. To observe genuine spinor/anyonic holonomy with this rule,
 the `large` preset (BFS 4+) is required.
@@ -127,7 +127,7 @@ The default $B2/S12$ rule from a 3-cell seed settles into a 3-cell
 The **panel survey** of 15 outer-totalistic rules:
 
 | Class      | Count |
-|------------|-------|
+| ---------- | ----- |
 | Extinct    | 9     |
 | Still life | 6     |
 | Periodic   | 0     |
@@ -150,7 +150,7 @@ a larger BFS depth is needed to provide running room.
 Twelve vortex rules were compared on depth-3 clusters:
 
 | $\tau$-rule        | Cells | Sheets | Mean deg. |
-|--------------------|-------|--------|-----------|
+| ------------------ | ----- | ------ | --------- |
 | `none` (flat)      | 156   | 1      | 1.99      |
 | `every3` (default) | 156   | 4      | 1.99      |
 | `every2`           | 156   | 4      | 1.99      |
@@ -168,8 +168,8 @@ The **signed-3** and **signed-n** rules tie for the most sheets (7);
 all other rules produce 4 sheets. At this BFS depth, all rules yield
 the same cell count and mean degree — only the sheet structure
 differs, which is exactly what the multi-sheeted construction
-predicts: $\tau$ controls the *vertical* (sheet) degree of freedom
-while leaving the *horizontal* (geometric) structure invariant.
+predicts: $\tau$ controls the _vertical_ (sheet) degree of freedom
+while leaving the _horizontal_ (geometric) structure invariant.
 
 No nontrivial holonomy was detected for any rule because no cycles
 exist at this depth.
@@ -177,7 +177,7 @@ exist at this depth.
 ## 8. Structural Patterns (Sections 13–14)
 
 | Quantity                    | Value |
-|-----------------------------|-------|
+| --------------------------- | ----- |
 | Triangle count              | 0     |
 | Mean clustering coefficient | 0.0   |
 | Girth through origin        | $> 8$ |
@@ -193,11 +193,11 @@ falloff (log-pop slope $-0.176$, geometric decay rate $r \approx 0.84$).
 ## 9. Cut-and-Project Acceptance Window (Section 17)
 
 Of the 156 cluster cells, **96 (61.5%)** fall inside the cut-and-project
-acceptance window. Building a depth-3 cluster *restricted* to
+acceptance window. Building a depth-3 cluster _restricted_ to
 acceptance-window cells yields:
 
 | Quantity                               | Value            |
-|----------------------------------------|------------------|
+| -------------------------------------- | ---------------- |
 | Cap-window cluster size                | 156 cells        |
 | Cap-window sheets                      | $\{0, 1, 2, 3\}$ |
 | BFS volumes                            | 1, 6, 31, 156    |
@@ -231,7 +231,7 @@ this run.
 100 intra-sheet walks of length 60:
 
 | Quantity                                 | Value                                     |
-|------------------------------------------|-------------------------------------------|
+| ---------------------------------------- | ----------------------------------------- |
 | Intra-sheet MSD slope                    | 0.603 ⇒ $d_w^{\text{intra}} \approx 3.31$ |
 | $d_w^{\text{intra}} / d_w^{\text{full}}$ | 0.435                                     |
 | Mean sheet crossings per 60-step walk    | 39.9 (0.666 per step)                     |
@@ -247,7 +247,7 @@ transport.
 Depth-3 $d_{\text{eff}}$ by $\tau$-rule:
 
 | $\tau$-rule  | $d_{\text{eff}}$ |
-|--------------|------------------|
+| ------------ | ---------------- |
 | All 12 rules | 2.369            |
 
 At this depth, **all $\tau$-rules give identical $d_{\text{eff}}$**:
@@ -265,7 +265,7 @@ is `none` (flat), with $|d_{\text{eff}} - 2.5| = 0.131$.
 Pairwise squared distances in the 156-cell cluster:
 
 | Quantity                          | Value |
-|-----------------------------------|-------|
+| --------------------------------- | ----- |
 | Total point pairs                 | 12090 |
 | Distinct squared distances        | 12195 |
 | High-multiplicity rings ($\ge 5$) | 0     |
@@ -304,7 +304,7 @@ each have 4 directions with maximum angular gap $1.85$ rad, well
 above the pinwheel threshold $\pi/n \approx 0.628$ rad.
 
 | Quantity                          | Value |
-|-----------------------------------|-------|
+| --------------------------------- | ----- |
 | Pinwheel classes / total examined | 0 / 8 |
 
 No pinwheel detected. As with the Erdős catalog and distance webs,
@@ -316,7 +316,7 @@ irrational angle accumulation has room to manifest.
 Commute-time estimates from origin to targets at BFS distance 1–3:
 
 | Target | Dist | Sheet | Commute estimate |
-|--------|------|-------|------------------|
+| ------ | ---- | ----- | ---------------- |
 | 2      | 1    | $-1$  | 54.6             |
 | 3      | 1    | 0     | 41.7             |
 | 7      | 2    | $-1$  | 89.8             |
@@ -333,7 +333,7 @@ one expects slope $> 1$.
 ## Summary of Dimensional Estimates
 
 | Quantity             | Method              | Value                     |
-|----------------------|---------------------|---------------------------|
+| -------------------- | ------------------- | ------------------------- |
 | $d_{\text{eff}}$     | BFS interior        | **2.369**                 |
 | $d_{\text{eff}}$     | BFS full            | 2.901                     |
 | $d_{\text{eff}}$     | Cap-window, depth 3 | 2.369                     |

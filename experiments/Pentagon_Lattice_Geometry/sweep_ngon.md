@@ -43,7 +43,7 @@ The sweep configuration in the recorded log uses:
 Reproduced from `sweep_ngon.log`:
 
 | n     | N       | mean deg | d_eff (BFS interior) | d_eff (full) | d_w      | d_spec (P₀) | d_spec (KPM low-λ) | d_spec (KPM CDF) | vortex edges | CA final pop |
-|-------|---------|----------|----------------------|--------------|----------|-------------|--------------------|------------------|--------------|--------------|
+| ----- | ------- | -------- | -------------------- | ------------ | -------- | ----------- | ------------------ | ---------------- | ------------ | ------------ |
 | 3     | 40      | 1.95     | 1.70                 | 2.05         | 6.34     | 1.92        | 0.96               | 1.04             | 26           | 30           |
 | 4     | 85      | 1.98     | 2.07                 | 2.52         | 6.38     | 2.38        | 1.01               | 1.07             | 56           | 64           |
 | **5** | **156** | **1.99** | **2.37**             | **2.90**     | **7.62** | **2.81**    | **1.08**           | **1.10**         | **103**      | **3**        |
@@ -134,7 +134,7 @@ quantitative shrinking foreseen qualitatively in `analysis.md` §12.2.
 Across the sweep, both KPM-based estimators give:
 
 | Estimator            | Range over n=3..12 | Mean ± std  |
-|----------------------|--------------------|-------------|
+| -------------------- | ------------------ | ----------- |
 | d_spec (low-λ slope) | 0.96 – 1.18        | 1.09 ± 0.07 |
 | d_spec (CDF slope)   | 1.04 – 1.27        | 1.15 ± 0.08 |
 
@@ -178,7 +178,7 @@ The default CA rule scales as `B⌊n/3⌋/S(⌊n/3⌋−1, ⌊n/3⌋)`. Final po
 default seed (origin + 2 neighbors, T = 16):
 
 | n     | default rule | final pop | qualitative fate                            |
-|-------|--------------|-----------|---------------------------------------------|
+| ----- | ------------ | --------- | ------------------------------------------- |
 | 3     | B1/S01       | 30        | grows then saturates (still life)           |
 | 4     | B2/S12       | 64        | grows then saturates (still life)           |
 | **5** | **B2/S12**   | **3**     | **still life from start (pentagon-stable)** |
@@ -329,7 +329,7 @@ plotting tools. The CSV is reproduced verbatim at the end of `sweep_ngon.log`.
 The sweep machine-verifies the following claims from `idea.md`:
 
 | Claim in `idea.md`                                  | Sweep observation                                       |
-|-----------------------------------------------------|---------------------------------------------------------|
+| --------------------------------------------------- | ------------------------------------------------------- |
 | Pentagon (n = 5) is the canonical fractional regime | d_eff(5) = 2.37, closest to midpoint 2.5 in the sweep   |
 | d_eff ∈ (2, 3) for the fractional regime (§4.2)     | Holds strictly for n ∈ {4, 5, 6, 7}                     |
 | d_spec < d_eff (sub-diffusive, §4.2)                | KPM confirms d_spec ≈ 1.1 < d_eff for every n           |
@@ -341,4 +341,3 @@ The sweep machine-verifies the following claims from `idea.md`:
 The sweep therefore constitutes a **cross-polygon empirical validation** of the
 multi-sheeted construction of `idea.md`, complementing the symbolic verification of
 `analysis.md` and the single-polygon depth of `experiment.mac`.
-

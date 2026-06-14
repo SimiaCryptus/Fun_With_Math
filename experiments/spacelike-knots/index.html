@@ -37,8 +37,8 @@
         --border-focus: #4a4f5a;
         --radius-sm: 4px;
         --radius-md: 8px;
-        --font-mono: "JetBrains Mono", monospace;
-        --font-sans: "Inter", sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+        --font-sans: 'Inter', sans-serif;
       }
 
       * {
@@ -177,7 +177,7 @@
       }
 
       select,
-      input[type="range"] {
+      input[type='range'] {
         width: 100%;
         background: transparent;
         cursor: pointer;
@@ -193,18 +193,18 @@
         font-size: 0.8rem;
       }
 
-      input[type="range"] {
+      input[type='range'] {
         -webkit-appearance: none;
       }
 
-      input[type="range"]::-webkit-slider-runnable-track {
+      input[type='range']::-webkit-slider-runnable-track {
         width: 100%;
         height: 4px;
         background: var(--border-color);
         border-radius: 2px;
       }
 
-      input[type="range"]::-webkit-slider-thumb {
+      input[type='range']::-webkit-slider-thumb {
         -webkit-appearance: none;
         height: 14px;
         width: 14px;
@@ -214,7 +214,7 @@
         transition: transform 0.1s;
       }
 
-      input[type="range"]::-webkit-slider-thumb:hover {
+      input[type='range']::-webkit-slider-thumb:hover {
         transform: scale(1.2);
       }
 
@@ -440,35 +440,35 @@
         padding: 0.5rem;
         font-size: 0.65rem;
       }
-     .home-link {
-       position: fixed;
-       top: 12px;
-       right: 12px;
-       z-index: 9999;
-       display: inline-flex;
-       align-items: center;
-       gap: 6px;
-       padding: 8px 14px;
-       font-family: var(--font-sans);
-       font-size: 13px;
-       font-weight: 600;
-       color: var(--text-primary);
-       background: rgba(26, 29, 36, 0.92);
-       border: 1px solid var(--border-color);
-       border-radius: var(--radius-sm);
-       text-decoration: none;
-       backdrop-filter: blur(8px);
-       transition: all 0.15s ease;
-     }
-     .home-link:hover {
-       background: var(--card-hover);
-       border-color: var(--accent-primary);
-       color: var(--accent-primary);
-     }
+      .home-link {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 9999;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        background: rgba(26, 29, 36, 0.92);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        text-decoration: none;
+        backdrop-filter: blur(8px);
+        transition: all 0.15s ease;
+      }
+      .home-link:hover {
+        background: var(--card-hover);
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+      }
     </style>
   </head>
   <body>
-   <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
+    <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
     <div id="loading">
       <div class="spinner"></div>
       <div>Initializing TensorFlow.js...</div>
@@ -508,61 +508,24 @@
         <div class="control-group" id="grp-c" style="display: none">
           <label
             >Time/Space Ratio (c)
-            <input
-              type="number"
-              class="value-input"
-              id="val-c"
-              value="1.0"
-              step="0.1"
+            <input type="number" class="value-input" id="val-c" value="1.0" step="0.1"
           /></label>
-          <input
-            type="range"
-            id="param-c"
-            min="0.1"
-            max="5.0"
-            step="0.1"
-            value="1.0"
-          />
+          <input type="range" id="param-c" min="0.1" max="5.0" step="0.1" value="1.0" />
         </div>
 
         <div class="control-group">
           <label
-            >Points (N)
-            <input
-              type="number"
-              class="value-input"
-              id="val-n"
-              value="64"
-              step="1"
+            >Points (N) <input type="number" class="value-input" id="val-n" value="64" step="1"
           /></label>
-          <input
-            type="range"
-            id="param-n"
-            min="16"
-            max="256"
-            step="1"
-            value="64"
-          />
+          <input type="range" id="param-n" min="16" max="256" step="1" value="64" />
         </div>
 
         <div class="control-group">
           <label
             >Control Points
-            <input
-              type="number"
-              class="value-input"
-              id="val-ctrl"
-              value="14"
-              step="1"
+            <input type="number" class="value-input" id="val-ctrl" value="14" step="1"
           /></label>
-          <input
-            type="range"
-            id="param-ctrl"
-            min="4"
-            max="32"
-            step="1"
-            value="14"
-          />
+          <input type="range" id="param-ctrl" min="4" max="32" step="1" value="14" />
         </div>
 
         <div class="panel-header">Physics Parameters</div>
@@ -570,81 +533,33 @@
         <div class="control-group">
           <label
             >Target Edge Length
-            <input
-              type="number"
-              class="value-input"
-              id="val-edge"
-              value="0.15"
-              step="0.01"
+            <input type="number" class="value-input" id="val-edge" value="0.15" step="0.01"
           /></label>
-          <input
-            type="range"
-            id="param-edge"
-            min="0.05"
-            max="0.5"
-            step="0.01"
-            value="0.15"
-          />
+          <input type="range" id="param-edge" min="0.05" max="0.5" step="0.01" value="0.15" />
         </div>
 
         <div class="control-group">
           <label
             >Edge Stiffness
-            <input
-              type="number"
-              class="value-input"
-              id="val-stiff"
-              value="10.0"
-              step="0.5"
+            <input type="number" class="value-input" id="val-stiff" value="10.0" step="0.5"
           /></label>
-          <input
-            type="range"
-            id="param-stiff"
-            min="0.1"
-            max="50"
-            step="0.1"
-            value="10.0"
-          />
+          <input type="range" id="param-stiff" min="0.1" max="50" step="0.1" value="10.0" />
         </div>
 
         <div class="control-group">
           <label
             >Repulsion Strength
-            <input
-              type="number"
-              class="value-input"
-              id="val-repel"
-              value="0.5"
-              step="0.05"
+            <input type="number" class="value-input" id="val-repel" value="0.5" step="0.05"
           /></label>
-          <input
-            type="range"
-            id="param-repel"
-            min="0"
-            max="5"
-            step="0.05"
-            value="0.5"
-          />
+          <input type="range" id="param-repel" min="0" max="5" step="0.05" value="0.5" />
         </div>
 
         <div class="control-group">
           <label
             >Repulsion Cutoff
-            <input
-              type="number"
-              class="value-input"
-              id="val-cutoff"
-              value="0.5"
-              step="0.05"
+            <input type="number" class="value-input" id="val-cutoff" value="0.5" step="0.05"
           /></label>
-          <input
-            type="range"
-            id="param-cutoff"
-            min="0.1"
-            max="2.0"
-            step="0.05"
-            value="0.5"
-          />
+          <input type="range" id="param-cutoff" min="0.1" max="2.0" step="0.05" value="0.5" />
         </div>
 
         <div class="panel-header">Optimization</div>
@@ -660,53 +575,27 @@
         <div class="control-group">
           <label
             >Learning Rate
-            <input
-              type="number"
-              class="value-input"
-              id="val-lr"
-              value="0.01"
-              step="0.001"
+            <input type="number" class="value-input" id="val-lr" value="0.01" step="0.001"
           /></label>
-          <input
-            type="range"
-            id="param-lr"
-            min="0.001"
-            max="0.1"
-            step="0.001"
-            value="0.01"
-          />
+          <input type="range" id="param-lr" min="0.001" max="0.1" step="0.001" value="0.01" />
         </div>
         <div class="panel-header">Metric Optimization</div>
         <div class="control-group">
           <div class="button-group">
-            <button id="btn-opt-time" class="btn-secondary">
-              Max Timelike
-            </button>
-            <button id="btn-opt-space" class="btn-secondary">
-              Max Spacelike
-            </button>
-            <button id="btn-opt-light" class="btn-secondary">
-              Max Lightlike
-            </button>
-            <button id="btn-align-time" class="btn-secondary">
-              Align Time Axis
-            </button>
+            <button id="btn-opt-time" class="btn-secondary">Max Timelike</button>
+            <button id="btn-opt-space" class="btn-secondary">Max Spacelike</button>
+            <button id="btn-opt-light" class="btn-secondary">Max Lightlike</button>
+            <button id="btn-align-time" class="btn-secondary">Align Time Axis</button>
           </div>
           <div class="math-block" style="margin-top: 0.5rem">
-            Optimizes rotation to minimize/maximize required c for lightlike
-            separation.
+            Optimizes rotation to minimize/maximize required c for lightlike separation.
           </div>
         </div>
 
         <div class="control-group">
           <label>
             Auto-Rotate
-            <input
-              type="checkbox"
-              id="chk-autorotate"
-              checked
-              style="width: auto"
-            />
+            <input type="checkbox" id="chk-autorotate" checked style="width: auto" />
           </label>
           <label>
             Show Edges
@@ -722,9 +611,7 @@
           <button id="btn-toggle" class="btn-primary">Start</button>
           <button id="btn-reset" class="btn-secondary">Reset</button>
           <button id="btn-step" class="btn-secondary">Step</button>
-          <button id="btn-distribute" class="btn-secondary">
-            Redistribute
-          </button>
+          <button id="btn-distribute" class="btn-secondary">Redistribute</button>
           <button id="btn-copy" class="btn-secondary">Copy</button>
           <button id="btn-paste" class="btn-secondary">Paste</button>
           <button id="btn-orbit-knot" class="btn-secondary">Orbit Knot</button>
@@ -744,28 +631,17 @@
         <div class="metrics-bar">
           <div class="metric-card">
             <span class="metric-label">Total Loss</span>
-            <span
-              class="metric-value"
-              id="metric-loss"
-              style="color: var(--danger)"
-              >--</span
-            >
+            <span class="metric-value" id="metric-loss" style="color: var(--danger)">--</span>
           </div>
           <div class="metric-card">
             <span class="metric-label">Edge Loss</span>
-            <span
-              class="metric-value"
-              id="metric-edge"
-              style="color: var(--accent-primary)"
+            <span class="metric-value" id="metric-edge" style="color: var(--accent-primary)"
               >--</span
             >
           </div>
           <div class="metric-card">
             <span class="metric-label">Repulsion</span>
-            <span
-              class="metric-value"
-              id="metric-repel"
-              style="color: var(--accent-tertiary)"
+            <span class="metric-value" id="metric-repel" style="color: var(--accent-tertiary)"
               >--</span
             >
           </div>
@@ -785,21 +661,13 @@
         <div class="metrics-bar">
           <div class="metric-card">
             <span class="metric-label">Min Distance</span>
-            <span
-              class="metric-value"
-              id="metric-min-dist"
-              style="color: var(--accent-secondary)"
+            <span class="metric-value" id="metric-min-dist" style="color: var(--accent-secondary)"
               >--</span
             >
           </div>
           <div class="metric-card">
             <span class="metric-label">Max Distance</span>
-            <span
-              class="metric-value"
-              id="metric-max-dist"
-              style="color: var(--warning)"
-              >--</span
-            >
+            <span class="metric-value" id="metric-max-dist" style="color: var(--warning)">--</span>
           </div>
           <div class="metric-card">
             <span class="metric-label">Avg Distance</span>

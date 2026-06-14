@@ -17,6 +17,7 @@ This comprehensive guide covers the parameter schemas, configuration options, an
 ## Overview
 
 All optimizers in the framework follow a consistent pattern:
+
 1. **Configuration struct** (`*Config`) - Defines all parameters
 2. **State struct** (`*State`) - Maintains internal optimization state
 3. **Optimizer struct** (`*Optimizer`) - Main optimization engine
@@ -146,6 +147,7 @@ let debug_optimizer = GDOptimizer::new(GDConfig::debug());
 ### Preset Configurations
 
 #### `GDConfig::strict()`
+
 - **Use case**: Ill-conditioned problems, production stability
 - **Learning rate**: 0.001 (very conservative)
 - **Momentum**: 0.0 (no momentum to avoid overshooting)
@@ -153,6 +155,7 @@ let debug_optimizer = GDOptimizer::new(GDConfig::debug());
 - **Adaptive LR**: Enabled for additional safety
 
 #### `GDConfig::lax()`
+
 - **Use case**: Well-conditioned problems, fast experimentation
 - **Learning rate**: 0.1 (aggressive)
 - **Momentum**: 0.9 with Nesterov acceleration
@@ -160,6 +163,7 @@ let debug_optimizer = GDOptimizer::new(GDConfig::debug());
 - **Adaptive LR**: Disabled for consistent behavior
 
 #### `GDConfig::rosenbrock()`
+
 - **Use case**: Non-convex optimization, narrow valleys
 - **Learning rate**: 0.001 (handles steep gradients)
 - **Momentum**: 0.9 with Nesterov (navigates valleys)
@@ -263,6 +267,7 @@ let dl_optimizer = AdamOptimizer::autoname(AdamConfig::deep_learning());
 ### Preset Configurations
 
 #### `AdamConfig::strict()`
+
 - **Use case**: High-precision optimization, scientific computing
 - **Learning rate**: 0.0001 (10x smaller than default)
 - **Schedule**: "adaptive" with automatic reduction
@@ -271,6 +276,7 @@ let dl_optimizer = AdamOptimizer::autoname(AdamConfig::deep_learning());
 - **Epsilon**: 1e-12 (higher precision)
 
 #### `AdamConfig::lax()`
+
 - **Use case**: Rapid prototyping, approximate solutions
 - **Learning rate**: 0.01 (10x larger than default)
 - **Schedule**: "exponential" decay
@@ -279,6 +285,7 @@ let dl_optimizer = AdamOptimizer::autoname(AdamConfig::deep_learning());
 - **Epsilon**: 1e-6 (lower precision for speed)
 
 #### `AdamConfig::deep_learning()`
+
 - **Use case**: Neural network training
 - **Learning rate**: 0.001 (proven effective for NNs)
 - **Schedule**: "cosine" annealing
@@ -428,6 +435,7 @@ let qqn_optimizer = LBFGSOptimizer::new(LBFGSConfig::for_qqn());
 ### Preset Configurations
 
 #### `LBFGSConfig::strict()`
+
 - **Use case**: Ill-conditioned problems, high precision
 - **History size**: 5 (reduces memory effects)
 - **Max step size**: 0.5 (conservative)
@@ -436,6 +444,7 @@ let qqn_optimizer = LBFGSOptimizer::new(LBFGSConfig::for_qqn());
 - **Recovery patience**: 10 (patient recovery)
 
 #### `LBFGSConfig::lax()`
+
 - **Use case**: Well-conditioned problems, fast convergence
 - **History size**: 20 (better approximation)
 - **Max step size**: 50.0 (large steps allowed)
@@ -444,6 +453,7 @@ let qqn_optimizer = LBFGSOptimizer::new(LBFGSConfig::for_qqn());
 - **Recovery patience**: 2 (quick recovery)
 
 #### `LBFGSConfig::for_qqn()`
+
 - **Use case**: Component within QQN algorithm
 - **History size**: 10 (balanced)
 - **Gradient clipping**: 0.0 (disabled - QQN handles)
@@ -539,6 +549,7 @@ let verbose_optimizer = QQNOptimizer::new(QQNConfig::verbose());
 ### Preset Configurations
 
 #### `QQNConfig::strict()`
+
 - **Use case**: Robust convergence, ill-conditioned problems
 - **L-BFGS history**: 20 (better approximation)
 - **Min L-BFGS iterations**: 5 (more steepest descent)
@@ -547,6 +558,7 @@ let verbose_optimizer = QQNOptimizer::new(QQNConfig::verbose());
 - **Gradient scale factor**: 1.0 (conservative)
 
 #### `QQNConfig::lax()`
+
 - **Use case**: Fast convergence, well-conditioned problems
 - **L-BFGS history**: 5 (computational efficiency)
 - **Min L-BFGS iterations**: 1 (quick L-BFGS activation)
@@ -555,6 +567,7 @@ let verbose_optimizer = QQNOptimizer::new(QQNConfig::verbose());
 - **Gradient scale factor**: 1.0 (aggressive)
 
 #### `QQNConfig::verbose()`
+
 - **Use case**: Debugging, analysis, education
 - **Verbose**: true (detailed logging)
 - **Otherwise**: Default parameters
@@ -650,6 +663,7 @@ let aggressive_optimizer = TrustRegionOptimizer::new(TrustRegionConfig::aggressi
 ### Preset Configurations
 
 #### `TrustRegionConfig::conservative()`
+
 - **Use case**: Stable convergence, sensitive problems
 - **Initial radius**: 0.5 (small initial region)
 - **Max radius**: 10.0 (limited expansion)
@@ -658,6 +672,7 @@ let aggressive_optimizer = TrustRegionOptimizer::new(TrustRegionConfig::aggressi
 - **Shrink factor**: 0.2 (aggressive shrinking)
 
 #### `TrustRegionConfig::aggressive()`
+
 - **Use case**: Fast convergence, well-behaved problems
 - **Initial radius**: 2.0 (large initial region)
 - **Max radius**: 1000.0 (unlimited expansion)

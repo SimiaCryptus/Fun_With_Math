@@ -5,36 +5,39 @@
     <title>Affine IFS Point-Set Fitting — Lab (TF.js)</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
     <link rel="stylesheet" href="./css/lab.css" />
-   <style>
-     .home-link {
-       position: fixed;
-       top: 12px;
-       right: 12px;
-       z-index: 9999;
-       display: inline-flex;
-       align-items: center;
-       gap: 6px;
-       padding: 8px 14px;
-       font-family: system-ui, -apple-system, sans-serif;
-       font-size: 13px;
-       font-weight: 600;
-       color: #e6edf3;
-       background: rgba(22, 27, 34, 0.92);
-       border: 1px solid #30363d;
-       border-radius: 8px;
-       text-decoration: none;
-       backdrop-filter: blur(8px);
-       transition: all 0.15s ease;
-     }
-     .home-link:hover {
-       background: rgba(48, 54, 61, 0.95);
-       border-color: #58a6ff;
-       color: #58a6ff;
-     }
-   </style>
+    <style>
+      .home-link {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 9999;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #e6edf3;
+        background: rgba(22, 27, 34, 0.92);
+        border: 1px solid #30363d;
+        border-radius: 8px;
+        text-decoration: none;
+        backdrop-filter: blur(8px);
+        transition: all 0.15s ease;
+      }
+      .home-link:hover {
+        background: rgba(48, 54, 61, 0.95);
+        border-color: #58a6ff;
+        color: #58a6ff;
+      }
+    </style>
   </head>
   <body>
-   <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
+    <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
     <div class="app">
       <!-- LEFT PANEL: controls -->
       <div class="panel left">
@@ -155,14 +158,10 @@
           <span class="pill">loss: <span id="lossVal">—</span></span>
           <span class="pill">iter: <span id="iterVal">0</span></span>
           <span class="pill"
-            >active θ: <span id="activeCount">0</span>/<span id="totalCount"
-              >0</span
-            ></span
+            >active θ: <span id="activeCount">0</span>/<span id="totalCount">0</span></span
           >
           <span style="flex: 1"></span>
-          <span class="small"
-            >click/drag draw • <span class="kbd">Space</span> step</span
-          >
+          <span class="small">click/drag draw • <span class="kbd">Space</span> step</span>
         </div>
         <canvas id="view"></canvas>
       </div>
@@ -171,15 +170,11 @@
       <div class="panel right">
         <h2>Transforms θ</h2>
         <div class="legend">
+          <div><span class="swatch" style="background: #3fb950"></span>target Q</div>
+          <div><span class="swatch" style="background: #58a6ff"></span>orbit P_N(θ)</div>
           <div>
-            <span class="swatch" style="background: #3fb950"></span>target Q
-          </div>
-          <div>
-            <span class="swatch" style="background: #58a6ff"></span>orbit P_N(θ)
-          </div>
-          <div>
-            <span class="swatch" style="background: #ff7b72"></span>fixed points
-            + A·ê basis (image of unit square)
+            <span class="swatch" style="background: #ff7b72"></span>fixed points + A·ê basis (image
+            of unit square)
           </div>
         </div>
         <div class="bulk-actions" style="margin-top: 8px">
@@ -191,12 +186,11 @@
 
         <h2>Notes</h2>
         <div class="small">
-          Each transform is T_k(x)=A_k x + b_k in ℝ². The orbit P_N(θ) is the
-          set of points obtained by applying length-N words (commutative ↔
-          multiset) starting from 0. Loss is symmetric Chamfer (squared NN
-          distance). Gradients flow through TensorFlow.js autodiff. Frozen
-          transforms are held constant — their gradients are masked to zero
-          before the optimizer step.
+          Each transform is T_k(x)=A_k x + b_k in ℝ². The orbit P_N(θ) is the set of points obtained
+          by applying length-N words (commutative ↔ multiset) starting from 0. Loss is symmetric
+          Chamfer (squared NN distance). Gradients flow through TensorFlow.js autodiff. Frozen
+          transforms are held constant — their gradients are masked to zero before the optimizer
+          step.
         </div>
       </div>
     </div>

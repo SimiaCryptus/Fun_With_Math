@@ -25,11 +25,7 @@ export function presetHeart(n = 250) {
   for (let i = 0; i < n; i++) {
     const t = (2 * Math.PI * i) / n;
     const x = 16 * Math.pow(Math.sin(t), 3);
-    const y =
-      13 * Math.cos(t) -
-      5 * Math.cos(2 * t) -
-      2 * Math.cos(3 * t) -
-      Math.cos(4 * t);
+    const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
     pts.push([x / 20, y / 20]);
   }
   return pts;

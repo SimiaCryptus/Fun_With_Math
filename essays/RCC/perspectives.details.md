@@ -180,7 +180,7 @@ The rational certificate framework produces approximations from a _specific engi
 
 For the binomial series for √k: g(N) = Θ(N), f(N) = Θ(ρ^N), so -log f(N) = Θ(N), giving μ_engine = Θ(1). This is consistent with Roth's theorem.
 
-For Gregory–Leibniz: g(N) = Θ(N), f(N) = Θ(1/N), so -log f(N) = Θ(log N), giving μ_engine = Θ(N/log N) → ∞. This reflects the _inefficiency_ of the engine, not a property of π itself.
+For Gregory–Leibniz: g(N) = Θ(N), f(N) = Θ(1/N), so -log f(N) = Θ(log N), giving μ*engine = Θ(N/log N) → ∞. This reflects the \_inefficiency* of the engine, not a property of π itself.
 
 This observation reinforces Problem 3: the engine complexity reflects engine design, not constant nature.
 
@@ -434,7 +434,7 @@ The proposed "denominator growth analyzer" is the most algorithmically challengi
 D_N ≤ lcm(d_0, d_1, ..., d_N)
 ```
 
-where d_k is the denominator of the k-th term. Computing this exactly requires tracking the lcm, which can be done symbolically. But the _asymptotic_ behavior of this lcm depends on the prime factorization structure of the denominators, which requires number-theoretic analysis beyond simple pattern matching.
+where d*k is the denominator of the k-th term. Computing this exactly requires tracking the lcm, which can be done symbolically. But the \_asymptotic* behavior of this lcm depends on the prime factorization structure of the denominators, which requires number-theoretic analysis beyond simple pattern matching.
 
 For the specific cases in the paper, the analysis is tractable. For a general catalog, it would require:
 

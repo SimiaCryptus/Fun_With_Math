@@ -64,7 +64,7 @@ The pentagonal lattice generates distances that fall into five algebraic classes
 corresponding to the five symmetry directions of the pentagon:
 
 | Class | Representative distance | Squared value        | Algebraic form          |
-|-------|-------------------------|----------------------|-------------------------|
+| ----- | ----------------------- | -------------------- | ----------------------- |
 | 0     | Edge length $s = 1$     | $1$                  | $1 \in \mathbb{Q}$      |
 | 1     | Short diagonal          | $\phi^2 = \phi + 1$  | $\frac{3+\sqrt{5}}{2}$  |
 | 2     | Long diagonal           | $\phi^4 = 3\phi + 2$ | $\frac{7+3\sqrt{5}}{2}$ |
@@ -346,7 +346,7 @@ Key properties of pentagonal distance webs:
    web $\mathcal{W}_1$ (the pentagonal adjacency graph); orange edges form the
    short-diagonal web $\mathcal{W}_\phi$.
 
-4. <svg viewBox="-180 -180 360 360" xmlns="http://www.w3.org/2000/svg" width="380" height="380">
+5. <svg viewBox="-180 -180 360 360" xmlns="http://www.w3.org/2000/svg" width="380" height="380">
    <defs>
      <style>
        .lbl { font: 10px sans-serif; fill: #333; }
@@ -545,16 +545,16 @@ computation (implementable as an extension of `experiment.mac`):
 Based on the geometry of the pentagonal lattice and the $\mathbb{Q}(\sqrt{5})$ norm form,
 the first several distance rings are predicted to be:
 
-| Ring $k$ | $\delta_k$ (exact)          | $\delta_k$ (decimal) | $|\mathcal{R}_k|$ | Notes |
-|----------|-----------------------------|----------------------|-------------------|------------------------------|
-| 1 | $1$                         | 1.000 | 5 | Edge length (unit)           |
-| 2 | $\phi^2 = \phi + 1$         | 2.618 | 5 | Short diagonal |
-| 3 | $2 + \phi$                  | 3.618 | 10 | Second-shell edge |
-| 4 | $\phi^4 = 3\phi + 2$        | 6.854 | 5 | Long diagonal |
-| 5 | $4 + \phi$                  | 5.618 | 10 | Mixed shell |
-| 6 | $2\phi^2 = 2\phi + 2$       | 5.236 | 10 | Double short diagonal |
-| 7 | $\phi^6 = 8\phi + 5$        | 17.944 | 5 | Third-order diagonal |
-| 8 | $3 + 2\phi$                 | 6.236 | 20 | High-multiplicity ring |
+| Ring $k$ | $\delta_k$ (exact)    | $\delta_k$ (decimal) | $   | \mathcal{R}\_k         | $   | Notes |
+| -------- | --------------------- | -------------------- | --- | ---------------------- | --- | ----- |
+| 1        | $1$                   | 1.000                | 5   | Edge length (unit)     |
+| 2        | $\phi^2 = \phi + 1$   | 2.618                | 5   | Short diagonal         |
+| 3        | $2 + \phi$            | 3.618                | 10  | Second-shell edge      |
+| 4        | $\phi^4 = 3\phi + 2$  | 6.854                | 5   | Long diagonal          |
+| 5        | $4 + \phi$            | 5.618                | 10  | Mixed shell            |
+| 6        | $2\phi^2 = 2\phi + 2$ | 5.236                | 10  | Double short diagonal  |
+| 7        | $\phi^6 = 8\phi + 5$  | 17.944               | 5   | Third-order diagonal   |
+| 8        | $3 + 2\phi$           | 6.236                | 20  | High-multiplicity ring |
 
 The high-multiplicity ring at $k = 8$ ($|\mathcal{R}_8| = 20$) is a signature of the
 norm-multiplicativity: the value $3 + 2\phi$ factors as $(\phi^2)^2 \cdot \phi^{-2}$ in
@@ -677,7 +677,7 @@ The comparison between the pentagonal and integer lattices for the Erdős proble
 summarized in the following table:
 
 | Property                          | Integer lattice $\mathbb{Z}^2$      | Pentagonal lattice $\mathcal{L}_5$ |
-|-----------------------------------|-------------------------------------|------------------------------------|
+| --------------------------------- | ----------------------------------- | ---------------------------------- |
 | Coordinate field                  | $\mathbb{Q}$                        | $\mathbb{Q}(\sqrt{5})$             |
 | Symmetry group                    | $D_4$ (4-fold)                      | $D_5$ (5-fold)                     |
 | Ring radius growth                | $\sqrt{n}$ (sum of two squares)     | $\phi^k$ (Fibonacci geometric)     |
@@ -958,7 +958,7 @@ prevents complete collapse.
 The main findings are:
 
 | Feature                                     | Consequence for Erdős problem                                |
-|---------------------------------------------|--------------------------------------------------------------|
+| ------------------------------------------- | ------------------------------------------------------------ |
 | $\mathbb{Q}(\sqrt{5})$ field                | Distances are algebraically paired by Galois conjugation     |
 | Fibonacci ring spacing ($\phi^2$)           | $O(\log n)$ distinct distances in a ball of $n$ points       |
 | $D_5$ symmetry                              | Every distance has multiplicity $\geq 5$                     |

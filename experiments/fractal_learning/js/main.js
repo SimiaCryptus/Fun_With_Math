@@ -1,35 +1,35 @@
 // Main lab entry point — wires UI, model, optimizer, and view together.
 
-import { IFSModel } from "./ifs-model.js";
-import { enumerate } from "./enumeration.js";
-import { makeLossFn } from "./loss.js";
-import { OptimizerAdam } from "./optimizer-adam.js";
-import { OptimizerLbfgs } from "./optimizer-lbfgs.js";
-import { OptimizerQQN } from "./optimizer-qqn.js";
-import { PRESETS, presetCircle } from "./presets.js";
-import { View } from "./view.js";
-import { TransformsPanel } from "./ui-transforms.js";
-import { commutativeOrbitSize } from "./orbit-commutative.js";
+import { IFSModel } from './ifs-model.js';
+import { enumerate } from './enumeration.js';
+import { makeLossFn } from './loss.js';
+import { OptimizerAdam } from './optimizer-adam.js';
+import { OptimizerLbfgs } from './optimizer-lbfgs.js';
+import { OptimizerQQN } from './optimizer-qqn.js';
+import { PRESETS, presetCircle } from './presets.js';
+import { View } from './view.js';
+import { TransformsPanel } from './ui-transforms.js';
+import { commutativeOrbitSize } from './orbit-commutative.js';
 
 const $ = (id) => document.getElementById(id);
 
 // ---------- TF backend ----------
 async function initTF() {
   try {
-    await tf.setBackend("webgl");
+    await tf.setBackend('webgl');
     await tf.ready();
   } catch {
-    await tf.setBackend("cpu");
+    await tf.setBackend('cpu');
     await tf.ready();
   }
-  $("backendInfo").textContent = `tf.js backend: ${tf.getBackend()}`;
+  $('backendInfo').textContent = `tf.js backend: ${tf.getBackend()}`;
 }
 
 // ---------- App state ----------
 const state = {
   K: 2,
   N: 7,
-  enumeration: "commutative",
+  enumeration: 'commutative',
   // `targetSource` is the user-provided target (drawn or preset). `target` is
   // a resampled version of length == orbit size, which is what the loss and
   // renderer actually consume. Keeping the source lets us re-resample when N
@@ -38,18 +38,18 @@ const state = {
   target: presetCircle(150),
   model: null,
   optimizer: null,
-  optimizerName: "adam",
+  optimizerName: 'adam',
   words: null,
-  wordsKey: "",
+  wordsKey: '',
   iter: 0,
   lastLoss: null,
   lossHistory: [],
   running: false,
   lossFn: null,
-  lossHparamSig: "",
+  lossHparamSig: '',
 };
 
-const view = new View($("view"), $("lossCanvas"));
+const view = new View($('view'), $('lossCanvas'));
 let panel = null;
 // ---------- target resampling ----------
 // Resample `src` to exactly `n` points. Deterministic given (src, n):
@@ -80,7 +80,7 @@ function getWords() {
     // Fast path: commutative enumeration uses the binary-power DP
     // (algo.md). We don't need the explicit word list at all; we mark
     // state.words = null and just track the orbit size for the HUD.
-    if (state.enumeration === "commutative") {
+    if (state.enumeration === 'commutative') {
       state.words = null;
       state.orbitSize = commutativeOrbitSize(state.K, state.N);
     } else {
@@ -97,12 +97,12 @@ function getWords() {
 
 function readHparams() {
   return {
-    alpha: parseFloat($("alpha").value) || 0,
-    beta: parseFloat($("beta").value) || 0,
-    lamA: parseFloat($("lamA").value) || 0,
-    lamb: parseFloat($("lamb").value) || 0,
-    lamC: parseFloat($("lamC").value) || 0,
-    eps: parseFloat($("eps").value) || 0,
+    alpha: parseFloat($('alpha').value) || 0,
+    beta: parseFloat($('beta').value) || 0,
+    lamA: parseFloat($('lamA').value) || 0,
+    lamb: parseFloat($('lamb').value) || 0,
+    lamC: parseFloat($('lamC').value) || 0,
+    eps: parseFloat($('eps').value) || 0,
     N: state.N,
   };
 }
@@ -126,14 +126,14 @@ function ensureLossFn() {
 // ---------- optimizer ----------
 function buildOptimizer() {
   if (state.optimizer) state.optimizer.dispose?.();
-  const lr = parseFloat($("lr").value) || 0.02;
-  const name = $("optim").value;
+  const lr = parseFloat($('lr').value) || 0.02;
+  const name = $('optim').value;
   state.optimizerName = name;
-  if (name === "adam") state.optimizer = new OptimizerAdam(lr);
-  else if (name === "lbfgs") {
+  if (name === 'adam') state.optimizer = new OptimizerAdam(lr);
+  else if (name === 'lbfgs') {
     state.optimizer = new OptimizerLbfgs();
     state.optimizer.setLearningRate(lr);
-  } else if (name === "qqn") {
+  } else if (name === 'qqn') {
     state.optimizer = new OptimizerQQN();
     state.optimizer.setLearningRate(lr);
   }
@@ -143,9 +143,7 @@ function buildOptimizer() {
 function forwardRender() {
   const words = getWords();
   const orbitT =
-    words === null
-      ? state.model.computeCommutativeOrbit(state.N)
-      : state.model.computeOrbit(words);
+    words === null ? state.model.computeCommutativeOrbit(state.N) : state.model.computeOrbit(words);
   const orbit = orbitT.arraySync();
   orbitT.dispose();
   return orbit;
@@ -167,8 +165,8 @@ function draw() {
   const orbit = forwardRender();
   view.drawGrid();
   const dpr = window.devicePixelRatio || 1;
-  view.drawPoints(state.target, "#3fb950", 2.0 * dpr);
-  view.drawPoints(orbit, "#58a6ff", 2.6 * dpr);
+  view.drawPoints(state.target, '#3fb950', 2.0 * dpr);
+  view.drawPoints(orbit, '#58a6ff', 2.6 * dpr);
   view.drawFixedPoints(state.model.readTransforms());
   view.drawLossCurve(state.lossHistory);
   updateHUD(orbit.length);
@@ -177,49 +175,47 @@ function draw() {
 function updateHUD(orbitN) {
   const words = getWords();
   const orbSize = words === null ? state.orbitSize : words.length;
-  $("targCount").textContent = state.target.length;
-  $("orbitCount").textContent = orbitN ?? orbSize;
-  $("iterVal").textContent = state.iter;
-  $("lossVal").textContent =
-    state.lastLoss == null ? "—" : state.lastLoss.toExponential(3);
-  $("activeCount").textContent = state.model.activeCount();
-  $("totalCount").textContent = state.model.K;
-  $("orbitSize").textContent =
-    `orbit size: ${orbSize} words${words === null ? " (DP)" : ""}`;
+  $('targCount').textContent = state.target.length;
+  $('orbitCount').textContent = orbitN ?? orbSize;
+  $('iterVal').textContent = state.iter;
+  $('lossVal').textContent = state.lastLoss == null ? '—' : state.lastLoss.toExponential(3);
+  $('activeCount').textContent = state.model.activeCount();
+  $('totalCount').textContent = state.model.K;
+  $('orbitSize').textContent = `orbit size: ${orbSize} words${words === null ? ' (DP)' : ''}`;
 }
 
 // ---------- UI wiring ----------
-function rebuildModel(initFn = "small") {
-  const newK = Math.max(1, Math.min(6, parseInt($("K").value) || 2));
+function rebuildModel(initFn = 'small') {
+  const newK = Math.max(1, Math.min(6, parseInt($('K').value) || 2));
   state.K = newK;
-  state.N = Math.max(1, Math.min(12, parseInt($("N").value) || 5));
-  state.enumeration = $("enum").value;
-  const seed = parseInt($("seed").value) || 1;
+  state.N = Math.max(1, Math.min(12, parseInt($('N').value) || 5));
+  state.enumeration = $('enum').value;
+  const seed = parseInt($('seed').value) || 1;
 
   if (state.model) state.model.dispose();
   state.model = new IFSModel(newK, seed);
 
-  if (initFn === "small") state.model.initSmall(seed);
-  else if (initFn === "rot") state.model.initRotations(seed);
-  else if (initFn === "shrink") state.model.initContractions();
-  else if (initFn === "sierp") {
+  if (initFn === 'small') state.model.initSmall(seed);
+  else if (initFn === 'rot') state.model.initRotations(seed);
+  else if (initFn === 'shrink') state.model.initContractions();
+  else if (initFn === 'sierp') {
     state.model.initSierpinski3();
     state.K = state.model.K;
-    $("K").value = state.K;
-  } else if (initFn === "barnsley") {
+    $('K').value = state.K;
+  } else if (initFn === 'barnsley') {
     state.model.initBarnsley();
     state.K = state.model.K;
-    $("K").value = state.K;
+    $('K').value = state.K;
   }
 
   state.iter = 0;
   state.lossHistory = [];
   state.lastLoss = null;
-  state.wordsKey = "";
+  state.wordsKey = '';
   invalidateLossFn();
   buildOptimizer();
 
-  panel = new TransformsPanel($("transforms"), state.model, {
+  panel = new TransformsPanel($('transforms'), state.model, {
     onChange: () => {
       draw();
       panel.render();
@@ -237,75 +233,75 @@ function afterParamChange() {
 }
 
 function bindUI() {
-  $("K").addEventListener("change", () => rebuildModel("small"));
-  $("N").addEventListener("change", () => {
-    state.N = Math.max(1, Math.min(12, parseInt($("N").value) || 5));
-    state.wordsKey = "";
+  $('K').addEventListener('change', () => rebuildModel('small'));
+  $('N').addEventListener('change', () => {
+    state.N = Math.max(1, Math.min(12, parseInt($('N').value) || 5));
+    state.wordsKey = '';
     afterParamChange();
   });
-  $("enum").addEventListener("change", () => {
-    state.enumeration = $("enum").value;
-    state.wordsKey = "";
+  $('enum').addEventListener('change', () => {
+    state.enumeration = $('enum').value;
+    state.wordsKey = '';
     afterParamChange();
   });
 
-  $("initSmall").addEventListener("click", () => rebuildModel("small"));
-  $("initRot").addEventListener("click", () => rebuildModel("rot"));
-  $("initShrink").addEventListener("click", () => rebuildModel("shrink"));
-  $("initSierp").addEventListener("click", () => rebuildModel("sierp"));
-  $("initBarnsley").addEventListener("click", () => rebuildModel("barnsley"));
-  $("reset").addEventListener("click", () => rebuildModel("small"));
+  $('initSmall').addEventListener('click', () => rebuildModel('small'));
+  $('initRot').addEventListener('click', () => rebuildModel('rot'));
+  $('initShrink').addEventListener('click', () => rebuildModel('shrink'));
+  $('initSierp').addEventListener('click', () => rebuildModel('sierp'));
+  $('initBarnsley').addEventListener('click', () => rebuildModel('barnsley'));
+  $('reset').addEventListener('click', () => rebuildModel('small'));
 
-  $("optim").addEventListener("change", () => buildOptimizer());
-  $("lr").addEventListener("change", () => {
-    const lr = parseFloat($("lr").value) || 0.02;
+  $('optim').addEventListener('change', () => buildOptimizer());
+  $('lr').addEventListener('change', () => {
+    const lr = parseFloat($('lr').value) || 0.02;
     if (state.optimizer?.setLearningRate) state.optimizer.setLearningRate(lr);
   });
 
   // hparams trigger lossFn rebuild
-  ["alpha", "beta", "lamA", "lamb", "lamC", "eps"].forEach((id) => {
-    $(id).addEventListener("change", () => invalidateLossFn());
+  ['alpha', 'beta', 'lamA', 'lamb', 'lamC', 'eps'].forEach((id) => {
+    $(id).addEventListener('change', () => invalidateLossFn());
   });
 
-  $("step").addEventListener("click", () => {
-    const steps = parseInt($("steps").value) || 1;
+  $('step').addEventListener('click', () => {
+    const steps = parseInt($('steps').value) || 1;
     for (let i = 0; i < steps; i++) trainStep();
     draw();
     panel.render();
   });
 
-  $("run").addEventListener("click", () => {
+  $('run').addEventListener('click', () => {
     state.running = !state.running;
-    $("run").textContent = state.running ? "⏸ Pause" : "▶ Run";
+    $('run').textContent = state.running ? '⏸ Pause' : '▶ Run';
     if (state.running) loop();
   });
 
   // Bulk freeze
-  $("freezeAll").addEventListener("click", () => {
+  $('freezeAll').addEventListener('click', () => {
     state.model.freezeAll(true);
     panel.render();
     draw();
   });
-  $("unfreezeAll").addEventListener("click", () => {
+  $('unfreezeAll').addEventListener('click', () => {
     state.model.freezeAll(false);
     panel.render();
     draw();
   });
-  $("invertFreeze").addEventListener("click", () => {
+  $('invertFreeze').addEventListener('click', () => {
     state.model.invertFreeze();
     panel.render();
     draw();
   });
 
   // Target
-  $("targetClear").addEventListener("click", () => {
+  $('targetClear').addEventListener('click', () => {
     state.targetSource = [];
     state.target = [];
     invalidateLossFn();
     draw();
   });
-  $("loadPreset").addEventListener("click", () => {
-    const v = $("targetPreset").value;
+  $('loadPreset').addEventListener('click', () => {
+    const v = $('targetPreset').value;
     if (!v) return;
     state.targetSource = PRESETS[v]();
     rebuildResampledTarget();
@@ -314,19 +310,19 @@ function bindUI() {
 
   // Drawing target on canvas
   let drawing = false;
-  $("view").addEventListener("mousedown", (e) => {
+  $('view').addEventListener('mousedown', (e) => {
     if (e.button === 2) return;
     drawing = true;
     addTargetAt(e);
   });
-  $("view").addEventListener("mousemove", (e) => {
+  $('view').addEventListener('mousemove', (e) => {
     if (drawing) addTargetAt(e);
   });
-  window.addEventListener("mouseup", () => {
+  window.addEventListener('mouseup', () => {
     drawing = false;
   });
   function addTargetAt(e) {
-    const rect = $("view").getBoundingClientRect();
+    const rect = $('view').getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     const sx = (e.clientX - rect.left) * dpr;
     const sy = (e.clientY - rect.top) * dpr;
@@ -343,11 +339,11 @@ function bindUI() {
   }
 
   // Zoom / pan
-  $("view").addEventListener(
-    "wheel",
+  $('view').addEventListener(
+    'wheel',
     (e) => {
       e.preventDefault();
-      const rect = $("view").getBoundingClientRect();
+      const rect = $('view').getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       const sx = (e.clientX - rect.left) * dpr;
       const sy = (e.clientY - rect.top) * dpr;
@@ -359,19 +355,19 @@ function bindUI() {
       view.world.cy += wy - nwy;
       draw();
     },
-    { passive: false },
+    { passive: false }
   );
 
   let panning = false,
     panLast = null;
-  $("view").addEventListener("contextmenu", (e) => e.preventDefault());
-  $("view").addEventListener("mousedown", (e) => {
+  $('view').addEventListener('contextmenu', (e) => e.preventDefault());
+  $('view').addEventListener('mousedown', (e) => {
     if (e.button === 2) {
       panning = true;
       panLast = [e.clientX, e.clientY];
     }
   });
-  window.addEventListener("mousemove", (e) => {
+  window.addEventListener('mousemove', (e) => {
     if (panning) {
       const dx = e.clientX - panLast[0];
       const dy = e.clientY - panLast[1];
@@ -382,17 +378,17 @@ function bindUI() {
       draw();
     }
   });
-  window.addEventListener("mouseup", (e) => {
+  window.addEventListener('mouseup', (e) => {
     if (e.button === 2) panning = false;
   });
 
-  window.addEventListener("keydown", (e) => {
-    if (e.code === "Space" && e.target.tagName !== "INPUT") {
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space' && e.target.tagName !== 'INPUT') {
       e.preventDefault();
-      $("step").click();
+      $('step').click();
     }
   });
-  window.addEventListener("resize", () => {
+  window.addEventListener('resize', () => {
     view.resize();
     draw();
   });
@@ -400,12 +396,12 @@ function bindUI() {
 
 function loop() {
   if (!state.running) return;
-  const fps = parseFloat($("fps").value) || 60;
+  const fps = parseFloat($('fps').value) || 60;
   const minDt = 1000 / fps;
   const now = performance.now();
   if (!loop._last) loop._last = 0;
   if (now - loop._last >= minDt) {
-    const steps = parseInt($("steps").value) || 1;
+    const steps = parseInt($('steps').value) || 1;
     for (let i = 0; i < steps; i++) trainStep();
     draw();
     panel.render();
@@ -418,6 +414,6 @@ function loop() {
 (async () => {
   await initTF();
   bindUI();
-  $("targetPreset").value = "circle";
-  rebuildModel("small");
+  $('targetPreset').value = 'circle';
+  rebuildModel('small');
 })();

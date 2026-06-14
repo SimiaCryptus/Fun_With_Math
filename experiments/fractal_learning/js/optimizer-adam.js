@@ -4,7 +4,7 @@
  */
 export class OptimizerAdam {
   constructor(learningRate = 0.02) {
-    this.name = "adam";
+    this.name = 'adam';
     this.learningRate = learningRate;
     this.optimizer = tf.train.adam(learningRate);
   }

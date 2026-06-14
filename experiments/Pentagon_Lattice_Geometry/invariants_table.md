@@ -34,26 +34,26 @@ not applicable.
 
 ## 2. Master Table
 
-| Name              | Source              | `F`             | `[F:Q]` | `G`             | `tau`     | `P`           | `E_A` | `d_eff` | `d_spec` | Level |
-|-------------------|---------------------|-----------------|---------|-----------------|-----------|---------------|-------|---------|----------|-------|
-| Square            | idea.md, polyhedra  | `Q`             | 1       | `{e}`           | triv      | square        | all   | 2       | 2        | 0     |
-| Triangle          | sweep_ngon, idea    | `Q`             | 1       | `{e}`           | triv      | triangle      | all   | 2       | 2        | 0     |
-| Hexagon           | idea.md             | `Q`             | 1       | `{e}`           | triv      | hexagon       | all   | 2       | 2        | 0     |
-| Pentagon          | idea.md, all        | `Q(sqrt(5))`    | 2       | `Z_10`          | signed-3  | pentagon      | all   | ~2.3-2.5| ~1.1     | 1     |
-| Octagon           | sweep_ngon, idea    | `Q(sqrt(2))`    | 2       | `Z_8` (?)       | signed-3  | octagon       | all   | ~2.3?   | ~1.1?    | 1     |
-| Dodecagon         | sweep_ngon          | `Q(sqrt(3))`    | 2       | `Z_12` (?)      | signed-3  | dodecagon     | all   | ~2.3?   | ~1.1?    | 1     |
-| Heptagon          | sweep_ngon          | `Q(zeta_7+...)` | 3       | `Z_14` (?)      | signed-3  | heptagon      | all   | ~2.3?   | ~1.1?    | 1     |
-| Tetrahedron       | polyhedra.md        | `Q(sqrt(2))`    | 2       | `2T` (24)       | 3D-tau    | tetrahedron   | all   | 3       | ??       | 0     |
-| Cube              | polyhedra.md        | `Q`             | 1       | `{e}`           | triv      | cube          | all   | 3       | 3        | 0     |
-| Octahedron        | polyhedra.md        | `Q`             | 1       | `{e}`           | triv      | octahedron    | all   | 3       | 3        | 0     |
-| Dodecahedron      | polyhedra.md        | `Q(sqrt(5))`    | 2       | `2I` (120)      | 3D-tau    | dodecahedron  | all   | (3,4)   | ??       | 1     |
-| Icosahedron       | polyhedra.md        | `Q(sqrt(5))`    | 2       | `2I` (120)      | 3D-tau    | icosahedron   | all   | (3,4)   | ??       | 1     |
-| Conway-Radin      | pinwheels.md        | `Q`             | 1       | `Z_2 x Z_2`     | hypotenuse| right tri     | hyp   | 2       | 2        | 2     |
-| Penrose (rhomb)   | pinwheels.md, idea  | `Q(sqrt(5))`    | 2       | `Z_10`          | inflation | rhombus       | special| ~2.3   | ~1.1     | 1     |
-| Sierpinski tri.   | analysis.md, idea   | `Q(sqrt(3))`    | 2       | `Z_6`           | scale     | triangle      | --    | log3/log2| log3/log5| 3     |
-| Sierpinski tet.   | analysis.md         | `Q(sqrt(2))`    | 2       | `Z_8`           | scale     | tetrahedron   | --    | 2 (exact)| ??      | 3     |
-| Koch snowflake    | analysis.md         | `Q(sqrt(3))`    | 2       | --              | scale     | curve         | --    | log4/log3| --      | --    |
-| Menger sponge     | analysis.md         | `Q`             | 1       | --              | scale     | cube          | --    | log20/log3| --     | --    |
+| Name            | Source             | `F`             | `[F:Q]` | `G`         | `tau`      | `P`          | `E_A`   | `d_eff`    | `d_spec`  | Level |
+| --------------- | ------------------ | --------------- | ------- | ----------- | ---------- | ------------ | ------- | ---------- | --------- | ----- |
+| Square          | idea.md, polyhedra | `Q`             | 1       | `{e}`       | triv       | square       | all     | 2          | 2         | 0     |
+| Triangle        | sweep_ngon, idea   | `Q`             | 1       | `{e}`       | triv       | triangle     | all     | 2          | 2         | 0     |
+| Hexagon         | idea.md            | `Q`             | 1       | `{e}`       | triv       | hexagon      | all     | 2          | 2         | 0     |
+| Pentagon        | idea.md, all       | `Q(sqrt(5))`    | 2       | `Z_10`      | signed-3   | pentagon     | all     | ~2.3-2.5   | ~1.1      | 1     |
+| Octagon         | sweep_ngon, idea   | `Q(sqrt(2))`    | 2       | `Z_8` (?)   | signed-3   | octagon      | all     | ~2.3?      | ~1.1?     | 1     |
+| Dodecagon       | sweep_ngon         | `Q(sqrt(3))`    | 2       | `Z_12` (?)  | signed-3   | dodecagon    | all     | ~2.3?      | ~1.1?     | 1     |
+| Heptagon        | sweep_ngon         | `Q(zeta_7+...)` | 3       | `Z_14` (?)  | signed-3   | heptagon     | all     | ~2.3?      | ~1.1?     | 1     |
+| Tetrahedron     | polyhedra.md       | `Q(sqrt(2))`    | 2       | `2T` (24)   | 3D-tau     | tetrahedron  | all     | 3          | ??        | 0     |
+| Cube            | polyhedra.md       | `Q`             | 1       | `{e}`       | triv       | cube         | all     | 3          | 3         | 0     |
+| Octahedron      | polyhedra.md       | `Q`             | 1       | `{e}`       | triv       | octahedron   | all     | 3          | 3         | 0     |
+| Dodecahedron    | polyhedra.md       | `Q(sqrt(5))`    | 2       | `2I` (120)  | 3D-tau     | dodecahedron | all     | (3,4)      | ??        | 1     |
+| Icosahedron     | polyhedra.md       | `Q(sqrt(5))`    | 2       | `2I` (120)  | 3D-tau     | icosahedron  | all     | (3,4)      | ??        | 1     |
+| Conway-Radin    | pinwheels.md       | `Q`             | 1       | `Z_2 x Z_2` | hypotenuse | right tri    | hyp     | 2          | 2         | 2     |
+| Penrose (rhomb) | pinwheels.md, idea | `Q(sqrt(5))`    | 2       | `Z_10`      | inflation  | rhombus      | special | ~2.3       | ~1.1      | 1     |
+| Sierpinski tri. | analysis.md, idea  | `Q(sqrt(3))`    | 2       | `Z_6`       | scale      | triangle     | --      | log3/log2  | log3/log5 | 3     |
+| Sierpinski tet. | analysis.md        | `Q(sqrt(2))`    | 2       | `Z_8`       | scale      | tetrahedron  | --      | 2 (exact)  | ??        | 3     |
+| Koch snowflake  | analysis.md        | `Q(sqrt(3))`    | 2       | --          | scale      | curve        | --      | log4/log3  | --        | --    |
+| Menger sponge   | analysis.md        | `Q`             | 1       | --          | scale      | cube         | --      | log20/log3 | --        | --    |
 
 ---
 
@@ -88,6 +88,7 @@ in its currently-realized form.
 ### 3.3 The Hierarchy Levels are Sparse
 
 Of the entries:
+
 - **Level 0**: 6 examples (all the "boring" cases),
 - **Level 1**: 7 examples (the heart of the framework),
 - **Level 2**: 1 example (Conway-Radin),
@@ -105,21 +106,21 @@ example.
 
 Each row of the master table corresponds to specific code paths:
 
-| Row family       | Code path                                          |
-|------------------|----------------------------------------------------|
-| `Q` (Level 0)    | `experiment.mac` with `TAU_MODE = "every3"`,       |
-|                  | `N_GON in {3, 4, 6}`                               |
-| `Q(sqrt(5))` 2D  | `experiment.mac` with `N_GON = 5`,                 |
-|                  | `TAU_MODE = "signed3"`                             |
-| `Q(sqrt(2))` 2D  | `experiment.mac` with `N_GON = 8`,                 |
-|                  | `TAU_MODE = "signedn"`                             |
-| `Q(sqrt(3))` 2D  | `experiment.mac` with `N_GON = 12`                 |
-| Erdős catalog    | `erdos.mac`                                        |
-| 3D polyhedra     | **Not yet implemented**; ticket C1 of              |
-|                  | `research_program.md`                              |
-| Pinwheel polygons| **Not yet implemented**; ticket C2 of              |
-|                  | `research_program.md`                              |
-| Sweeps           | `sweep_ngon.mac`                                   |
+| Row family        | Code path                                    |
+| ----------------- | -------------------------------------------- |
+| `Q` (Level 0)     | `experiment.mac` with `TAU_MODE = "every3"`, |
+|                   | `N_GON in {3, 4, 6}`                         |
+| `Q(sqrt(5))` 2D   | `experiment.mac` with `N_GON = 5`,           |
+|                   | `TAU_MODE = "signed3"`                       |
+| `Q(sqrt(2))` 2D   | `experiment.mac` with `N_GON = 8`,           |
+|                   | `TAU_MODE = "signedn"`                       |
+| `Q(sqrt(3))` 2D   | `experiment.mac` with `N_GON = 12`           |
+| Erdős catalog     | `erdos.mac`                                  |
+| 3D polyhedra      | **Not yet implemented**; ticket C1 of        |
+|                   | `research_program.md`                        |
+| Pinwheel polygons | **Not yet implemented**; ticket C2 of        |
+|                   | `research_program.md`                        |
+| Sweeps            | `sweep_ngon.mac`                             |
 
 ---
 

@@ -40,11 +40,13 @@ This design allows for flexible function definitions while ensuring thread safet
 **Algorithm**: Simple backtracking with Armijo sufficient decrease condition.
 
 **Key Features**:
+
 - **Condition**: f(α) ≤ f(0) + c₁αf'(0)
 - **Strategy**: Start with initial step, multiply by ρ < 1 until condition satisfied
 - **Configurations**: Default (c₁=1e-4, ρ=0.5), Strict (c₁=1e-3, ρ=0.3), Lax (c₁=1e-6, ρ=0.8)
 
 **Advantages**:
+
 - Simple and robust
 - Guaranteed convergence for descent directions
 - Low computational overhead
@@ -56,13 +58,15 @@ This design allows for flexible function definitions while ensuring thread safet
 **Algorithm**: Two-phase algorithm with bracketing and zooming phases.
 
 **Key Features**:
+
 - **Conditions**:
-    - Armijo: f(α) ≤ f(0) + c₁αf'(0)
-    - Curvature: |f'(α)| ≤ c₂|f'(0)|
+  - Armijo: f(α) ≤ f(0) + c₁αf'(0)
+  - Curvature: |f'(α)| ≤ c₂|f'(0)|
 - **Strategy**: Bracket minimum, then zoom to satisfy both conditions
 - **Configurations**: Default (c₁=1e-4, c₂=0.9), Strict (c₁=1e-6, c₂=0.1), Lax (c₁=1e-2, c₂=0.99)
 
 **Advantages**:
+
 - Theoretically sound convergence guarantees
 - Excellent for Newton-type methods
 - Prevents steps that are too small or too large
@@ -74,12 +78,14 @@ This design allows for flexible function definitions while ensuring thread safet
 **Algorithm**: Sophisticated algorithm based on "Line Search Algorithms with Guaranteed Sufficient Decrease".
 
 **Key Features**:
+
 - **Advanced Interpolation**: Uses cubic and quadratic interpolation with safeguards
 - **Robust Bracketing**: Sophisticated interval update rules
 - **Numerical Stability**: Extensive safeguards against numerical issues
 - **Configurations**: Default, Strict (xtol=1e-15, ftol=1e-8), Lax (xtol=1e-8, ftol=1e-4)
 
 **Advantages**:
+
 - Highly robust and numerically stable
 - Excellent performance on difficult functions
 - Handles ill-conditioned problems well
@@ -91,13 +97,15 @@ This design allows for flexible function definitions while ensuring thread safet
 **Algorithm**: Uses polynomial interpolation to find optimal step sizes.
 
 **Key Features**:
+
 - **Interpolation Methods**:
-    - Cubic interpolation with function and gradient values
-    - Quadratic interpolation fallback
+  - Cubic interpolation with function and gradient values
+  - Quadratic interpolation fallback
 - **Safeguards**: Minimum movement constraints to prevent stagnation
 - **Extrapolation**: Intelligent step size expansion when needed
 
 **Advantages**:
+
 - Fast convergence on smooth functions
 - Efficient use of function evaluations
 - Good balance of speed and robustness
@@ -109,11 +117,13 @@ This design allows for flexible function definitions while ensuring thread safet
 **Algorithm**: Derivative-free method using golden ratio for interval reduction.
 
 **Key Features**:
+
 - **Golden Ratio**: Uses φ = (1+√5)/2 for optimal interval reduction
 - **Bracketing**: Establishes proper bracket [a,b,c] where f(b) < f(a), f(b) < f(c)
 - **Derivative-Free**: Only requires function evaluations
 
 **Advantages**:
+
 - No gradient information required
 - Guaranteed convergence rate
 - Simple and reliable
@@ -125,11 +135,13 @@ This design allows for flexible function definitions while ensuring thread safet
 **Algorithm**: Finds zero of the gradient using bisection method.
 
 **Key Features**:
+
 - **Gradient Zeroing**: Searches for points where f'(α) = 0
 - **Bracketing Methods**: Two strategies for finding initial brackets
 - **Tolerance Control**: Configurable gradient tolerance
 
 **Advantages**:
+
 - Finds exact stationary points
 - Simple implementation
 - Predictable behavior
@@ -141,7 +153,9 @@ This design allows for flexible function definitions while ensuring thread safet
 Each algorithm supports three configuration levels:
 
 ### Default Configuration
+
 Balanced parameters suitable for most applications:
+
 ```rust
 BacktrackingConfig {
     c1: 1e-4,
@@ -152,7 +166,9 @@ BacktrackingConfig {
 ```
 
 ### Strict Configuration
+
 High-precision parameters for accuracy-critical applications:
+
 ```rust
 StrongWolfeConfig::strict() {
     c1: 1e-6,      // Very strict sufficient decrease
@@ -163,7 +179,9 @@ StrongWolfeConfig::strict() {
 ```
 
 ### Lax Configuration
+
 Relaxed parameters for speed-critical applications:
+
 ```rust
 MoreThuenteConfig::lax() {
     c1: 1e-3,      // More permissive Armijo condition
@@ -185,7 +203,9 @@ pub trait ParametricCurve: Send + Sync {
 ```
 
 ### Linear Curves
+
 Most common case for traditional line search:
+
 ```rust
 x(t) = x₀ + t·d
 ```
@@ -195,16 +215,19 @@ Where x₀ is the current point and d is the search direction.
 ## Error Handling and Robustness
 
 ### Comprehensive Error Detection
+
 - **Non-descent directions**: Validates that initial directional derivative < 0
 - **Numerical issues**: Detects NaN, infinity, and ill-conditioned functions
 - **Convergence failures**: Graceful handling when algorithms don't converge
 
 ### Fallback Strategies
+
 - **Machine epsilon steps**: When normal steps fail, try tiny steps
 - **Best point tracking**: Always return the best point found during search
 - **Graceful degradation**: Algorithms attempt to find any improvement when optimal conditions aren't met
 
 ### Logging and Debugging
+
 - **Verbose modes**: Detailed logging for algorithm debugging
 - **Progress tracking**: Function value improvements and step size evolution
 - **Convergence diagnostics**: Clear termination reasons
@@ -212,6 +235,7 @@ Where x₀ is the current point and d is the search direction.
 ## Performance Characteristics
 
 ### Computational Complexity
+
 - **Backtracking**: O(log(1/α*)) where α* is optimal step
 - **Strong Wolfe**: O(log(1/ε)) where ε is tolerance
 - **More-Thuente**: O(1) to O(log(1/ε)) depending on function properties
@@ -219,7 +243,9 @@ Where x₀ is the current point and d is the search direction.
 - **Bisection**: O(log(1/ε)) for gradient tolerance ε
 
 ### Function Evaluation Counts
+
 Typical ranges per line search:
+
 - **Backtracking**: 2-10 evaluations
 - **Strong Wolfe**: 5-20 evaluations
 - **More-Thuente**: 3-15 evaluations
@@ -230,6 +256,7 @@ Typical ranges per line search:
 ## Integration with Optimization Methods
 
 ### Factory Pattern
+
 ```rust
 pub fn create_line_search(_config: LineSearchConfig) -> Box<dyn LineSearch>
 ```
@@ -237,36 +264,44 @@ pub fn create_line_search(_config: LineSearchConfig) -> Box<dyn LineSearch>
 Supports dynamic algorithm selection based on configuration.
 
 ### Thread Safety
+
 All implementations are `Send + Sync`, enabling parallel optimization algorithms.
 
 ### Memory Efficiency
+
 Algorithms are designed to be stateless where possible, minimizing memory overhead.
 
 ## Recommendations by Use Case
 
 ### General Purpose Optimization
+
 - **Primary**: Strong Wolfe (default configuration)
 - **Fallback**: Backtracking (default configuration)
 
 ### High-Precision Scientific Computing
+
 - **Primary**: More-Thuente (strict configuration)
 - **Alternative**: Strong Wolfe (strict configuration)
 
 ### Real-time/Embedded Applications
+
 - **Primary**: Backtracking (lax configuration)
 - **Alternative**: Cubic-Quadratic (lax configuration)
 
 ### Derivative-Free Optimization
+
 - **Primary**: Golden Section Search
 - **Alternative**: Backtracking with finite differences
 
 ### Research and Development
+
 - **Primary**: More-Thuente (default configuration)
 - **Debugging**: Any algorithm with verbose logging enabled
 
 ## Future Extensions
 
 The modular design supports easy addition of:
+
 - **Adaptive algorithms**: Dynamic parameter adjustment
 - **Hybrid methods**: Combining multiple strategies
 - **Specialized algorithms**: Domain-specific optimizations

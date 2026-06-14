@@ -9,8 +9,7 @@
     />
     <meta name="author" content="" />
     <title>
-      Rational Certificate Complexity: A Computational Taxonomy of Mathematical
-      Constants
+      Rational Certificate Complexity: A Computational Taxonomy of Mathematical Constants
     </title>
     <!-- CSS will be added here -->
 
@@ -48,13 +47,9 @@
 
         /* Typography */
         --font-serif:
-          "Iowan Old Style", "Palatino Linotype", Palatino, "URW Palladio L",
-          Georgia, serif;
-        --font-sans:
-          -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto,
-          sans-serif;
-        --font-mono:
-          "JetBrains Mono", "SF Mono", Menlo, Consolas, "Courier New", monospace;
+          'Iowan Old Style', 'Palatino Linotype', Palatino, 'URW Palladio L', Georgia, serif;
+        --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+        --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, 'Courier New', monospace;
 
         /* Spacing */
         --space-xs: 0.5rem;
@@ -162,7 +157,7 @@
       }
 
       .hero-section::before {
-        content: "Σ";
+        content: 'Σ';
         position: absolute;
         top: -3rem;
         right: -2rem;
@@ -250,7 +245,7 @@
       }
 
       .section-heading::before {
-        content: "";
+        content: '';
         position: absolute;
         bottom: -2px;
         left: 0;
@@ -346,7 +341,7 @@
       .feature-item::before,
       .conclusion-item::before,
       .finding-item::before {
-        content: "▸";
+        content: '▸';
         position: absolute;
         left: 0;
         color: var(--color-accent);
@@ -413,7 +408,7 @@
       }
 
       .check-item.check-yes::before {
-        content: "✓";
+        content: '✓';
         position: absolute;
         left: 0;
         color: var(--color-teal);
@@ -422,7 +417,7 @@
       }
 
       .check-item.check-no::before {
-        content: "✗";
+        content: '✗';
         position: absolute;
         left: 0;
         color: var(--color-rust);
@@ -463,11 +458,7 @@
       }
 
       .callout-caveats {
-        background: linear-gradient(
-          135deg,
-          var(--color-accent-light) 0%,
-          #f5f0ff 100%
-        );
+        background: linear-gradient(135deg, var(--color-accent-light) 0%, #f5f0ff 100%);
         border-left-color: var(--color-accent);
       }
 
@@ -522,7 +513,7 @@
 
       .central-claim::before,
       .definition-blockquote::before {
-        content: "\201C";
+        content: '\201C';
         position: absolute;
         top: -0.5rem;
         left: 0.5rem;
@@ -972,12 +963,12 @@
     <header class="site-header">
       <nav class="site-nav">
         <div class="nav-brand">
-         <a href="../../index.html" class="brand-link">RC Complexity</a>
+          <a href="../../index.html" class="brand-link">RC Complexity</a>
         </div>
         <ul class="nav-menu">
-         <li class="nav-item">
-           <a href="../../index.html" class="nav-link">← Home</a>
-         </li>
+          <li class="nav-item">
+            <a href="../../index.html" class="nav-link">← Home</a>
+          </li>
           <li class="nav-item">
             <a href="#core-idea" class="nav-link">Core Idea</a>
           </li>
@@ -1004,9 +995,7 @@
       <div class="hero-content">
         <p class="article-eyebrow">Mathematics · Computational Complexity</p>
         <h1 class="article-title">Rational Certificate Complexity</h1>
-        <p class="article-subtitle">
-          A Computational Taxonomy of Mathematical Constants
-        </p>
+        <p class="article-subtitle">A Computational Taxonomy of Mathematical Constants</p>
         <div class="article-meta">
           <span class="meta-reading-time">~20 min read</span>
           <span class="meta-separator">·</span>
@@ -1023,65 +1012,53 @@
       <section id="core-idea" class="article-section section-core-idea">
         <h2 class="section-heading">The Core Idea</h2>
         <p class="section-paragraph lead-paragraph">
-          There is a clean, rigorous, and surprisingly simple way to classify
-          mathematical constants by computational hardness — one that sidesteps
-          much of the metaphysical baggage of the real number system. The method
-          is this: treat every convergence sequence as a
-          <em>rational certificate engine</em>, measure the bit-length of the
-          rational it produces as a function of demanded tolerance, and classify
-          constants by the cheapest engine within a precisely specified class.
+          There is a clean, rigorous, and surprisingly simple way to classify mathematical constants
+          by computational hardness — one that sidesteps much of the metaphysical baggage of the
+          real number system. The method is this: treat every convergence sequence as a
+          <em>rational certificate engine</em>, measure the bit-length of the rational it produces
+          as a function of demanded tolerance, and classify constants by the cheapest engine within
+          a precisely specified class.
         </p>
         <p class="section-paragraph">
-          This is not a new mathematical result. The pieces exist across
-          numerical analysis, Diophantine approximation, and real-number
-          complexity theory. But the synthesis — fixing a specific convergence
-          engine, truncating it, and measuring the bit-length of the resulting
-          rational as a function of ε — is unusually sharp, and it makes
-          computationally precise a separation that is often argued abstractly:
-          that the <em>natural</em> convergence engines for π and e live in a
-          fundamentally harder cost regime than the natural engines for
+          This is not a new mathematical result. The pieces exist across numerical analysis,
+          Diophantine approximation, and real-number complexity theory. But the synthesis — fixing a
+          specific convergence engine, truncating it, and measuring the bit-length of the resulting
+          rational as a function of ε — is unusually sharp, and it makes computationally precise a
+          separation that is often argued abstractly: that the <em>natural</em> convergence engines
+          for π and e live in a fundamentally harder cost regime than the natural engines for
           algebraic irrationals like √k.
         </p>
         <div class="callout callout-caveats">
           <h3 class="callout-title">Two Sharpening Caveats</h3>
           <p class="callout-text">
-            First, the framework classifies <em>engines</em>, not constants in
-            any absolute sense; the "hardness" of π depends on which engine you
-            use, and sophisticated algorithms (AGM, Ramanujan series) can place
-            π in the same low-cost class as √2. Second, the elimination of
-            real-number metaphysics is partial rather than total: the framework
-            replaces explicit appeals to Dedekind cuts with operational appeals
-            to asymptotic structure, which is itself a substantive mathematical
-            commitment.
+            First, the framework classifies <em>engines</em>, not constants in any absolute sense;
+            the "hardness" of π depends on which engine you use, and sophisticated algorithms (AGM,
+            Ramanujan series) can place π in the same low-cost class as √2. Second, the elimination
+            of real-number metaphysics is partial rather than total: the framework replaces explicit
+            appeals to Dedekind cuts with operational appeals to asymptotic structure, which is
+            itself a substantive mathematical commitment.
           </p>
           <p class="callout-text">
-            What the framework genuinely delivers is not metaphysical purity but
-            operational precision — a measurable, falsifiable taxonomy of
-            approximation strategies.
+            What the framework genuinely delivers is not metaphysical purity but operational
+            precision — a measurable, falsifiable taxonomy of approximation strategies.
           </p>
         </div>
       </section>
 
       <!-- Background Section -->
       <section id="background" class="article-section section-background">
-        <h2 class="section-heading">
-          Background: Convergence Engines for Irrational Constants
-        </h2>
+        <h2 class="section-heading">Background: Convergence Engines for Irrational Constants</h2>
 
         <article class="subsection subsection-algebraic">
-          <h3 class="subsection-heading">
-            Algebraic Irrationals via Binomial Series
-          </h3>
+          <h3 class="subsection-heading">Algebraic Irrationals via Binomial Series</h3>
           <p class="section-paragraph">
-            The simplest infinite series constructions for integer radicals come
-            from the binomial series for negative half-powers:
+            The simplest infinite series constructions for integer radicals come from the binomial
+            series for negative half-powers:
           </p>
           <pre
             class="math-block"
           ><code class="math-code">(1 − x)^(−1/2) = Σ C(2n,n)/4^n · x^n,   |x| &lt; 1</code></pre>
-          <p class="section-paragraph">
-            For any integer k &gt; 1, set x = 1 − 1/k, which gives:
-          </p>
+          <p class="section-paragraph">For any integer k &gt; 1, set x = 1 − 1/k, which gives:</p>
           <pre
             class="math-block"
           ><code class="math-code">√k = Σ C(2n,n)/4^n · (1 − 1/k)^n</code></pre>
@@ -1091,37 +1068,28 @@
             <li class="example-item">√3 = Σ C(2n,n)/4^n · (2/3)^n</li>
           </ul>
           <p class="section-paragraph">
-            This is structurally minimal: a single binomial series with a
-            rational parameter, converging to an irrational algebraic number.
-            Crucially, this is a <em>hypergeometric</em> series — the ratio of
-            consecutive terms is a rational function of n — and this property
-            will turn out to be the decisive feature.
+            This is structurally minimal: a single binomial series with a rational parameter,
+            converging to an irrational algebraic number. Crucially, this is a
+            <em>hypergeometric</em> series — the ratio of consecutive terms is a rational function
+            of n — and this property will turn out to be the decisive feature.
           </p>
         </article>
 
         <article class="subsection subsection-pi-series">
-          <h3 class="subsection-heading">
-            Classical Series and Products for π
-          </h3>
+          <h3 class="subsection-heading">Classical Series and Products for π</h3>
           <p class="section-paragraph">
             Three canonical constructions for π, ordered by convergence rate:
           </p>
 
           <div class="series-card series-card-leibniz">
             <h4 class="series-name">Gregory–Leibniz series</h4>
-            <p class="series-description">
-              simplest pattern, slowest convergence
-            </p>
-            <pre
-              class="math-block"
-            ><code class="math-code">π = 4 · Σ (−1)^k / (2k+1)</code></pre>
+            <p class="series-description">simplest pattern, slowest convergence</p>
+            <pre class="math-block"><code class="math-code">π = 4 · Σ (−1)^k / (2k+1)</code></pre>
           </div>
 
           <div class="series-card series-card-nilakantha">
             <h4 class="series-name">Nilakantha series</h4>
-            <p class="series-description">
-              same alternating structure, cubic denominators
-            </p>
+            <p class="series-description">same alternating structure, cubic denominators</p>
             <pre
               class="math-block"
             ><code class="math-code">π = 3 + Σ (−1)^(k+1) · 4 / [(2k)(2k+1)(2k+2)]</code></pre>
@@ -1129,9 +1097,7 @@
 
           <div class="series-card series-card-wallis">
             <h4 class="series-name">Wallis product</h4>
-            <p class="series-description">
-              multiplicative, purely even/odd integers
-            </p>
+            <p class="series-description">multiplicative, purely even/odd integers</p>
             <pre
               class="math-block"
             ><code class="math-code">π = 2 · Π (2k)² / [(2k−1)(2k+1)]</code></pre>
@@ -1146,32 +1112,26 @@
         <article class="subsection subsection-setup">
           <h3 class="subsection-heading">Setup</h3>
           <p class="section-paragraph">
-            Given a sequence (s_N) of rationals with limit α, fix a tolerance ε
-            &gt; 0 and pick the smallest N such that |s_N − α| &lt; ε. The
-            truncation s_N = p_N/q_N is the <em>rational certificate</em> for α
-            at tolerance ε.
+            Given a sequence (s_N) of rationals with limit α, fix a tolerance ε &gt; 0 and pick the
+            smallest N such that |s_N − α| &lt; ε. The truncation s_N = p_N/q_N is the
+            <em>rational certificate</em> for α at tolerance ε.
           </p>
           <p class="section-paragraph">The cost model has two components:</p>
           <ol class="numbered-list">
+            <li class="numbered-item"><strong>Iteration cost</strong>: how N(ε) scales with ε</li>
             <li class="numbered-item">
-              <strong>Iteration cost</strong>: how N(ε) scales with ε
-            </li>
-            <li class="numbered-item">
-              <strong>Representation cost</strong>: the bit-length of p_N and
-              q_N as functions of N, hence of ε
+              <strong>Representation cost</strong>: the bit-length of p_N and q_N as functions of N,
+              hence of ε
             </li>
           </ol>
           <p class="section-paragraph">Bit-length is defined as:</p>
-          <pre
-            class="math-block"
-          ><code class="math-code">bits(p/q) = log₂|p| + log₂|q|</code></pre>
+          <pre class="math-block"><code class="math-code">bits(p/q) = log₂|p| + log₂|q|</code></pre>
           <p class="section-paragraph">
-            This choice is not arbitrary. Bit-length corresponds to actual
-            memory usage, determines the cost of arithmetic operations on the
-            certificate, and connects directly to the classical notion of
-            <em>height</em> in Diophantine approximation. It is the right metric
-            because it tracks what a computer must actually do to store,
-            transmit, and manipulate the certificate.
+            This choice is not arbitrary. Bit-length corresponds to actual memory usage, determines
+            the cost of arithmetic operations on the certificate, and connects directly to the
+            classical notion of
+            <em>height</em> in Diophantine approximation. It is the right metric because it tracks
+            what a computer must actually do to store, transmit, and manipulate the certificate.
           </p>
           <p class="section-paragraph">
             The composed quantity — bit-length as a function of ε — is the
@@ -1180,41 +1140,35 @@
         </article>
 
         <article class="subsection subsection-lower-bound">
-          <h3 class="subsection-heading">
-            An Information-Theoretic Lower Bound
-          </h3>
+          <h3 class="subsection-heading">An Information-Theoretic Lower Bound</h3>
           <p class="section-paragraph">
-            Before computing specific complexities, one observation establishes
-            the floor: specifying any real number to within tolerance ε requires
-            at least log₂(1/ε) bits of information. Any rational certificate p/q
-            with |p/q − α| &lt; ε must therefore encode at least this much
-            information, giving:
+            Before computing specific complexities, one observation establishes the floor:
+            specifying any real number to within tolerance ε requires at least log₂(1/ε) bits of
+            information. Any rational certificate p/q with |p/q − α| &lt; ε must therefore encode at
+            least this much information, giving:
           </p>
           <pre
             class="math-block highlight-math"
           ><code class="math-code">bits(p_N/q_N) ≥ Ω(log(1/ε))</code></pre>
           <p class="section-paragraph">
-            This is the information-theoretic minimum. Any engine achieving
-            Θ(log(1/ε)) bit-length is
-            <em>information-theoretically optimal</em> — it spends no more bits
-            than the problem fundamentally requires. This makes the logarithmic
-            class not merely "cheap" but provably tight.
+            This is the information-theoretic minimum. Any engine achieving Θ(log(1/ε)) bit-length
+            is
+            <em>information-theoretically optimal</em> — it spends no more bits than the problem
+            fundamentally requires. This makes the logarithmic class not merely "cheap" but provably
+            tight.
           </p>
         </article>
 
         <article class="subsection subsection-analysis">
           <h3 class="subsection-heading">Analysis: Gregory–Leibniz for π</h3>
           <p class="section-paragraph">The alternating series bound gives:</p>
-          <pre
-            class="math-block"
-          ><code class="math-code">|π − S_N| ≤ 4/(2N+3)</code></pre>
+          <pre class="math-block"><code class="math-code">|π − S_N| ≤ 4/(2N+3)</code></pre>
           <p class="section-paragraph">So N(ε) = Θ(1/ε).</p>
           <p class="section-paragraph">
-            The natural denominator after N terms is lcm(1, 3, 5, ..., 2N+1). By
-            the Prime Number Theorem for arithmetic progressions, log lcm(1, 3,
-            ..., 2N+1) = Θ(N), so the bit-length of the denominator is Θ(N).
-            (This step is not elementary: it depends on PNT-level results, a
-            dependency we acknowledge rather than hide.) Combined:
+            The natural denominator after N terms is lcm(1, 3, 5, ..., 2N+1). By the Prime Number
+            Theorem for arithmetic progressions, log lcm(1, 3, ..., 2N+1) = Θ(N), so the bit-length
+            of the denominator is Θ(N). (This step is not elementary: it depends on PNT-level
+            results, a dependency we acknowledge rather than hide.) Combined:
           </p>
           <p class="result-statement">
             <strong>Bit-length vs tolerance: Θ(1/ε)</strong>
@@ -1224,20 +1178,18 @@
         <article class="subsection subsection-analysis">
           <h3 class="subsection-heading">Analysis: Nilakantha Series for π</h3>
           <p class="section-paragraph">
-            Term magnitude ~ C/k³, so the tail behaves like ∫_N^∞ dx/x³ =
-            1/(2N²), giving:
+            Term magnitude ~ C/k³, so the tail behaves like ∫_N^∞ dx/x³ = 1/(2N²), giving:
           </p>
           <pre
             class="math-block"
           ><code class="math-code">|π − T_N| = O(1/N²),   N(ε) = Θ(ε^(−1/2))</code></pre>
           <p class="section-paragraph">
-            The denominators are products of three consecutive integers
-            (2k)(2k+1)(2k+2). Establishing that log lcm of these triple products
-            is Θ(N) requires showing that the triples collectively cover a dense
-            enough set of integers up to 2N+2 — this follows from PNT-level
-            results but is not the same trivial claim as the lcm of all integers
-            up to 2N+2, and deserves explicit proof in a full treatment.
-            Granting this, combined with the iteration count:
+            The denominators are products of three consecutive integers (2k)(2k+1)(2k+2).
+            Establishing that log lcm of these triple products is Θ(N) requires showing that the
+            triples collectively cover a dense enough set of integers up to 2N+2 — this follows from
+            PNT-level results but is not the same trivial claim as the lcm of all integers up to
+            2N+2, and deserves explicit proof in a full treatment. Granting this, combined with the
+            iteration count:
           </p>
           <p class="result-statement">
             <strong>Bit-length vs tolerance: Θ(ε^(−1/2))</strong>
@@ -1247,15 +1199,13 @@
         <article class="subsection subsection-analysis">
           <h3 class="subsection-heading">Analysis: Wallis Product for π</h3>
           <p class="section-paragraph">
-            Each factor is (2k)²/[(2k−1)(2k+1)] = 1 + O(1/k²), so the log-error
-            has a tail of O(1/N):
+            Each factor is (2k)²/[(2k−1)(2k+1)] = 1 + O(1/k²), so the log-error has a tail of
+            O(1/N):
           </p>
           <pre
             class="math-block"
           ><code class="math-code">|P_N − π| = O(1/N),   N(ε) = Θ(1/ε)</code></pre>
-          <p class="section-paragraph">
-            The product denominator is Π(2k−1)(2k+1), so:
-          </p>
+          <p class="section-paragraph">The product denominator is Π(2k−1)(2k+1), so:</p>
           <pre
             class="math-block"
           ><code class="math-code">log D_N = Σ O(log k) = O(N log N)</code></pre>
@@ -1263,55 +1213,43 @@
             <strong>Bit-length vs tolerance: Θ((1/ε) · log(1/ε))</strong>
           </p>
           <p class="section-paragraph">
-            Wallis is actually <em>worse</em> than Gregory–Leibniz in
-            representation cost, despite similar iteration counts. This is the
-            kind of distinction the framework is built to surface: a result
-            invisible to pure convergence analysis, which tracks only N(ε), but
-            visible the moment one accounts for the bit-cost of the rational
-            being produced.
+            Wallis is actually <em>worse</em> than Gregory–Leibniz in representation cost, despite
+            similar iteration counts. This is the kind of distinction the framework is built to
+            surface: a result invisible to pure convergence analysis, which tracks only N(ε), but
+            visible the moment one accounts for the bit-cost of the rational being produced.
           </p>
         </article>
 
         <article class="subsection subsection-analysis subsection-optimal">
           <h3 class="subsection-heading">Analysis: Binomial Series for √k</h3>
           <p class="section-paragraph">
-            The n-th term is C(2n,n)/4^n · (1 − 1/k)^n. Since C(2n,n) ~
-            4^n/√(πn), the term magnitude is:
+            The n-th term is C(2n,n)/4^n · (1 − 1/k)^n. Since C(2n,n) ~ 4^n/√(πn), the term
+            magnitude is:
           </p>
-          <pre
-            class="math-block"
-          ><code class="math-code">~ (1 − 1/k)^n / √(πn)</code></pre>
-          <p class="section-paragraph">
-            This is a geometric tail with ratio ρ = 1 − 1/k ∈ (0,1):
-          </p>
+          <pre class="math-block"><code class="math-code">~ (1 − 1/k)^n / √(πn)</code></pre>
+          <p class="section-paragraph">This is a geometric tail with ratio ρ = 1 − 1/k ∈ (0,1):</p>
           <pre
             class="math-block"
           ><code class="math-code">|√k − R_N| = O(ρ^N),   N(ε) = Θ(log(1/ε))</code></pre>
           <p class="section-paragraph">
-            Each term has denominator 4^n · k^n, so a common denominator up to N
-            is at most 4^N · k^N:
+            Each term has denominator 4^n · k^n, so a common denominator up to N is at most 4^N ·
+            k^N:
           </p>
-          <pre
-            class="math-block"
-          ><code class="math-code">log D_N = Θ(N)</code></pre>
+          <pre class="math-block"><code class="math-code">log D_N = Θ(N)</code></pre>
           <p class="section-paragraph">Combined with N(ε) = Θ(log(1/ε)):</p>
           <p class="result-statement result-optimal">
             <strong>Bit-length vs tolerance: Θ(log(1/ε))</strong>
           </p>
           <p class="section-paragraph">
-            This matches the information-theoretic lower bound. The binomial
-            series for √k is <em>optimal</em>: no rational certificate engine,
-            however clever, can do better than logarithmic bit-cost, and this
-            naïve construction already achieves it.
+            This matches the information-theoretic lower bound. The binomial series for √k is
+            <em>optimal</em>: no rational certificate engine, however clever, can do better than
+            logarithmic bit-cost, and this naïve construction already achieves it.
           </p>
         </article>
       </section>
 
       <!-- Classification Table -->
-      <section
-        id="classification"
-        class="article-section section-classification"
-      >
+      <section id="classification" class="article-section section-classification">
         <h2 class="section-heading">The Classification Table</h2>
         <div class="table-wrapper">
           <table class="complexity-table">
@@ -1341,120 +1279,100 @@
               <tr class="table-row table-row-highlight">
                 <td class="table-cell cell-sequence">Binomial series for √k</td>
                 <td class="table-cell cell-iteration">Θ(log(1/ε))</td>
-                <td class="table-cell cell-bitlength">
-                  <strong>Θ(log(1/ε))</strong> — optimal
-                </td>
+                <td class="table-cell cell-bitlength"><strong>Θ(log(1/ε))</strong> — optimal</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p class="section-paragraph">
-          The separation is stark. The binomial series for √k saturates the
-          information-theoretic lower bound. Every
-          <em>classical</em> construction for π sits in a polynomial-cost regime
-          — or worse.
+          The separation is stark. The binomial series for √k saturates the information-theoretic
+          lower bound. Every
+          <em>classical</em> construction for π sits in a polynomial-cost regime — or worse.
         </p>
       </section>
 
       <!-- What Framework Settles -->
       <section id="settled" class="article-section section-settled">
-        <h2 class="section-heading">
-          What the Framework Does and Does Not Settle
-        </h2>
+        <h2 class="section-heading">What the Framework Does and Does Not Settle</h2>
         <p class="section-paragraph">
-          It is tempting to say this "settles" the argument that π is harder
-          than √2. That overstates what the framework delivers, and it is
-          important to be precise about what is actually shown.
+          It is tempting to say this "settles" the argument that π is harder than √2. That
+          overstates what the framework delivers, and it is important to be precise about what is
+          actually shown.
         </p>
 
         <div class="dual-callout">
           <div class="callout callout-shown">
             <h3 class="callout-title">What is shown</h3>
             <p class="callout-text">
-              For the natural hypergeometric engines associated with each
-              constant, algebraic irrationals like √k achieve the
-              information-theoretically optimal logarithmic cost class, while
-              the classical hypergeometric engines for π achieve only polynomial
-              cost. The separation between these engine families is genuine,
-              measurable, and elementary in its derivation (modulo the PNT
-              dependence noted above).
+              For the natural hypergeometric engines associated with each constant, algebraic
+              irrationals like √k achieve the information-theoretically optimal logarithmic cost
+              class, while the classical hypergeometric engines for π achieve only polynomial cost.
+              The separation between these engine families is genuine, measurable, and elementary in
+              its derivation (modulo the PNT dependence noted above).
             </p>
           </div>
           <div class="callout callout-not-shown">
             <h3 class="callout-title">What is not shown</h3>
             <p class="callout-text">
-              That π is <em>intrinsically</em> harder than √2 as a constant. The
-              AGM iteration computes π in logarithmic bit-cost, placing it in
-              the same optimal class as √2. So if we classify a constant by the
-              cheapest engine over <em>all</em> regular engines, π and √2 land
-              in the same class, and the separation collapses.
+              That π is <em>intrinsically</em> harder than √2 as a constant. The AGM iteration
+              computes π in logarithmic bit-cost, placing it in the same optimal class as √2. So if
+              we classify a constant by the cheapest engine over <em>all</em> regular engines, π and
+              √2 land in the same class, and the separation collapses.
             </p>
           </div>
         </div>
 
         <p class="section-paragraph">
-          This raises an obvious question: why isn't the AGM the "natural"
-          engine for π in the same sense that the binomial series is natural for
-          √k? The honest answer is that "natural" is doing real work here, and
-          we should formalize it rather than rely on intuition.
+          This raises an obvious question: why isn't the AGM the "natural" engine for π in the same
+          sense that the binomial series is natural for √k? The honest answer is that "natural" is
+          doing real work here, and we should formalize it rather than rely on intuition.
         </p>
 
         <article class="subsection subsection-formalizing">
-          <h3 class="subsection-heading">
-            Formalizing "Natural": Hypergeometric Engines
-          </h3>
+          <h3 class="subsection-heading">Formalizing "Natural": Hypergeometric Engines</h3>
           <p class="section-paragraph">
-            Define the class of <strong>hypergeometric sequences</strong> as
-            those whose consecutive term ratio a_{n+1}/a_n is a rational
-            function of n. This is a decidable, syntactically checkable
-            property, and it captures all the classical series and products
-            considered here:
+            Define the class of <strong>hypergeometric sequences</strong> as those whose consecutive
+            term ratio a_{n+1}/a_n is a rational function of n. This is a decidable, syntactically
+            checkable property, and it captures all the classical series and products considered
+            here:
           </p>
           <ul class="check-list">
-            <li class="check-item check-yes">
-              The binomial series for √k is hypergeometric.
-            </li>
+            <li class="check-item check-yes">The binomial series for √k is hypergeometric.</li>
             <li class="check-item check-yes">
               Gregory–Leibniz, Nilakantha, and Wallis are all hypergeometric.
             </li>
-            <li class="check-item check-yes">
-              The Taylor series for e is hypergeometric.
-            </li>
+            <li class="check-item check-yes">The Taylor series for e is hypergeometric.</li>
             <li class="check-item check-no">
-              The AGM iteration is <strong>not</strong> hypergeometric — its
-              terms are defined by a nonlinear recursion involving square roots,
-              not a rational ratio.
+              The AGM iteration is <strong>not</strong> hypergeometric — its terms are defined by a
+              nonlinear recursion involving square roots, not a rational ratio.
             </li>
           </ul>
           <p class="section-paragraph">
-            Restricting attention to hypergeometric engines, the framework's
-            central claim becomes precise and defensible:
+            Restricting attention to hypergeometric engines, the framework's central claim becomes
+            precise and defensible:
           </p>
           <blockquote class="central-claim">
-            Among hypergeometric convergence engines, the natural engines for
-            algebraic irrationals achieve the information-theoretically optimal
-            logarithmic cost class, while the classical hypergeometric engines
-            for π and e achieve only polynomial cost.
+            Among hypergeometric convergence engines, the natural engines for algebraic irrationals
+            achieve the information-theoretically optimal logarithmic cost class, while the
+            classical hypergeometric engines for π and e achieve only polynomial cost.
           </blockquote>
           <p class="section-paragraph">
-            This is the statement the framework actually establishes. It is
-            weaker than "π is harder than √2 absolutely," but it is stronger
-            than "some series for π is slow" — it identifies a structural
-            property of an entire natural class of engines that correlates with
-            the algebraic/transcendental distinction.
+            This is the statement the framework actually establishes. It is weaker than "π is harder
+            than √2 absolutely," but it is stronger than "some series for π is slow" — it identifies
+            a structural property of an entire natural class of engines that correlates with the
+            algebraic/transcendental distinction.
           </p>
         </article>
 
         <article class="subsection subsection-extending">
           <h3 class="subsection-heading">Extending the Algebraic Result</h3>
           <p class="section-paragraph">
-            The binomial series result is not isolated to √k. By Gauss's theorem
-            on hypergeometric functions, every algebraic number arises as the
-            value of a hypergeometric series at an algebraic argument. The same
-            tail analysis that gives Θ(log(1/ε)) for √k extends to all algebraic
-            irrationals via their natural hypergeometric representations. The
-            optimal logarithmic class is the home of the algebraic numbers, with
-            respect to natural hypergeometric engines.
+            The binomial series result is not isolated to √k. By Gauss's theorem on hypergeometric
+            functions, every algebraic number arises as the value of a hypergeometric series at an
+            algebraic argument. The same tail analysis that gives Θ(log(1/ε)) for √k extends to all
+            algebraic irrationals via their natural hypergeometric representations. The optimal
+            logarithmic class is the home of the algebraic numbers, with respect to natural
+            hypergeometric engines.
           </p>
         </article>
       </section>
@@ -1463,44 +1381,36 @@
       <section id="regularity" class="article-section section-regularity">
         <h2 class="section-heading">The Regularity Condition, Made Precise</h2>
         <p class="section-paragraph">
-          Not every program counts as a convergence engine for the purposes of
-          this classification. The framework requires
-          <em>regular</em> sequences, and we can now state this condition
-          precisely rather than informally.
+          Not every program counts as a convergence engine for the purposes of this classification.
+          The framework requires
+          <em>regular</em> sequences, and we can now state this condition precisely rather than
+          informally.
         </p>
         <p class="section-paragraph">
-          A convergence sequence is <strong>regular</strong> if it is
-          hypergeometric — equivalently, if the ratio of consecutive terms is a
-          rational function of n. This single condition simultaneously:
+          A convergence sequence is <strong>regular</strong> if it is hypergeometric — equivalently,
+          if the ratio of consecutive terms is a rational function of n. This single condition
+          simultaneously:
         </p>
         <ul class="feature-list">
+          <li class="feature-item">Makes the class decidable and machine-checkable</li>
           <li class="feature-item">
-            Makes the class decidable and machine-checkable
+            Filters out pathological constructions whose cost profile is arbitrary or unanalyzable
           </li>
+          <li class="feature-item">Includes all classical analytic sequences of interest</li>
           <li class="feature-item">
-            Filters out pathological constructions whose cost profile is
-            arbitrary or unanalyzable
-          </li>
-          <li class="feature-item">
-            Includes all classical analytic sequences of interest
-          </li>
-          <li class="feature-item">
-            Excludes algorithms like AGM that compute using genuinely non-series
-            machinery, which deserve their own classification rather than
-            competing with series
+            Excludes algorithms like AGM that compute using genuinely non-series machinery, which
+            deserve their own classification rather than competing with series
           </li>
         </ul>
         <p class="section-paragraph">
-          This is the right regularity condition because it is both
-          syntactically clean and aligned with the natural mathematical category
-          of "elementary closed-form series."
+          This is the right regularity condition because it is both syntactically clean and aligned
+          with the natural mathematical category of "elementary closed-form series."
         </p>
         <p class="section-paragraph">
-          More general regularity conditions (such as the class of D-finite
-          sequences, which satisfy linear recursions with polynomial
-          coefficients) admit broader analysis at the cost of slightly more
-          complex machinery. For the present framework, hypergeometric is the
-          right level.
+          More general regularity conditions (such as the class of D-finite sequences, which satisfy
+          linear recursions with polynomial coefficients) admit broader analysis at the cost of
+          slightly more complex machinery. For the present framework, hypergeometric is the right
+          level.
         </p>
       </section>
 
@@ -1510,53 +1420,45 @@
           The Deeper Point: Operational Precision Over Metaphysical Ambition
         </h2>
         <p class="section-paragraph">
-          The real number system, as formalized in the 19th century through
-          Dedekind cuts and Cauchy completions, is a powerful and internally
-          consistent construction. But it also posits an uncountable continuum,
-          most of whose members are not computable, not nameable, and not
+          The real number system, as formalized in the 19th century through Dedekind cuts and Cauchy
+          completions, is a powerful and internally consistent construction. But it also posits an
+          uncountable continuum, most of whose members are not computable, not nameable, and not
           reachable by any finite process.
         </p>
         <p class="section-paragraph">
-          The rational certificate framework does not need the full apparatus of
-          this construction for its central classifications. A "number," within
-          the framework, is treated as:
+          The rational certificate framework does not need the full apparatus of this construction
+          for its central classifications. A "number," within the framework, is treated as:
         </p>
         <blockquote class="definition-blockquote">
           A regular convergence engine together with its cost profile.
         </blockquote>
         <p class="section-paragraph">
-          Two engines that produce the same limit are computing the same
-          constant <em>for the purposes of this taxonomy</em>. There is no
-          appeal to a Platonic continuum, no Dedekind cut, no equivalence class
-          of Cauchy sequences. There is computation, data, and asymptotic
-          analysis.
+          Two engines that produce the same limit are computing the same constant
+          <em>for the purposes of this taxonomy</em>. There is no appeal to a Platonic continuum, no
+          Dedekind cut, no equivalence class of Cauchy sequences. There is computation, data, and
+          asymptotic analysis.
         </p>
         <p class="section-paragraph">
-          Honesty requires acknowledging that this does not eliminate
-          mathematical metaphysics entirely. The asymptotic notation Θ(·), the
-          notion of "the same limit," and the regularity condition itself all
-          carry mathematical commitments. What the framework eliminates is not
-          metaphysics in general but the <em>specific</em> commitment to a
-          completed uncountable continuum as the foundation of computational
-          claims. The framework is operationally precise, not ontologically
-          empty.
+          Honesty requires acknowledging that this does not eliminate mathematical metaphysics
+          entirely. The asymptotic notation Θ(·), the notion of "the same limit," and the regularity
+          condition itself all carry mathematical commitments. What the framework eliminates is not
+          metaphysics in general but the <em>specific</em> commitment to a completed uncountable
+          continuum as the foundation of computational claims. The framework is operationally
+          precise, not ontologically empty.
         </p>
         <p class="section-paragraph">
-          This is not a rejection of classical mathematics. It is a
-          reinterpretation that stays closer to what computational mathematics
-          actually does: symbol manipulation, finite data, and structured cost
-          analysis. The real number system remains a useful organizing fiction
-          for the surrounding mathematical machinery, but it is not load-bearing
-          for the classification itself.
+          This is not a rejection of classical mathematics. It is a reinterpretation that stays
+          closer to what computational mathematics actually does: symbol manipulation, finite data,
+          and structured cost analysis. The real number system remains a useful organizing fiction
+          for the surrounding mathematical machinery, but it is not load-bearing for the
+          classification itself.
         </p>
         <p class="section-paragraph">
-          Under this reinterpretation, the hardness separation between algebraic
-          and transcendental constants — as expressed by their natural
-          hypergeometric engines — is not a deep theorem requiring centuries of
-          number theory. It is a direct, elementary consequence of the tail
-          structure of those engines, combined with an information-theoretic
-          lower bound. The math makes it clear. The computation makes it
-          precise.
+          Under this reinterpretation, the hardness separation between algebraic and transcendental
+          constants — as expressed by their natural hypergeometric engines — is not a deep theorem
+          requiring centuries of number theory. It is a direct, elementary consequence of the tail
+          structure of those engines, combined with an information-theoretic lower bound. The math
+          makes it clear. The computation makes it precise.
         </p>
       </section>
 
@@ -1564,169 +1466,137 @@
       <section id="related" class="article-section section-related">
         <h2 class="section-heading">Relationship to Known Frameworks</h2>
         <p class="section-paragraph">
-          This method is not entirely new, but the synthesis is sharper than
-          existing presentations.
+          This method is not entirely new, but the synthesis is sharper than existing presentations.
         </p>
 
         <div class="framework-grid">
           <div class="framework-card framework-card-classical">
             <h3 class="framework-name">Classical Convergence Analysis</h3>
             <p class="framework-description">
-              Studies how many terms are needed for a given error tolerance. It
-              derives N(ε) but does not track the bit-length of the resulting
-              rational. It treats numbers as reals, not as rationals with
-              explicit representation cost. The Wallis-vs-Gregory–Leibniz
-              comparison — where Wallis is worse in bit-cost despite comparable
-              iteration counts — is invisible to classical convergence analysis
-              but immediate in the present framework.
+              Studies how many terms are needed for a given error tolerance. It derives N(ε) but
+              does not track the bit-length of the resulting rational. It treats numbers as reals,
+              not as rationals with explicit representation cost. The Wallis-vs-Gregory–Leibniz
+              comparison — where Wallis is worse in bit-cost despite comparable iteration counts —
+              is invisible to classical convergence analysis but immediate in the present framework.
             </p>
           </div>
           <div class="framework-card framework-card-diophantine">
             <h3 class="framework-name">Diophantine Approximation</h3>
             <p class="framework-description">
-              Studies the size of numerators and denominators of rational
-              approximations, the height of algebraic numbers, and the
-              irrationality measure of constants like π and e. But it studies
-              the <em>best possible</em> rational approximations, not the
-              approximations produced by a specific convergence engine.
+              Studies the size of numerators and denominators of rational approximations, the height
+              of algebraic numbers, and the irrationality measure of constants like π and e. But it
+              studies the <em>best possible</em> rational approximations, not the approximations
+              produced by a specific convergence engine.
             </p>
           </div>
           <div class="framework-card framework-card-ko-friedman">
             <h3 class="framework-name">Real-Number Complexity Theory</h3>
             <p class="framework-description">
-              (The Ko–Friedman model and related frameworks) defines a real
-              number as "easy" if there exists an algorithm that outputs a
-              rational within ε in time polynomial in log(1/ε). Algebraic
-              numbers are in this class. Transcendentals like π and e are also
-              in this class via fast algorithms (AGM, Ramanujan series), but not
-              via the naive classical series.
+              (The Ko–Friedman model and related frameworks) defines a real number as "easy" if
+              there exists an algorithm that outputs a rational within ε in time polynomial in
+              log(1/ε). Algebraic numbers are in this class. Transcendentals like π and e are also
+              in this class via fast algorithms (AGM, Ramanujan series), but not via the naive
+              classical series.
             </p>
           </div>
         </div>
 
         <p class="section-paragraph">
-          The rational certificate framework is closest to the Ko–Friedman
-          model, but applied to <em>specific</em> classes of convergence
-          sequences rather than arbitrary algorithms. The question is not "does
-          some algorithm exist that computes this constant cheaply?" but "what
-          does <em>this particular family</em> of convergence engines cost?"
-          This is a more operational and more discriminating question, and it is
-          what makes the framework useful as a benchmark for evaluating real
-          algorithms (PSLQ, LLL, continued-fraction methods) against predicted
-          difficulty.
+          The rational certificate framework is closest to the Ko–Friedman model, but applied to
+          <em>specific</em> classes of convergence sequences rather than arbitrary algorithms. The
+          question is not "does some algorithm exist that computes this constant cheaply?" but "what
+          does <em>this particular family</em> of convergence engines cost?" This is a more
+          operational and more discriminating question, and it is what makes the framework useful as
+          a benchmark for evaluating real algorithms (PSLQ, LLL, continued-fraction methods) against
+          predicted difficulty.
         </p>
       </section>
 
       <!-- Complexity Classes -->
-      <section
-        id="complexity-classes"
-        class="article-section section-complexity-classes"
-      >
+      <section id="complexity-classes" class="article-section section-complexity-classes">
         <h2 class="section-heading">The Computational Complexity Classes</h2>
         <p class="section-paragraph">
-          The analysis suggests a natural hierarchy of complexity classes for
-          convergence engines:
+          The analysis suggests a natural hierarchy of complexity classes for convergence engines:
         </p>
 
         <div class="class-hierarchy">
           <div class="complexity-class class-rc1">
             <div class="class-label">RC₁</div>
-            <h3 class="class-name">
-              Log-cost, information-theoretically optimal
-            </h3>
+            <h3 class="class-name">Log-cost, information-theoretically optimal</h3>
             <p class="class-formula">bit-length = Θ(log(1/ε))</p>
             <p class="class-examples">
-              <strong>Examples:</strong> binomial series for √k (and all
-              algebraic irrationals via hypergeometric representations),
-              Newton's method for algebraic equations, AGM-based algorithms for
-              π
+              <strong>Examples:</strong> binomial series for √k (and all algebraic irrationals via
+              hypergeometric representations), Newton's method for algebraic equations, AGM-based
+              algorithms for π
             </p>
           </div>
           <div class="complexity-class class-rc2">
             <div class="class-label">RC₂</div>
             <h3 class="class-name">Poly-cost</h3>
-            <p class="class-formula">
-              bit-length = Θ(ε^(−c)) for some c &gt; 0
-            </p>
+            <p class="class-formula">bit-length = Θ(ε^(−c)) for some c &gt; 0</p>
             <p class="class-examples">
-              <strong>Examples:</strong> Gregory–Leibniz, Nilakantha, basic
-              e-series
+              <strong>Examples:</strong> Gregory–Leibniz, Nilakantha, basic e-series
             </p>
           </div>
           <div class="complexity-class class-rc3">
             <div class="class-label">RC₃</div>
             <h3 class="class-name">Super-poly-cost</h3>
-            <p class="class-formula">
-              bit-length grows faster than any polynomial in 1/ε
-            </p>
+            <p class="class-formula">bit-length grows faster than any polynomial in 1/ε</p>
             <p class="class-examples">
-              <strong>Examples:</strong> Wallis product (Θ((1/ε)·log(1/ε))),
-              factorial-denominator series with slow convergence
+              <strong>Examples:</strong> Wallis product (Θ((1/ε)·log(1/ε))), factorial-denominator
+              series with slow convergence
             </p>
           </div>
         </div>
 
         <p class="section-paragraph">
-          A constant is classified by the lowest RC class achievable by any
-          regular (hypergeometric) engine for it, with the optional refinement
-          of classifying it relative to broader engine classes when discussing
-          algorithms like AGM.
+          A constant is classified by the lowest RC class achievable by any regular (hypergeometric)
+          engine for it, with the optional refinement of classifying it relative to broader engine
+          classes when discussing algorithms like AGM.
         </p>
-        <p class="section-paragraph">
-          Under the hypergeometric-engine classification:
-        </p>
+        <p class="section-paragraph">Under the hypergeometric-engine classification:</p>
         <ul class="finding-list">
           <li class="finding-item">
-            <strong>Algebraic irrationals are in RC₁</strong> via their natural
-            hypergeometric representations.
+            <strong>Algebraic irrationals are in RC₁</strong> via their natural hypergeometric
+            representations.
+          </li>
+          <li class="finding-item">
+            <strong>The classical hypergeometric engines for π and e are in RC₂ or RC₃.</strong>
           </li>
           <li class="finding-item">
             <strong
-              >The classical hypergeometric engines for π and e are in RC₂ or
-              RC₃.</strong
+              >Whether π and e admit <em>any</em> hypergeometric engine in RC₁ is an open
+              question</strong
             >
-          </li>
-          <li class="finding-item">
-            <strong
-              >Whether π and e admit <em>any</em> hypergeometric engine in RC₁
-              is an open question</strong
-            >
-            — and a genuinely interesting one. A positive answer would refine
-            the framework; a negative answer would constitute a real lower bound
-            separating algebraic and transcendental constants relative to
-            hypergeometric engines.
+            — and a genuinely interesting one. A positive answer would refine the framework; a
+            negative answer would constitute a real lower bound separating algebraic and
+            transcendental constants relative to hypergeometric engines.
           </li>
         </ul>
         <p class="section-paragraph">
-          This is the computational signature of the algebraic/transcendental
-          distinction as the framework expresses it: algebraic constants have
-          simple, cheap natural engines that saturate the information-theoretic
-          optimum; transcendental constants require either non-hypergeometric
-          machinery (like AGM) or pay a polynomial cost.
+          This is the computational signature of the algebraic/transcendental distinction as the
+          framework expresses it: algebraic constants have simple, cheap natural engines that
+          saturate the information-theoretic optimum; transcendental constants require either
+          non-hypergeometric machinery (like AGM) or pay a polynomial cost.
         </p>
       </section>
 
       <!-- Benchmark Suite -->
       <section id="benchmark" class="article-section section-benchmark">
-        <h2 class="section-heading">
-          A Benchmark Suite for Numerical Algorithms
-        </h2>
+        <h2 class="section-heading">A Benchmark Suite for Numerical Algorithms</h2>
         <p class="section-paragraph">
-          The framework's most immediate practical application is as a benchmark
-          generator. Constants stratified by RC class form a curated test suite
-          for empirically evaluating numerical algorithms such as PSLQ, LLL
-          lattice reduction, and continued-fraction methods. The RC score
-          predicts the cost of certifying a constant; discrepancies between
-          predicted and observed algorithm performance identify either
-          unexpected algebraic structure (the constant is easier than its RC
-          class suggests) or algorithmic weakness (the algorithm fails to
-          exploit structure that the framework predicts is available).
+          The framework's most immediate practical application is as a benchmark generator.
+          Constants stratified by RC class form a curated test suite for empirically evaluating
+          numerical algorithms such as PSLQ, LLL lattice reduction, and continued-fraction methods.
+          The RC score predicts the cost of certifying a constant; discrepancies between predicted
+          and observed algorithm performance identify either unexpected algebraic structure (the
+          constant is easier than its RC class suggests) or algorithmic weakness (the algorithm
+          fails to exploit structure that the framework predicts is available).
         </p>
         <p class="section-paragraph">
-          This converts the abstract taxonomy into a falsifiable empirical
-          instrument. The benchmark is a durable artifact — useful regardless of
-          whether every theoretical prediction holds, because discrepancies are
-          informative rather than invalidating.
+          This converts the abstract taxonomy into a falsifiable empirical instrument. The benchmark
+          is a durable artifact — useful regardless of whether every theoretical prediction holds,
+          because discrepancies are informative rather than invalidating.
         </p>
       </section>
 
@@ -1734,65 +1604,56 @@
       <section id="tools" class="article-section section-tools">
         <h2 class="section-heading">The Right Tool for Cataloguing</h2>
         <p class="section-paragraph">
-          To catalog known sequences under this framework, the appropriate tool
-          treats exact rationals as first-class objects, supports symbolic
-          manipulation of sequence terms, and allows meta-level asymptotic
-          analysis — without imposing a real-number ontology on the
+          To catalog known sequences under this framework, the appropriate tool treats exact
+          rationals as first-class objects, supports symbolic manipulation of sequence terms, and
+          allows meta-level asymptotic analysis — without imposing a real-number ontology on the
           representation layer.
         </p>
         <p class="section-paragraph">
-          <strong>GiNaC</strong> (GiNaC is Not a CAS) is a natural choice for a
-          production implementation. Built in C++ with CLN for exact rational
-          arithmetic, GiNaC was originally developed for Feynman diagram algebra
-          — a domain that similarly demands exact symbolic manipulation. Its
-          design philosophy matches the requirements: deterministic,
-          inspectable, full control over the symbolic machinery.
+          <strong>GiNaC</strong> (GiNaC is Not a CAS) is a natural choice for a production
+          implementation. Built in C++ with CLN for exact rational arithmetic, GiNaC was originally
+          developed for Feynman diagram algebra — a domain that similarly demands exact symbolic
+          manipulation. Its design philosophy matches the requirements: deterministic, inspectable,
+          full control over the symbolic machinery.
         </p>
         <p class="section-paragraph">
-          Pragmatically, however, a Python/SymPy prototype is the right first
-          step. It validates the architecture, exercises the pattern-matching
-          rules on the small set of canonical examples (Gregory–Leibniz,
-          Nilakantha, Wallis, binomial, Taylor for e), and exposes
-          implementation complexity before committing to C++. The denominator
-          growth analyzer in particular requires care: it must either encode
-          PNT-level results as known asymptotic facts or invoke a verified
-          library for them.
+          Pragmatically, however, a Python/SymPy prototype is the right first step. It validates the
+          architecture, exercises the pattern-matching rules on the small set of canonical examples
+          (Gregory–Leibniz, Nilakantha, Wallis, binomial, Taylor for e), and exposes implementation
+          complexity before committing to C++. The denominator growth analyzer in particular
+          requires care: it must either encode PNT-level results as known asymptotic facts or invoke
+          a verified library for them.
         </p>
         <p class="section-paragraph">
-          The catalog is structured as a typed symbolic system with four
-          components:
+          The catalog is structured as a typed symbolic system with four components:
         </p>
         <ol class="component-list">
           <li class="component-item">
-            <strong class="component-name">Sequence definition</strong>:
-            symbolic term a_n or b_k, partial sum or product S_N, with
-            verification that the consecutive-term ratio is a rational function
-            of n (hypergeometricity check)
+            <strong class="component-name">Sequence definition</strong>: symbolic term a_n or b_k,
+            partial sum or product S_N, with verification that the consecutive-term ratio is a
+            rational function of n (hypergeometricity check)
           </li>
           <li class="component-item">
-            <strong class="component-name">Tail asymptotic analyzer</strong>:
-            pattern-match for alternating series, geometric tails,
-            hypergeometric terms, polynomial tails; derive f(N) such that |α −
-            S_N| ~ f(N)
+            <strong class="component-name">Tail asymptotic analyzer</strong>: pattern-match for
+            alternating series, geometric tails, hypergeometric terms, polynomial tails; derive f(N)
+            such that |α − S_N| ~ f(N)
           </li>
           <li class="component-item">
-            <strong class="component-name">Denominator growth analyzer</strong>:
-            extract denominators of terms, model lcm or product growth, derive
-            g(N) = log bit-length of S_N (with explicit dependence flagged when
-            PNT-level results are invoked)
+            <strong class="component-name">Denominator growth analyzer</strong>: extract
+            denominators of terms, model lcm or product growth, derive g(N) = log bit-length of S_N
+            (with explicit dependence flagged when PNT-level results are invoked)
           </li>
           <li class="component-item">
-            <strong class="component-name">Complexity profile</strong>: compose
-            f and g to produce C(ε) = g(f⁻¹(ε)), classify into RC₁/RC₂/RC₃
+            <strong class="component-name">Complexity profile</strong>: compose f and g to produce
+            C(ε) = g(f⁻¹(ε)), classify into RC₁/RC₂/RC₃
           </li>
         </ol>
         <p class="section-paragraph">
-          The first deliverable is a heuristic classifier with explicit
-          confidence annotations and numerical validation against measured
-          bit-lengths at chosen tolerances. A formally verified catalog —
-          implemented in Lean 4 with Mathlib, for instance — is a longer-term
-          research goal that would force resolution of any remaining ambiguities
-          in the regularity condition and the asymptotic claims.
+          The first deliverable is a heuristic classifier with explicit confidence annotations and
+          numerical validation against measured bit-lengths at chosen tolerances. A formally
+          verified catalog — implemented in Lean 4 with Mathlib, for instance — is a longer-term
+          research goal that would force resolution of any remaining ambiguities in the regularity
+          condition and the asymptotic claims.
         </p>
       </section>
 
@@ -1800,54 +1661,46 @@
       <section id="conclusion" class="article-section section-conclusion">
         <h2 class="section-heading">Conclusion</h2>
         <p class="section-paragraph">
-          The rational certificate complexity framework is valid, meaningful,
-          and operationally precise. It requires no transcendence theory and no
-          commitment to the full real-number continuum. It requires:
+          The rational certificate complexity framework is valid, meaningful, and operationally
+          precise. It requires no transcendence theory and no commitment to the full real-number
+          continuum. It requires:
         </p>
         <ul class="conclusion-list">
           <li class="conclusion-item">
-            A hypergeometric convergence sequence (the precise regularity
-            condition)
+            A hypergeometric convergence sequence (the precise regularity condition)
           </li>
+          <li class="conclusion-item">A tail bound derivable by standard analysis</li>
           <li class="conclusion-item">
-            A tail bound derivable by standard analysis
-          </li>
-          <li class="conclusion-item">
-            A denominator growth model derivable by standard number theory (with
-            PNT-level results acknowledged as inputs)
+            A denominator growth model derivable by standard number theory (with PNT-level results
+            acknowledged as inputs)
           </li>
           <li class="conclusion-item">
             A composition of the two into a bit-length-vs-tolerance profile
           </li>
           <li class="conclusion-item">
-            An information-theoretic lower bound that pins down what "optimal"
-            means
+            An information-theoretic lower bound that pins down what "optimal" means
           </li>
         </ul>
         <p class="section-paragraph">
-          Under this framework, the computational hardness separation between
-          the natural hypergeometric engines for algebraic and transcendental
-          constants is a direct, visible consequence of the tail structure of
-          those engines. Algebraic irrationals saturate the
-          information-theoretic optimum at logarithmic bit-cost. Classical
-          hypergeometric engines for π and e pay polynomial cost. Whether
-          transcendentals admit any hypergeometric engine reaching the optimum
-          is open, and that openness is itself a sharp, well-posed research
+          Under this framework, the computational hardness separation between the natural
+          hypergeometric engines for algebraic and transcendental constants is a direct, visible
+          consequence of the tail structure of those engines. Algebraic irrationals saturate the
+          information-theoretic optimum at logarithmic bit-cost. Classical hypergeometric engines
+          for π and e pay polynomial cost. Whether transcendentals admit any hypergeometric engine
+          reaching the optimum is open, and that openness is itself a sharp, well-posed research
           question.
         </p>
         <p class="section-paragraph">
-          The framework's deepest contribution is not a metaphysical reform but
-          an operational one: it gives a precise, measurable, falsifiable
-          instrument for comparing approximation strategies, evaluating
-          numerical algorithms, and stratifying constants by the cost of
-          certifying them. The structure of the series is the structure of the
-          cost, made computationally explicit.
+          The framework's deepest contribution is not a metaphysical reform but an operational one:
+          it gives a precise, measurable, falsifiable instrument for comparing approximation
+          strategies, evaluating numerical algorithms, and stratifying constants by the cost of
+          certifying them. The structure of the series is the structure of the cost, made
+          computationally explicit.
         </p>
         <p class="section-paragraph closing-paragraph">
-          Mathematics, on the constructive side of the ledger, is computation
-          and data. The rational certificate framework keeps it that way —
-          without pretending that the surrounding mathematical machinery is
-          metaphysically free.
+          Mathematics, on the constructive side of the ledger, is computation and data. The rational
+          certificate framework keeps it that way — without pretending that the surrounding
+          mathematical machinery is metaphysically free.
         </p>
       </section>
     </main>
@@ -1860,9 +1713,9 @@
         <div class="footer-section footer-about">
           <h3 class="footer-heading">About This Article</h3>
           <p class="footer-text">
-            A synthesis across numerical analysis, Diophantine approximation,
-            and real-number complexity theory, proposing a measurable taxonomy
-            of approximation strategies for mathematical constants.
+            A synthesis across numerical analysis, Diophantine approximation, and real-number
+            complexity theory, proposing a measurable taxonomy of approximation strategies for
+            mathematical constants.
           </p>
         </div>
         <div class="footer-section footer-topics">
@@ -1881,8 +1734,7 @@
       </div>
       <div class="footer-bottom">
         <p class="footer-copyright">
-          © Rational Certificate Complexity — A taxonomy of approximation
-          strategies.
+          © Rational Certificate Complexity — A taxonomy of approximation strategies.
         </p>
       </div>
     </footer>
@@ -1903,12 +1755,12 @@
        */
 
       (() => {
-        "use strict";
+        'use strict';
 
         // ============================================
         // 1. INITIALIZATION
         // ============================================
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener('DOMContentLoaded', () => {
           initSmoothScroll();
           initScrollSpy();
           initRevealOnScroll();
@@ -1918,42 +1770,35 @@
           initComplexityCardToggle();
           initMobileNav();
           initBackToTop();
-          console.log("[RC Complexity] Article interactivity initialized.");
+          console.log('[RC Complexity] Article interactivity initialized.');
         });
 
         // ============================================
         // 2. SMOOTH SCROLL FOR NAV LINKS
         // ============================================
         function initSmoothScroll() {
-          const navLinks = document.querySelectorAll(".nav-link, .brand-link");
+          const navLinks = document.querySelectorAll('.nav-link, .brand-link');
 
           navLinks.forEach((link) => {
-            link.addEventListener("click", (e) => {
-              const href = link.getAttribute("href");
-              if (!href || !href.startsWith("#")) return;
+            link.addEventListener('click', (e) => {
+              const href = link.getAttribute('href');
+              if (!href || !href.startsWith('#')) return;
 
-              const target =
-                href === "#" ? document.body : document.querySelector(href);
+              const target = href === '#' ? document.body : document.querySelector(href);
               if (!target) return;
 
               e.preventDefault();
-              const headerOffset =
-                document.querySelector(".site-header")?.offsetHeight || 0;
+              const headerOffset = document.querySelector('.site-header')?.offsetHeight || 0;
               const targetPos =
-                target.getBoundingClientRect().top +
-                window.pageYOffset -
-                headerOffset -
-                20;
+                target.getBoundingClientRect().top + window.pageYOffset - headerOffset - 20;
 
               window.scrollTo({
                 top: targetPos,
-                behavior: "smooth",
+                behavior: 'smooth',
               });
 
               // Close mobile menu if open
-              document
-                .querySelector(".nav-menu")
-                ?.classList.remove("nav-menu-open");
+              document.querySelector('.nav-menu')?.classList.remove('nav-menu-open');
             });
           });
         }
@@ -1962,14 +1807,14 @@
         // 3. SCROLLSPY - HIGHLIGHT ACTIVE SECTION
         // ============================================
         function initScrollSpy() {
-          const sections = document.querySelectorAll(".article-section[id]");
-          const navLinks = document.querySelectorAll(".nav-link");
+          const sections = document.querySelectorAll('.article-section[id]');
+          const navLinks = document.querySelectorAll('.nav-link');
           if (!sections.length || !navLinks.length) return;
 
           const linkMap = new Map();
           navLinks.forEach((link) => {
-            const href = link.getAttribute("href");
-            if (href && href.startsWith("#")) {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('#')) {
               linkMap.set(href.slice(1), link);
             }
           });
@@ -1982,17 +1827,15 @@
                 if (!link) return;
 
                 if (entry.isIntersecting) {
-                  navLinks.forEach((l) =>
-                    l.classList.remove("nav-link-active"),
-                  );
-                  link.classList.add("nav-link-active");
+                  navLinks.forEach((l) => l.classList.remove('nav-link-active'));
+                  link.classList.add('nav-link-active');
                 }
               });
             },
             {
-              rootMargin: "-30% 0px -60% 0px",
+              rootMargin: '-30% 0px -60% 0px',
               threshold: 0,
-            },
+            }
           );
 
           sections.forEach((section) => observer.observe(section));
@@ -2003,27 +1846,27 @@
         // ============================================
         function initRevealOnScroll() {
           const revealTargets = document.querySelectorAll(
-            ".article-section, .callout, .series-card, .framework-card, .complexity-class, .math-block, .central-claim, .definition-blockquote",
+            '.article-section, .callout, .series-card, .framework-card, .complexity-class, .math-block, .central-claim, .definition-blockquote'
           );
 
           if (!revealTargets.length) return;
 
           // Set initial state via class
-          revealTargets.forEach((el) => el.classList.add("reveal-init"));
+          revealTargets.forEach((el) => el.classList.add('reveal-init'));
 
           const revealObserver = new IntersectionObserver(
             (entries) => {
               entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                  entry.target.classList.add("reveal-visible");
+                  entry.target.classList.add('reveal-visible');
                   revealObserver.unobserve(entry.target);
                 }
               });
             },
             {
               threshold: 0.1,
-              rootMargin: "0px 0px -50px 0px",
-            },
+              rootMargin: '0px 0px -50px 0px',
+            }
           );
 
           revealTargets.forEach((el) => revealObserver.observe(el));
@@ -2034,15 +1877,15 @@
         // ============================================
         function initReadingProgress() {
           // Create progress bar
-          const progressBar = document.createElement("div");
-          progressBar.className = "reading-progress";
-          progressBar.setAttribute("aria-hidden", "true");
-          const progressFill = document.createElement("div");
-          progressFill.className = "reading-progress-fill";
+          const progressBar = document.createElement('div');
+          progressBar.className = 'reading-progress';
+          progressBar.setAttribute('aria-hidden', 'true');
+          const progressFill = document.createElement('div');
+          progressFill.className = 'reading-progress-fill';
           progressBar.appendChild(progressFill);
           document.body.appendChild(progressBar);
 
-          const article = document.querySelector(".article-main");
+          const article = document.querySelector('.article-main');
           if (!article) return;
 
           const updateProgress = () => {
@@ -2053,17 +1896,14 @@
 
             const start = articleTop - windowHeight * 0.2;
             const end = articleTop + articleHeight - windowHeight;
-            const progress = Math.min(
-              Math.max((scrollTop - start) / (end - start), 0),
-              1,
-            );
+            const progress = Math.min(Math.max((scrollTop - start) / (end - start), 0), 1);
 
             progressFill.style.width = `${progress * 100}%`;
           };
 
           let ticking = false;
           window.addEventListener(
-            "scroll",
+            'scroll',
             () => {
               if (!ticking) {
                 window.requestAnimationFrame(() => {
@@ -2073,7 +1913,7 @@
                 ticking = true;
               }
             },
-            { passive: true },
+            { passive: true }
           );
 
           updateProgress();
@@ -2083,20 +1923,20 @@
         // 6. COPY MATH BLOCKS TO CLIPBOARD
         // ============================================
         function initMathBlockCopy() {
-          const mathBlocks = document.querySelectorAll(".math-block");
+          const mathBlocks = document.querySelectorAll('.math-block');
 
           mathBlocks.forEach((block) => {
             // Wrap in container for positioning the button
-            block.classList.add("math-block-interactive");
+            block.classList.add('math-block-interactive');
 
-            const copyBtn = document.createElement("button");
-            copyBtn.className = "math-copy-btn";
-            copyBtn.type = "button";
-            copyBtn.textContent = "Copy";
-            copyBtn.setAttribute("aria-label", "Copy formula to clipboard");
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'math-copy-btn';
+            copyBtn.type = 'button';
+            copyBtn.textContent = 'Copy';
+            copyBtn.setAttribute('aria-label', 'Copy formula to clipboard');
 
-            copyBtn.addEventListener("click", async () => {
-              const code = block.querySelector(".math-code");
+            copyBtn.addEventListener('click', async () => {
+              const code = block.querySelector('.math-code');
               if (!code) return;
 
               const text = code.textContent.trim();
@@ -2106,28 +1946,28 @@
                   await navigator.clipboard.writeText(text);
                 } else {
                   // Fallback
-                  const ta = document.createElement("textarea");
+                  const ta = document.createElement('textarea');
                   ta.value = text;
-                  ta.style.position = "fixed";
-                  ta.style.left = "-9999px";
+                  ta.style.position = 'fixed';
+                  ta.style.left = '-9999px';
                   document.body.appendChild(ta);
                   ta.select();
-                  document.execCommand("copy");
+                  document.execCommand('copy');
                   document.body.removeChild(ta);
                 }
 
-                copyBtn.textContent = "Copied!";
-                copyBtn.classList.add("math-copy-btn-success");
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('math-copy-btn-success');
 
                 setTimeout(() => {
-                  copyBtn.textContent = "Copy";
-                  copyBtn.classList.remove("math-copy-btn-success");
+                  copyBtn.textContent = 'Copy';
+                  copyBtn.classList.remove('math-copy-btn-success');
                 }, 1800);
               } catch (err) {
-                console.warn("[RC Complexity] Copy failed:", err);
-                copyBtn.textContent = "Failed";
+                console.warn('[RC Complexity] Copy failed:', err);
+                copyBtn.textContent = 'Failed';
                 setTimeout(() => {
-                  copyBtn.textContent = "Copy";
+                  copyBtn.textContent = 'Copy';
                 }, 1800);
               }
             });
@@ -2140,23 +1980,21 @@
         // 7. TABLE ROW HOVER INTERACTION
         // ============================================
         function initTableHover() {
-          const rows = document.querySelectorAll(
-            ".complexity-table .table-row",
-          );
+          const rows = document.querySelectorAll('.complexity-table .table-row');
 
           rows.forEach((row) => {
-            row.addEventListener("mouseenter", () => {
-              row.classList.add("table-row-hover");
+            row.addEventListener('mouseenter', () => {
+              row.classList.add('table-row-hover');
             });
-            row.addEventListener("mouseleave", () => {
-              row.classList.remove("table-row-hover");
+            row.addEventListener('mouseleave', () => {
+              row.classList.remove('table-row-hover');
             });
 
             // Click to "pin" row highlight
-            row.addEventListener("click", () => {
-              const wasActive = row.classList.contains("table-row-active");
-              rows.forEach((r) => r.classList.remove("table-row-active"));
-              if (!wasActive) row.classList.add("table-row-active");
+            row.addEventListener('click', () => {
+              const wasActive = row.classList.contains('table-row-active');
+              rows.forEach((r) => r.classList.remove('table-row-active'));
+              if (!wasActive) row.classList.add('table-row-active');
             });
           });
         }
@@ -2165,22 +2003,20 @@
         // 8. COMPLEXITY CLASS CARD EXPANSION
         // ============================================
         function initComplexityCardToggle() {
-          const classes = document.querySelectorAll(".complexity-class");
+          const classes = document.querySelectorAll('.complexity-class');
 
           classes.forEach((card) => {
-            card.setAttribute("tabindex", "0");
-            card.setAttribute("role", "button");
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('role', 'button');
 
             const toggle = () => {
-              const isExpanded = card.classList.toggle(
-                "complexity-class-expanded",
-              );
-              card.setAttribute("aria-expanded", String(isExpanded));
+              const isExpanded = card.classList.toggle('complexity-class-expanded');
+              card.setAttribute('aria-expanded', String(isExpanded));
             };
 
-            card.addEventListener("click", toggle);
-            card.addEventListener("keydown", (e) => {
-              if (e.key === "Enter" || e.key === " ") {
+            card.addEventListener('click', toggle);
+            card.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 toggle();
               }
@@ -2192,36 +2028,33 @@
         // 9. MOBILE NAVIGATION TOGGLE
         // ============================================
         function initMobileNav() {
-          const nav = document.querySelector(".site-nav");
-          const menu = document.querySelector(".nav-menu");
+          const nav = document.querySelector('.site-nav');
+          const menu = document.querySelector('.nav-menu');
           if (!nav || !menu) return;
 
           // Create toggle button
-          const toggle = document.createElement("button");
-          toggle.className = "nav-toggle";
-          toggle.type = "button";
-          toggle.setAttribute("aria-label", "Toggle navigation menu");
-          toggle.setAttribute("aria-expanded", "false");
+          const toggle = document.createElement('button');
+          toggle.className = 'nav-toggle';
+          toggle.type = 'button';
+          toggle.setAttribute('aria-label', 'Toggle navigation menu');
+          toggle.setAttribute('aria-expanded', 'false');
           toggle.innerHTML =
             '<span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span>';
 
           nav.appendChild(toggle);
 
-          toggle.addEventListener("click", () => {
-            const isOpen = menu.classList.toggle("nav-menu-open");
-            toggle.setAttribute("aria-expanded", String(isOpen));
-            toggle.classList.toggle("nav-toggle-active", isOpen);
+          toggle.addEventListener('click', () => {
+            const isOpen = menu.classList.toggle('nav-menu-open');
+            toggle.setAttribute('aria-expanded', String(isOpen));
+            toggle.classList.toggle('nav-toggle-active', isOpen);
           });
 
           // Close menu on outside click
-          document.addEventListener("click", (e) => {
-            if (
-              !nav.contains(e.target) &&
-              menu.classList.contains("nav-menu-open")
-            ) {
-              menu.classList.remove("nav-menu-open");
-              toggle.setAttribute("aria-expanded", "false");
-              toggle.classList.remove("nav-toggle-active");
+          document.addEventListener('click', (e) => {
+            if (!nav.contains(e.target) && menu.classList.contains('nav-menu-open')) {
+              menu.classList.remove('nav-menu-open');
+              toggle.setAttribute('aria-expanded', 'false');
+              toggle.classList.remove('nav-toggle-active');
             }
           });
         }
@@ -2230,24 +2063,24 @@
         // 10. BACK TO TOP BUTTON
         // ============================================
         function initBackToTop() {
-          const btn = document.createElement("button");
-          btn.className = "back-to-top";
-          btn.type = "button";
-          btn.setAttribute("aria-label", "Back to top");
-          btn.innerHTML = "↑";
+          const btn = document.createElement('button');
+          btn.className = 'back-to-top';
+          btn.type = 'button';
+          btn.setAttribute('aria-label', 'Back to top');
+          btn.innerHTML = '↑';
           document.body.appendChild(btn);
 
           const toggleVisibility = () => {
             if (window.pageYOffset > 600) {
-              btn.classList.add("back-to-top-visible");
+              btn.classList.add('back-to-top-visible');
             } else {
-              btn.classList.remove("back-to-top-visible");
+              btn.classList.remove('back-to-top-visible');
             }
           };
 
           let ticking = false;
           window.addEventListener(
-            "scroll",
+            'scroll',
             () => {
               if (!ticking) {
                 window.requestAnimationFrame(() => {
@@ -2257,11 +2090,11 @@
                 ticking = true;
               }
             },
-            { passive: true },
+            { passive: true }
           );
 
-          btn.addEventListener("click", () => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
+          btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           });
 
           toggleVisibility();
