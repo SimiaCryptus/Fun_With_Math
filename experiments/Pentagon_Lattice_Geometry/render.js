@@ -129,14 +129,29 @@ export class LatticeView {
     const [wx, wy] = this.screenToWorld(sx, sy);
     const sel = this.selectedIdx !== null ? this.lattice.tiles[this.selectedIdx] : null;
     const selSheet = sel ? sel.sheet : 0;
-    let fallback = null;
-    for (const t of this.lattice.tiles) {
-      if (pointInPoly(wx, wy, t.vertsF)) {
-        if (t.sheet === selSheet) return t.index;
-        if (fallback === null) fallback = t.index;
-      }
-    }
-    return fallback;
+       // Gather ALL tiles whose polygon contains the point. Among them,
+       // prefer the selected sheet; within a sheet, prefer the tile whose
+       // centroid is nearest the click (disambiguates overlapping sheets).
+       const hits = [];
+       for (const t of this.lattice.tiles) {
+         if (pointInPoly(wx, wy, t.vertsF)) hits.push(t);
+       }
+       if (hits.length === 0) {
+         // Fallback: nearest centroid via kd-tree (forgiving clicks near edges).
+         if (this.lattice._kdtree) {
+           return this.lattice._kdtree.nearest(wx, wy);
+         }
+         return null;
+       }
+       const dist2 = (t) =>
+         (t.centroidF[0] - wx) ** 2 + (t.centroidF[1] - wy) ** 2;
+       hits.sort((a, b) => {
+         const aSel = a.sheet === selSheet ? 0 : 1;
+         const bSel = b.sheet === selSheet ? 0 : 1;
+         if (aSel !== bSel) return aSel - bSel;
+         return dist2(a) - dist2(b);
+       });
+       return hits[0].index;
   }
 
   select(idx) {
@@ -209,7 +224,15 @@ export class LatticeView {
       const isSel = sh === selSheet;
       if (this.options.onlySelSheet && !isSel) continue;
       const alpha = isSel ? this.options.alphaSelected : this.options.alphaOther;
-      for (const t of bySheet.get(sh)) this._drawTile(t, alpha, isSel);
+      for (const t of bySheet.get(sh)) this._drawTile(t, alpha, isSel, /*fillOnly=*/ true);
+    }
+    // Second pass: strokes + labels on top, so a neighbor's fill never
+    // covers a shared edge that was already stroked.
+    for (const sh of sheets) {
+      const isSel = sh === selSheet;
+      if (this.options.onlySelSheet && !isSel) continue;
+      const alpha = isSel ? this.options.alphaSelected : this.options.alphaOther;
+      for (const t of bySheet.get(sh)) this._drawTile(t, alpha, isSel, /*fillOnly=*/ false, /*strokeOnly=*/ true);
     }
 
     if (sel && this.options.showSelGlow) this._drawSelection(sel);
@@ -230,7 +253,7 @@ export class LatticeView {
     ctx.restore();
   }
 
-  _drawTile(t, alpha, isSelSheet) {
+  _drawTile(t, alpha, isSelSheet, fillOnly = false, strokeOnly = false) {
     const ctx = this.ctx;
     const opts = this.options;
     ctx.save();
@@ -246,7 +269,10 @@ export class LatticeView {
         useAlpha = isSelSheet ? Math.max(alpha, 0.95) : Math.max(alpha, 0.6);
       }
     }
-    ctx.globalAlpha = useAlpha;
+   // For the stroke-only pass, draw borders at (near) full opacity so they
+   // are never washed out by low fill / dead-cell alphas. Otherwise use the
+   // computed fill alpha.
+   ctx.globalAlpha = strokeOnly ? 1 : useAlpha;
 
     ctx.beginPath();
     for (let i = 0; i < t.vertsF.length; i++) {
@@ -256,11 +282,11 @@ export class LatticeView {
     }
     ctx.closePath();
 
-    if (opts.fillTiles) {
+    if (opts.fillTiles && !strokeOnly) {
       ctx.fillStyle = this._tileColor(t, isSelSheet);
       ctx.fill();
     }
-    if (opts.strokeTiles) {
+    if (opts.strokeTiles && !fillOnly) {
       // If this tile has an activeEdges restriction (pinwheel), draw
       // active edges solid and inactive edges with a dashed, dim style.
       if (t.activeEdges) {
@@ -272,13 +298,13 @@ export class LatticeView {
           ctx.moveTo(sx0, sy0);
           ctx.lineTo(sx1, sy1);
           if (t.activeEdges[k]) {
-            ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.14)';
+           ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
             ctx.lineWidth = isSelSheet
               ? opts.borderWidth * 1.3
               : Math.max(0.4, opts.borderWidth * 0.7);
             ctx.setLineDash([]);
           } else {
-            ctx.strokeStyle = isSelSheet ? 'rgba(255, 90, 90, 0.55)' : 'rgba(255, 90, 90, 0.28)';
+           ctx.strokeStyle = isSelSheet ? 'rgba(255, 90, 90, 0.9)' : 'rgba(255, 90, 90, 0.5)';
             ctx.lineWidth = isSelSheet ? opts.borderWidth : Math.max(0.4, opts.borderWidth * 0.5);
             ctx.setLineDash([4, 3]);
           }
@@ -286,14 +312,14 @@ export class LatticeView {
         }
         ctx.setLineDash([]);
       } else {
-        ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)';
-        ctx.lineWidth = isSelSheet ? opts.borderWidth : Math.max(0.4, opts.borderWidth * 0.6);
+       ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
+       ctx.lineWidth = isSelSheet ? opts.borderWidth : Math.max(0.5, opts.borderWidth * 0.7);
         ctx.stroke();
       }
     }
 
     const drawLabels = isSelSheet || opts.labelsAllSheets;
-    if (drawLabels && !t.isSierpinski && !t.isPinwheel) {
+    if (drawLabels && !fillOnly && !t.isSierpinski && !t.isPinwheel) {
       const [cx, cy] = this.worldToScreen(...t.centroidF);
       const sz = opts.labelSize;
       ctx.font = `600 ${sz}px ui-monospace, 'JetBrains Mono', monospace`;
@@ -331,7 +357,7 @@ export class LatticeView {
     }
 
     // Sierpiński: show depth label if requested.
-    if (t.isSierpinski && opts.depthLabels) {
+    if (t.isSierpinski && opts.depthLabels && !fillOnly) {
       const [cx, cy] = this.worldToScreen(...t.centroidF);
       const sz = Math.max(6, opts.labelSize - 2);
       ctx.font = `600 ${sz}px ui-monospace, 'JetBrains Mono', monospace`;

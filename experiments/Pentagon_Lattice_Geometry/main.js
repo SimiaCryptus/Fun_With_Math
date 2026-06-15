@@ -644,19 +644,26 @@ window.addEventListener('keydown', (e) => {
   if (k < 0) return;
   const t = lattice.tiles[currentTileIdx];
   if (k >= t.neighbors.length) return;
-  if (t.activeEdges && !t.activeEdges[k]) {
-    appendWalkStep(els.walk, t, k, 'inactive edge (pinwheel)');
+     // Map the pressed key to a compass slot (North, then clockwise), then
+     // resolve to this tile's raw edge index so walking stays direction-stable.
+     const n = t.n || t.neighbors.length;
+     const edge =
+       t.isSierpinski || t.isPinwheel
+         ? k
+         : (((k + t.orient) % n) + n) % n;
+     if (t.activeEdges && !t.activeEdges[edge]) {
+       appendWalkStep(els.walk, t, edge, 'inactive edge (pinwheel)');
     return;
   }
-  const nIdx = t.neighbors[k];
+     const nIdx = t.neighbors[edge];
   if (nIdx === null) {
-    appendWalkStep(els.walk, t, k, 'no neighbor in lattice');
+       appendWalkStep(els.walk, t, edge, 'no neighbor in lattice');
     return;
   }
   currentTileIdx = nIdx;
   view.select(nIdx);
   renderTileInfo(els.tileInfo, lattice.tiles[nIdx], lattice);
-  appendWalkStep(els.walk, lattice.tiles[nIdx], k);
+     appendWalkStep(els.walk, lattice.tiles[nIdx], edge);
 });
 
 // initial build

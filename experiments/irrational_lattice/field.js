@@ -93,6 +93,10 @@ export function computeField(opts) {
   const panX = opts.panX || 0;
   const panY = opts.panY || 0;
   const zoom = opts.zoom || 1;
+   // Upsample: sample the lattice at 1/upsample-unit steps so we see the
+   // field between integer sites (½, ⅓, … grid sampling).
+   const upsample = opts.upsample && opts.upsample > 0 ? opts.upsample : 1;
+   const sampleZoom = zoom * upsample;
   const offsetX = opts.offsetX || 0;
   const offsetY = opts.offsetY || 0;
   const cmap2d = opts.cmap2d || 'none';
@@ -114,8 +118,8 @@ export function computeField(opts) {
     for (let i = 0; i < width; i++) {
       // Center the grid for symmetric viewing.
       // Apply pan (in lattice units) and zoom (lattice units per pixel).
-      const x = (i - width / 2) * zoom + panX;
-      const y = (j - height / 2) * zoom + panY;
+       const x = (i - width / 2) * sampleZoom + panX;
+       const y = (j - height / 2) * sampleZoom + panY;
       const xo = x + offsetX;
       const yo = y + offsetY;
       const e = etaAt(xo, yo, params, K);

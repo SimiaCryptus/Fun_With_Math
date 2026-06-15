@@ -462,15 +462,16 @@ export function renderTileInfo(el, tile, lattice) {
 
   // --- Centroid ---
   html.push(`<div class="section">Centroid</div>`);
-  html.push(floatBlock(cxF, cyF));
+     html.push(floatBlock(cxF, cyF, tile.centroidAlg));
 
   // --- Vertices ---
   html.push(`<div class="section">Vertices</div>`);
   for (let i = 0; i < tile.verts.length; i++) {
     const [fx, fy] = tile.vertsF[i];
+       const alg = tile.vertsAlg ? tile.vertsAlg[i] : null;
     html.push(`<div class="vertex-row">
         <span class="pill">v${i}</span>
-       ${floatBlock(fx, fy)}
+          ${floatBlock(fx, fy, alg)}
       </div>`);
   }
 
@@ -491,8 +492,12 @@ export function renderTileInfo(el, tile, lattice) {
       continue;
     }
     const nb = lattice.tiles[nIdx];
+       const compass =
+         tile.neighborCompass && tile.neighborCompass[k] != null
+           ? ` <span style="color:var(--muted);font-size:10px">slot${tile.neighborCompass[k]}</span>`
+           : '';
     html.push(`<div class="neighbor-row">
-         <span class="pill edge">${edgeLabel}</span>
+          <span class="pill edge">${edgeLabel}${compass}</span>
       <span>→ #${nb.index} · <span style="color:var(--accent3)">s${nb.sheet}</span> · <span style="color:var(--accent2)">o${nb.orient}</span></span>
         <span class="delta">Δs = +${tile.neighborSheetDeltas[k]}</span>
       </div>`);
@@ -508,11 +513,15 @@ function kv(label, content) {
     </div>`;
 }
 
-function floatBlock(fx, fy) {
-  return `<div class="alg-block">
-     <div><span class="axis">x</span>= ${fx.toFixed(8)}</div>
-     <div><span class="axis">y</span>= ${fy.toFixed(8)}</div>
-   </div>`;
+   function floatBlock(fx, fy, alg) {
+     const algLine = alg
+       ? `<div class="float" style="color:var(--accent3)">alg = ${escapeHtml(alg)}</div>`
+       : '';
+     return `<div class="alg-block">
+      <div><span class="axis">x</span>= ${fx.toFixed(8)}</div>
+      <div><span class="axis">y</span>= ${fy.toFixed(8)}</div>
+      ${algLine}
+    </div>`;
 }
 
 function escapeHtml(s) {

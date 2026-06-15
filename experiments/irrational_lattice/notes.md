@@ -1,8 +1,0 @@
-- Add export to png button
-- resize rendered grid to fit space
-- increase parameter scales
-- add some color-cycling modes (disco themes)
-- add selectable 2d color maps (but default to snap distance)
-- integer offset button to page through offsets
-- add sweep buttons that will slowly sweep over any parameter
--

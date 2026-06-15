@@ -12,12 +12,13 @@ export function gamma(velocity, c) {
 // Softened Newtonian acceleration on a body at posA due to a mass at posB.
 export function newtonianAccel(posA, posB, massB, params) {
   const { G, epsilon } = params;
-  const d = sub(posB, posA);
-  const r2 = dot(d, d) + epsilon * epsilon;
-  const r = Math.sqrt(r2);
-  const dir = scale(d, 1 / r);
-  const magnitude = (G * massB) / r2;
-  return scale(dir, magnitude);
+   const dx = posB.x - posA.x;
+   const dy = posB.y - posA.y;
+   const r2 = dx * dx + dy * dy + epsilon * epsilon;
+   const r = Math.sqrt(r2);
+   // magnitude / r folds the normalization into the force scale.
+   const m = (G * massB) / (r2 * r);
+   return { x: dx * m, y: dy * m };
 }
 
 // Solve retarded time via fixed-point iteration, returning the past
@@ -25,21 +26,28 @@ export function newtonianAccel(posA, posB, massB, params) {
 export function solveRetardedPosition(observerPos, sourceHistory, t, params) {
   const { c, hermite } = params;
   let tRet = t;
-  let sourcePos = sourceHistory.interpolate(tRet, hermite);
-  if (!sourcePos) return null;
+   let sourcePos = sourceHistory.interpolate(tRet, hermite);
+   if (!sourcePos) return null;
+   const invC = 1 / c;
   for (let i = 0; i < 6; i++) {
-    const distance = len(sub(sourcePos, observerPos));
-    const newTRet = t - distance / c;
-    sourcePos = sourceHistory.interpolate(newTRet, hermite);
-    if (!sourcePos) return null;
+     const dx = sourcePos.x - observerPos.x;
+     const dy = sourcePos.y - observerPos.y;
+     const distance = Math.sqrt(dx * dx + dy * dy);
+     const newTRet = t - distance * invC;
     if (Math.abs(newTRet - tRet) < 1e-9) {
       tRet = newTRet;
+       sourcePos = sourceHistory.interpolate(newTRet, hermite);
+       if (!sourcePos) return null;
       break;
     }
     tRet = newTRet;
+     sourcePos = sourceHistory.interpolate(newTRet, hermite);
+     if (!sourcePos) return null;
   }
-  const sourceVel = sourceHistory.interpolateVelocity(tRet, hermite);
-  return { position: sourcePos, velocity: sourceVel, tRet };
+   // Final combined fetch (single search) for consistent pos+vel at tRet.
+   const state = sourceHistory.interpolateState(tRet, hermite);
+   if (!state) return null;
+   return { position: state.position, velocity: state.velocity, tRet };
 }
 
 // EIH-style velocity-dependent correction (qualitative, tunable by alpha).
@@ -82,6 +90,8 @@ export function computeAcceleration(bodyA, bodyB, t, params) {
       // current velocity, so the velocity-dependent corrections are
       // evaluated consistently with the retarded position.
       if (ret.velocity) sourceVel = ret.velocity;
+       // Cache for the renderer so it need not re-solve the retarded time.
+       bodyA._retardedCache = ret.position;
     }
   }
 

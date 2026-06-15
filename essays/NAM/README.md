@@ -537,6 +537,17 @@ answer.
 ## On Equality, Identity, and the Limits of the Substrate
 
 A foundational caveat, presented honestly because the architecture's value depends on its users understanding it.
+There is a Futurama line that captures the situation with uncomfortable precision. Professor Farnsworth, having
+"translated" an alien message, announces: _"Of course we can translate it — but only into Betacrypt-3… a language so
+complex, there is even less chance of understanding it."_ The joke lands because the translation technically succeeds —
+it just maps the problem into a representation where the operations people actually cared about have become harder, not
+easier. This is, structurally, exactly the move Numbers as Machines makes. We "translate" every number into a
+generator-VM that emits an infinite digit stream, gaining uniformity, composability, and exactness. The bill for that
+translation comes due precisely here: the very act of representing a number as a non-halting machine is what makes "is
+this equal?" and "which is bigger?" non-primitive, partial, or outright undecidable. We did not make the substrate too
+complex out of carelessness — the translation preserves computability by discarding cheap equality. Betacrypt-3, but the
+trade is honest and the dialect is at least the same one everywhere.
+
 
 The natural equivalence relation on generator VMs is extensional: two VMs are equal iff they produce identical digit
 streams on every query. This relation is **not computably decidable** — it is the canonical example of an undecidable

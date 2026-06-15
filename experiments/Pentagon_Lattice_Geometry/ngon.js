@@ -2,6 +2,17 @@
 // Generalized n-gon geometry using floating-point arithmetic.
 // For n=5 this reproduces the pentagon lattice (approximately).
 // Also supports the Sierpiński triangle IFS mode.
+   import { edgeToCompass, compassSheetDelta } from './affine.js';
+   import { buildCentroidIndex } from './kdtree.js';
+   import {
+     V,
+     vAdd,
+     vAlg,
+     vFloat,
+     pentVertices,
+     neighborOf,
+   } from './geometry.js';
+   import { K, ZERO, toFloat } from './field.js';
 //
 // A "tile" in the generalized sense is:
 //   { centroid: [x,y], orient: int (0..n-1), sigma: int (0/1),
@@ -287,7 +298,11 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
       if (t.neighbors[k] !== null) continue;
 
       const nb = ngonNeighbour(t.centroid[0], t.centroid[1], n, t.orient, t.sigma, k);
-      const delta = k % groupOrder;
+         // Normalize the move to a compass slot (North, then clockwise) so the
+         // sheet shift depends on the absolute world direction, not on the
+         // tile's local edge numbering. This fixes inconsistent holonomy.
+         const slot = edgeToCompass(k, t.orient, n);
+         const delta = compassSheetDelta(slot, groupOrder);
       const newSheet = mod(t.sheet + delta, groupOrder);
       const [ncx, ncy] = nb.centroid;
       const id = tileKey(ncx, ncy, nb.orient, nb.sigma) + `|sh${newSheet}`;
@@ -304,17 +319,25 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
 
       t.neighbors[k] = nIdx;
       t.neighborSheetDeltas[k] = delta;
+         t.neighborCompass = t.neighborCompass || new Array(n).fill(null);
+         t.neighborCompass[k] = slot;
 
       // Back-link: find the matching edge on the neighbour.
       const nt = tiles[nIdx];
       if (nt.neighbors[nb.matchEdge] === null) {
         nt.neighbors[nb.matchEdge] = tIdx;
         nt.neighborSheetDeltas[nb.matchEdge] = mod(-delta, groupOrder);
+           nt.neighborCompass = nt.neighborCompass || new Array(n).fill(null);
+           nt.neighborCompass[nb.matchEdge] = edgeToCompass(nb.matchEdge, nt.orient, n);
       }
     }
   }
 
-  return { tiles, byId, groupOrder, radius, n, isSierpinski: false };
+     const lattice = { tiles, byId, groupOrder, radius, n, isSierpinski: false };
+     // Cache algebraic coords + spatial index for fast/exact lookups.
+     attachAlgebraicCoords(lattice);
+     buildCentroidIndex(lattice);
+     return lattice;
 }
 
 // ── Field info strings ────────────────────────────────────────────────────────
@@ -339,6 +362,81 @@ export function fieldInfoForN(n) {
     }
   );
 }
+
+   // ── Algebraic-coordinate cache ───────────────────────────────────────────────
+   // For each tile we attach `centroidAlg` and `vertsAlg` as human-readable
+   // strings. Pentagons (n=5) get EXACT Q(√5, S) values via geometry.js, by
+   // replaying the lattice's adjacency in the exact field. Other polygons fall
+   // back to high-precision decimal strings (their algebraic field generator
+   // can be expanded per-n later).
+   function attachAlgebraicCoords(lattice) {
+     if (lattice.n === 5 && !lattice.isSierpinski && !lattice.isPinwheel) {
+       attachExactPentagonCoords(lattice);
+       return;
+     }
+     const fmt = (v) => {
+       // Snap near-integers / simple rationals for readability.
+       const r = Math.round(v * 1e9) / 1e9;
+       return Number.isFinite(r) ? r.toString() : String(v);
+     };
+     for (const t of lattice.tiles) {
+       t.centroidAlg = `( ${fmt(t.centroidF[0])} , ${fmt(t.centroidF[1])} )`;
+       t.vertsAlg = t.vertsF.map(([x, y]) => `( ${fmt(x)} , ${fmt(y)} )`);
+     }
+   }
+
+   // Replay the lattice graph in exact Q(√5, S) arithmetic. We BFS from the
+   // origin tile (index 0), carrying an exact field-valued centroid for each
+   // tile, and use geometry.js's exact `neighborOf` to derive neighbor centroids
+   // and exact vertices. Float coords are used only to match each exact tile
+   // back to its lattice index (via the existing kd-tree / centroid compare).
+   function attachExactPentagonCoords(lattice) {
+     const tiles = lattice.tiles;
+     const exact = new Array(tiles.length).fill(null); // { centroid, orient, sigma }
+
+     // Find the origin tile (centroid nearest (0,0)).
+     let originIdx = 0;
+     let bestD = Infinity;
+     for (const t of tiles) {
+       const d = t.centroidF[0] ** 2 + t.centroidF[1] ** 2;
+       if (d < bestD) {
+         bestD = d;
+         originIdx = t.index;
+       }
+     }
+
+     exact[originIdx] = { centroid: V(ZERO, ZERO), orient: 0, sigma: 0 };
+     const queue = [originIdx];
+
+     while (queue.length > 0) {
+       const i = queue.shift();
+       const t = tiles[i];
+       const e = exact[i];
+       const n = t.n || t.neighbors.length;
+       for (let k = 0; k < n; k++) {
+         const nIdx = t.neighbors[k];
+         if (nIdx === null || exact[nIdx] !== null) continue;
+         const nb = neighborOf(e.centroid, e.orient, e.sigma, k);
+         exact[nIdx] = { centroid: nb.centroid, orient: nb.orient, sigma: nb.sigma };
+         queue.push(nIdx);
+       }
+     }
+
+     for (let i = 0; i < tiles.length; i++) {
+       const t = tiles[i];
+       const e = exact[i];
+       if (!e) {
+         // Unreachable via exact walk (shouldn't happen); fall back to float.
+         const fmt = (v) => (Math.round(v * 1e9) / 1e9).toString();
+         t.centroidAlg = `( ${fmt(t.centroidF[0])} , ${fmt(t.centroidF[1])} )`;
+         t.vertsAlg = t.vertsF.map(([x, y]) => `( ${fmt(x)} , ${fmt(y)} )`);
+         continue;
+       }
+       t.centroidAlg = vAlg(e.centroid);
+       const verts = pentVertices(e.centroid, e.orient, e.sigma);
+       t.vertsAlg = verts.map((p) => vAlg(p));
+     }
+   }
 
 export const POLY_PRESETS = {
   triangle: { n: 3, label: 'Equilateral Triangle' },

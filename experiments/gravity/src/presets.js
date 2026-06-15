@@ -239,7 +239,99 @@ export const presets = {
         radius: 12,
       }),
     ],
-  },
+   },
+
+   // --- astronomically-motivated: Mercury around the Sun (qualitative) ---
+   // Heavy primary, tiny fast inner planet on an eccentric orbit with enough
+   // relativity to exhibit visible perihelion precession (Mercury's hallmark).
+   mercurySun: {
+     label: '☉ Mercury–Sun',
+     params: { G: 1, c: 40, alpha: 0.5, dt: 0.004, epsilon: 2 },
+     bodies: () => [
+       new Body({
+         position: { x: 0, y: 0 },
+         velocity: { x: 0, y: -0.02 },
+         mass: 1000,
+         color: '#ffd23f',
+         radius: 22,
+       }),
+       new Body({
+         position: { x: 120, y: 0 },
+         velocity: { x: 0, y: 2.55 },
+         mass: 3,
+         color: '#c9b8a8',
+         radius: 5,
+       }),
+     ],
+   },
+
+   // --- collapsing black-hole pair: tight, fast, strongly relativistic ---
+   // Two heavy compact objects spiraling in a deep, fast inner orbit. Not GR,
+   // but the low c + high alpha give a dramatic rosette "inspiral" flavor.
+   blackHolePair: {
+     label: '⬤ Collapsing BH Pair',
+     params: { G: 1, c: 9, alpha: 1.0, dt: 0.0025, epsilon: 1.2 },
+     bodies: () => [
+       new Body({
+         position: { x: -42, y: 0 },
+         velocity: { x: 0, y: 2.0 },
+         mass: 400,
+         color: '#9d7bff',
+         radius: 13,
+       }),
+       new Body({
+         position: { x: 42, y: 0 },
+         velocity: { x: 0, y: -2.0 },
+         mass: 400,
+         color: '#ff6bd0',
+         radius: 13,
+       }),
+     ],
+   },
+
+   // --- Earth–Moon style: light fast satellite, mild relativity ---
+   earthMoon: {
+     label: '🌍 Earth–Moon',
+     params: { G: 1, c: 300, alpha: 0.02, dt: 0.008, epsilon: 2 },
+     bodies: () => [
+       new Body({
+         position: { x: 0, y: 0 },
+         velocity: { x: 0, y: -0.04 },
+         mass: 800,
+         color: '#5aa9ff',
+         radius: 18,
+       }),
+       new Body({
+         position: { x: 130, y: 0 },
+         velocity: { x: 0, y: 2.45 },
+         mass: 10,
+         color: '#d8dde6',
+         radius: 6,
+       }),
+     ],
+   },
+
+   // --- pulsar binary: two neutron-star-like masses, eccentric & relativistic ---
+   pulsarBinary: {
+     label: '✦ Pulsar Binary',
+     params: { G: 1, c: 22, alpha: 0.8, dt: 0.003, epsilon: 1.5 },
+     bodies: () => [
+       new Body({
+         position: { x: -90, y: 0 },
+         velocity: { x: 0, y: 0.9 },
+         mass: 300,
+         color: '#5affe1',
+         radius: 10,
+       }),
+       new Body({
+         position: { x: 110, y: 0 },
+         velocity: { x: 0.05, y: -1.4 },
+         mass: 200,
+         color: '#fff35a',
+         radius: 9,
+       }),
+     ],
+   },
 };
 
 export const presetKeys = Object.keys(presets);
