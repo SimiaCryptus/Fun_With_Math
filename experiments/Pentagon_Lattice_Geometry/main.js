@@ -297,15 +297,12 @@ function rebuild() {
   try {
     const report = auditAdjacency(lattice);
     if (!report.ok) {
-      console.warn(
-        `[main] adjacency audit found problems after rebuild:`,
-        {
-          asymmetric: report.asymmetric.length,
-          outOfRange: report.outOfRange.length,
-          selfLoops: report.selfLoops.length,
-          duplicates: report.duplicates.length,
-        }
-      );
+      console.warn(`[main] adjacency audit found problems after rebuild:`, {
+        asymmetric: report.asymmetric.length,
+        outOfRange: report.outOfRange.length,
+        selfLoops: report.selfLoops.length,
+        duplicates: report.duplicates.length,
+      });
     }
     // Expose for interactive debugging from the browser console.
     window.__lattice = lattice;
@@ -640,9 +637,9 @@ els.caClear.addEventListener('click', () => {
 // ---- Path tool wiring ----
 els.pathSetStart.addEventListener('click', () => {
   pathStartIdx = currentTileIdx;
-   // After explicitly setting a start, keep the picker on 'end' so further
-   // clicks (in path-pick mode) choose alternative endpoints.
-   pathPickNext = 'end';
+  // After explicitly setting a start, keep the picker on 'end' so further
+  // clicks (in path-pick mode) choose alternative endpoints.
+  pathPickNext = 'end';
   recomputePath();
 });
 els.pathSetEnd.addEventListener('click', () => {
@@ -701,17 +698,17 @@ window.addEventListener('mouseup', (e) => {
     const idx = view.pickTile(sx, sy);
     if (idx !== null) {
       if (els.pathMode.checked) {
-         // Path-pick mode: first click sets the start, subsequent clicks
-         // keep updating the end so alternative endpoints can be explored
-         // without re-picking the start each time.
+        // Path-pick mode: first click sets the start, subsequent clicks
+        // keep updating the end so alternative endpoints can be explored
+        // without re-picking the start each time.
         if (pathPickNext === 'start') {
           pathStartIdx = idx;
           pathEndIdx = null;
           pathPickNext = 'end';
         } else {
           pathEndIdx = idx;
-           // Stay in 'end' mode: the next click re-selects the endpoint.
-           pathPickNext = 'end';
+          // Stay in 'end' mode: the next click re-selects the endpoint.
+          pathPickNext = 'end';
         }
         currentTileIdx = idx;
         view.select(idx);
