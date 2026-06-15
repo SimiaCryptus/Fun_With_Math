@@ -82,9 +82,13 @@ export function etaAt(x, y, params, K_field) {
 }
 
 // Compute a scalar field over a grid using the chosen mode.
-// Returns Float32Array of length size*size and {min, max}.
+// Returns Float32Array of length width*height and {min, max}.
 export function computeField(opts) {
-  const { D, size, K, alphaScale, seed, mode, epsilon } = opts;
+  const { D, K, alphaScale, seed, mode, epsilon } = opts;
+  // Render dimensions: width and height in pixels. The grid-size control
+  // sets the smaller dimension; the larger one is derived from the aspect.
+  const width = opts.width || opts.size;
+  const height = opts.height || opts.size;
   // Viewport: panX/panY in lattice units, zoom > 0 (lattice units per pixel).
   const panX = opts.panX || 0;
   const panY = opts.panY || 0;
@@ -94,10 +98,10 @@ export function computeField(opts) {
   const cmap2d = opts.cmap2d || 'none';
   const field = new QuadField(D);
   const params = makeFrequencies(D, K, alphaScale, seed);
-  const out = new Float32Array(size * size);
+  const out = new Float32Array(width * height);
   // Secondary channel for 2D colormaps (e.g. snap distance).
   const useChannel2 = cmap2d && cmap2d !== 'none';
-  const chan2 = useChannel2 ? new Float32Array(size * size) : null;
+  const chan2 = useChannel2 ? new Float32Array(width * height) : null;
   let min2 = Infinity,
     max2 = -Infinity;
 
@@ -106,12 +110,12 @@ export function computeField(opts) {
   let irrSumSq = 0,
     irrCount = 0;
 
-  for (let j = 0; j < size; j++) {
-    for (let i = 0; i < size; i++) {
+  for (let j = 0; j < height; j++) {
+    for (let i = 0; i < width; i++) {
       // Center the grid for symmetric viewing.
       // Apply pan (in lattice units) and zoom (lattice units per pixel).
-      const x = (i - size / 2) * zoom + panX;
-      const y = (j - size / 2) * zoom + panY;
+      const x = (i - width / 2) * zoom + panX;
+      const y = (j - height / 2) * zoom + panY;
       const xo = x + offsetX;
       const yo = y + offsetY;
       const e = etaAt(xo, yo, params, K);
@@ -154,7 +158,7 @@ export function computeField(opts) {
           break;
       }
 
-      out[j * size + i] = v;
+      out[j * width + i] = v;
       if (v < minV) minV = v;
       if (v > maxV) maxV = v;
       if (useChannel2) {
@@ -176,7 +180,7 @@ export function computeField(opts) {
             break;
           }
         }
-        chan2[j * size + i] = v2;
+        chan2[j * width + i] = v2;
         if (v2 < min2) min2 = v2;
         if (v2 > max2) max2 = v2;
       }
@@ -184,5 +188,5 @@ export function computeField(opts) {
   }
 
   const irrRMS = Math.sqrt(irrSumSq / irrCount);
-  return { data: out, min: minV, max: maxV, irrRMS, chan2, min2, max2 };
+  return { data: out, min: minV, max: maxV, irrRMS, chan2, min2, max2, width, height };
 }

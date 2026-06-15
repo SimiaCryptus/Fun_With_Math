@@ -1,4 +1,4 @@
-# Fun With Math
+# ![Mathematical Explorations](og-image.png)
 
 A collection of original interactive mathematical experiments and essays—all running live in your browser with no
 installation required. Each lab is a small piece of in-browser mathematical research, not a textbook visualization.

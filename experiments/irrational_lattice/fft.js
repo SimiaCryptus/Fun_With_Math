@@ -49,21 +49,23 @@ function largestPow2LE(n) {
 }
 
 // Compute the centered log-magnitude 2D FFT of a square field (Float32Array,
-// length size*size). Downsamples to a power-of-two grid (max `maxN`).
+// length width*height). Downsamples to a power-of-two grid (max `maxN`).
 // Returns { mag: Float32Array(N*N), N, min, max }.
-export function computeFFT2D(data, size, maxN = 64) {
-  let N = largestPow2LE(Math.min(size, maxN));
+export function computeFFT2D(data, width, maxN = 64, height = width) {
+  const minDim = Math.min(width, height);
+  let N = largestPow2LE(Math.min(minDim, maxN));
   const re = new Float64Array(N * N);
   const im = new Float64Array(N * N);
 
   // Sample/average the source field down to N x N.
-  const scale = size / N;
+  const scaleX = width / N;
+  const scaleY = height / N;
   for (let y = 0; y < N; y++) {
     for (let x = 0; x < N; x++) {
       // Nearest-block average for a smoother spectrum.
-      const sx = Math.floor(x * scale);
-      const sy = Math.floor(y * scale);
-      re[y * N + x] = data[sy * size + sx];
+      const sx = Math.min(width - 1, Math.floor(x * scaleX));
+      const sy = Math.min(height - 1, Math.floor(y * scaleY));
+      re[y * N + x] = data[sy * width + sx] || 0;
     }
   }
 
@@ -223,6 +225,10 @@ export function renderFFT3D(canvas, fft, opts = {}) {
 
 // Small viridis-ish colormap for the 3D surface.
 function spectrumColor(t) {
+  // Guard against NaN / out-of-range inputs which would index past the
+  // stops array and yield `undefined`.
+  if (!isFinite(t)) t = 0;
+  t = Math.max(0, Math.min(1, t));
   const stops = [
     [68, 1, 84],
     [59, 82, 139],
@@ -232,7 +238,7 @@ function spectrumColor(t) {
   ];
   const n = stops.length - 1;
   const idx = t * n;
-  const i0 = Math.floor(idx);
+  const i0 = Math.min(n, Math.max(0, Math.floor(idx)));
   const i1 = Math.min(i0 + 1, n);
   const f = idx - i0;
   const a = stops[i0],

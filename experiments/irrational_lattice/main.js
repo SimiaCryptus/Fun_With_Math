@@ -8,6 +8,11 @@ import { wireRationalControls } from './rational.js';
 
 const canvas = document.getElementById('field');
 const statsEl = document.getElementById('stats');
+const mainEl = document.querySelector('main');
+// Render dimensions in pixels. The grid-size control sets the smaller
+// dimension; the larger one is derived from the canvas display aspect so
+// the field fills all available space.
+const renderDims = { width: 256, height: 256 };
 
 const controls = {
   D: document.getElementById('D'),
@@ -110,12 +115,14 @@ function readOpts() {
     alphaScale: parseFloat(controls.alpha.value),
     epsilon: parseFloat(controls.eps.value),
     size,
+    width: renderDims.width,
+    height: renderDims.height,
     cmap: controls.cmap.value,
     cmap2d: controls.cmap2d.value,
     seed: parseInt(controls.seed.value, 10),
     panX: view.panX,
     panY: view.panY,
-    zoom: effectiveZoom(size),
+    zoom: effectiveZoom(Math.min(renderDims.width, renderDims.height)),
     offsetX: offset.x,
     offsetY: offset.y,
     colorPhase,
@@ -139,7 +146,7 @@ function updateStats(o, result, elapsed) {
         <div><span>min</span><span>${result.min.toFixed(4)}</span></div>
         <div><span>max</span><span>${result.max.toFixed(4)}</span></div>
         <div><span>irr RMS</span><span>${result.irrRMS.toFixed(4)}</span></div>
-        <div><span>sites</span><span>${o.size * o.size}</span></div>
+        <div><span>sites</span><span>${o.width * o.height}</span></div>
        <div><span>zoom</span><span>${o.zoom.toFixed(3)}</span></div>
        <div><span>pan</span><span>${o.panX.toFixed(1)}, ${o.panY.toFixed(1)}</span></div>
        <div><span>offset</span><span>${offset.x}, ${offset.y}</span></div>
@@ -206,6 +213,8 @@ const rationalControls = wireRationalControls({
     if (outputs.zoomStep) {
       outputs.zoomStep.textContent = zoomGranularity().toFixed(3);
     }
+    // Grid size may have changed; recompute render dimensions first.
+    fitCanvas();
     regenerate();
   },
 });
@@ -356,13 +365,29 @@ function fitCanvas() {
   const style = getComputedStyle(wrap);
   const padX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
   const avail = wrap.clientWidth - padX;
-  // Keep it square; cap by viewport height too.
-  const maxH = window.innerHeight * 0.9;
-  const dim = Math.max(64, Math.min(avail, maxH));
-  canvas.style.width = dim + 'px';
-  canvas.style.height = dim + 'px';
+  // Fill the available rectangle. Cap the height by the viewport.
+  const padY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+  const dispW = Math.max(64, avail);
+  const dispH = Math.max(64, window.innerHeight * 0.9 - padY);
+  canvas.style.width = dispW + 'px';
+  canvas.style.height = dispH + 'px';
+
+  // The grid-size control sets the smaller render dimension; the larger
+  // dimension is scaled by the display aspect ratio so pixels stay square.
+  const gridSize = parseInt(controls.size.value, 10) || 256;
+  const aspect = dispW / dispH;
+  if (aspect >= 1) {
+    renderDims.height = gridSize;
+    renderDims.width = Math.max(1, Math.round(gridSize * aspect));
+  } else {
+    renderDims.width = gridSize;
+    renderDims.height = Math.max(1, Math.round(gridSize / aspect));
+  }
 }
-window.addEventListener('resize', fitCanvas);
+window.addEventListener('resize', () => {
+  fitCanvas();
+  regenerate();
+});
 
 // --- Pan & zoom interaction on the canvas ---
 // The canvas is displayed scaled (CSS) relative to its pixel resolution
@@ -375,11 +400,12 @@ function clientToFieldPixel(ev) {
 }
 // Convert a field pixel coordinate to lattice coordinates given the view.
 function pixelToLattice(fx, fy) {
-  const size = canvas.width;
-  const z = effectiveZoom(size);
+  const w = canvas.width;
+  const h = canvas.height;
+  const z = effectiveZoom(Math.min(w, h));
   return {
-    x: (fx - size / 2) * z + view.panX,
-    y: (fy - size / 2) * z + view.panY,
+    x: (fx - w / 2) * z + view.panX,
+    y: (fy - h / 2) * z + view.panY,
   };
 }
 let dragging = false;
@@ -404,10 +430,9 @@ window.addEventListener('mousemove', (ev) => {
   // Editing an autocorrelation vector endpoint.
   if (acDragging) {
     const { fx, fy } = clientToFieldPixel(ev);
-    const size = canvas.width;
-    const cx = size / 2;
-    const cy = size / 2;
-    const z = effectiveZoom(size);
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const z = effectiveZoom(Math.min(canvas.width, canvas.height));
     const v = acVectors[acDragging.index];
     // Endpoint position in pixels relative to center, undoing the sign so
     // the stored vector always represents the +v direction.
@@ -430,7 +455,7 @@ window.addEventListener('mousemove', (ev) => {
   // sub-pixel resampling jitter while dragging.
   const dxPx = Math.round(cur.fx - dragStart.fx);
   const dyPx = Math.round(cur.fy - dragStart.fy);
-  const z = effectiveZoom(canvas.width);
+  const z = effectiveZoom(Math.min(canvas.width, canvas.height));
   view.panX = panStart.x - dxPx * z;
   view.panY = panStart.y - dyPx * z;
   regenerate();
@@ -466,10 +491,11 @@ canvas.addEventListener(
     // Clamp zoom to a reasonable range.
     view.zoom = Math.min(Math.max(view.zoom, 0.001), 1000);
     // Recompute pan so the cursor stays over the same lattice point.
-    const size = canvas.width;
-    const z = effectiveZoom(size);
-    view.panX = before.x - (fx - size / 2) * z;
-    view.panY = before.y - (fy - size / 2) * z;
+    const w = canvas.width;
+    const h = canvas.height;
+    const z = effectiveZoom(Math.min(w, h));
+    view.panX = before.x - (fx - w / 2) * z;
+    view.panY = before.y - (fy - h / 2) * z;
     regenerate();
   },
   { passive: false }
@@ -489,7 +515,7 @@ let lastFFT = null;
 function updateFFT() {
   if (fftWindow.classList.contains('collapsed')) return;
   if (!lastResult) return;
-  lastFFT = computeFFT2D(lastResult.data, lastOpts.size, 64);
+  lastFFT = computeFFT2D(lastResult.data, lastOpts.width, 64, lastOpts.height);
   drawFFT();
 }
 function drawFFT() {
@@ -559,10 +585,9 @@ let acDragging = null;
 const AC_HANDLE_RADIUS = 10;
 // Return the field-pixel position of a vector endpoint given its view.
 function acEndpointPixel(v, sign) {
-  const size = canvas.width;
-  const cx = size / 2;
-  const cy = size / 2;
-  const z = effectiveZoom(size);
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const z = effectiveZoom(Math.min(canvas.width, canvas.height));
   return {
     x: cx + sign * (v.dx / z),
     y: cy + sign * (v.dy / z),
@@ -585,9 +610,11 @@ function acHitTest(fx, fy) {
 function drawAcVectors() {
   if (!acShowVectors || !acVectors || acVectors.length === 0) return;
   const ctx = canvas.getContext('2d');
-  const size = canvas.width;
-  const cx = size / 2;
-  const cy = size / 2;
+  const w = canvas.width;
+  const h = canvas.height;
+  const size = Math.min(w, h);
+  const cx = w / 2;
+  const cy = h / 2;
   // Vectors are in lattice units; convert to field pixels via the zoom.
   const colors = ['#ff3b6b', '#3bff9d', '#3b9dff', '#ffd23b'];
   ctx.save();
@@ -637,7 +664,8 @@ function drawAcVectors() {
 }
 function computeAutocorrVectors() {
   if (!lastResult || !lastOpts) return;
-  acVectors = topAutocorrVectors(lastResult.data, lastOpts.size, effectiveZoom(lastOpts.size));
+  const size = Math.min(lastOpts.width, lastOpts.height);
+  acVectors = topAutocorrVectors(lastResult.data, lastOpts.width, effectiveZoom(size));
   if (!acVectors || acVectors.length === 0) {
     acOut.textContent = 'no vectors';
     acVectors = null;
@@ -689,7 +717,18 @@ fitCanvas();
 hashToState();
 // Reflect any hash-restored size into the rational stepper display.
 if (rationalControls && rationalControls.refresh) rationalControls.refresh();
+fitCanvas();
 regenerate();
+// --- Sidebar collapse toggle ---
+const sidebarToggle = document.getElementById('sidebarToggle');
+sidebarToggle.addEventListener('click', () => {
+  mainEl.classList.toggle('sidebar-collapsed');
+  sidebarToggle.classList.toggle('active', mainEl.classList.contains('sidebar-collapsed'));
+  // The canvas wrap changes width when the sidebar collapses; refit.
+  fitCanvas();
+  regenerate();
+});
+
 // Respond to external hash changes (shared link pasted, back/forward nav).
 window.addEventListener('hashchange', () => {
   if (restoringFromHash) return;

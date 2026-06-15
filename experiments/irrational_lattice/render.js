@@ -4,19 +4,19 @@ import { colormaps, colormaps2d } from './colormap.js';
 
 export function renderField(canvas, fieldResult, opts) {
   const { data, min, max, chan2, min2, max2 } = fieldResult;
-  const { size, cmap } = opts;
+  const { width, height, cmap } = opts;
   const phase = opts.colorPhase || 0;
   const cmap2d = opts.cmap2d || 'none';
   const colorFn = colormaps[cmap] || colormaps.viridis;
 
   // Resize canvas to match field resolution for pixel-accurate rendering.
-  if (canvas.width !== size || canvas.height !== size) {
-    canvas.width = size;
-    canvas.height = size;
+  if (canvas.width !== width || canvas.height !== height) {
+    canvas.width = width;
+    canvas.height = height;
   }
 
   const ctx = canvas.getContext('2d');
-  const img = ctx.createImageData(size, size);
+  const img = ctx.createImageData(width, height);
   const range = max - min || 1;
 
   const use2d = cmap2d && cmap2d !== 'none' && chan2 && colormaps2d[cmap2d];

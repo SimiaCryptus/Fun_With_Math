@@ -106,7 +106,7 @@ quadratic irrationals (2), classical transcendentals (3–4), higher transcenden
   dimension. The script should explicitly flag that this is an _upper witness_, not a
   proven lower bound (the essay is honest that minimality is an open problem).
 - **G5.3 — Non-minimal engine cross-check (ties to PI_RCC).** Implement the x+sin(x)
-  cubic engine from the PI_RCC companion _as a generator VM_ and confirm it carries
+  cubic engine from the PI*RCC companion \_as a generator VM* and confirm it carries
   MORE live state than the 3–4 minimal figure for π — directly illustrating the
   essay's "the table tracks the floor; specific engines sit on or above it" remark.
   This is the key cross-essay consistency check.

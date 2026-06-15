@@ -277,6 +277,42 @@ This overlap is what licenses reading the whole tower as one phenomenon. The inv
 This reframing pays an immediate dividend for understanding the x + sin(x) engine. The engine does not introduce a new _layer_ — it does not enlarge the alphabet of closure operations. What it does is operate _within_ the analytic layer's recursion while engineering the step rule itself. Where the algebraic promotion fixes its step function (root extraction) and asks what is reachable, derivative engineering holds the layer fixed and asks: among the functions the analytic recursion already admits, which step rules g couple to a target constant α with vanishing first and second error-derivatives? The iteration x ↦ x + g(x) is then a functional recursion whose step function has been _tuned_ — not adjoined — so that its fixed point is α and its approach is cubic.
 Seen this way, the cubic engine is the same kind of object as the algebraic closure, one rung up: a least-fixed-point computation whose operator is an evaluation map. The novelty is not in the recursive form, which is universal across the tower, but in the discovery that the _step function_ of such a recursion is itself a design surface. Promotion builds new continua by enlarging the alphabet; derivative engineering builds new engines by sculpting a single letter of the alphabet already present. Both are functional recursion. Only the locus of freedom differs.
 
+### ℚ#: The Closure Under a Single Transcendental Evaluation
+
+There is a sharper way to see where π enters this picture, and it begins with an observation that is easy to state and surprisingly consequential: **sin(1) is transcendental.** By the Lindemann–Weierstrass theorem, sin(1) = (e^i − e^{−i})/2i is transcendental, because 1 is a nonzero algebraic number and the theorem forbids any nonzero algebraic argument from producing an algebraic sine value. So sin, evaluated at the most elementary nonzero rational of all — the unit 1 — already escapes the algebraic floor entirely.
+This is the same phenomenon as inversion, viewed through a different lens. Inversion ι : b ↦ b⁻¹ was the minimal unary partial map whose closure promoted ℤ to ℚ. The sine evaluation map
+
+```
+σ : x ↦ sin(x)   (defined for all x)
+```
+
+is a unary _total_ map whose closure promotes ℚ to something strictly larger. Define:
+
+```
+Σ(K) = K ∪ { sin(x) : x ∈ K } closed under +, ×, and ι
+ℚ# = least fixed point of Σ above ℚ
+```
+
+ℚ# is the smallest field containing ℚ and closed under taking sines. It is a genuine new continuum, built by exactly the recursion pattern the tower runs on: a base case (ℚ), a unary evaluation map (σ), and a closure under the structure already in hand. The very first nontrivial element it produces — sin(1) — is already transcendental, so ℚ# is not contained in the algebraic numbers. Yet sin(1) lives _inside our basic computational field_ in the operational sense that matters for a certificate engine: it is the value at a rational point of a function whose Taylor coefficients are rational and whose evaluation is near-RC₁. ℚ# is the layer of constants reachable by finitely many sine evaluations, inversions, and ring operations starting from ℚ — transcendental in value, but rational in _generation_.
+The point of naming ℚ# is that it is the inversion promotion repeated at a richer alphabet. Where ℤ ⇒ ℚ closed under the unary map ι, ℚ ⇒ ℚ# closes under the unary map σ. Both are least-fixed-point computations over a monotone operator built from a single evaluation map. The only change is which letter we have added to the alphabet — and the remarkable fact is that adding _one transcendental analytic letter_ jumps the closure clean over the algebraic floor in a single step, where inversion stayed inside ℚ.
+
+### π as the Inversion of σ
+
+Now the cubic engine snaps into place as the next move in this very sequence. ℚ# is closed under _forward_ application of sine: it contains sin(x) for every x it holds. But it is not closed under the _inverse_ relation — under solving sin(x) = 0 for x, or equivalently under finding the fixed points of x ↦ x + sin(x). And the canonical solution of sin(x) = 0, the first positive root, is **π**.
+This is exactly the inversion pattern again, one rung up. The promotion ℤ ⇒ ℚ closed ℤ under the inverse of multiplication; the promotion ℚ ⇒ ℚ# closed ℚ under the forward sine map; the promotion ℚ# ⇒ ℚ#(π) closes ℚ# under the _inverse_ of the sine map at its zero. π is to σ what 1/q is to multiplication-by-q: the object you must adjoin to make a forward-only operation invertible. Inversion built ℚ by undoing multiplication; the cubic engine builds π by undoing sine.
+
+```
+ℤ ──ι (invert ×)──▶ ℚ ──σ (apply sin)──▶ ℚ# ──σ⁻¹ (invert sin at 0)──▶ ℚ#(π)
+```
+
+And here the x + sin(x) iteration is revealed as the _constructive witness_ of that final arrow. Inverting sine is not an algebraic operation — there is no formula for σ⁻¹ inside ℚ#. What there is instead is a fixed-point recurrence whose step rule is built from σ itself: x ↦ x + sin(x). The iteration computes σ⁻¹(0) = π by repeatedly applying the very map whose inverse it is solving, and the engineered derivative conditions (g′(π) = −1, g″(π) = 0) are precisely what make this self-referential inversion converge cubically rather than merely linearly. The map that _applies_ sine, lightly tuned, becomes the engine that _inverts_ it.
+This is why the cubic engine is not an oddity grafted onto the tower but a direct continuation of its generating pattern. Each rung either adds a forward evaluation map or inverts one already present:
+
+- ℤ ⇒ ℚ: **invert** multiplication (the map ι).
+- ℚ ⇒ ℚ#: **apply** the transcendental map σ (sine).
+- ℚ# ⇒ ℚ#(π): **invert** σ at its zero — and the constructive content of that inversion _is_ the x + sin(x) engine.
+  π, on this reading, is not merely a constant that the cubic engine happens to converge to. It is the element forced into existence by closing ℚ# under the inverse of the same sine map that generated ℚ#'s transcendence in the first place. The constant and the engine are two faces of one inversion: sin(1) is what σ produces going forward, π is what σ produces when inverted, and x + sin(x) is the recursion that carries out the inversion using nothing but forward applications of σ. The generating pattern that built ℚ from ℤ by inversion, and ℚ# from ℚ by sine-application, completes its next step by inverting sine — and the cubic engine is exactly that step, made constructive.
+
 ---
 
 ## The Simplest Increment
