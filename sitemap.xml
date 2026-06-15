@@ -31,6 +31,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://math.cognotik.com/essays/TEL/</loc>
+    <lastmod>2026-06-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://math.cognotik.com/experiments/fractal_learning/</loc>
     <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>

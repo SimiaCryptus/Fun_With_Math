@@ -168,10 +168,14 @@ export class LatticeView {
     const tied = hits.filter((t) => dist2(t) <= TIE);
     if (tied.length > 1) {
       tied.sort((a, b) => {
-        const aSel = a.sheet === selSheet ? 0 : 1;
-        const bSel = b.sheet === selSheet ? 0 : 1;
-        if (aSel !== bSel) return aSel - bSel;
-        return dist2(a) - dist2(b);
+        // Deterministic, selection-independent ordering so that picking the
+        // same spot always yields the same tile regardless of what was
+        // previously selected. (Previously this depended on selSheet, which
+        // made picks—and therefore pathfinding—order-dependent/stateful.)
+        const dd = dist2(a) - dist2(b);
+        if (Math.abs(dd) > 1e-12) return dd;
+        if (a.sheet !== b.sheet) return a.sheet - b.sheet;
+        return a.index - b.index;
       });
       return tied[0].index;
     }

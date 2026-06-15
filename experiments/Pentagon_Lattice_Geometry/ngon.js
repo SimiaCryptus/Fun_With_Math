@@ -298,7 +298,10 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
       const delta = compassSheetDelta(slot, groupOrder);
       const newSheet = mod(t.sheet + delta, groupOrder);
       const [ncx, ncy] = nb.centroid;
-      const id = tileKey(ncx, ncy, nb.orient, nb.sigma) + `|sh${newSheet}`;
+      // NOTE: sheet is intentionally NOT part of the identity key here, so a
+      // given geometric tile is created once. Its sheet is whatever the first
+      // (BFS-shortest) path assigns, giving a deterministic single-sheet lattice.
+      const id = tileKey(ncx, ncy, nb.orient, nb.sigma);
 
       let nIdx;
       if (byId.has(id)) {
@@ -315,13 +318,75 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
       t.neighborCompass = t.neighborCompass || new Array(n).fill(null);
       t.neighborCompass[k] = slot;
 
-      // Back-link: find the matching edge on the neighbour.
+      // Back-link: find the matching edge on the neighbour. We must make the
+      // adjacency SYMMETRIC by construction, otherwise BFS in pathfind.js
+      // sees a→b but not b→a and reports wrong hop counts.
+      //
+      // `nb.matchEdge` (a geometry-derived guess) can collide with a slot
+      // already (incorrectly) claimed by another forward edge, in which case
+      // the old code silently dropped the back-link. Instead, recompute the
+      // neighbour edge whose midpoint coincides with our edge k's midpoint,
+      // and set it unconditionally.
       const nt = tiles[nIdx];
-      if (nt.neighbors[nb.matchEdge] === null) {
-        nt.neighbors[nb.matchEdge] = tIdx;
-        nt.neighborSheetDeltas[nb.matchEdge] = mod(-delta, groupOrder);
+      const [smx, smy] = edgeMidpoint(t.centroid[0], t.centroid[1], n, t.orient, t.sigma, k);
+      let backEdge = nb.matchEdge;
+      let backDist = Infinity;
+      for (let kk = 0; kk < n; kk++) {
+        const [bmx, bmy] = edgeMidpoint(nt.centroid[0], nt.centroid[1], n, nt.orient, nt.sigma, kk);
+        const d = (bmx - smx) ** 2 + (bmy - smy) ** 2;
+        if (d < backDist) {
+          backDist = d;
+          backEdge = kk;
+        }
+      }
+      // Set the back-link so a↔b is symmetric, but DON'T clobber a slot that
+      // already (validly) points at a *different* tile — doing so destroys a
+      // real adjacency and leaves the graph asymmetric. Priority:
+      //   1. If some slot already points at tIdx, we're already linked.
+      //   2. If the computed backEdge slot is free or already points at us, use it.
+      //   3. Otherwise fall back to the first free slot.
+      let alreadyLinked = false;
+      for (let kk = 0; kk < n; kk++) {
+        if (nt.neighbors[kk] === tIdx) {
+          alreadyLinked = true;
+          backEdge = kk;
+          break;
+        }
+      }
+      if (!alreadyLinked) {
+        if (nt.neighbors[backEdge] !== null && nt.neighbors[backEdge] !== tIdx) {
+          // Computed slot is occupied by a different tile; find a free slot.
+          let freeSlot = -1;
+          for (let kk = 0; kk < n; kk++) {
+            if (nt.neighbors[kk] === null) {
+              freeSlot = kk;
+              break;
+            }
+          }
+          if (freeSlot !== -1) {
+            backEdge = freeSlot;
+          } else {
+            // No free slot. Rather than leave the graph ASYMMETRIC (which
+            // breaks BFS hop counts), evict the conflicting neighbor that
+            // currently sits in `backEdge`. We also remove the reciprocal
+            // link from that evicted tile so it doesn't dangle.
+            const evicted = nt.neighbors[backEdge];
+            if (evicted !== null && evicted !== tIdx) {
+              const et = tiles[evicted];
+              for (let kk = 0; kk < et.neighbors.length; kk++) {
+                if (et.neighbors[kk] === nIdx) {
+                  et.neighbors[kk] = null;
+                  et.neighborSheetDeltas[kk] = 0;
+                  if (et.neighborCompass) et.neighborCompass[kk] = null;
+                }
+              }
+            }
+          }
+        }
+        nt.neighbors[backEdge] = tIdx;
+        nt.neighborSheetDeltas[backEdge] = mod(-delta, groupOrder);
         nt.neighborCompass = nt.neighborCompass || new Array(n).fill(null);
-        nt.neighborCompass[nb.matchEdge] = edgeToCompass(nb.matchEdge, nt.orient, n);
+        nt.neighborCompass[backEdge] = edgeToCompass(backEdge, nt.orient, n);
       }
     }
   }
@@ -510,6 +575,18 @@ export function buildVicsek(depth) {
 }
 // Generic shared-edge linker for axis-aligned square fractal cells.
 function linkSquareAdjacency(tiles) {
+  // Place `nbIdx` into the first free neighbor slot of `tile` (idempotent).
+  function placeNeighbor(tile, nbIdx) {
+    for (let k = 0; k < tile.neighbors.length; k++) {
+      if (tile.neighbors[k] === nbIdx) return; // already linked
+    }
+    for (let k = 0; k < tile.neighbors.length; k++) {
+      if (tile.neighbors[k] === null) {
+        tile.neighbors[k] = nbIdx;
+        return;
+      }
+    }
+  }
   const snap = (v) => Math.round(v * 1e7) / 1e7;
   const edgeKey = (x0, y0, x1, y1) => {
     const a = `${snap(x0)},${snap(y0)}`;

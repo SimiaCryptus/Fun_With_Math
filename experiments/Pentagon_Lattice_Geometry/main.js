@@ -14,7 +14,7 @@ import { LatticeView } from './render.js';
 import { renderTileInfo, appendWalkStep, clearWalk } from './ui.js';
 import { initDocs } from './ui.js';
 import { CA } from './ca.js';
-import { computePath } from './pathfind.js';
+import { computePath, auditAdjacency } from './pathfind.js';
 
 const canvas = document.getElementById('lattice');
 const view = new LatticeView(canvas);
@@ -291,6 +291,30 @@ function rebuild() {
   view.setLattice(lattice);
   currentTileIdx = 0;
   view.select(currentTileIdx);
+  // Diagnostics: audit the freshly-built adjacency graph. Asymmetric or
+  // out-of-range neighbor entries are the usual cause of wrong hop counts
+  // between supposedly-adjacent tiles.
+  try {
+    const report = auditAdjacency(lattice);
+    if (!report.ok) {
+      console.warn(
+        `[main] adjacency audit found problems after rebuild:`,
+        {
+          asymmetric: report.asymmetric.length,
+          outOfRange: report.outOfRange.length,
+          selfLoops: report.selfLoops.length,
+          duplicates: report.duplicates.length,
+        }
+      );
+    }
+    // Expose for interactive debugging from the browser console.
+    window.__lattice = lattice;
+    window.__auditAdjacency = () => auditAdjacency(lattice);
+    window.__computePath = (a, b) => computePath(lattice, a, b);
+  } catch (err) {
+    console.error('[main] adjacency audit threw', err);
+  }
+
   renderTileInfo(els.tileInfo, lattice.tiles[currentTileIdx], lattice);
   clearWalk(els.walk);
   appendWalkStep(els.walk, lattice.tiles[currentTileIdx], null, 'origin');
@@ -616,6 +640,9 @@ els.caClear.addEventListener('click', () => {
 // ---- Path tool wiring ----
 els.pathSetStart.addEventListener('click', () => {
   pathStartIdx = currentTileIdx;
+   // After explicitly setting a start, keep the picker on 'end' so further
+   // clicks (in path-pick mode) choose alternative endpoints.
+   pathPickNext = 'end';
   recomputePath();
 });
 els.pathSetEnd.addEventListener('click', () => {
@@ -674,14 +701,17 @@ window.addEventListener('mouseup', (e) => {
     const idx = view.pickTile(sx, sy);
     if (idx !== null) {
       if (els.pathMode.checked) {
-        // Path-pick mode: alternate start / end.
+         // Path-pick mode: first click sets the start, subsequent clicks
+         // keep updating the end so alternative endpoints can be explored
+         // without re-picking the start each time.
         if (pathPickNext === 'start') {
           pathStartIdx = idx;
           pathEndIdx = null;
           pathPickNext = 'end';
         } else {
           pathEndIdx = idx;
-          pathPickNext = 'start';
+           // Stay in 'end' mode: the next click re-selects the endpoint.
+           pathPickNext = 'end';
         }
         currentTileIdx = idx;
         view.select(idx);
