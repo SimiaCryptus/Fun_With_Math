@@ -454,8 +454,11 @@
       Essays <span class="section-title-sub">— long-form explorations</span>
     </p>
     <p class="section-subtitle">
-      Extended written investigations into the foundations of computational mathematics. Click a
-      card to read the essay inline; use the Open button to launch its dedicated reading view.
+      Extended written investigations into the foundations of computational mathematics. The
+      <strong>RCC&nbsp;·&nbsp;PI_RCC&nbsp;·&nbsp;NAM</strong> trilogy forms a single arc — three
+      angles on one question: <em>what is a mathematical constant, computationally?</em> Each treats
+      a number not as a static value but as an <em>engine</em> whose structure, cost, and
+      reachability can be measured. Click a card to read inline; use Open for the dedicated view.
     </p>
     <div class="featured-grid" id="essaysGrid">
       <div
@@ -472,6 +475,9 @@
             >Open <span class="arrow">→</span></a
           >
         </div>
+        <p class="featured-card-tag" style="font-size: 0.85em; opacity: 0.7; margin-bottom: 0.5em">
+          Standalone · optimization
+        </p>
         <p class="featured-card-pitch">
           A new optimization algorithm for smooth functions that interpolates between gradient
           descent and L-BFGS.
@@ -490,15 +496,20 @@
       >
         <div class="featured-card-header">
           <div class="featured-card-icon" aria-hidden="true">RCC</div>
-          <h2 class="featured-card-title">Rational Certificate Complexity</h2>
+          <h2 class="featured-card-title">RCC — Rational Certificate Complexity</h2>
           <a class="featured-card-launch" href="essays/RCC/index.html"
             >Open <span class="arrow">→</span></a
           >
         </div>
+        <p class="featured-card-tag" style="font-size: 0.85em; opacity: 0.7; margin-bottom: 0.5em">
+          Trilogy I · the foundational vocabulary
+        </p>
         <p class="featured-card-pitch">
-          A computational taxonomy of mathematical constants: treat each convergence sequence as a
-          rational certificate engine, measure its bit-length versus tolerance, and stratify
-          constants by cost — sidestepping real-number metaphysics.
+          The foundation of the trilogy. Treats every convergence sequence as a rational certificate
+          engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into
+          cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower
+          bound, and the central separation algebraic irrationals vs. π and e.
+          <em>It fixes the vocabulary the other two essays invoke.</em>
         </p>
         <div class="readme-preview">
           <p class="readme-loading">Loading description…</p>
@@ -513,15 +524,20 @@
       >
         <div class="featured-card-header">
           <div class="featured-card-icon" aria-hidden="true">PI_RCC</div>
-          <h2 class="featured-card-title">The Simplest Increment: x + sin(x)</h2>
+          <h2 class="featured-card-title">PI_RCC — The Simplest Increment: x + sin(x)</h2>
           <a class="featured-card-launch" href="essays/PI_RCC/index.html"
             >Open <span class="arrow">→</span></a
           >
         </div>
+        <p class="featured-card-tag" style="font-size: 0.85em; opacity: 0.7; margin-bottom: 0.5em">
+          Trilogy II · stress-testing the boundary
+        </p>
         <p class="featured-card-pitch">
-          A deceptively simple cubic-convergent iteration for π, built by engineering the derivative
-          structure of an analytic function at its target. A case study in rational-certificate
-          complexity — and the smallest possible mutation of the analytic layer of the continuum.
+          A cubic-convergent iteration for π whose outer recurrence is <em>not</em> hypergeometric —
+          it falls outside RCC's classified class, yet still attains optimal RC₁ cost. Develops
+          derivative engineering and the tower of continua (ℚ → algebraic → analytic →
+          elliptic/modular → periods).
+          <em>Where RCC defines the cost classes, PI_RCC shows their boundary is permeable.</em>
         </p>
         <div class="readme-preview">
           <p class="readme-loading">Loading description…</p>
@@ -536,15 +552,22 @@
       >
         <div class="featured-card-header">
           <div class="featured-card-icon" aria-hidden="true">NAM</div>
-          <h2 class="featured-card-title">Numbers as Machines</h2>
+          <h2 class="featured-card-title">NAM — Numbers as Machines</h2>
           <a class="featured-card-launch" href="essays/NAM/index.html"
             >Open <span class="arrow">→</span></a
           >
         </div>
+        <p class="featured-card-tag" style="font-size: 0.85em; opacity: 0.7; margin-bottom: 0.5em">
+          Trilogy III · the executable substrate
+        </p>
         <p class="featured-card-pitch">
-          A generator-based numerics library where every number is a deterministic, forkable virtual
-          machine emitting an infinite digit stream — MUX trees, signed-digit arithmetic, p-adics
-          for free, and a two-tier ABI compiled by LLVM.
+          A generator-based numerics library where every number is a forkable, deterministic nano-VM
+          emitting an infinite digit stream. RCC's cost classes resurface here as generator
+          state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest
+          interval account of equality.
+          <em
+            >Where RCC measures and PI_RCC engineers, NAM builds the machine that runs them all.</em
+          >
         </p>
         <div class="readme-preview">
           <p class="readme-loading">Loading description…</p>

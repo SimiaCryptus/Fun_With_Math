@@ -1,5 +1,11 @@
 # Rational Certificate Complexity: A Computational Taxonomy of Mathematical Constants
 
+> **Companion essays.** This document defines the RCC vocabulary (rational certificate engine, RC₁/RC₂/RC₃ cost
+> classes, the hypergeometric regularity condition) used by two companion pieces: _PI_RCC_ (the x + sin(x) cubic
+> engine, which sits outside the hypergeometric class yet attains RC₁ composite cost) and _NAM_ (a generator-VM
+> substrate in which RCC cost classes reappear as generator state-dimension tiers). Where those essays invoke RC₁ or
+> "hypergeometric engine," the definitions are the ones given here.
+
 ## The Core Idea
 
 There is a clean, rigorous, and surprisingly simple way to classify mathematical constants by computational hardness —
@@ -122,7 +128,9 @@ So N(ε) = Θ(1/ε).
 
 The natural denominator after N terms is lcm(1, 3, 5, ..., 2N+1). By the Prime Number Theorem for arithmetic
 progressions, log lcm(1, 3, ..., 2N+1) = Θ(N), so the bit-length of the denominator is Θ(N). (This step is not
-elementary: it depends on PNT-level results, a dependency we acknowledge rather than hide.) Combined:
+elementary: it depends on PNT-level results, a dependency we acknowledge rather than hide. Concretely, the relevant
+asymptotic is log lcm(1, ..., M) = ψ(M) ~ M via the second Chebyshev function — the same fact used in the companion
+PI_RCC and NAM analyses to obtain a linear rather than M·log M denominator bound.) Combined:
 
 **Bit-length vs tolerance: Θ(1/ε)**
 
@@ -196,7 +204,7 @@ engine, however clever, can do better than logarithmic bit-cost, and this naïve
 | ---------------------- | ----------- | ------------------------- |
 | Gregory–Leibniz for π  | Θ(1/ε)      | Θ(1/ε)                    |
 | Nilakantha for π       | Θ(ε^(−1/2)) | Θ(ε^(−1/2))               |
-| Wallis product for π   | Θ(1/ε)      | Θ((1/ε)·log(1/ε))         |
+| Wallis product for π   | Θ(1/ε)      | Θ((1/ε)·log(1/ε)) (RC₂)   |
 | Binomial series for √k | Θ(log(1/ε)) | **Θ(log(1/ε))** — optimal |
 
 The separation is stark. The binomial series for √k saturates the information-theoretic lower bound. Every _classical_
@@ -349,7 +357,19 @@ The analysis suggests a natural hierarchy of complexity classes for convergence 
 
 **RC₃ (Super-poly-cost)**: bit-length grows faster than any polynomial in 1/ε
 
-- Examples: Wallis product (Θ((1/ε)·log(1/ε))), factorial-denominator series with slow convergence
+- Examples: factorial-denominator series with slow convergence, and engines whose
+  denominator growth is super-polynomial in N while the iteration count is itself
+  polynomial in 1/ε
+
+A clarification is owed here, because it is easy to miscategorize the Wallis product.
+Wallis has bit-length Θ((1/ε)·log(1/ε)), which is _not_ super-polynomial: it is bounded
+above by (1/ε)^(1+δ) for every δ > 0. Strictly, Wallis therefore lives in **RC₂**, at the
+high end of the polynomial regime — worse than Gregory–Leibniz by a logarithmic factor but
+still polynomial. The genuine RC₃ inhabitants are engines whose representation cost defeats
+every polynomial bound, such as series whose natural common denominator carries factorial
+growth without a compensating super-geometric convergence rate. We flag this because the
+Wallis-vs-Gregory–Leibniz distinction the framework is built to surface is a distinction
+_within_ RC₂, not a crossing of the RC₂/RC₃ boundary.
 
 A constant is classified by the lowest RC class achievable by any regular (hypergeometric) engine for it, with the
 optional refinement of classifying it relative to broader engine classes when discussing algorithms like AGM.

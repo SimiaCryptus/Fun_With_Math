@@ -362,13 +362,25 @@ a **reformulation rather than a discovery**.
 What the generator-VM model contributes is a _first-class library primitive_ that lifts this phenomenon out of one-off
 optimizations and into the ABI:
 
-**A BBP-type formula exists exactly when the generator automaton has a periodic orbit under the chosen codec.**
+**A BBP-type formula corresponds to the generator automaton admitting an O(log n) fast-forward under the chosen codec —
+in the cleanest cases, a periodic orbit; more generally, a sub-automaton whose n-th state is reachable by repeated
+squaring (modular exponentiation) rather than by stepping through all n predecessors.**
+
+The honest form of the claim is a correspondence, not a strict equivalence: the existence of a known BBP-type extraction
+formula is what licenses installing a `skip` opcode, and that opcode is implemented by the modular-exponentiation
+structure underlying the formula. Calling this "a periodic orbit" is exact only in the genuinely periodic cases
+(rationals, periodic p-adics); for π in base 16 the precise mechanism is the repeated-squaring fast-forward of a partial
+sum modulo a moving denominator. We use "periodicity" below as a convenient shorthand for this broader fast-forwardable
+structure, and flag here that the shorthand overstates the symmetry in the transcendental case.
 
 In base 16, the π-generator VM has a periodic sub-automaton. The codec (base 16) aligns with that periodic structure,
-exposing a fast-forward opcode: you can jump ahead in the automaton's orbit in O(log n) time rather than stepping
-through all n digits.
+exposing a fast-forward opcode: you can jump ahead in the automaton's state in O(log n) time — via repeated squaring of
+the relevant modular quantities — rather than stepping through all n digits. (Strictly, this is the fast-forwardable
+structure described above, of which a true finite periodic orbit is the special case.)
 
 In base 10, the same automaton has no such periodic orbit under that codec. No fast-forward is possible.
+(More carefully: no such O(log n) fast-forward is _known_; the absence of a base-10 BBP formula for π is an empirical
+and conjectural state of affairs, not a proven impossibility.)
 
 This is not a property of π. It is a property of the π-generator under a specific projection. The base is a lens on the
 automaton's structure. Some lenses expose periodicity; others do not.
@@ -415,7 +427,10 @@ struct size does not grow as you emit more digits.
 
 **Quadratic irrationals** (√2, φ, √3) require two coupled registers — a second-order recurrence. The field count is
 fixed; the bit-width grows as O(log n) for the n-th digit. These are algebraic of degree 2, and the generator reflects
-that exactly.
+that exactly. (Note that the `AutomatonVM` struct over-provisions with `state[4]` so that a single fixed layout covers
+algebraic numbers up to degree 4; the _logical_ register count for a degree-d algebraic number is d, even though the
+_physical_ struct reserves a uniform four-word slot. The complexity metric below counts logical, minimal registers, not
+the padded struct width.)
 
 **Transcendentals** (π, e, log(2), ζ(3)) require more coupled accumulators, error-control state, and index tracking.
 Still O(log n) bit-width growth, but with a strictly richer invariant structure — more fields, more intertwined
@@ -441,6 +456,13 @@ ascending sequence of irreducible generator-complexity classes, each requiring g
 correctness over an unbounded digit stream. Whether the sequence is strictly ascending in a provable sense is a question
 for computable analysis complexity theory; the architecture is committed to making the question well-posed and
 instrumentable, not to settling it.
+A subtlety worth flagging, since it connects to the companion essays: the state-dimension figures above are claims about
+the _minimal_ generator for a constant, not about any particular generator one might choose to run. The x + sin(x) cubic
+engine for π analyzed in the companion PI_RCC essay, for instance, carries more live state than the 3–4 register figure
+— it maintains a growing rational seed plus Taylor-truncation accumulators — yet it computes the same π. This is not a
+contradiction: a constant's complexity class is the infimum of state dimension over all correct generators, and a
+deliberately non-minimal engine (chosen for its cubic outer convergence rather than for state economy) sits above that
+infimum. The table tracks the floor; specific engines sit on or above it.
 
 ---
 

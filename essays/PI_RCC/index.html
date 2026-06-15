@@ -2667,6 +2667,18 @@
             >
           </li>
           <li class="table-of-contents__item">
+            <a href="#functional-recursion" class="table-of-contents__link"
+              >Promotion as Functional Recursion</a
+            >
+            <ol class="table-of-contents__sublist" role="list">
+              <li class="table-of-contents__subitem">
+                <a href="#inversion-promotion" class="table-of-contents__link"
+                  >Inversion as the Primitive Promotion</a
+                >
+              </li>
+            </ol>
+          </li>
+          <li class="table-of-contents__item">
             <a href="#simplest-increment" class="table-of-contents__link">The Simplest Increment</a>
           </li>
           <li class="table-of-contents__item">
@@ -3462,6 +3474,201 @@
                   </p>
                 </div>
               </blockquote>
+            </div>
+          </div>
+        </section>
+        <!-- ====================================================
+                 SECTION 7.5: Promotion as Functional Recursion
+            ==================================================== -->
+        <section
+          class="article-section article-section--alternate"
+          id="functional-recursion"
+          aria-labelledby="section-7b-heading"
+        >
+          <div class="article-section__inner">
+            <h2 class="article-section__heading" id="section-7b-heading">
+              <span class="article-section__number">7.5</span>
+              Promotion as Functional Recursion
+            </h2>
+            <div class="article-section__content">
+              <p class="article-section__paragraph">
+                There is a way to read the ascent from one layer of the tower to the next that makes
+                the x + sin(x) engine feel less like an oddity and more like an instance of a
+                general pattern. The promotion from ℚ to the algebraic numbers is itself a form of
+                <em>functional recursion</em> — and once that is made explicit, every later
+                promotion turns out to be the same move applied to a richer alphabet of operations.
+              </p>
+              <p class="article-section__paragraph">
+                Consider what it means to pass from ℚ to ℚ(√2), and then to the full algebraic
+                closure ℚ̄. The naive picture is <em>enlargement by fiat</em>: we declare √2 to exist
+                and adjoin it. But the operative picture is recursive. The algebraic closure is the
+                least fixed point of an operator Φ acting on fields:
+              </p>
+              <div class="math-block" aria-label="Algebraic closure as fixed point">
+                <code class="math-block__expression">
+                  Φ(K) = K ∪ { roots of polynomials with coefficients in K } ℚ̄ = least fixed point
+                  of Φ above ℚ = ⋃<sub>n≥0</sub> Φ<sup>n</sup>(ℚ)
+                </code>
+              </div>
+              <p class="article-section__paragraph">
+                This is a functional recursion in the precise sense of fixed-point semantics: Φ is
+                monotone, the chain ℚ ⊆ Φ(ℚ) ⊆ Φ²(ℚ) ⊆ ... is increasing, and the closure is the
+                colimit. Saturation is exactly the statement that Φ reaches a fixed point — Φ(ℚ̄) = ℚ̄
+                — so that no further application of the operator produces anything new. The
+                algebraic numbers are not "all numbers of a certain kind"; they are
+                <em>everything reachable by iterating a single operator</em>, and nothing else.
+              </p>
+              <p class="article-section__paragraph">
+                The recursion is genuinely functional rather than merely set-theoretic because each
+                step is mediated by an <em>evaluation map</em>. To produce a root of a polynomial p
+                ∈ K[x] is to apply a partial function — root extraction — whose domain is the
+                polynomials over the current field and whose codomain is the next field. The
+                operator Φ is the closure of K under the application of these functions. The
+                recursion unfolds the tower:
+              </p>
+              <div class="math-block" aria-label="Recursion unfolding the tower">
+                <code class="math-block__expression">
+                  ℚ ──root-of──▶ Φ(ℚ) ──root-of──▶ Φ²(ℚ) ──root-of──▶ ... ──▶ ℚ̄
+                </code>
+              </div>
+              <p class="article-section__paragraph">
+                Each arrow is the application of a function to data already in hand. This is
+                structurally identical to how a recursive program builds its result: a base case
+                (ℚ), a step rule (adjoin roots), and a fixed point witnessing termination of the
+                generative process (saturation at ℚ̄).
+              </p>
+              <p class="article-section__paragraph">
+                What changes as we climb the tower is only the
+                <em>alphabet of admissible functions</em> defining the step rule:
+              </p>
+              <ul class="conditions-list" aria-label="Alphabets of admissible functions">
+                <li class="conditions-list__item conditions-list__item--one">
+                  <div class="conditions-list__content">
+                    <p class="conditions-list__description">
+                      <strong>ℚ from ℤ:</strong> the step function is division — the recursion
+                      closes ℤ under the partial map (a, b) ↦ a/b.
+                    </p>
+                  </div>
+                </li>
+                <li class="conditions-list__item conditions-list__item--two">
+                  <div class="conditions-list__content">
+                    <p class="conditions-list__description">
+                      <strong>ℚ̄ from ℚ:</strong> the step function is root extraction — the
+                      recursion closes ℚ under (p) ↦ roots of p.
+                    </p>
+                  </div>
+                </li>
+                <li class="conditions-list__item conditions-list__item--three">
+                  <div class="conditions-list__content">
+                    <p class="conditions-list__description">
+                      <strong>Analytic layer:</strong> the step functions are limits of rational
+                      power series and solutions of differential equations with rational data.
+                    </p>
+                  </div>
+                </li>
+                <li class="conditions-list__item conditions-list__item--one">
+                  <div class="conditions-list__content">
+                    <p class="conditions-list__description">
+                      <strong>Elliptic/modular layer:</strong> the step functions include the AGM
+                      iteration and evaluation of modular forms.
+                    </p>
+                  </div>
+                </li>
+              </ul>
+              <p class="article-section__paragraph">
+                At every level the <em>form</em> of the promotion is the same — least fixed point of
+                a monotone operator built from an evaluation map — and only the operator's
+                primitives differ. The tower of continua is therefore a tower of recursions, each
+                one a functional closure whose saturation is the precise content of "this mechanism
+                can produce no more."
+              </p>
+              <!-- Inversion subsection -->
+              <div class="subsection-group">
+                <div class="article-subsection" id="inversion-promotion">
+                  <h3 class="article-subsection__heading">Inversion as the Primitive Promotion</h3>
+                  <p class="article-section__paragraph">
+                    It is worth dwelling on the very first rung, because it exposes the recursion
+                    pattern in its most stripped-down form. The promotion from ℤ to ℚ is built from
+                    a
+                    <em>single</em> operation applied repeatedly: inversion. Division (a, b) ↦ a/b
+                    is not a primitive at all — it is the composite of multiplication, which ℤ
+                    already has, with inversion b ↦ b⁻¹, which it lacks. The entire content of the
+                    promotion ℤ ⇒ ℚ is the act of closing under the partial map
+                  </p>
+                  <div class="math-block" aria-label="Inversion map">
+                    <code class="math-block__expression"> ι : b ↦ b⁻¹ (defined for b ≠ 0) </code>
+                  </div>
+                  <p class="article-section__paragraph">
+                    and then re-closing under the ring operations already present. Concretely:
+                  </p>
+                  <div
+                    class="math-block math-block--result"
+                    aria-label="Localization as fixed point"
+                  >
+                    <code class="math-block__expression">
+                      Ψ(R) = R ∪ { b⁻¹ : b ∈ R, b ≠ 0 } closed under +, × ℚ = least fixed point of Ψ
+                      above ℤ
+                    </code>
+                  </div>
+                  <p class="article-section__paragraph">
+                    Iterating ι and the ring operations generates every rational: 1/q from q, then p
+                    · (1/q) from p and 1/q, and the chain saturates the moment every nonzero element
+                    already has its inverse present. ℚ is the localization of ℤ that this
+                    inversion-recursion produces, and saturation is exactly the statement that ℚ is
+                    closed under ι — every nonzero rational already has a rational inverse, so no
+                    further inversion produces anything new.
+                  </p>
+                  <p class="article-section__paragraph">
+                    The point of isolating inversion is that it makes the
+                    <em>inversion promotion pattern</em> and the
+                    <em>recursion promotion pattern</em> visibly the same move. Both are
+                    least-fixed-point computations over a monotone operator built from an evaluation
+                    map; the inversion case is simply the one where the evaluation map is the unary
+                    partial function ι and the closure is taken in a ring. Root extraction at the
+                    next rung is the same shape with ι replaced by "roots of p," and the analytic
+                    layer is the same shape again with the alphabet enlarged to limits and
+                    differential-equation solutions. The two patterns do not merely resemble each
+                    other — inversion <em>is</em> the recursion pattern instantiated at its simplest
+                    possible alphabet: a single unary operation closed under the structure already
+                    in hand.
+                  </p>
+                  <blockquote class="insight-callout insight-callout--symmetry">
+                    <div class="insight-callout__icon" aria-hidden="true">♻</div>
+                    <div class="insight-callout__content">
+                      <p class="insight-callout__text">
+                        This overlap is what licenses reading the whole tower as one phenomenon. The
+                        inversion promotion that builds ℚ from ℤ is the
+                        <strong>minimal nontrivial instance</strong> of the functional recursion
+                        that builds every later layer. Inversion and recursion are not two patterns
+                        that happen to align; they are one pattern seen at its base case.
+                      </p>
+                    </div>
+                  </blockquote>
+                  <p class="article-section__paragraph">
+                    This reframing pays an immediate dividend for understanding the x + sin(x)
+                    engine. The engine does not introduce a new <em>layer</em> — it does not enlarge
+                    the alphabet of closure operations. What it does is operate <em>within</em> the
+                    analytic layer's recursion while engineering the step rule itself. Where the
+                    algebraic promotion fixes its step function (root extraction) and asks what is
+                    reachable, derivative engineering holds the layer fixed and asks: among the
+                    functions the analytic recursion already admits, which step rules g couple to a
+                    target constant α with vanishing first and second error-derivatives? The
+                    iteration x ↦ x + g(x) is then a functional recursion whose step function has
+                    been <em>tuned</em> — not adjoined — so that its fixed point is α and its
+                    approach is cubic.
+                  </p>
+                  <p class="article-section__paragraph article-section__paragraph--closing">
+                    Seen this way, the cubic engine is the same kind of object as the algebraic
+                    closure, one rung up: a least-fixed-point computation whose operator is an
+                    evaluation map. The novelty is not in the recursive form, which is universal
+                    across the tower, but in the discovery that the <em>step function</em> of such a
+                    recursion is itself a design surface. Promotion builds new continua by enlarging
+                    the alphabet; derivative engineering builds new engines by sculpting a single
+                    letter of the alphabet already present. Both are functional recursion. Only the
+                    locus of freedom differs.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
