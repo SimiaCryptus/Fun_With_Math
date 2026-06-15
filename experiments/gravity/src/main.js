@@ -1,16 +1,16 @@
-import { Simulation } from "./simulation.js";
-import { Renderer } from "./renderer.js";
-import { Controls } from "./controls.js";
-import { presets } from "./presets.js";
-import { sub, scale, len } from "./vector.js";
+import { Simulation } from './simulation.js';
+import { Renderer } from './renderer.js';
+import { Controls } from './controls.js';
+import { presets } from './presets.js';
+import { sub, scale, len } from './vector.js';
 
-const canvas = document.getElementById("sim-canvas");
-const controlsMount = document.getElementById("controls");
-const readouts = document.getElementById("readouts");
+const canvas = document.getElementById('sim-canvas');
+const controlsMount = document.getElementById('controls');
+const readouts = document.getElementById('readouts');
 
 const renderer = new Renderer(canvas);
 
-let currentPreset = "binary";
+let currentPreset = 'binary';
 
 function buildSimulation(key) {
   const def = presets[key];
@@ -55,7 +55,7 @@ function loadPreset(key) {
 // --- interactivity: click to place + drag to set velocity ---
 let dragging = null;
 
-canvas.addEventListener("pointerdown", (e) => {
+canvas.addEventListener('pointerdown', (e) => {
   const screen = { x: e.offsetX, y: e.offsetY };
   const world = renderer.toWorld(screen);
   // find nearest body within grab radius
@@ -73,7 +73,7 @@ canvas.addEventListener("pointerdown", (e) => {
   }
 });
 
-canvas.addEventListener("pointermove", (e) => {
+canvas.addEventListener('pointermove', (e) => {
   if (!dragging) return;
   const world = renderer.toWorld({ x: e.offsetX, y: e.offsetY });
   // live preview velocity vector
@@ -81,7 +81,7 @@ canvas.addEventListener("pointermove", (e) => {
   if (!playing) renderer.render(simulation);
 });
 
-canvas.addEventListener("pointerup", () => {
+canvas.addEventListener('pointerup', () => {
   if (dragging) {
     simulation.reset(); // reseed history with new state
     controls.sync();
@@ -90,12 +90,16 @@ canvas.addEventListener("pointerup", () => {
 });
 
 // --- zoom ---
-canvas.addEventListener("wheel", (e) => {
-  e.preventDefault();
-  const factor = e.deltaY < 0 ? 1.1 : 0.9;
-  renderer.scaleFactor *= factor;
-  if (!playing) renderer.render(simulation);
-}, { passive: false });
+canvas.addEventListener(
+  'wheel',
+  (e) => {
+    e.preventDefault();
+    const factor = e.deltaY < 0 ? 1.1 : 0.9;
+    renderer.scaleFactor *= factor;
+    if (!playing) renderer.render(simulation);
+  },
+  { passive: false }
+);
 
 // --- readouts ---
 function updateReadouts() {
@@ -129,11 +133,11 @@ function loop() {
 }
 
 // keyboard: space toggles play, S steps
-window.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
+window.addEventListener('keydown', (e) => {
+  if (e.code === 'Space') {
     e.preventDefault();
     togglePlay();
-  } else if (e.key === "s") {
+  } else if (e.key === 's') {
     simulation.step();
     renderer.render(simulation);
     updateReadouts();

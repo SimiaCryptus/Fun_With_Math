@@ -7,14 +7,17 @@
   --accent-2: #ff7b5a;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
   margin: 0;
   height: 100%;
   background: var(--bg);
   color: var(--text);
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   overflow: hidden;
 }
 
@@ -65,7 +68,7 @@ html, body {
   color: #aab2c5;
 }
 
-.control-row input[type="range"] {
+.control-row input[type='range'] {
   width: 100%;
   accent-color: var(--accent);
 }
@@ -94,9 +97,14 @@ html, body {
   cursor: pointer;
 }
 
-.button-row button:hover { background: #28304a; }
+.button-row button:hover {
+  background: #28304a;
+}
 
-.preset-select { width: 100%; margin-bottom: 8px; }
+.preset-select {
+  width: 100%;
+  margin-bottom: 8px;
+}
 
 .readouts {
   position: absolute;
@@ -112,4 +120,6 @@ html, body {
   min-width: 180px;
 }
 
-.readouts span { color: var(--accent); }
+.readouts span {
+  color: var(--accent);
+}

@@ -1,5 +1,5 @@
-import { add, scale, sub, len } from "./vector.js";
-import { computeAcceleration } from "./physics.js";
+import { add, scale, sub, len } from './vector.js';
+import { computeAcceleration } from './physics.js';
 
 export class Simulation {
   constructor(bodies, params = {}) {
@@ -15,7 +15,7 @@ export class Simulation {
     };
     this.t = 0;
     this.running = false;
-    this.integrator = "rk4"; // 'verlet' | 'rk4'
+    this.integrator = 'rk4'; // 'verlet' | 'rk4'
     this._initPrecession();
     this._seedHistory();
   }
@@ -75,10 +75,7 @@ export class Simulation {
 
   _accelerations(t) {
     const [a, b] = this.bodies;
-    return [
-      computeAcceleration(a, b, t, this.params),
-      computeAcceleration(b, a, t, this.params),
-    ];
+    return [computeAcceleration(a, b, t, this.params), computeAcceleration(b, a, t, this.params)];
   }
 
   stepVerlet() {
@@ -92,10 +89,7 @@ export class Simulation {
     });
     const acc1 = this._accelerations(this.t + dt);
     this.bodies.forEach((body, i) => {
-      body.velocity = add(
-        body.velocity,
-        scale(add(acc0[i], acc1[i]), 0.5 * dt)
-      );
+      body.velocity = add(body.velocity, scale(add(acc0[i], acc1[i]), 0.5 * dt));
       body.acceleration = acc1[i];
     });
     this.t += dt;
@@ -133,24 +127,12 @@ export class Simulation {
 
     bodies.forEach((b, i) => {
       b.position = {
-        x:
-          state[i].p.x +
-          (dt / 6) *
-            (k1[i].dp.x + 2 * k2[i].dp.x + 2 * k3[i].dp.x + k4[i].dp.x),
-        y:
-          state[i].p.y +
-          (dt / 6) *
-            (k1[i].dp.y + 2 * k2[i].dp.y + 2 * k3[i].dp.y + k4[i].dp.y),
+        x: state[i].p.x + (dt / 6) * (k1[i].dp.x + 2 * k2[i].dp.x + 2 * k3[i].dp.x + k4[i].dp.x),
+        y: state[i].p.y + (dt / 6) * (k1[i].dp.y + 2 * k2[i].dp.y + 2 * k3[i].dp.y + k4[i].dp.y),
       };
       b.velocity = {
-        x:
-          state[i].v.x +
-          (dt / 6) *
-            (k1[i].dv.x + 2 * k2[i].dv.x + 2 * k3[i].dv.x + k4[i].dv.x),
-        y:
-          state[i].v.y +
-          (dt / 6) *
-            (k1[i].dv.y + 2 * k2[i].dv.y + 2 * k3[i].dv.y + k4[i].dv.y),
+        x: state[i].v.x + (dt / 6) * (k1[i].dv.x + 2 * k2[i].dv.x + 2 * k3[i].dv.x + k4[i].dv.x),
+        y: state[i].v.y + (dt / 6) * (k1[i].dv.y + 2 * k2[i].dv.y + 2 * k3[i].dv.y + k4[i].dv.y),
       };
       b.acceleration = k1[i].dv;
     });
@@ -158,7 +140,7 @@ export class Simulation {
   }
 
   step() {
-    if (this.integrator === "verlet") this.stepVerlet();
+    if (this.integrator === 'verlet') this.stepVerlet();
     else this.stepRK4();
     for (const b of this.bodies) b.record(this.t);
     this._updatePrecession();
@@ -182,8 +164,7 @@ export class Simulation {
 
   angularMomentum() {
     return this.bodies.reduce((sum, body) => {
-      const L = body.mass * (body.position.x * body.velocity.y -
-        body.position.y * body.velocity.x);
+      const L = body.mass * (body.position.x * body.velocity.y - body.position.y * body.velocity.x);
       return sum + L;
     }, 0);
   }

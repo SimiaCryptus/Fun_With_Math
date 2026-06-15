@@ -1,10 +1,10 @@
-import { clone, vec } from "./vector.js";
-import { StateHistory } from "./history.js";
+import { clone, vec } from './vector.js';
+import { StateHistory } from './history.js';
 
 let _id = 0;
 
 export class Body {
-  constructor({ position, velocity, mass, color = "#5ad1ff", radius = 8 }) {
+  constructor({ position, velocity, mass, color = '#5ad1ff', radius = 8 }) {
     this.id = _id++;
     this.position = clone(position);
     this.velocity = clone(velocity);

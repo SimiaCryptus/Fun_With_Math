@@ -1,4 +1,4 @@
-import { lerp, clone } from "./vector.js";
+import { lerp, clone } from './vector.js';
 
 // Ring buffer of { t, position, velocity } samples with interpolation.
 export class StateHistory {
@@ -84,15 +84,9 @@ export class StateHistory {
     const h11 = u3 - u2;
     return {
       x:
-        h00 * a.position.x +
-        h10 * dt * a.velocity.x +
-        h01 * b.position.x +
-        h11 * dt * b.velocity.x,
+        h00 * a.position.x + h10 * dt * a.velocity.x + h01 * b.position.x + h11 * dt * b.velocity.x,
       y:
-        h00 * a.position.y +
-        h10 * dt * a.velocity.y +
-        h01 * b.position.y +
-        h11 * dt * b.velocity.y,
+        h00 * a.position.y + h10 * dt * a.velocity.y + h01 * b.position.y + h11 * dt * b.velocity.y,
     };
   }
   // Interpolate velocity at past time t. Defaults to linear; uses the

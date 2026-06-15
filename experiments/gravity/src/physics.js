@@ -1,4 +1,4 @@
-import { sub, add, scale, dot, len, normalize } from "./vector.js";
+import { sub, add, scale, dot, len, normalize } from './vector.js';
 
 const GAMMA_CAP = 0.9999; // clamp v/c to avoid singular gamma
 
@@ -57,11 +57,11 @@ function relativisticCorrection(posA, posB, velA, velB, massB, params) {
 
   // Simplified 1PN-like term: (G m / r^2) * (4 G m / r - v^2 + 4 vr^2) / c^2
   const gm = G * massB;
-  const factor = (gm / r2) * (4 * gm / r - v2 + 4 * vr * vr) / (c * c);
+  const factor = ((gm / r2) * ((4 * gm) / r - v2 + 4 * vr * vr)) / (c * c);
   const along = scale(n, factor);
 
   // velocity-coupling term: 4 (G m / r^2) vr * vRel / c^2
-  const couple = scale(vRel, (4 * gm / r2) * vr / (c * c));
+  const couple = scale(vRel, (((4 * gm) / r2) * vr) / (c * c));
 
   return scale(add(along, couple), alpha);
 }
