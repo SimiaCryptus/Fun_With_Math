@@ -105,7 +105,7 @@ This gives a rational approximant to the next iterate:
 y_m = x + s_m(x)
 ```
 
-The sequence y_m converges to x + sin(x) as m → ∞. Each y_m is a rational number paired with a computable error bound — a _certificate_ that the true iterate lies within an explicit interval around y_m. This is, in essence, interval arithmetic with rational endpoints: the framework of validated numerics (Moore, Rump, Tucker) applied to a specific transcendental update.
+The sequence y*m converges to x + sin(x) as m → ∞. Each y_m is a rational number paired with a computable error bound — a \_certificate* that the true iterate lies within an explicit interval around y_m. This is, in essence, interval arithmetic with rational endpoints: the framework of validated numerics (Moore, Rump, Tucker) applied to a specific transcendental update.
 
 ### Inner Convergence Rate
 
@@ -179,7 +179,7 @@ The x + sin(x) engine fits none of these categories cleanly.
 
 It is not a hypergeometric series — the outer recurrence is nonlinear and cannot be expressed as a ratio of consecutive hypergeometric terms in the iteration index.
 
-It is not a Newton method — Newton's method for sin(x) = 0 gives x\_{n+1} = x_n − tan(x_n), a different map with different structure that requires evaluating _both_ sin and cos and performing a division. The x + sin(x) iteration achieves cubic convergence without division and without derivative evaluation.
+It is not a Newton method — Newton's method for sin(x) = 0 gives x\_{n+1} = x*n − tan(x_n), a different map with different structure that requires evaluating \_both* sin and cos and performing a division. The x + sin(x) iteration achieves cubic convergence without division and without derivative evaluation.
 
 It is not an AGM — there is no arithmetic-geometric mean in sight.
 

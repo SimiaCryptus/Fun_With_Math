@@ -24,7 +24,7 @@ Extended interactive studies, each accompanied by documentation describing the u
 methods.
 
 | Laboratory                                                                      | Description                                                                                                              |
-|---------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | [Pentagonal Lattice Geometry](experiments/Pentagon_Lattice_Geometry/index.html) | Multi-sheeted covering construction where the pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy |
 | [Space-Color Symmetry](experiments/symmetry_simple/index.html)                  | A pixel canvas where symmetry rewires the diffusion graph, producing kaleidoscope dynamics on a quotient-like manifold   |
 | [Geometric Entropy](experiments/geometric-entropy/index.html)                   | A continuous analogue of the Erdős distinct-distance problem via Shannon entropy optimization                            |
@@ -38,7 +38,7 @@ methods.
 Extended written investigations into the foundations of computational mathematics.
 
 | Essay                                                          | Description                                                                                        |
-|----------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | [Quadratic Quasi-Newton](essays/QQN/index.html)                | A new optimization algorithm interpolating between gradient descent and L-BFGS                     |
 | [Rational Certificate Complexity](essays/RCC/index.html)       | A computational taxonomy of mathematical constants, stratified by certificate cost                 |
 | [The Simplest Increment: x + sin(x)](essays/PI_RCC/index.html) | A cubic-convergent iteration for π built from the derivative structure of an analytic function     |
@@ -49,7 +49,7 @@ Extended written investigations into the foundations of computational mathematic
 Compact, self-contained demonstrations of classical mathematical concepts.
 
 | Demonstration                                        | Description                                   |
-|------------------------------------------------------|-----------------------------------------------|
+| ---------------------------------------------------- | --------------------------------------------- |
 | [Mandelbrot Set](experiments/basic/mandelbrot.html)  | Zoom and pan the iconic complex-plane fractal |
 | [Prime Number Sieve](experiments/basic/primes.html)  | Animated Sieve of Eratosthenes                |
 | [Fourier Series](experiments/basic/fourier.html)     | Build waveforms from rotating circles         |

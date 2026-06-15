@@ -425,11 +425,11 @@ window.addEventListener('mousemove', (ev) => {
   if (!dragging) return;
   const cur = clientToFieldPixel(ev);
   // Drag moves the view: dragging right pulls content right => pan left.
-// Round the pixel delta so panning snaps to whole field-pixel steps.
-// This keeps the lattice sampling aligned to the pixel grid and avoids
-// sub-pixel resampling jitter while dragging.
-const dxPx = Math.round(cur.fx - dragStart.fx);
-const dyPx = Math.round(cur.fy - dragStart.fy);
+  // Round the pixel delta so panning snaps to whole field-pixel steps.
+  // This keeps the lattice sampling aligned to the pixel grid and avoids
+  // sub-pixel resampling jitter while dragging.
+  const dxPx = Math.round(cur.fx - dragStart.fx);
+  const dyPx = Math.round(cur.fy - dragStart.fy);
   const z = effectiveZoom(canvas.width);
   view.panX = panStart.x - dxPx * z;
   view.panY = panStart.y - dyPx * z;

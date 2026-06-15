@@ -28,7 +28,7 @@ e_{n+1} = (1/6)e_n³ + O(e_n⁵)
 
 is standard. However, several numerical analysis subtleties deserve sharper treatment:
 
-**Basin of Attraction**: The cubic convergence holds only within a neighborhood of π where the Taylor expansion is valid _and_ where the cubic term dominates. Specifically, we need |e_n| small enough that the O(e_n⁵) term is negligible relative to e_n³/6. This requires roughly |e_n| < 1, but the _practical_ basin where cubic behavior is observed requires |e_n| ≲ 0.1 to avoid the quintic correction term contributing more than ~1% of the cubic term. The document glosses over the seed quality requirement.
+**Basin of Attraction**: The cubic convergence holds only within a neighborhood of π where the Taylor expansion is valid _and_ where the cubic term dominates. Specifically, we need |e*n| small enough that the O(e_n⁵) term is negligible relative to e_n³/6. This requires roughly |e_n| < 1, but the \_practical* basin where cubic behavior is observed requires |e_n| ≲ 0.1 to avoid the quintic correction term contributing more than ~1% of the cubic term. The document glosses over the seed quality requirement.
 
 **Pre-asymptotic Behavior**: For seeds far from π, the iteration x + sin(x) is not contractive everywhere. The map has derivative 1 + cos(x), which equals 2 at x = 0 and is expansive for x ∈ (−π/2, π/2). A naive seed of x₀ = 3 gives e₀ ≈ 0.14, which is already in the cubic regime. But x₀ = 1 would diverge initially before potentially being captured. The document's claim of "start with a seed sufficiently close to π" needs quantification.
 
@@ -966,7 +966,7 @@ Option 3 is the correct engineering choice and also reveals a deeper point: **ra
 
 The document glosses over a critical implementation challenge: **the iteration requires a seed sufficiently close to π**. This is a bootstrapping problem.
 
-For cubic convergence to dominate, we need |e_0| < 1 (roughly). But to get a _certified_ rational seed, we need an independent method. Options:
+For cubic convergence to dominate, we need |e*0| < 1 (roughly). But to get a \_certified* rational seed, we need an independent method. Options:
 
 | Method              | Complexity        | Notes                   |
 | ------------------- | ----------------- | ----------------------- |

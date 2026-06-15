@@ -447,34 +447,34 @@ univariate optimization will find t∗ → 1. □
 8.2.1 B.1 L-BFGS Direction Computation
 The L-BFGS direction is computed using the two-loop recursion:
 
-function compute_lbfgs_direction(gradient, memory):
+function compute*lbfgs_direction(gradient, memory):
 q = gradient
 alphas = []
 // First loop (backward)
 for i = memory.size-1 down to 0:
-rho_i = 1 / (memory.y[i]^T _ memory.s[i])
-alpha_i = rho_i _ memory.s[i]^T _ q
+rho_i = 1 / (memory.y[i]^T * memory.s[i])
+alpha*i = rho_i * memory.s[i]^T _ q
 q = q - alpha_i _ memory.y[i]
-alphas.append(alpha_i)
+alphas.append(alpha*i)
 // Apply initial Hessian approximation
 if memory.size > 0:
-gamma = (memory.s[-1]^T _ memory.y[-1]) / (memory.y[-1]^T _ memory.y[-1])
+gamma = (memory.s[-1]^T * memory.y[-1]) / (memory.y[-1]^T _ memory.y[-1])
 r = gamma _ q
 else:
 r = q
 // Second loop (forward)
 for i = 0 to memory.size-1:
-rho_i = 1 / (memory.y[i]^T _ memory.s[i])
-beta = rho_i _ memory.y[i]^T _ r
+rho*i = 1 / (memory.y[i]^T * memory.s[i])
+beta = rho*i * memory.y[i]^T \_ r
 r = r + (alphas[memory.size-1-i] - beta) \* memory.s[i]
 return -r
 
 8.2.2 B.2 Univariate Optimization Methods
 Golden Section Search
-function golden_section_search(f, a, b, tol):
+function golden*section_search(f, a, b, tol):
 phi = (1 + sqrt(5)) / 2
 resphi = 2 - phi
-x1 = a + resphi _ (b - a)
+x1 = a + resphi * (b - a)
 x2 = b - resphi _ (b - a)
 f1 = f(x1)
 f2 = f(x2)
@@ -489,7 +489,7 @@ else:
 b = x2
 x2 = x1
 f2 = f1
-x1 = a + resphi _ (b - a)
+x1 = a + resphi \_ (b - a)
 f1 = f(x1)
 return (a + b) / 2
 
@@ -670,5 +670,3 @@ QQN matches L-BFGS complexity while providing gradient descent robustness and of
 function evaluations due to better step selection.
 
                                                  13
-
-

@@ -104,7 +104,7 @@ This paper makes three primary contributions:
                                                       2
 
 3. Benchmarking Framework: A reusable Rust application for optimization algorithm evaluation that
-promotes reproducible research and meaningful comparisons.
+   promotes reproducible research and meaningful comparisons.
 
 Optimal configurations remain problem-dependent, but QQN’s adaptive nature minimizes the need for
 extensive hyperparameter tuning. Scaling and convergence properties are theoretically justified, largely
@@ -164,8 +164,7 @@ that traces a path from the current point. We impose three natural boundary cond
    descent)
 3. Terminal Position: d(1) = dLBFGS (the curve ends at the L-BFGS direction)
 
-
-    The second condition is crucial: by ensuring the path starts tangent to the negative gradient, we guarantee
+   The second condition is crucial: by ensuring the path starts tangent to the negative gradient, we guarantee
 
 that moving along the path initially decreases the objective function, regardless of where the path eventually
 leads. This provides robustness against poor quasi-Newton directions.
@@ -628,7 +627,7 @@ consistently outperformed other optimizer families across the benchmark suite.
 
                                                       12
 
-3. Line Search Critical: Among QQN variants, line search strategy dramatically affects performance:
+3.  Line Search Critical: Among QQN variants, line search strategy dramatically affects performance:
 
         • Strong Wolfe: Excellent success rate with moderate average evaluations
         • Golden Section: 90-100% success rate on 2D problems with relatively few average evaluations
@@ -636,15 +635,15 @@ consistently outperformed other optimizer families across the benchmark suite.
         • Bisection: Strong performance on various problems with minimal evaluations
         • Cubic-Quadratic Interpolation: 70% success on Rosenbrock 5D, good for ill-conditioned objectives
 
-4. Problem-Specific Excellence: Algorithms show significant specialization:
+4.  Problem-Specific Excellence: Algorithms show significant specialization:
 
-   • QQN-GoldenSection: Achieved strong performance on multimodal problems
-   • QQN-GoldenSection: Achieved strong performance on multimodal problems
-   • QQN-CubicQuadraticInterpolation: 70% success on Rosenbrock 5D with strong performance on
-   ill-conditioned problems
-   • Adam-WeightDecay: Excellent performance on neural networks vs moderate performance for
-   standard Adam
-   • L-BFGS variants: Generally poor performance on ill-conditioned problems like Rosenbrock
+    • QQN-GoldenSection: Achieved strong performance on multimodal problems
+    • QQN-GoldenSection: Achieved strong performance on multimodal problems
+    • QQN-CubicQuadraticInterpolation: 70% success on Rosenbrock 5D with strong performance on
+    ill-conditioned problems
+    • Adam-WeightDecay: Excellent performance on neural networks vs moderate performance for
+    standard Adam
+    • L-BFGS variants: Generally poor performance on ill-conditioned problems like Rosenbrock
 
 7.2 The Benchmarking and Reporting Framework
 7.2.1 Methodological Contributions
@@ -796,15 +795,15 @@ demonstrates:
 
                                                      15
 
-3. Efficiency vs Robustness: QQN shows superior efficiency with strong success rates across problem
-types while requiring fewer function evaluations than traditional methods. 4. Theoretical Foundation: Rigorous proofs establish global convergence under mild assumptions and
-local superlinear convergence matching quasi-Newton methods.
+3.  Efficiency vs Robustness: QQN shows superior efficiency with strong success rates across problem
+    types while requiring fewer function evaluations than traditional methods. 4. Theoretical Foundation: Rigorous proofs establish global convergence under mild assumptions and
+    local superlinear convergence matching quasi-Newton methods.
 
-    5. Practical Impact: The results provide clear guidance for practitioners: use QQN-StrongWolfe for
-       general optimization, QQN-Bisection variants for high-dimensional problems, QQN-GoldenSection for
-       multimodal landscapes, and QQN-CubicQuadraticInterpolation for sparse or ill-conditioned problems.
+        5. Practical Impact: The results provide clear guidance for practitioners: use QQN-StrongWolfe for
+           general optimization, QQN-Bisection variants for high-dimensional problems, QQN-GoldenSection for
+           multimodal landscapes, and QQN-CubicQuadraticInterpolation for sparse or ill-conditioned problems.
 
-    The simplicity of QQN’s core insight—that quadratic interpolation provides the natural geometry for
+        The simplicity of QQN’s core insight—that quadratic interpolation provides the natural geometry for
 
 combining optimization directions—contrasts with the complexity of recent developments. Combined with
 our evaluation methodology, this work establishes new standards for both algorithm development and em-
@@ -1036,13 +1035,13 @@ We seek a principled method to combine these directions that:
 3. Requires no additional hyperparameters
 4. Maintains computational efficiency
 
-14.1.2 B.1.2 Geometric Formulation
-We formulate direction combination as a boundary value problem in parametric space. Consider a parametric
-curve d : [0, 1] → Rn satisfying:
+   14.1.2 B.1.2 Geometric Formulation
+   We formulate direction combination as a boundary value problem in parametric space. Consider a parametric
+   curve d : [0, 1] → Rn satisfying:
 
-1. Initial position: d(0) = 0
-2. Initial tangent: d′ (0) = −∇f (x) (ensures descent)
-3. Terminal position: d(1) = dL-BFGS
+5. Initial position: d(0) = 0
+6. Initial tangent: d′ (0) = −∇f (x) (ensures descent)
+7. Terminal position: d(1) = dL-BFGS
 
 The minimal polynomial satisfying these constraints is quadratic:
 
@@ -1243,8 +1242,8 @@ Proof :
                                                       23
 
 1. Path construction: Computing d(t) = t(1−t)(−∇f )+t2 dL-BFGS requires O(n) operations for vector
-arithmetic. 2. L-BFGS direction: The two-loop recursion requires O(mn) operations to compute Hk ∇f (xk ). 3. Line search: Each function evaluation along the path requires O(n) operations to compute xk + d(t),
-plus the cost of evaluating f .
+   arithmetic. 2. L-BFGS direction: The two-loop recursion requires O(mn) operations to compute Hk ∇f (xk ). 3. Line search: Each function evaluation along the path requires O(n) operations to compute xk + d(t),
+   plus the cost of evaluating f .
 
 Total complexity per iteration: O(mn + kn) + k · cost(f ). □
 
@@ -1337,5 +1336,3 @@ dquasi-Newton if condition B
 QQN provides continuous interpolation, eliminating discontinuities and the need for switching logic.
 
                                                      25
-
-
