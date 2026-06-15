@@ -26,7 +26,7 @@ const controls = {
   cycle: document.getElementById('cycle'),
   seed: document.getElementById('seed'),
   zoomStep: document.getElementById('zoomStep'),
-   upsample: document.getElementById('upsample'),
+  upsample: document.getElementById('upsample'),
 };
 
 const outputs = {
@@ -109,7 +109,7 @@ function hashToState() {
 
 function readOpts() {
   const size = parseInt(controls.size.value, 10);
-   const upsample = parseInt(controls.upsample.value, 10) || 1;
+  const upsample = parseInt(controls.upsample.value, 10) || 1;
   return {
     D: parseInt(controls.D.value, 10),
     mode: controls.mode.value,
@@ -125,7 +125,7 @@ function readOpts() {
     panX: view.panX,
     panY: view.panY,
     zoom: effectiveZoom(Math.min(renderDims.width, renderDims.height)),
-     upsample,
+    upsample,
     offsetX: offset.x,
     offsetY: offset.y,
     colorPhase,
@@ -140,8 +140,8 @@ function updateOutputs(o) {
   outputs.seed.textContent = o.seed;
   outputs.cycle.textContent = parseFloat(controls.cycle.value).toFixed(2);
   outputs.offset.textContent = `${offset.x}, ${offset.y}`;
-   const upsampleOut = document.getElementById('upsampleOut');
-   if (upsampleOut) upsampleOut.textContent = o.upsample;
+  const upsampleOut = document.getElementById('upsampleOut');
+  if (upsampleOut) upsampleOut.textContent = o.upsample;
 }
 
 function updateStats(o, result, elapsed) {
@@ -668,48 +668,48 @@ function drawAcVectors() {
   ctx.restore();
 }
 function computeAutocorrVectors() {
-    console.group('[main] computeAutocorrVectors');
-   if (!lastResult || !lastOpts) {
-      console.log('[main] no cached result — computing field synchronously');
-     // Compute the field synchronously so analysis has data to work with.
-     // (regenerate() defers via requestAnimationFrame, so lastResult would
-     // not be populated by the time we read it here.)
-     const opts = readOpts();
-     updateOutputs(opts);
-     const result = computeField(opts);
-     renderField(canvas, result, opts);
-     lastResult = result;
-     lastOpts = opts;
-      if (!lastResult || !lastOpts) {
-        console.warn('[main] field computation failed; aborting analysis');
-        console.groupEnd();
-        return;
-      }
-   }
+  console.group('[main] computeAutocorrVectors');
+  if (!lastResult || !lastOpts) {
+    console.log('[main] no cached result — computing field synchronously');
+    // Compute the field synchronously so analysis has data to work with.
+    // (regenerate() defers via requestAnimationFrame, so lastResult would
+    // not be populated by the time we read it here.)
+    const opts = readOpts();
+    updateOutputs(opts);
+    const result = computeField(opts);
+    renderField(canvas, result, opts);
+    lastResult = result;
+    lastOpts = opts;
+    if (!lastResult || !lastOpts) {
+      console.warn('[main] field computation failed; aborting analysis');
+      console.groupEnd();
+      return;
+    }
+  }
   const size = Math.min(lastOpts.width, lastOpts.height);
-   const z = effectiveZoom(size);
-   console.log('[main] analysis params:', {
-     width: lastOpts.width,
-     height: lastOpts.height,
-     size,
-     effectiveZoom: z,
-     dataLength: lastResult.data ? lastResult.data.length : null,
-     fieldMin: lastResult.min,
-     fieldMax: lastResult.max,
-     mode: lastOpts.mode,
-   });
-   acVectors = topAutocorrVectors(lastResult.data, lastOpts.width, z, 64, lastOpts.height);
+  const z = effectiveZoom(size);
+  console.log('[main] analysis params:', {
+    width: lastOpts.width,
+    height: lastOpts.height,
+    size,
+    effectiveZoom: z,
+    dataLength: lastResult.data ? lastResult.data.length : null,
+    fieldMin: lastResult.min,
+    fieldMax: lastResult.max,
+    mode: lastOpts.mode,
+  });
+  acVectors = topAutocorrVectors(lastResult.data, lastOpts.width, z, 64, lastOpts.height);
   if (!acVectors || acVectors.length === 0) {
-     console.warn('[main] topAutocorrVectors returned no vectors');
+    console.warn('[main] topAutocorrVectors returned no vectors');
     acOut.textContent = 'no vectors';
     acVectors = null;
-     console.groupEnd();
+    console.groupEnd();
     return;
   }
   acOut.textContent = acVectors.map((v) => `(${v.dx.toFixed(2)}, ${v.dy.toFixed(2)})`).join('  ');
-   console.log('[main] acVectors set:', acVectors);
+  console.log('[main] acVectors set:', acVectors);
   drawAcVectors();
-   console.groupEnd();
+  console.groupEnd();
 }
 function acWalkStep() {
   if (!acVectors || acVectors.length === 0) {

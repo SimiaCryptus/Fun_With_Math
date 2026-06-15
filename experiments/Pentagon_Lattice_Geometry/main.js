@@ -5,6 +5,7 @@
 import {
   buildNgonLattice,
   buildSierpinski,
+  buildVicsek,
   buildPinwheel,
   fieldInfoForN,
   POLY_PRESETS,
@@ -13,6 +14,7 @@ import { LatticeView } from './render.js';
 import { renderTileInfo, appendWalkStep, clearWalk } from './ui.js';
 import { initDocs } from './ui.js';
 import { CA } from './ca.js';
+import { computePath } from './pathfind.js';
 
 const canvas = document.getElementById('lattice');
 const view = new LatticeView(canvas);
@@ -122,6 +124,18 @@ const els = {
   caGen: $('caGen'),
   caPop: $('caPop'),
   caBySheet: $('caBySheet'),
+    // Path tool
+    pathMode: $('pathMode'),
+    pathSetStart: $('pathSetStart'),
+    pathSetEnd: $('pathSetEnd'),
+    pathClear: $('pathClear'),
+    pathShowAll: $('pathShowAll'),
+    pathStart: $('pathStart'),
+    pathEnd: $('pathEnd'),
+    pathHops: $('pathHops'),
+    pathCount: $('pathCount'),
+    pathSheet: $('pathSheet'),
+    pathEuclid: $('pathEuclid'),
   // value displays
   alphaSelVal: $('alphaSelVal'),
   alphaOtherVal: $('alphaOtherVal'),
@@ -139,6 +153,10 @@ let caPlaying = false;
 let caStepsPerSec = 8;
 let caLastStepTime = 0;
 let caRAF = null;
+// Path tool state
+let pathStartIdx = null;
+let pathEndIdx = null;
+let pathPickNext = 'start'; // alternates 'start' → 'end'
 
 // ── Polygon type helpers ──────────────────────────────────────────────────────
 
@@ -146,6 +164,9 @@ function getPolyConfig() {
   const type = els.polyType.value;
   if (type === 'sierpinski') {
     return { mode: 'sierpinski', depth: parseInt(els.sierpinskiDepth.value, 10) || 4 };
+  }
+  if (type === 'vicsek') {
+    return { mode: 'vicsek', depth: parseInt(els.sierpinskiDepth.value, 10) || 4 };
   }
   if (type === 'pinwheel') {
     const a = parseFloat(els.pinwheelA && els.pinwheelA.value) || 2;
@@ -170,14 +191,16 @@ function getPolyConfig() {
 function updatePolyTypeUI() {
   const type = els.polyType.value;
   els.customNLabel.style.display = type === 'custom' ? '' : 'none';
-  els.sierpinskiDepthLabel.style.display = type === 'sierpinski' ? '' : 'none';
+  els.sierpinskiDepthLabel.style.display =
+    type === 'sierpinski' || type === 'vicsek' ? '' : 'none';
   if (els.pinwheelOptionsLabel) {
     els.pinwheelOptionsLabel.style.display = type === 'pinwheel' ? '' : 'none';
   }
 
   // Show/hide BFS radius (not meaningful for Sierpiński; meaningful for pinwheel).
   const radiusLabel = els.radius.closest('label');
-  if (radiusLabel) radiusLabel.style.display = type === 'sierpinski' ? 'none' : '';
+  if (radiusLabel)
+    radiusLabel.style.display = type === 'sierpinski' || type === 'vicsek' ? 'none' : '';
 
   // Update field info box.
   if (type === 'sierpinski') {
@@ -249,6 +272,8 @@ function rebuild() {
 
   if (cfg.mode === 'sierpinski') {
     lattice = buildSierpinski(cfg.depth);
+  } else if (cfg.mode === 'vicsek') {
+    lattice = buildVicsek(cfg.depth);
   } else if (cfg.mode === 'pinwheel') {
     const radius = Math.max(0, Math.min(8, parseInt(els.radius.value, 10) || 3));
     lattice = buildPinwheel({
@@ -272,6 +297,7 @@ function rebuild() {
   appendWalkStep(els.walk, lattice.tiles[currentTileIdx], null, 'origin');
   initCA();
   updatePolyTypeUI();
+   clearPath();
 }
 
 function initCA() {
@@ -298,6 +324,46 @@ function updateCAStats() {
     const parts = [...by.entries()].sort((a, b) => a[0] - b[0]).map(([s, n]) => `s${s}:${n}`);
     els.caBySheet.textContent = parts.join('  ');
   }
+}
+function recomputePath() {
+   if (pathStartIdx === null || pathEndIdx === null) {
+     view.setPath(null);
+     updatePathStats(null);
+     return;
+   }
+   const result = computePath(lattice, pathStartIdx, pathEndIdx);
+   view.setPath(result);
+   updatePathStats(result);
+}
+function updatePathStats(result) {
+   els.pathStart.textContent = pathStartIdx === null ? '—' : `#${pathStartIdx}`;
+   els.pathEnd.textContent = pathEndIdx === null ? '—' : `#${pathEndIdx}`;
+   if (!result) {
+     els.pathHops.textContent = '—';
+     els.pathCount.textContent = '—';
+     els.pathSheet.textContent = '—';
+     els.pathEuclid.textContent = '—';
+     return;
+   }
+   if (!result.reachable) {
+     els.pathHops.textContent = '∞ (unreachable)';
+     els.pathCount.textContent = '0';
+     els.pathSheet.textContent = '—';
+     els.pathEuclid.textContent = result.euclid != null ? result.euclid.toFixed(4) : '—';
+     return;
+   }
+   els.pathHops.textContent = String(result.hops);
+   els.pathCount.textContent =
+     result.numPaths > 64 ? `${result.numPaths} (showing 64)` : String(result.numPaths);
+   els.pathSheet.textContent = `+${result.sheetShift} (mod ${lattice.groupOrder})`;
+   els.pathEuclid.textContent = result.euclid.toFixed(4);
+}
+function clearPath() {
+   pathStartIdx = null;
+   pathEndIdx = null;
+   pathPickNext = 'start';
+   view.setPath(null);
+   updatePathStats(null);
 }
 
 function caTick(now) {
@@ -355,7 +421,7 @@ els.customN.addEventListener('change', () => {
   }
 });
 els.sierpinskiDepth.addEventListener('change', () => {
-  if (els.polyType.value === 'sierpinski') rebuild();
+  if (els.polyType.value === 'sierpinski' || els.polyType.value === 'vicsek') rebuild();
 });
 if (els.pinwheelHypSheets) {
   els.pinwheelHypSheets.addEventListener('change', () => {
@@ -548,6 +614,22 @@ els.caClear.addEventListener('click', () => {
   view.draw();
   updateCAStats();
 });
+// ---- Path tool wiring ----
+els.pathSetStart.addEventListener('click', () => {
+   pathStartIdx = currentTileIdx;
+   recomputePath();
+});
+els.pathSetEnd.addEventListener('click', () => {
+   pathEndIdx = currentTileIdx;
+   recomputePath();
+});
+els.pathClear.addEventListener('click', clearPath);
+els.pathShowAll.addEventListener('change', (e) => {
+   view.setOption('pathShowAll', e.target.checked);
+});
+// Initialize the render option to match the checkbox.
+view.setOption('pathShowAll', els.pathShowAll.checked);
+
 
 function ensureCAOverlayOn() {
   if (!els.caOverlay.checked) {
@@ -593,7 +675,21 @@ window.addEventListener('mouseup', (e) => {
     const [sx, sy] = view.eventToCanvas(e);
     const idx = view.pickTile(sx, sy);
     if (idx !== null) {
-      if (els.caPaintMode.checked && ca) {
+        if (els.pathMode.checked) {
+          // Path-pick mode: alternate start / end.
+          if (pathPickNext === 'start') {
+            pathStartIdx = idx;
+            pathEndIdx = null;
+            pathPickNext = 'end';
+          } else {
+            pathEndIdx = idx;
+            pathPickNext = 'start';
+          }
+          currentTileIdx = idx;
+          view.select(idx);
+          renderTileInfo(els.tileInfo, lattice.tiles[idx], lattice);
+          recomputePath();
+        } else if (els.caPaintMode.checked && ca) {
         ca.toggleCell(idx);
         ensureCAOverlayOn();
         view.draw();
@@ -644,26 +740,23 @@ window.addEventListener('keydown', (e) => {
   if (k < 0) return;
   const t = lattice.tiles[currentTileIdx];
   if (k >= t.neighbors.length) return;
-     // Map the pressed key to a compass slot (North, then clockwise), then
-     // resolve to this tile's raw edge index so walking stays direction-stable.
-     const n = t.n || t.neighbors.length;
-     const edge =
-       t.isSierpinski || t.isPinwheel
-         ? k
-         : (((k + t.orient) % n) + n) % n;
-     if (t.activeEdges && !t.activeEdges[edge]) {
-       appendWalkStep(els.walk, t, edge, 'inactive edge (pinwheel)');
+  // Map the pressed key to a compass slot (North, then clockwise), then
+  // resolve to this tile's raw edge index so walking stays direction-stable.
+  const n = t.n || t.neighbors.length;
+  const edge = t.isSierpinski || t.isPinwheel ? k : (((k + t.orient) % n) + n) % n;
+  if (t.activeEdges && !t.activeEdges[edge]) {
+    appendWalkStep(els.walk, t, edge, 'inactive edge (pinwheel)');
     return;
   }
-     const nIdx = t.neighbors[edge];
+  const nIdx = t.neighbors[edge];
   if (nIdx === null) {
-       appendWalkStep(els.walk, t, edge, 'no neighbor in lattice');
+    appendWalkStep(els.walk, t, edge, 'no neighbor in lattice');
     return;
   }
   currentTileIdx = nIdx;
   view.select(nIdx);
   renderTileInfo(els.tileInfo, lattice.tiles[nIdx], lattice);
-     appendWalkStep(els.walk, lattice.tiles[nIdx], edge);
+  appendWalkStep(els.walk, lattice.tiles[nIdx], edge);
 });
 
 // initial build

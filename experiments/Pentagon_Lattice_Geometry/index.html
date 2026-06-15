@@ -74,6 +74,7 @@
                   <option value="dodecagon">Regular Dodecagon (n=12)</option>
                   <option value="custom">Custom n-gon…</option>
                   <option value="sierpinski">Sierpiński Triangle</option>
+                  <option value="vicsek">Vicsek (Cross) Fractal</option>
                 </select>
               </label>
               <label id="customNLabel" style="display: none">
@@ -218,6 +219,34 @@
                 <input id="glow" max="40" min="0" type="range" value="14" />
                 <span class="rangeval" id="glowVal">14</span>
               </label>
+            </div>
+          </details>
+          <details class="section-group" open>
+            <summary>Path / Distance Tool</summary>
+            <div class="section-body">
+              <label>
+                <input id="pathMode" type="checkbox" />
+                Path-pick mode (click sets start, then end)
+              </label>
+              <div style="margin-top: 6px">
+                <button id="pathSetStart">Set start = selected</button>
+                <button id="pathSetEnd">Set end = selected</button>
+              </div>
+              <div style="margin-top: 6px">
+                <button id="pathClear">Clear path</button>
+              </div>
+              <label>
+                <input checked id="pathShowAll" type="checkbox" />
+                Highlight all shortest paths (not just one)
+              </label>
+              <div class="alg-block" id="pathStats" style="margin-top: 8px">
+                <div>start: <span id="pathStart">—</span></div>
+                <div>end: <span id="pathEnd">—</span></div>
+                <div>hop distance: <span id="pathHops">—</span></div>
+                <div># shortest paths: <span id="pathCount">—</span></div>
+                <div>net sheet shift: <span id="pathSheet">—</span></div>
+                <div>Euclidean dist: <span id="pathEuclid">—</span></div>
+              </div>
             </div>
           </details>
           <details class="section-group" open>

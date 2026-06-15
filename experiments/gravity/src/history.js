@@ -126,52 +126,69 @@ export class StateHistory {
         dt,
     };
   }
-   // Combined position + velocity interpolation in a single search to avoid
-   // redundant binary searches on hot paths (retarded-time solving).
-   interpolateState(t, useHermite = false) {
-     if (this.count === 0) return null;
-     if (this.count === 1) {
-       const s = this._at(0);
-       return { position: clone(s.position), velocity: clone(s.velocity) };
-     }
-     const oldest = this._at(0);
-     const newest = this._at(this.count - 1);
-     if (t <= oldest.t)
-       return { position: clone(oldest.position), velocity: clone(oldest.velocity) };
-     if (t >= newest.t)
-       return { position: clone(newest.position), velocity: clone(newest.velocity) };
-     const i = this._findIndex(t);
-     const a = this._at(i);
-     const b = this._at(Math.min(i + 1, this.count - 1));
-     const dt = b.t - a.t;
-     if (dt === 0)
-       return { position: clone(a.position), velocity: clone(a.velocity) };
-     const u = (t - a.t) / dt;
-     if (!useHermite) {
-       return {
-         position: lerp(a.position, b.position, u),
-         velocity: lerp(a.velocity, b.velocity, u),
-       };
-     }
-     const u2 = u * u;
-     const u3 = u2 * u;
-     const h00 = 2 * u3 - 3 * u2 + 1;
-     const h10 = u3 - 2 * u2 + u;
-     const h01 = -2 * u3 + 3 * u2;
-     const h11 = u3 - u2;
-     const dh00 = 6 * u2 - 6 * u;
-     const dh10 = 3 * u2 - 4 * u + 1;
-     const dh01 = -6 * u2 + 6 * u;
-     const dh11 = 3 * u2 - 2 * u;
-     return {
-       position: {
-         x: h00 * a.position.x + h10 * dt * a.velocity.x + h01 * b.position.x + h11 * dt * b.velocity.x,
-         y: h00 * a.position.y + h10 * dt * a.velocity.y + h01 * b.position.y + h11 * dt * b.velocity.y,
-       },
-       velocity: {
-         x: (dh00 * a.position.x + dh10 * dt * a.velocity.x + dh01 * b.position.x + dh11 * dt * b.velocity.x) / dt,
-         y: (dh00 * a.position.y + dh10 * dt * a.velocity.y + dh01 * b.position.y + dh11 * dt * b.velocity.y) / dt,
-       },
-     };
-   }
+  // Combined position + velocity interpolation in a single search to avoid
+  // redundant binary searches on hot paths (retarded-time solving).
+  interpolateState(t, useHermite = false) {
+    if (this.count === 0) return null;
+    if (this.count === 1) {
+      const s = this._at(0);
+      return { position: clone(s.position), velocity: clone(s.velocity) };
+    }
+    const oldest = this._at(0);
+    const newest = this._at(this.count - 1);
+    if (t <= oldest.t)
+      return { position: clone(oldest.position), velocity: clone(oldest.velocity) };
+    if (t >= newest.t)
+      return { position: clone(newest.position), velocity: clone(newest.velocity) };
+    const i = this._findIndex(t);
+    const a = this._at(i);
+    const b = this._at(Math.min(i + 1, this.count - 1));
+    const dt = b.t - a.t;
+    if (dt === 0) return { position: clone(a.position), velocity: clone(a.velocity) };
+    const u = (t - a.t) / dt;
+    if (!useHermite) {
+      return {
+        position: lerp(a.position, b.position, u),
+        velocity: lerp(a.velocity, b.velocity, u),
+      };
+    }
+    const u2 = u * u;
+    const u3 = u2 * u;
+    const h00 = 2 * u3 - 3 * u2 + 1;
+    const h10 = u3 - 2 * u2 + u;
+    const h01 = -2 * u3 + 3 * u2;
+    const h11 = u3 - u2;
+    const dh00 = 6 * u2 - 6 * u;
+    const dh10 = 3 * u2 - 4 * u + 1;
+    const dh01 = -6 * u2 + 6 * u;
+    const dh11 = 3 * u2 - 2 * u;
+    return {
+      position: {
+        x:
+          h00 * a.position.x +
+          h10 * dt * a.velocity.x +
+          h01 * b.position.x +
+          h11 * dt * b.velocity.x,
+        y:
+          h00 * a.position.y +
+          h10 * dt * a.velocity.y +
+          h01 * b.position.y +
+          h11 * dt * b.velocity.y,
+      },
+      velocity: {
+        x:
+          (dh00 * a.position.x +
+            dh10 * dt * a.velocity.x +
+            dh01 * b.position.x +
+            dh11 * dt * b.velocity.x) /
+          dt,
+        y:
+          (dh00 * a.position.y +
+            dh10 * dt * a.velocity.y +
+            dh01 * b.position.y +
+            dh11 * dt * b.velocity.y) /
+          dt,
+      },
+    };
+  }
 }

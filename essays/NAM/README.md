@@ -548,7 +548,6 @@ this equal?" and "which is bigger?" non-primitive, partial, or outright undecida
 complex out of carelessness — the translation preserves computability by discarding cheap equality. Betacrypt-3, but the
 trade is honest and the dialect is at least the same one everywhere.
 
-
 The natural equivalence relation on generator VMs is extensional: two VMs are equal iff they produce identical digit
 streams on every query. This relation is **not computably decidable** — it is the canonical example of an undecidable
 semantic property of programs (Rice's theorem). The library therefore cannot ship an `equals(x, y)` operation that

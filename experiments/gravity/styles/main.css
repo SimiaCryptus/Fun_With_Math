@@ -15,7 +15,7 @@ html,
 body {
   margin: 0;
   height: 100%;
-    background: radial-gradient(ellipse at 30% 20%, #0b1026 0%, #05060a 55%, #02030a 100%);
+  background: radial-gradient(ellipse at 30% 20%, #0b1026 0%, #05060a 55%, #02030a 100%);
   color: var(--text);
   font-family: 'Segoe UI', system-ui, sans-serif;
   overflow: hidden;
@@ -43,75 +43,77 @@ body {
   width: 280px;
   max-height: calc(100vh - 24px);
   overflow-y: auto;
-    background: linear-gradient(160deg, rgba(20, 24, 40, 0.92), rgba(12, 14, 26, 0.94));
-    border: 1px solid rgba(120, 150, 255, 0.18);
-    border-radius: 12px;
+  background: linear-gradient(160deg, rgba(20, 24, 40, 0.92), rgba(12, 14, 26, 0.94));
+  border: 1px solid rgba(120, 150, 255, 0.18);
+  border-radius: 12px;
   padding: 14px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 0 30px rgba(90, 120, 255, 0.12), inset 0 0 24px rgba(90, 130, 255, 0.05);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 0 30px rgba(90, 120, 255, 0.12),
+    inset 0 0 24px rgba(90, 130, 255, 0.05);
 }
 
 .panel h2 {
   margin: 0 0 10px;
   font-size: 15px;
-    letter-spacing: 0.8px;
-    background: linear-gradient(90deg, #7ad4ff, #b88dff, #ff8ad4);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 18px rgba(120, 150, 255, 0.25);
+  letter-spacing: 0.8px;
+  background: linear-gradient(90deg, #7ad4ff, #b88dff, #ff8ad4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 18px rgba(120, 150, 255, 0.25);
 }
-  .section-header {
-    margin: 14px 0 8px;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
-    color: #7e8bc5;
-    border-bottom: 1px solid rgba(120, 150, 255, 0.15);
-    padding-bottom: 4px;
-  }
-  .lock-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-  }
-  .lock-row .lock-name {
-    flex: 1 1 auto;
-    color: #aab2c5;
-  }
-  .lock-row .lock-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin: 0;
-    color: #8893ad;
-  }
-  .lock-row button {
-    background: #1c2438;
-    color: var(--text);
-    border: 1px solid rgba(120, 150, 255, 0.2);
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 11px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-  .lock-row button:hover {
-    background: #28335a;
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  .follow-select {
-    width: 100%;
-    background: #1c2233;
-    color: var(--text);
-    border: 1px solid var(--panel-border);
-    border-radius: 6px;
-    padding: 5px 6px;
-    font-size: 12px;
-    cursor: pointer;
-  }
+.section-header {
+  margin: 14px 0 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: #7e8bc5;
+  border-bottom: 1px solid rgba(120, 150, 255, 0.15);
+  padding-bottom: 4px;
+}
+.lock-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.lock-row .lock-name {
+  flex: 1 1 auto;
+  color: #aab2c5;
+}
+.lock-row .lock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  color: #8893ad;
+}
+.lock-row button {
+  background: #1c2438;
+  color: var(--text);
+  border: 1px solid rgba(120, 150, 255, 0.2);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.lock-row button:hover {
+  background: #28335a;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.follow-select {
+  width: 100%;
+  background: #1c2233;
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 5px 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
 
 .control-row {
   margin-bottom: 10px;
@@ -151,20 +153,20 @@ body {
 .button-row button,
 .preset-select {
   flex: 1 1 auto;
-    background: linear-gradient(180deg, #232c47, #18203a);
+  background: linear-gradient(180deg, #232c47, #18203a);
   color: var(--text);
-    border: 1px solid rgba(120, 150, 255, 0.22);
+  border: 1px solid rgba(120, 150, 255, 0.22);
   border-radius: 6px;
   padding: 6px 8px;
   font-size: 12px;
   cursor: pointer;
-    transition: all 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .button-row button:hover {
-    background: linear-gradient(180deg, #2e3a63, #20294a);
-    border-color: var(--accent);
-    box-shadow: 0 0 12px rgba(90, 209, 255, 0.25);
+  background: linear-gradient(180deg, #2e3a63, #20294a);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(90, 209, 255, 0.25);
 }
 
 .preset-select {
@@ -176,21 +178,21 @@ body {
   position: absolute;
   left: 12px;
   bottom: 12px;
-    background: linear-gradient(160deg, rgba(20, 24, 40, 0.85), rgba(12, 14, 26, 0.88));
-    border: 1px solid rgba(120, 150, 255, 0.18);
-    border-radius: 10px;
+  background: linear-gradient(160deg, rgba(20, 24, 40, 0.85), rgba(12, 14, 26, 0.88));
+  border: 1px solid rgba(120, 150, 255, 0.18);
+  border-radius: 10px;
   padding: 10px 12px;
   font-size: 12px;
   font-variant-numeric: tabular-nums;
   line-height: 1.6;
   min-width: 180px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 0 24px rgba(90, 120, 255, 0.1);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 24px rgba(90, 120, 255, 0.1);
 }
 
 .readouts span {
   color: var(--accent);
-    text-shadow: 0 0 8px rgba(90, 209, 255, 0.4);
+  text-shadow: 0 0 8px rgba(90, 209, 255, 0.4);
 }
 
 .home-link {
