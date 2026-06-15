@@ -124,18 +124,18 @@ const els = {
   caGen: $('caGen'),
   caPop: $('caPop'),
   caBySheet: $('caBySheet'),
-    // Path tool
-    pathMode: $('pathMode'),
-    pathSetStart: $('pathSetStart'),
-    pathSetEnd: $('pathSetEnd'),
-    pathClear: $('pathClear'),
-    pathShowAll: $('pathShowAll'),
-    pathStart: $('pathStart'),
-    pathEnd: $('pathEnd'),
-    pathHops: $('pathHops'),
-    pathCount: $('pathCount'),
-    pathSheet: $('pathSheet'),
-    pathEuclid: $('pathEuclid'),
+  // Path tool
+  pathMode: $('pathMode'),
+  pathSetStart: $('pathSetStart'),
+  pathSetEnd: $('pathSetEnd'),
+  pathClear: $('pathClear'),
+  pathShowAll: $('pathShowAll'),
+  pathStart: $('pathStart'),
+  pathEnd: $('pathEnd'),
+  pathHops: $('pathHops'),
+  pathCount: $('pathCount'),
+  pathSheet: $('pathSheet'),
+  pathEuclid: $('pathEuclid'),
   // value displays
   alphaSelVal: $('alphaSelVal'),
   alphaOtherVal: $('alphaOtherVal'),
@@ -191,8 +191,7 @@ function getPolyConfig() {
 function updatePolyTypeUI() {
   const type = els.polyType.value;
   els.customNLabel.style.display = type === 'custom' ? '' : 'none';
-  els.sierpinskiDepthLabel.style.display =
-    type === 'sierpinski' || type === 'vicsek' ? '' : 'none';
+  els.sierpinskiDepthLabel.style.display = type === 'sierpinski' || type === 'vicsek' ? '' : 'none';
   if (els.pinwheelOptionsLabel) {
     els.pinwheelOptionsLabel.style.display = type === 'pinwheel' ? '' : 'none';
   }
@@ -297,7 +296,7 @@ function rebuild() {
   appendWalkStep(els.walk, lattice.tiles[currentTileIdx], null, 'origin');
   initCA();
   updatePolyTypeUI();
-   clearPath();
+  clearPath();
 }
 
 function initCA() {
@@ -326,44 +325,44 @@ function updateCAStats() {
   }
 }
 function recomputePath() {
-   if (pathStartIdx === null || pathEndIdx === null) {
-     view.setPath(null);
-     updatePathStats(null);
-     return;
-   }
-   const result = computePath(lattice, pathStartIdx, pathEndIdx);
-   view.setPath(result);
-   updatePathStats(result);
+  if (pathStartIdx === null || pathEndIdx === null) {
+    view.setPath(null);
+    updatePathStats(null);
+    return;
+  }
+  const result = computePath(lattice, pathStartIdx, pathEndIdx);
+  view.setPath(result);
+  updatePathStats(result);
 }
 function updatePathStats(result) {
-   els.pathStart.textContent = pathStartIdx === null ? '—' : `#${pathStartIdx}`;
-   els.pathEnd.textContent = pathEndIdx === null ? '—' : `#${pathEndIdx}`;
-   if (!result) {
-     els.pathHops.textContent = '—';
-     els.pathCount.textContent = '—';
-     els.pathSheet.textContent = '—';
-     els.pathEuclid.textContent = '—';
-     return;
-   }
-   if (!result.reachable) {
-     els.pathHops.textContent = '∞ (unreachable)';
-     els.pathCount.textContent = '0';
-     els.pathSheet.textContent = '—';
-     els.pathEuclid.textContent = result.euclid != null ? result.euclid.toFixed(4) : '—';
-     return;
-   }
-   els.pathHops.textContent = String(result.hops);
-   els.pathCount.textContent =
-     result.numPaths > 64 ? `${result.numPaths} (showing 64)` : String(result.numPaths);
-   els.pathSheet.textContent = `+${result.sheetShift} (mod ${lattice.groupOrder})`;
-   els.pathEuclid.textContent = result.euclid.toFixed(4);
+  els.pathStart.textContent = pathStartIdx === null ? '—' : `#${pathStartIdx}`;
+  els.pathEnd.textContent = pathEndIdx === null ? '—' : `#${pathEndIdx}`;
+  if (!result) {
+    els.pathHops.textContent = '—';
+    els.pathCount.textContent = '—';
+    els.pathSheet.textContent = '—';
+    els.pathEuclid.textContent = '—';
+    return;
+  }
+  if (!result.reachable) {
+    els.pathHops.textContent = '∞ (unreachable)';
+    els.pathCount.textContent = '0';
+    els.pathSheet.textContent = '—';
+    els.pathEuclid.textContent = result.euclid != null ? result.euclid.toFixed(4) : '—';
+    return;
+  }
+  els.pathHops.textContent = String(result.hops);
+  els.pathCount.textContent =
+    result.numPaths > 64 ? `${result.numPaths} (showing 64)` : String(result.numPaths);
+  els.pathSheet.textContent = `+${result.sheetShift} (mod ${lattice.groupOrder})`;
+  els.pathEuclid.textContent = result.euclid.toFixed(4);
 }
 function clearPath() {
-   pathStartIdx = null;
-   pathEndIdx = null;
-   pathPickNext = 'start';
-   view.setPath(null);
-   updatePathStats(null);
+  pathStartIdx = null;
+  pathEndIdx = null;
+  pathPickNext = 'start';
+  view.setPath(null);
+  updatePathStats(null);
 }
 
 function caTick(now) {
@@ -616,20 +615,19 @@ els.caClear.addEventListener('click', () => {
 });
 // ---- Path tool wiring ----
 els.pathSetStart.addEventListener('click', () => {
-   pathStartIdx = currentTileIdx;
-   recomputePath();
+  pathStartIdx = currentTileIdx;
+  recomputePath();
 });
 els.pathSetEnd.addEventListener('click', () => {
-   pathEndIdx = currentTileIdx;
-   recomputePath();
+  pathEndIdx = currentTileIdx;
+  recomputePath();
 });
 els.pathClear.addEventListener('click', clearPath);
 els.pathShowAll.addEventListener('change', (e) => {
-   view.setOption('pathShowAll', e.target.checked);
+  view.setOption('pathShowAll', e.target.checked);
 });
 // Initialize the render option to match the checkbox.
 view.setOption('pathShowAll', els.pathShowAll.checked);
-
 
 function ensureCAOverlayOn() {
   if (!els.caOverlay.checked) {
@@ -675,21 +673,21 @@ window.addEventListener('mouseup', (e) => {
     const [sx, sy] = view.eventToCanvas(e);
     const idx = view.pickTile(sx, sy);
     if (idx !== null) {
-        if (els.pathMode.checked) {
-          // Path-pick mode: alternate start / end.
-          if (pathPickNext === 'start') {
-            pathStartIdx = idx;
-            pathEndIdx = null;
-            pathPickNext = 'end';
-          } else {
-            pathEndIdx = idx;
-            pathPickNext = 'start';
-          }
-          currentTileIdx = idx;
-          view.select(idx);
-          renderTileInfo(els.tileInfo, lattice.tiles[idx], lattice);
-          recomputePath();
-        } else if (els.caPaintMode.checked && ca) {
+      if (els.pathMode.checked) {
+        // Path-pick mode: alternate start / end.
+        if (pathPickNext === 'start') {
+          pathStartIdx = idx;
+          pathEndIdx = null;
+          pathPickNext = 'end';
+        } else {
+          pathEndIdx = idx;
+          pathPickNext = 'start';
+        }
+        currentTileIdx = idx;
+        view.select(idx);
+        renderTileInfo(els.tileInfo, lattice.tiles[idx], lattice);
+        recomputePath();
+      } else if (els.caPaintMode.checked && ca) {
         ca.toggleCell(idx);
         ensureCAOverlayOn();
         view.draw();

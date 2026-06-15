@@ -12,7 +12,7 @@ export class LatticeView {
     this.selectedIdx = null;
     this.lattice = null;
     this.ca = null;
-      this.path = null; // result object from computePath()
+    this.path = null; // result object from computePath()
     this.options = {
       colorMode: 'sheet',
       palette: 'hsl',
@@ -78,11 +78,10 @@ export class LatticeView {
     this.ca = ca;
     this.draw();
   }
-    setPath(path) {
-      this.path = path;
-      this.draw();
-    }
-
+  setPath(path) {
+    this.path = path;
+    this.draw();
+  }
 
   setOption(name, val) {
     this.options[name] = val;
@@ -148,35 +147,35 @@ export class LatticeView {
       return null;
     }
     const dist2 = (t) => (t.centroidF[0] - wx) ** 2 + (t.centroidF[1] - wy) ** 2;
-     // Find the geometrically nearest candidate (by centroid distance).
-     // This guarantees that tiles centred on the click — e.g. the origin
-     // tile at (0,0) — are always selectable even when tiles from other
-     // sheets overlap them.
-     let nearest = hits[0];
-     let nearestD = dist2(nearest);
-     for (let i = 1; i < hits.length; i++) {
-       const d = dist2(hits[i]);
-       if (d < nearestD) {
-         nearestD = d;
-         nearest = hits[i];
-       }
-     }
-     // If several candidates are essentially tied for "nearest" (overlapping
-     // sheets at the same spot), prefer the one on the currently selected
-     // sheet to keep walking/inspection stable. Otherwise, the strictly
-     // nearest centroid wins so the centre tile can never be obscured.
-     const TIE = nearestD * 1.0001 + 1e-9;
-     const tied = hits.filter((t) => dist2(t) <= TIE);
-     if (tied.length > 1) {
-       tied.sort((a, b) => {
-         const aSel = a.sheet === selSheet ? 0 : 1;
-         const bSel = b.sheet === selSheet ? 0 : 1;
-         if (aSel !== bSel) return aSel - bSel;
-         return dist2(a) - dist2(b);
-       });
-       return tied[0].index;
-     }
-     return nearest.index;
+    // Find the geometrically nearest candidate (by centroid distance).
+    // This guarantees that tiles centred on the click — e.g. the origin
+    // tile at (0,0) — are always selectable even when tiles from other
+    // sheets overlap them.
+    let nearest = hits[0];
+    let nearestD = dist2(nearest);
+    for (let i = 1; i < hits.length; i++) {
+      const d = dist2(hits[i]);
+      if (d < nearestD) {
+        nearestD = d;
+        nearest = hits[i];
+      }
+    }
+    // If several candidates are essentially tied for "nearest" (overlapping
+    // sheets at the same spot), prefer the one on the currently selected
+    // sheet to keep walking/inspection stable. Otherwise, the strictly
+    // nearest centroid wins so the centre tile can never be obscured.
+    const TIE = nearestD * 1.0001 + 1e-9;
+    const tied = hits.filter((t) => dist2(t) <= TIE);
+    if (tied.length > 1) {
+      tied.sort((a, b) => {
+        const aSel = a.sheet === selSheet ? 0 : 1;
+        const bSel = b.sheet === selSheet ? 0 : 1;
+        if (aSel !== bSel) return aSel - bSel;
+        return dist2(a) - dist2(b);
+      });
+      return tied[0].index;
+    }
+    return nearest.index;
   }
 
   select(idx) {
@@ -230,7 +229,7 @@ export class LatticeView {
       for (const t of sorted) {
         this._drawTile(t, this.options.alphaSelected, true);
       }
-        if (this.path) this._drawPath();
+      if (this.path) this._drawPath();
       if (sel && this.options.showSelGlow) this._drawSelection(sel);
       return;
     }
@@ -262,7 +261,6 @@ export class LatticeView {
         this._drawTile(t, alpha, isSel, /*fillOnly=*/ false, /*strokeOnly=*/ true);
     }
     if (this.path) this._drawPath();
-
 
     if (sel && this.options.showSelGlow) this._drawSelection(sel);
   }
@@ -338,7 +336,6 @@ export class LatticeView {
     if (p.end !== p.start) mark(p.end, '#ff7b72', 'B');
     ctx.restore();
   }
-
 
   _drawTile(t, alpha, isSelSheet, fillOnly = false, strokeOnly = false) {
     const ctx = this.ctx;
