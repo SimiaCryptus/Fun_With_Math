@@ -66,6 +66,11 @@ body {
   justify-content: space-between;
   margin-bottom: 3px;
   color: #aab2c5;
+  align-items: center;
+}
+.control-row input[type='checkbox'] {
+  accent-color: var(--accent);
+  cursor: pointer;
 }
 
 .control-row input[type='range'] {

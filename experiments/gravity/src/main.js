@@ -31,6 +31,17 @@ const controls = new Controls(controlsMount, {
     updateReadouts();
   },
   onReset: () => loadPreset(currentPreset),
+  onSpeed: (v) => {
+    subStepsPerFrame = v;
+  },
+  onResetView: () => {
+    renderer.resetView();
+    renderer.render(simulation);
+  },
+  onToggleRetarded: (on) => {
+    renderer.showRetarded = on;
+    if (!playing) renderer.render(simulation);
+  },
 });
 
 let playing = false;
@@ -48,12 +59,15 @@ function loadPreset(key) {
   controls.sync();
   playing = false;
   controls.setPlaying(false);
+  // Re-enable auto-fit framing whenever a fresh preset loads.
+  renderer.autoFit = true;
   renderer.render(simulation);
   updateReadouts();
 }
 
 // --- interactivity: click to place + drag to set velocity ---
 let dragging = null;
+let panning = null;
 
 canvas.addEventListener('pointerdown', (e) => {
   const screen = { x: e.offsetX, y: e.offsetY };
@@ -70,10 +84,23 @@ canvas.addEventListener('pointerdown', (e) => {
   }
   if (nearest && nd < Math.max(20, nearest.radius * 2)) {
     dragging = { body: nearest, start: world };
+  } else {
+    // Empty space: start a manual pan. This takes over from auto-fit.
+    renderer.autoFit = false;
+    panning = {
+      startScreen: screen,
+      startOffset: { x: renderer.offset.x, y: renderer.offset.y },
+    };
   }
 });
 
 canvas.addEventListener('pointermove', (e) => {
+  if (panning) {
+    renderer.offset.x = panning.startOffset.x + (e.offsetX - panning.startScreen.x);
+    renderer.offset.y = panning.startOffset.y + (e.offsetY - panning.startScreen.y);
+    if (!playing) renderer.render(simulation);
+    return;
+  }
   if (!dragging) return;
   const world = renderer.toWorld({ x: e.offsetX, y: e.offsetY });
   // live preview velocity vector
@@ -87,6 +114,7 @@ canvas.addEventListener('pointerup', () => {
     controls.sync();
   }
   dragging = null;
+  panning = null;
 });
 
 // --- zoom ---
@@ -94,6 +122,8 @@ canvas.addEventListener(
   'wheel',
   (e) => {
     e.preventDefault();
+    // Manual zoom takes over from auto-fit.
+    renderer.autoFit = false;
     const factor = e.deltaY < 0 ? 1.1 : 0.9;
     renderer.scaleFactor *= factor;
     if (!playing) renderer.render(simulation);
@@ -121,11 +151,11 @@ function updateReadouts() {
 
 // --- animation loop ---
 let acc = 0;
+let subStepsPerFrame = 8;
 function loop() {
   if (playing) {
-    // run a few sub-steps per frame for smoothness
-    const subSteps = 2;
-    for (let i = 0; i < subSteps; i++) simulation.step();
+    // run several sub-steps per frame for smoothness/speed
+    for (let i = 0; i < subStepsPerFrame; i++) simulation.step();
     renderer.render(simulation);
     if (++acc % 6 === 0) updateReadouts();
   }
