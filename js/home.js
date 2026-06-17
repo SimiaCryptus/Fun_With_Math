@@ -306,3 +306,76 @@ overlay.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
 });
+/* ── Featured-card demo videos ─────────────────────────────── */
+/* Lazily mount <video> elements for cards that declare a
+    data-video source. Videos load when scrolled into view,
+    play on hover / focus, and pause otherwise to save resources.
+    Respects prefers-reduced-motion. */
+(function initFeaturedVideos() {
+  const reduceMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const cards = document.querySelectorAll('.featured-card[data-video]');
+  if (!cards.length) return;
+  function buildVideo(card) {
+    const mount = card.querySelector('[data-video-mount]');
+    if (!mount || mount.dataset.built === 'true') return null;
+    const src = card.dataset.video;
+    const title = card.querySelector('.featured-card-title')?.textContent || 'demo';
+    const video = document.createElement('video');
+    video.className = 'featured-card-video';
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    video.setAttribute('aria-label', title + ' — demonstration video');
+    video.setAttribute('tabindex', '-1');
+    const source = document.createElement('source');
+    source.src = src;
+    source.type = 'video/mp4';
+    video.appendChild(source);
+    mount.appendChild(video);
+    mount.dataset.built = 'true';
+    return video;
+  }
+  function safePlay(video) {
+    if (!video || reduceMotion) return;
+    const p = video.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  }
+  // Mount videos as cards enter the viewport.
+  const io =
+    'IntersectionObserver' in window
+      ? new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                buildVideo(entry.target);
+                io.unobserve(entry.target);
+              }
+            }
+          },
+          { rootMargin: '200px' }
+        )
+      : null;
+  cards.forEach((card) => {
+    if (io) {
+      io.observe(card);
+    } else {
+      buildVideo(card);
+    }
+    const start = () => {
+      const video = buildVideo(card) || card.querySelector('.featured-card-video');
+      safePlay(video);
+    };
+    const stop = () => {
+      const video = card.querySelector('.featured-card-video');
+      if (video) {
+        video.pause();
+      }
+    };
+    card.addEventListener('mouseenter', start);
+    card.addEventListener('mouseleave', stop);
+    card.addEventListener('focusin', start);
+    card.addEventListener('focusout', stop);
+  });
+})();
