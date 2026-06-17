@@ -604,6 +604,26 @@
           </label>
         </div>
         <div class="control-group">
+          <label>Stats Panel</label>
+          <select id="stats-select">
+            <option value="histogram">Density Histogram</option>
+            <option value="matrix">Point-Pair Distance Matrix</option>
+          </select>
+        </div>
+        <div class="control-group" id="matrix-perm-group" style="display: none">
+          <label>Matrix Ordering</label>
+          <select id="matrix-perm-select">
+            <option value="none">None (Original)</option>
+            <option value="greedy-nn">Greedy Nearest-Neighbor</option>
+            <option value="spectral">Spectral (Fiedler)</option>
+            <option value="density">Density Sort</option>
+            <option value="pca">PCA Axis Sort</option>
+          </select>
+          <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: -4px">
+            Reorders rows/cols to cluster short distances near the diagonal.
+          </div>
+        </div>
+        <div class="control-group">
           <label
             >Interaction Force
             <input type="number" id="input-force" class="value-input" value="0.0" step="0.1" />
@@ -716,6 +736,8 @@
         showWireframe: true,
         showTriangulation: false,
         showSolidFill: false,
+        statsMode: 'histogram',
+        matrixPerm: 'none',
         isDragging: false,
         params: {
           n: 50,
@@ -763,6 +785,9 @@
         chkAutoRotate: document.getElementById('chk-autorotate'),
         chkTriangulation: document.getElementById('chk-triangulation'),
         chkSolidFill: document.getElementById('chk-solid-fill'),
+        statsSelect: document.getElementById('stats-select'),
+        matrixPermSelect: document.getElementById('matrix-perm-select'),
+        matrixPermGroup: document.getElementById('matrix-perm-group'),
         forceInput: document.getElementById('param-force'),
         forceTextInput: document.getElementById('input-force'),
         btnToggle: document.getElementById('btn-toggle'),
@@ -1494,6 +1519,14 @@
         const chartW = w * 0.25;
         const chartH = h * 0.6;
 
+        if (state.statsMode === 'matrix') {
+          drawDistanceMatrix(pointsArr, numPoints, chartX, chartY, chartW, chartH);
+        } else {
+          drawDensityHistogram(densities, chartX, chartY, chartW, chartH);
+        }
+      }
+
+      function drawDensityHistogram(densities, chartX, chartY, chartW, chartH) {
         // Axis
         ctx.strokeStyle = '#2a2e36';
         ctx.lineWidth = 2;
@@ -1517,7 +1550,7 @@
         const range = maxD - minD;
         densities.forEach((d) => {
           const bin = Math.floor(((d - minD) / range) * bins);
-          hist[bin]++;
+          hist[Math.max(0, Math.min(bins - 1, bin))]++;
         });
         const maxCount = Math.max(...hist, 1);
         const binW = chartW / bins;
@@ -1539,6 +1572,297 @@
 
         ctx.lineWidth = 1;
         ctx.stroke();
+      }
+      /**
+       * Computes a permutation (ordering) of point indices for the distance
+       * matrix display. The goal of most modes is to place short distances
+       * close to the diagonal so block-structure becomes visible.
+       *
+       * Returns an array `order` of length N (capped to display count) where
+       * order[displayIndex] = originalPointIndex.
+       */
+      function computeMatrixPermutation(pointsArr, numPoints, mode) {
+        const maxDisplay = 64;
+        const N = Math.min(numPoints, maxDisplay);
+        // Default identity order.
+        const identity = Array.from({ length: N }, (_, i) => i);
+        if (!mode || mode === 'none' || N <= 2) return identity;
+        // Helper: pairwise distance between original indices a, b.
+        const dist = (a, b) => {
+          const dx = pointsArr[a * 3] - pointsArr[b * 3];
+          const dy = pointsArr[a * 3 + 1] - pointsArr[b * 3 + 1];
+          const dz = pointsArr[a * 3 + 2] - pointsArr[b * 3 + 2];
+          return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        };
+        if (mode === 'greedy-nn') {
+          // Greedy nearest-neighbor path: start at point 0, repeatedly append
+          // the closest unvisited point. Produces a 1D ordering where adjacent
+          // rows are spatially close -> short distances hug the diagonal.
+          const visited = new Array(N).fill(false);
+          const order = [];
+          let current = 0;
+          visited[0] = true;
+          order.push(0);
+          for (let step = 1; step < N; step++) {
+            let best = -1;
+            let bestD = Infinity;
+            for (let j = 0; j < N; j++) {
+              if (visited[j]) continue;
+              const d = dist(current, j);
+              if (d < bestD) {
+                bestD = d;
+                best = j;
+              }
+            }
+            visited[best] = true;
+            order.push(best);
+            current = best;
+          }
+          return order;
+        }
+        if (mode === 'density') {
+          // Sort by the density metric (clustered points grouped together).
+          const densities = state.metrics.densities;
+          if (densities && densities.length >= N) {
+            const order = identity.slice();
+            order.sort((a, b) => densities[a] - densities[b]);
+            return order;
+          }
+          return identity;
+        }
+        if (mode === 'pca') {
+          // Project points onto their principal axis and sort along it.
+          // Compute mean.
+          let mx = 0,
+            my = 0,
+            mz = 0;
+          for (let i = 0; i < N; i++) {
+            mx += pointsArr[i * 3];
+            my += pointsArr[i * 3 + 1];
+            mz += pointsArr[i * 3 + 2];
+          }
+          mx /= N;
+          my /= N;
+          mz /= N;
+          // Covariance matrix (3x3).
+          let cxx = 0,
+            cxy = 0,
+            cxz = 0,
+            cyy = 0,
+            cyz = 0,
+            czz = 0;
+          for (let i = 0; i < N; i++) {
+            const dx = pointsArr[i * 3] - mx;
+            const dy = pointsArr[i * 3 + 1] - my;
+            const dz = pointsArr[i * 3 + 2] - mz;
+            cxx += dx * dx;
+            cxy += dx * dy;
+            cxz += dx * dz;
+            cyy += dy * dy;
+            cyz += dy * dz;
+            czz += dz * dz;
+          }
+          // Power-iteration to find the dominant eigenvector of covariance.
+          let v = [1, 1, 1];
+          for (let it = 0; it < 30; it++) {
+            const nx = cxx * v[0] + cxy * v[1] + cxz * v[2];
+            const ny = cxy * v[0] + cyy * v[1] + cyz * v[2];
+            const nz = cxz * v[0] + cyz * v[1] + czz * v[2];
+            const len = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+            v = [nx / len, ny / len, nz / len];
+          }
+          const proj = identity.map((i) => {
+            const dx = pointsArr[i * 3] - mx;
+            const dy = pointsArr[i * 3 + 1] - my;
+            const dz = pointsArr[i * 3 + 2] - mz;
+            return { i, p: dx * v[0] + dy * v[1] + dz * v[2] };
+          });
+          proj.sort((a, b) => a.p - b.p);
+          return proj.map((o) => o.i);
+        }
+        if (mode === 'spectral') {
+          // Spectral ordering via the Fiedler vector of the graph Laplacian.
+          // Build affinity W = exp(-d^2 / sigma^2), degree D, Laplacian L = D - W.
+          // The second-smallest eigenvector of L (Fiedler vector) gives a
+          // 1D embedding; sorting by it clusters connected nodes.
+          // Estimate sigma as the mean nearest-neighbor distance.
+          let sigmaAccum = 0;
+          for (let i = 0; i < N; i++) {
+            let best = Infinity;
+            for (let j = 0; j < N; j++) {
+              if (i === j) continue;
+              const d = dist(i, j);
+              if (d < best) best = d;
+            }
+            sigmaAccum += isFinite(best) ? best : 0;
+          }
+          const sigma = sigmaAccum / N || 1;
+          const inv2s2 = 1 / (2 * sigma * sigma);
+          // Affinity and degree.
+          const W = [];
+          const deg = new Array(N).fill(0);
+          for (let i = 0; i < N; i++) {
+            W[i] = new Array(N).fill(0);
+          }
+          for (let i = 0; i < N; i++) {
+            for (let j = i + 1; j < N; j++) {
+              const d = dist(i, j);
+              const w = Math.exp(-d * d * inv2s2);
+              W[i][j] = w;
+              W[j][i] = w;
+              deg[i] += w;
+              deg[j] += w;
+            }
+          }
+          // Find the Fiedler vector via inverse power iteration on L, working in
+          // the subspace orthogonal to the constant (smallest eigenvalue) vector.
+          // We instead iterate on the matrix and deflate the all-ones direction.
+          const applyL = (x) => {
+            // y = L x = D x - W x
+            const y = new Array(N).fill(0);
+            for (let i = 0; i < N; i++) {
+              let s = deg[i] * x[i];
+              const Wi = W[i];
+              for (let j = 0; j < N; j++) {
+                if (j !== i) s -= Wi[j] * x[j];
+              }
+              y[i] = s;
+            }
+            return y;
+          };
+          const deflate = (x) => {
+            // Remove component along the all-ones vector.
+            let mean = 0;
+            for (let i = 0; i < N; i++) mean += x[i];
+            mean /= N;
+            for (let i = 0; i < N; i++) x[i] -= mean;
+            // Normalize.
+            let norm = 0;
+            for (let i = 0; i < N; i++) norm += x[i] * x[i];
+            norm = Math.sqrt(norm) || 1;
+            for (let i = 0; i < N; i++) x[i] /= norm;
+          };
+          // Largest eigenvalue estimate for shift (Gershgorin bound ~ 2*maxDeg).
+          let maxDeg = 0;
+          for (let i = 0; i < N; i++) maxDeg = Math.max(maxDeg, deg[i]);
+          const shift = 2 * maxDeg + 1e-6;
+          // Iterate on (shift*I - L): its dominant eigenvector (after deflating
+          // the constant mode) corresponds to L's smallest non-trivial mode.
+          let x = identity.map((i) => Math.sin(i + 1));
+          deflate(x);
+          for (let it = 0; it < 100; it++) {
+            const Lx = applyL(x);
+            const next = new Array(N);
+            for (let i = 0; i < N; i++) next[i] = shift * x[i] - Lx[i];
+            deflate(next);
+            x = next;
+          }
+          const fiedler = identity.map((i) => ({ i, v: x[i] }));
+          fiedler.sort((a, b) => a.v - b.v);
+          return fiedler.map((o) => o.i);
+        }
+        return identity;
+      }
+
+      function drawDistanceMatrix(pointsArr, numPoints, chartX, chartY, chartW, chartH) {
+        // Build the permutation order according to the selected mode.
+        const order = computeMatrixPermutation(pointsArr, numPoints, state.matrixPerm);
+
+        // Label
+        ctx.fillStyle = '#a0a0a0';
+        ctx.font = '10px JetBrains Mono';
+        ctx.fillText('POINT-PAIR DISTANCE MATRIX', chartX, chartY - chartH / 2 - 10);
+
+        // Cap the number of points displayed to keep cells visible
+        const maxDisplay = 64;
+        const N = Math.min(numPoints, maxDisplay);
+        const side = Math.min(chartW, chartH);
+        const cell = side / N;
+        const originX = chartX;
+        const originY = chartY - side / 2;
+        // Map display index -> original point index via the permutation.
+        const idxOf = (k) => order[k];
+
+        // First pass: compute min/max distance for color normalization
+        let minDist = Infinity;
+        let maxDist = -Infinity;
+        for (let i = 0; i < N; i++) {
+          const oi = idxOf(i);
+          const xi = pointsArr[oi * 3],
+            yi = pointsArr[oi * 3 + 1],
+            zi = pointsArr[oi * 3 + 2];
+          for (let j = 0; j < N; j++) {
+            if (i === j) continue;
+            const oj = idxOf(j);
+            const xj = pointsArr[oj * 3],
+              yj = pointsArr[oj * 3 + 1],
+              zj = pointsArr[oj * 3 + 2];
+            const d = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2);
+            if (d < minDist) minDist = d;
+            if (d > maxDist) maxDist = d;
+          }
+        }
+        if (!isFinite(minDist)) minDist = 0;
+        if (!isFinite(maxDist)) maxDist = 1;
+        const range = maxDist - minDist + 1e-6;
+
+        // Second pass: draw cells colored by distance (Cyan = near, Magenta = far)
+        for (let i = 0; i < N; i++) {
+          const oi = idxOf(i);
+          const xi = pointsArr[oi * 3],
+            yi = pointsArr[oi * 3 + 1],
+            zi = pointsArr[oi * 3 + 2];
+          for (let j = 0; j < N; j++) {
+            let t;
+            if (i === j) {
+              t = 0;
+            } else {
+              const oj = idxOf(j);
+              const xj = pointsArr[oj * 3],
+                yj = pointsArr[oj * 3 + 1],
+                zj = pointsArr[oj * 3 + 2];
+              const d = Math.sqrt((xi - xj) ** 2 + (yi - yj) ** 2 + (zi - zj) ** 2);
+              t = (d - minDist) / range;
+            }
+            // Interpolate Cyan (near, t=0) -> Magenta (far, t=1)
+            const r = Math.floor(0 + t * 255);
+            const g = Math.floor(210 - t * 210);
+            const b = 255;
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            ctx.fillRect(originX + j * cell, originY + i * cell, Math.ceil(cell), Math.ceil(cell));
+          }
+        }
+
+        // Border
+        ctx.strokeStyle = '#2a2e36';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(originX, originY, N * cell, N * cell);
+
+        // Note if truncated
+        if (numPoints > maxDisplay) {
+          ctx.fillStyle = '#6b7280';
+          ctx.font = '9px JetBrains Mono';
+          ctx.fillText(
+            `showing ${maxDisplay} of ${numPoints} points`,
+            originX,
+            originY + N * cell + 14
+          );
+        }
+
+        // Legend
+        ctx.fillStyle = '#a0a0a0';
+        ctx.font = '9px JetBrains Mono';
+        ctx.fillText('near', originX, originY + side + 30);
+        ctx.fillText('far', originX + side - 18, originY + side + 30);
+        const legendY = originY + side + 18;
+        const legendW = side;
+        for (let x = 0; x < legendW; x++) {
+          const t = x / legendW;
+          const r = Math.floor(0 + t * 255);
+          const g = Math.floor(210 - t * 210);
+          ctx.fillStyle = `rgb(${r}, ${g}, 255)`;
+          ctx.fillRect(originX + x, legendY, 1, 6);
+        }
       }
 
       function updateUI() {
@@ -1911,6 +2235,15 @@
         });
         els.chkSolidFill.addEventListener('change', (e) => {
           state.showSolidFill = e.target.checked;
+          draw();
+        });
+        els.statsSelect.addEventListener('change', (e) => {
+          state.statsMode = e.target.value;
+          els.matrixPermGroup.style.display = state.statsMode === 'matrix' ? 'flex' : 'none';
+          draw();
+        });
+        els.matrixPermSelect.addEventListener('change', (e) => {
+          state.matrixPerm = e.target.value;
           draw();
         });
         els.forceInput.addEventListener('input', (e) => {
