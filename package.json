@@ -2,6 +2,7 @@
   "type": "module",
   "name": "mathematical-explorations",
   "version": "0.1.0",
+  "private": true,
   "scripts": {
     "test": "node test/run-all.js",
     "serve": "npx http-server -p 8080 -c-1",
@@ -21,8 +22,11 @@
     "format:check": "prettier --check '**/*.js' '**/*.html' '**/*.css' '**/*.json' '**/*.md'",
     "validate": "npm run lint:all && npm run format:check && npm run test",
     "prebuild": "npm run format",
-    "build": "npm run assets"
+    "build": "npm run assets",
+    "build:seo": "node scripts/generate-seo-pages.cjs",
+    "build:seo:prod": "node scripts/generate-seo-pages.cjs --out companion --base https://math.cognotik.com"
   },
+  "author": "SimiaCryptus",
   "dependencies": {
     "canvas": "^3.2.3",
     "fs": "^0.0.1-security",
@@ -38,6 +42,7 @@
     "prettier": "^3.0.0",
     "stylelint": "^16.6.1",
     "stylelint-config-standard": "^36.0.1",
-    "stylelint-prettier": "^5.0.0"
+    "stylelint-prettier": "^5.0.0",
+    "marked": "^12.0.0"
   }
 }

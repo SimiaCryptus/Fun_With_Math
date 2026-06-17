@@ -1,0 +1,99 @@
+{
+  "featured": [
+    {
+      "icon": "PL",
+      "title": "Pentagonal Lattice Geometry",
+      "href": "experiments/Pentagon_Lattice_Geometry/index.html",
+      "readme": "experiments/Pentagon_Lattice_Geometry/README.md",
+      "video": "videos/Pentagon_Lattice_Geometry.mp4",
+      "launchLabel": "Open the Pentagonal Lattice Geometry lab",
+      "pitch": "A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy — a discrete model where a single loop requires two passes to return to identity."
+    },
+    {
+      "icon": "SY",
+      "title": "Space-Color Symmetry",
+      "href": "experiments/symmetry_simple/index.html",
+      "readme": "experiments/symmetry_simple/README.md",
+      "video": "videos/Symmetry_Diffusion.mp4",
+      "pitch": "A pixel canvas where symmetry doesn't just mirror your strokes — it rewires the diffusion graph. Heat flows along symmetry orbits, producing kaleidoscope dynamics on a quotient-like manifold."
+    },
+    {
+      "icon": "GE",
+      "title": "Geometric Entropy",
+      "href": "experiments/geometric-entropy/index.html",
+      "readme": "experiments/geometric-entropy/README.md",
+      "video": "videos/Geometric_Entropy.mp4",
+      "pitch": "A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize the Shannon entropy of their pairwise-distance distribution."
+    },
+    {
+      "icon": "SK",
+      "title": "Spacelike Knots",
+      "href": "experiments/spacelike-knots/index.html",
+      "readme": "experiments/spacelike-knots/README.md",
+      "video": "videos/Spacelike_Knots.mp4",
+      "pitch": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot."
+    },
+    {
+      "icon": "CA",
+      "title": "Layered Cellular Automata",
+      "href": "experiments/layered_ca/index.html",
+      "readme": "experiments/layered_ca/README.md",
+      "video": "videos/Binary_Coded_Layered_Autonoma.mp4",
+      "pitch": "Langton's ants write a colored substrate that gates where Conway's Life is allowed to live. Three feedback layers — ants → substrate → life → substrate → ants — produce highways, colonies, and fractal boundaries. For a playable take on Conway's Life and 50+ other rulesets, see the sister site <a href=\"https://aol.cognotik.com/\" target=\"_blank\" rel=\"noopener\">The Arcade of Life ↗</a>."
+    },
+    {
+      "icon": "FL",
+      "title": "Fractal Learning",
+      "href": "experiments/fractal_learning/index.html",
+      "readme": "experiments/fractal_learning/idea.md",
+      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
+    },
+    {
+      "icon": "IL",
+      "title": "Irrational Lattice",
+      "href": "experiments/irrational_lattice/index.html",
+      "readme": "experiments/irrational_lattice/README.md",
+      "video": "videos/Irrational_Lattice.mp4",
+      "pitch": "A new primitive: deterministic, algebraic “colored noise” for lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a nearest-lattice map — provably aperiodic, spectrally tunable, integer-arithmetic clean."
+    },
+    {
+      "icon": "GR",
+      "title": "Relativistic 2-Body Gravity",
+      "href": "experiments/gravity/index.html",
+      "readme": "experiments/gravity/README.md",
+      "video": "videos/Relativistic_Gravity.mp4",
+      "launchLabel": "Open the Relativistic 2-Body Gravity lab",
+      "pitch": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits."
+    }
+  ],
+  "demos": [
+    {
+      "glyph": "M",
+      "title": "Mandelbrot Set",
+      "href": "experiments/basic/mandelbrot.html",
+      "pitch": "Explore the fractal boundary defined by iteration of z ↦ z² + c in the complex plane. Pan and zoom to examine its self-similar structure.",
+      "tag": "Complex Numbers"
+    },
+    {
+      "glyph": "P",
+      "title": "Prime Number Sieve",
+      "href": "experiments/basic/primes.html",
+      "pitch": "A real-time visualization of the Sieve of Eratosthenes, illustrating the elimination of composite numbers to isolate the primes.",
+      "tag": "Number Theory"
+    },
+    {
+      "glyph": "ƒ",
+      "title": "Fourier Series",
+      "href": "experiments/basic/fourier.html",
+      "pitch": "Construct periodic waveforms as sums of rotating phasors, illustrating how harmonic components combine to approximate arbitrary signals.",
+      "tag": "Calculus · Signals"
+    },
+    {
+      "glyph": "3n",
+      "title": "Collatz Conjecture",
+      "href": "experiments/basic/collatz.html",
+      "pitch": "Trace the trajectory of any positive integer under the 3n + 1 iteration. Whether every sequence reaches 1 remains an open problem.",
+      "tag": "Open Problem"
+    }
+  ]
+}

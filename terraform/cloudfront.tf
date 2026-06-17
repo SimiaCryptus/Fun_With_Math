@@ -6,6 +6,29 @@
       signing_behavior                  = "always"
       signing_protocol                  = "sigv4"
     }
+   # CloudFront Function to rewrite subdirectory requests to index.html
+   resource "aws_cloudfront_function" "rewrite_index" {
+     name    = "${replace(var.domain_name, ".", "-")}-rewrite-index"
+     runtime = "cloudfront-js-2.0"
+     comment = "Append index.html to directory requests"
+     publish = true
+     code    = <<-EOT
+       function handler(event) {
+         var request = event.request;
+         var uri = request.uri;
+         // If the URI ends with a slash, append index.html
+         if (uri.endsWith('/')) {
+           request.uri += 'index.html';
+         }
+         // If the URI has no file extension, treat it as a directory
+         else if (!uri.includes('.')) {
+           request.uri += '/index.html';
+         }
+         return request;
+       }
+     EOT
+   }
+
 
     resource "aws_cloudfront_distribution" "website" {
       enabled             = true
@@ -27,6 +50,11 @@
         target_origin_id       = "s3-${aws_s3_bucket.website.id}"
         viewer_protocol_policy = "redirect-to-https"
         compress               = true
+       function_association {
+         event_type   = "viewer-request"
+         function_arn = aws_cloudfront_function.rewrite_index.arn
+       }
+
 
         forwarded_values {
           query_string = false
@@ -46,6 +74,13 @@
         response_page_path    = "/error.html"
         error_caching_min_ttl = 300
       }
+     custom_error_response {
+       error_code            = 403
+       response_code         = 404
+       response_page_path    = "/error.html"
+       error_caching_min_ttl = 300
+     }
+
 
       restrictions {
         geo_restriction {
