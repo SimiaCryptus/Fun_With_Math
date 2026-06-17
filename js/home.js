@@ -251,6 +251,7 @@ function openModal(card) {
   modalIcon.textContent = icon;
   modalTitle.textContent = title;
   modalLaunch.href = href;
+  mountModalVideo(card, title);
   if (readmeCache.has(path)) {
     modalBody.innerHTML = readmeCache.get(path);
     renderMathAndDiagrams(modalBody);
@@ -282,6 +283,60 @@ function closeModal() {
   overlay.classList.remove('open');
   overlay.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('modal-open');
+  clearModalVideo();
+}
+/* ── Modal video helpers ───────────────────────────────────── */
+const modalMedia = document.getElementById('modalMedia');
+function clearModalVideo() {
+  if (!modalMedia) return;
+  const v = modalMedia.querySelector('video');
+  if (v) {
+    v.pause();
+  }
+  modalMedia.innerHTML = '';
+  modalMedia.classList.remove('is-playing');
+}
+function mountModalVideo(card, title) {
+  if (!modalMedia) return;
+  clearModalVideo();
+  const src = card.dataset.video;
+  if (!src) return;
+  const video = document.createElement('video');
+  video.className = 'featured-card-video';
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  video.controls = true;
+  video.preload = 'metadata';
+  video.setAttribute('aria-label', (title || 'demo') + ' — demonstration video');
+  const source = document.createElement('source');
+  source.src = src;
+  source.type = 'video/mp4';
+  video.appendChild(source);
+  modalMedia.appendChild(video);
+  const reduceMotion =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Touch-friendly play button overlay
+  const playBtn = document.createElement('button');
+  playBtn.className = 'featured-card-play';
+  playBtn.type = 'button';
+  playBtn.setAttribute('aria-label', 'Play ' + (title || 'demo') + ' video');
+  modalMedia.appendChild(playBtn);
+  const togglePlay = () => {
+    if (video.paused) {
+      const p = video.play();
+      if (p && typeof p.catch === 'function') p.catch(() => {});
+    } else {
+      video.pause();
+    }
+  };
+  playBtn.addEventListener('click', togglePlay);
+  video.addEventListener('play', () => modalMedia.classList.add('is-playing'));
+  video.addEventListener('pause', () => modalMedia.classList.remove('is-playing'));
+  if (!reduceMotion) {
+    const p = video.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  }
 }
 
 document.querySelectorAll('.featured-card[data-readme]').forEach((card) => {
@@ -334,6 +389,25 @@ document.addEventListener('keydown', (e) => {
     source.type = 'video/mp4';
     video.appendChild(source);
     mount.appendChild(video);
+    // Track play state so the overlay button can hide itself.
+    video.addEventListener('play', () => mount.classList.add('is-playing'));
+    video.addEventListener('pause', () => mount.classList.remove('is-playing'));
+    // Touch-friendly play button overlay (works without hover).
+    const playBtn = document.createElement('button');
+    playBtn.className = 'featured-card-play';
+    playBtn.type = 'button';
+    playBtn.setAttribute('aria-label', 'Play ' + title + ' video');
+    playBtn.addEventListener('click', (e) => {
+      // Don't trigger the card's modal-open click handler.
+      e.stopPropagation();
+      e.preventDefault();
+      if (video.paused) {
+        safePlay(video);
+      } else {
+        video.pause();
+      }
+    });
+    mount.appendChild(playBtn);
     mount.dataset.built = 'true';
     return video;
   }
