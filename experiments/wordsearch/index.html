@@ -17,72 +17,68 @@
         <button class="mode-tab" data-mode="play">Play</button>
       </div>
 
-      <fieldset>
-        <legend>Grid</legend>
-        <div class="row">
-          <div>
-            <label for="cfg-width">Width</label>
-            <input id="cfg-width" type="number" min="5" max="40" value="15" />
+      <div id="config-controls">
+        <fieldset>
+          <legend>Grid</legend>
+          <div class="row">
+            <div>
+              <label for="cfg-width">Width</label>
+              <input id="cfg-width" type="number" min="5" max="40" value="15" />
+            </div>
+            <div>
+              <label for="cfg-height">Height</label>
+              <input id="cfg-height" type="number" min="5" max="40" value="15" />
+            </div>
           </div>
-          <div>
-            <label for="cfg-height">Height</label>
-            <input id="cfg-height" type="number" min="5" max="40" value="15" />
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
 
-      <fieldset>
-        <legend>Model</legend>
-        <label for="cfg-order">Markov order (N)</label>
-        <input id="cfg-order" type="number" min="0" max="6" value="3" />
-        <label for="cfg-lattice">Lattice</label>
-        <select id="cfg-lattice">
-          <option value="square" selected>square (8-dir)</option>
-          <option value="hex">hexagonal (6-dir)</option>
-          <!--            <option value="triangular">triangular (8-dir)</option>-->
-        </select>
-        <label>
-          <input id="cfg-no-backwards" type="checkbox" />
-          Disable backwards-oriented directions
-        </label>
+        <fieldset>
+          <legend>Model</legend>
+          <label for="cfg-order">Markov order (N)</label>
+          <input id="cfg-order" type="number" min="0" max="6" value="3" />
+          <label for="cfg-lattice">Lattice</label>
+          <select id="cfg-lattice">
+            <option value="square" selected>square (8-dir)</option>
+            <option value="hex">hexagonal (6-dir)</option>
+            <!--            <option value="triangular">triangular (8-dir)</option>-->
+          </select>
+          <label>
+            <input id="cfg-no-backwards" type="checkbox" />
+            Disable backwards-oriented directions
+          </label>
 
-        <label for="cfg-combiner">Combiner</label>
-        <select id="cfg-combiner">
-          <option value="product" selected>product (AND)</option>
-          <option value="sum">sum (OR)</option>
-          <option value="max">max</option>
-          <option value="vote">vote</option>
-        </select>
+          <label for="cfg-combiner">Combiner</label>
+          <select id="cfg-combiner">
+            <option value="product" selected>product (AND)</option>
+            <option value="sum">sum (OR)</option>
+            <option value="max">max</option>
+            <option value="vote">vote</option>
+          </select>
 
-        <label for="cfg-sampling">Sampling</label>
-        <select id="cfg-sampling">
-          <option value="weighted" selected>weighted</option>
-          <option value="argmax">argmax</option>
-        </select>
-      </fieldset>
+          <label for="cfg-sampling">Sampling</label>
+          <select id="cfg-sampling">
+            <option value="weighted" selected>weighted</option>
+            <option value="argmax">argmax</option>
+          </select>
+        </fieldset>
 
-      <fieldset>
-        <legend>Reference text</legend>
-        <label for="cfg-reffile">Upload text file</label>
-        <input id="cfg-reffile" type="file" accept=".txt,text/plain" />
-        <label for="cfg-reftext">Or paste text</label>
-        <textarea id="cfg-reftext">
-the quick brown fox jumps over the lazy dog while the sun rises slowly over the quiet little village where people gather to tell stories of old times and distant lands beyond the misty mountains that rise against the morning sky</textarea
-        >
-      </fieldset>
+        <fieldset>
+          <legend>Reference text</legend>
+          <label for="cfg-preset">Preset</label>
+          <select id="cfg-preset"></select>
+          <label for="cfg-reffile">Upload text file</label>
+          <input id="cfg-reffile" type="file" accept=".txt,text/plain" />
+          <label for="cfg-reftext">Or paste text</label>
+          <textarea id="cfg-reftext"></textarea>
+        </fieldset>
 
-      <fieldset>
-        <legend>Target words</legend>
-        <label for="cfg-words">One per line or comma-separated</label>
-        <textarea id="cfg-words">
-fox
-village
-mountain
-story
-sun</textarea
-        >
-        <label><input id="cfg-debug" type="checkbox" /> Highlight placed words</label>
-      </fieldset>
+        <fieldset>
+          <legend>Target words</legend>
+          <label for="cfg-words">One per line or comma-separated</label>
+          <textarea id="cfg-words"></textarea>
+          <label><input id="cfg-debug" type="checkbox" /> Highlight placed words</label>
+        </fieldset>
+      </div>
 
       <div id="panel-design">
         <div class="actions">

@@ -60,6 +60,33 @@ function clearSelectionClasses() {
     td.classList.remove('selecting');
   }
 }
+function flashWrong(cells) {
+  for (const c of cells) {
+    const td = cellAt(state.table, c.x, c.y);
+    if (td) {
+      td.classList.add('wrong-flash');
+      setTimeout(() => td.classList.remove('wrong-flash'), 400);
+    }
+  }
+}
+function launchConfetti(root) {
+  const host = root.querySelector('#grid') || document.body;
+  const colors = ['#7c5cff', '#36d1ff', '#ff5cae', '#ff9d5c', '#38e8a0', '#ffd166'];
+  const layer = document.createElement('div');
+  layer.className = 'confetti-layer';
+  for (let i = 0; i < 80; i++) {
+    const bit = document.createElement('span');
+    bit.className = 'confetti';
+    bit.style.left = `${Math.random() * 100}%`;
+    bit.style.background = colors[Math.floor(Math.random() * colors.length)];
+    bit.style.animationDelay = `${Math.random() * 0.4}s`;
+    bit.style.animationDuration = `${1.6 + Math.random() * 1.4}s`;
+    bit.style.transform = `rotate(${Math.random() * 360}deg)`;
+    layer.appendChild(bit);
+  }
+  host.appendChild(layer);
+  setTimeout(() => layer.remove(), 3200);
+}
 
 function markFound(cells) {
   for (const c of cells) {
@@ -87,14 +114,22 @@ function finishIfDone(root) {
     clearInterval(state.tick);
     const status = root.querySelector('#play-status');
     if (status) {
-      status.textContent = `Solved in ${formatTime(Date.now() - state.startedAt)}!`;
+      status.textContent = `🎉 Solved in ${formatTime(Date.now() - state.startedAt)}! 🎉`;
+      status.classList.add('win');
     }
+    launchConfetti(root);
   }
 }
 
 export function initPlay(root, grid, placement) {
   if (state && state.tick) clearInterval(state.tick);
   const container = root.querySelector('#grid');
+  for (const c of container.querySelectorAll('.confetti-layer')) c.remove();
+  const prevStatus = root.querySelector('#play-status');
+  if (prevStatus) {
+    prevStatus.classList.remove('win');
+    prevStatus.textContent = '';
+  }
   const table = renderInteractiveGrid(container, grid, {
     lattice: grid.lattice || 'square',
   });
@@ -128,7 +163,12 @@ export function initPlay(root, grid, placement) {
     if (!cells) return;
     const matched = tryMatch(cells);
     const status = root.querySelector('#play-status');
-    if (matched && status) status.textContent = `Found ${matched.toUpperCase()}!`;
+    if (matched) {
+      if (status) status.textContent = `✨ Found ${matched.toUpperCase()}!`;
+    } else {
+      if (status) status.textContent = `Not quite — keep looking!`;
+      flashWrong(cells);
+    }
     updateWordList(root);
     finishIfDone(root);
   };

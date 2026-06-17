@@ -134,15 +134,28 @@
   }
 
   function init() {
-    fetchJSON('labs.json')
-      .catch((e) => {
+    // Pull featured labs from labs.json, essays from essays.json, and
+    // short demonstrations from experiments.json. Each is loaded
+    // independently so a single failure doesn't blank the whole page.
+    const safeFetch = (url, fallback) =>
+      fetchJSON(url).catch((e) => {
         console.error(e);
-        return { featured: [], essays: [], demos: [] };
-      })
-      .then((labs) => {
-        fill(document.getElementById('featuredGrid'), labs.featured, buildFeaturedCard);
-        fill(document.getElementById('essaysGrid'), labs.essays, buildFeaturedCard);
-        fill(document.getElementById('demoGrid'), labs.demos, buildDemoCard);
+        return fallback;
+      });
+
+    Promise.all([
+      safeFetch('labs.json', { featured: [] }),
+      safeFetch('essays.json', { essays: [] }),
+      safeFetch('experiments.json', { demos: [] }),
+    ])
+      .then(([labs, essaysData, experiments]) => {
+        const featured = (labs && labs.featured) || (experiments && experiments.featured) || [];
+        const essays = (essaysData && essaysData.essays) || (labs && labs.essays) || [];
+        const demos = (experiments && experiments.demos) || (labs && labs.demos) || [];
+
+        fill(document.getElementById('featuredGrid'), featured, buildFeaturedCard);
+        fill(document.getElementById('essaysGrid'), essays, buildFeaturedCard);
+        fill(document.getElementById('demoGrid'), demos, buildDemoCard);
       })
       .finally(() => {
         // Load home.js after the grids are populated so its DOM queries succeed.

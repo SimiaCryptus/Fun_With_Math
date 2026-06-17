@@ -5,6 +5,7 @@ import { renderGrid, gridToPNG, gridToText } from './render.js';
 import { readConfig, wireFileUpload } from './controls.js';
 import { initWatch, watchStep, watchPlay, watchPause, watchFinish } from './watchMode.js';
 import { initPlay, stopPlay } from './playMode.js';
+import { populatePresetSelect, applyPreset, DEFAULT_PRESET } from './presets.js';
 
 let lastGrid = null;
 let lastPlacement = null;
@@ -55,6 +56,9 @@ function setMode(root, next) {
   for (const [name, el] of Object.entries(panels)) {
     if (el) el.hidden = name !== mode;
   }
+  // Hide configuration controls in play mode for a streamlined UI.
+  const configControls = root.querySelector('#config-controls');
+  if (configControls) configControls.hidden = mode === 'play';
   root.querySelectorAll('.mode-tab').forEach((b) => {
     b.classList.toggle('active', b.dataset.mode === mode);
   });
@@ -72,6 +76,16 @@ function setMode(root, next) {
 
 export function initApp(root = document) {
   wireFileUpload(root);
+  // Presets: populate dropdown, apply default, and re-apply on change.
+  const presetEl = root.querySelector('#cfg-preset');
+  if (presetEl) {
+    populatePresetSelect(presetEl);
+    applyPreset(root, presetEl.value || DEFAULT_PRESET);
+    presetEl.addEventListener('change', () => {
+      applyPreset(root, presetEl.value);
+      regenerate(root);
+    });
+  }
 
   const regenBtn = root.querySelector('#btn-regen');
   if (regenBtn) regenBtn.addEventListener('click', () => regenerate(root));
