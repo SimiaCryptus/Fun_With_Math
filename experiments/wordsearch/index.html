@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#3367d6"/>
+    <link rel="manifest" href="./manifest.webmanifest"/>
+    <title>Predictive Markov Wordsearch</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside>
+    <h1>Markov Wordsearch</h1>
+    <div class="mode-tabs">
+        <button class="mode-tab active" data-mode="design">Design</button>
+        <button class="mode-tab" data-mode="watch">Watch</button>
+        <button class="mode-tab" data-mode="play">Play</button>
+    </div>
+
+
+    <fieldset>
+        <legend>Grid</legend>
+        <div class="row">
+            <div>
+                <label for="cfg-width">Width</label>
+                <input id="cfg-width" type="number" min="5" max="40" value="15"/>
+            </div>
+            <div>
+                <label for="cfg-height">Height</label>
+                <input id="cfg-height" type="number" min="5" max="40" value="15"/>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Model</legend>
+        <label for="cfg-order">Markov order (N)</label>
+        <input id="cfg-order" type="number" min="0" max="6" value="3"/>
+        <label for="cfg-lattice">Lattice</label>
+        <select id="cfg-lattice">
+            <option value="square" selected>square (8-dir)</option>
+            <option value="hex">hexagonal (6-dir)</option>
+<!--            <option value="triangular">triangular (8-dir)</option>-->
+        </select>
+        <label>
+            <input id="cfg-no-backwards" type="checkbox"/>
+            Disable backwards-oriented directions
+        </label>
+
+
+        <label for="cfg-combiner">Combiner</label>
+        <select id="cfg-combiner">
+            <option value="product" selected>product (AND)</option>
+            <option value="sum">sum (OR)</option>
+            <option value="max">max</option>
+            <option value="vote">vote</option>
+        </select>
+
+        <label for="cfg-sampling">Sampling</label>
+        <select id="cfg-sampling">
+            <option value="weighted" selected>weighted</option>
+            <option value="argmax">argmax</option>
+        </select>
+    </fieldset>
+
+    <fieldset>
+        <legend>Reference text</legend>
+        <label for="cfg-reffile">Upload text file</label>
+        <input id="cfg-reffile" type="file" accept=".txt,text/plain"/>
+        <label for="cfg-reftext">Or paste text</label>
+        <textarea id="cfg-reftext">the quick brown fox jumps over the lazy dog while the sun rises slowly over the quiet little village where people gather to tell stories of old times and distant lands beyond the misty mountains that rise against the morning sky</textarea>
+    </fieldset>
+
+    <fieldset>
+        <legend>Target words</legend>
+        <label for="cfg-words">One per line or comma-separated</label>
+        <textarea id="cfg-words">fox
+village
+mountain
+story
+sun</textarea>
+        <label><input id="cfg-debug" type="checkbox"/> Highlight placed words</label>
+    </fieldset>
+
+    <div id="panel-design">
+        <div class="actions">
+            <button id="btn-regen">Generate</button>
+            <button id="btn-png" class="secondary">Export PNG</button>
+            <button id="btn-txt" class="secondary">Export TXT</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <div id="panel-watch" hidden>
+        <fieldset>
+            <legend>Watch buildout</legend>
+            <label for="watch-speed">Auto-play speed (ms/step)</label>
+            <input id="watch-speed" type="number" min="10" max="2000" value="120"/>
+            <div class="actions">
+                <button id="btn-watch-step">Step</button>
+                <button id="btn-watch-play" class="secondary">Play</button>
+                <button id="btn-watch-pause" class="secondary">Pause</button>
+                <button id="btn-watch-finish" class="secondary">Finish</button>
+                <button id="btn-watch-reset" class="secondary">Reset</button>
+            </div>
+            <div id="watch-status"></div>
+        </fieldset>
+    </div>
+
+    <div id="panel-play" hidden>
+        <fieldset>
+            <legend>Play</legend>
+            <div>Time: <span id="play-timer">00:00</span></div>
+            <p style="font-size:0.8rem;color:#555;margin:0.4rem 0;">
+                Click the first letter, then the last letter of a word.
+            </p>
+            <ul id="play-words"></ul>
+            <div class="actions">
+                <button id="btn-play-new">New game</button>
+            </div>
+            <div id="play-status"></div>
+        </fieldset>
+    </div>
+</aside>
+
+<main>
+    <div id="grid"></div>
+</main>
+
+<script type="module" src="./src/index.js"></script>
+</body>
+</html>
