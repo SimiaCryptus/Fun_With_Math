@@ -64,6 +64,14 @@
       "video": "videos/Relativistic_Gravity.mp4",
       "launchLabel": "Open the Relativistic 2-Body Gravity lab",
       "pitch": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits."
+    },
+    {
+      "icon": "WS",
+      "title": "Predictive Markov Wordsearch",
+      "href": "experiments/wordsearch/index.html",
+      "readme": "experiments/wordsearch/README.md",
+      "launchLabel": "Open the Predictive Markov Wordsearch lab",
+      "pitch": "A wordsearch generator where the filler letters aren't random — a character-level Markov model trained on reference text predicts plausible language fragments in all eight reading directions, camouflaging hidden words by matching the statistical texture of natural language."
     }
   ],
   "essays": [],

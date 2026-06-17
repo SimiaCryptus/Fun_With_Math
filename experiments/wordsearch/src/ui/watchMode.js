@@ -24,7 +24,11 @@ let stepLattice = 'square';
     table = container.querySelector('table');
     if (lastStep && table) {
       const td = cellAt(table, lastStep.x, lastStep.y);
-      if (td) td.classList.add('just-filled');
+       if (td) {
+         td.classList.add('just-filled');
+         // brief ripple so the eye is drawn to the newest cell
+         td.style.zIndex = '3';
+       }
     }
     const status = root.querySelector('#watch-status');
     if (status) {

@@ -24,7 +24,16 @@ const ASSETS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())
+     caches.open(CACHE).then(async (c) => {
+       // Cache individually so a single failed asset doesn't abort install.
+       await Promise.all(
+         ASSETS.map((url) =>
+           c.add(url).catch((err) => {
+             console.warn('[sw] Failed to cache:', url, err);
+           })
+         )
+       );
+     }).then(() => self.skipWaiting())
   );
 });
 
