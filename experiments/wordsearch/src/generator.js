@@ -30,16 +30,28 @@ export function generatePuzzle(opts) {
     lattice = 'square',
     includeBackwards = true,
     model: providedModel,
+    reverseModel: providedReverseModel,
   } = opts;
 
   const model = providedModel || new MarkovModel(order).train(referenceText, order);
+  // Reverse model only matters when backward-oriented vectors participate.
+  const reverseModel = includeBackwards
+    ? providedReverseModel || new MarkovModel(order).train(referenceText, order, { reverse: true })
+    : null;
 
   const grid = new Grid(width, height);
   const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
-  fillGrid(grid, model, { combiner, sampling, rng, lattice, includeBackwards });
+  fillGrid(grid, model, {
+    combiner,
+    sampling,
+    rng,
+    lattice,
+    includeBackwards,
+    reverseModel,
+  });
   grid.lattice = lattice;
 
-  return { grid, placement, model };
+  return { grid, placement, model, reverseModel };
 }
 /**
  * Build the puzzle scaffold (grid + placed words + trained model) but
@@ -57,9 +69,13 @@ export function preparePuzzle(opts) {
     lattice = 'square',
     includeBackwards = true,
     model: providedModel,
+    reverseModel: providedReverseModel,
   } = opts;
   const model = providedModel || new MarkovModel(order).train(referenceText, order);
+  const reverseModel = includeBackwards
+    ? providedReverseModel || new MarkovModel(order).train(referenceText, order, { reverse: true })
+    : null;
   const grid = new Grid(width, height);
   const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
-  return { grid, placement, model };
+  return { grid, placement, model, reverseModel };
 }

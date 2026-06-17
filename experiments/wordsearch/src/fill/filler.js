@@ -51,6 +51,7 @@ export function* fillGridSteps(grid, model, config = {}) {
     rng = Math.random,
     lattice = 'square',
     includeBackwards = true,
+    reverseModel = null,
   } = config;
   const alphabet = [...model.alphabet];
   let cell;
@@ -63,7 +64,11 @@ export function* fillGridSteps(grid, model, config = {}) {
     for (const d of dirs) {
       const ctx = readContext(grid, x, y, d, model.order, lattice);
       if (ctx) {
-        const dist = model.predict(ctx);
+        // Backward-oriented vectors are best predicted by a model trained on
+        // the reversed stream; their context must be reversed to match.
+        const useReverse = d.forward === false && reverseModel;
+        const queryCtx = useReverse ? [...ctx].reverse().join('') : ctx;
+        const dist = (useReverse ? reverseModel : model).predict(queryCtx);
         if (dist.size) {
           dists.push(dist);
           contexts.push({ dir: d.name, ctx });
@@ -95,6 +100,7 @@ export function fillGrid(grid, model, config = {}) {
     rng = Math.random,
     lattice = 'square',
     includeBackwards = true,
+    reverseModel = null,
   } = config;
   const alphabet = [...model.alphabet];
 
@@ -107,7 +113,10 @@ export function fillGrid(grid, model, config = {}) {
     for (const d of dirs) {
       const ctx = readContext(grid, x, y, d, model.order, lattice);
       if (ctx) {
-        const dist = model.predict(ctx);
+        // Use the reverse-trained model for backward-oriented vectors.
+        const useReverse = d.forward === false && reverseModel;
+        const queryCtx = useReverse ? [...ctx].reverse().join('') : ctx;
+        const dist = (useReverse ? reverseModel : model).predict(queryCtx);
         if (dist.size) dists.push(dist);
       }
     }

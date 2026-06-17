@@ -32,10 +32,14 @@ export class MarkovModel {
    * from 0 (unigram) up to `order`.
    * @param {string} text
    * @param {number} [order]
+   * @param {object} [opts]
+   * @param {boolean} [opts.reverse] train on the reversed character stream
    */
-  train(text, order = this.order) {
+  train(text, order = this.order, opts = {}) {
+    const { reverse = false } = opts;
     this.order = order;
-    const clean = normaliseText(text);
+    let clean = normaliseText(text);
+    if (reverse) clean = [...clean].reverse().join('');
     for (const ch of clean) this.alphabet.add(ch);
 
     for (let i = 0; i < clean.length; i++) {
