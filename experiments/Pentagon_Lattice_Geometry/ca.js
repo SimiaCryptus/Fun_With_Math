@@ -26,7 +26,20 @@ export const RULE_FAMILIES = ['life', 'parity', 'cyclic', 'majority'];
 //   - "diffusion":  next state = round(mean(self + neighbors)).
 //   - "sheetflow":  anyonic-style; uses (sheet index of neighbors) mod n.
 //   - "xor":        binary; next state = XOR of all neighbor states.
-export const ALL_RULE_FAMILIES = [...RULE_FAMILIES, 'threshold', 'diffusion', 'sheetflow', 'xor'];
+//   - "langton":    Langton's Ant. One or more "ants" walk the lattice; at
+//                   each step an ant turns based on the current cell state,
+//                   flips that cell (cycling through numStates), then moves
+//                   forward to a neighbor. On an n-neighbor tile, "turning"
+//                   means choosing the next/previous edge slot relative to
+//                   the ant's incoming heading.
+export const ALL_RULE_FAMILIES = [
+  ...RULE_FAMILIES,
+  'threshold',
+  'diffusion',
+  'sheetflow',
+  'xor',
+  'langton',
+];
 
 // Parse a "B/S" string like "B3/S23" into two Sets. For pentagons the
 // counts live in {0,1,2,3,4,5}.
@@ -52,6 +65,52 @@ export function lifeRuleToString(birth, survive) {
   const s = [...survive].sort((a, b) => a - b).join('');
   return `B${b}/S${s}`;
 }
+// Distinct colours used to render multiple Langton ants.
+export const ANT_COLORS = [
+  '#ff4d6d',
+  '#4dd2ff',
+  '#ffd24d',
+  '#7ee787',
+  '#c792ea',
+  '#ff9e64',
+  '#56b6c2',
+  '#e06c75',
+];
+// Parse a turn ruleset string like "RL", "LLRR", or "RNL" into an array of
+// turn operations. Each character maps to a relative rotation and whether
+// the ant moves forward this step:
+//   R = turn right (+1)        L = turn left (-1)
+//   U = reverse (≈180°)        N = no turn / straight (0)
+//   S = stay (don't move)      digits 0-9 = explicit rotation amount
+export function parseTurnString(str) {
+  const ops = [];
+  if (!str) str = 'RL';
+  for (const ch of str.toUpperCase()) {
+    switch (ch) {
+      case 'R':
+        ops.push({ turn: 1, move: true });
+        break;
+      case 'L':
+        ops.push({ turn: -1, move: true });
+        break;
+      case 'U':
+        ops.push({ turn: 'reverse', move: true });
+        break;
+      case 'N':
+        ops.push({ turn: 0, move: true });
+        break;
+      case 'S':
+        ops.push({ turn: 0, move: false });
+        break;
+      default: {
+        const d = parseInt(ch, 10);
+        if (!Number.isNaN(d)) ops.push({ turn: d, move: true });
+      }
+    }
+  }
+  if (ops.length === 0) ops.push({ turn: 1, move: true }, { turn: -1, move: true });
+  return ops;
+}
 
 export class CA {
   constructor(lattice, opts = {}) {
@@ -67,6 +126,13 @@ export class CA {
     this.state = new Uint8Array(n);
     this.next = new Uint8Array(n);
     this.generation = 0;
+    // Langton's Ant state. Each ant: { tile, edge } where `edge` is the
+    // raw neighbor slot index the ant is currently heading toward (its
+    // "facing" direction). Ants are seeded lazily on first step / seeding.
+    this.ants = [];
+    // Programmable turmite ruleset + chirality flag.
+    this.turnOps = parseTurnString(opts.turnString ?? 'RL');
+    this.antMirror = opts.antMirror ?? false;
   }
 
   setNumStates(n) {
@@ -91,10 +157,28 @@ export class CA {
   setThreshold(t) {
     this.threshold = Math.max(0, Math.min(5, t | 0));
   }
+  // Set the Langton/turmite turn ruleset. The number of colours the ant
+  // cycles through is the length of the ruleset, so grow numStates to match
+  // (so each colour has a defined turn op and the renderer shows them all).
+  setTurnString(str) {
+    this.turnOps = parseTurnString(str);
+    const need = this.turnOps.length;
+    if (need > this.numStates) this.setNumStates(need);
+  }
+  // Toggle chirality (mirror all turns left<->right).
+  setAntMirror(on) {
+    this.antMirror = !!on;
+  }
+  // Number of colours an ant cycles a cell through. Bound below by the
+  // ruleset length (one op per colour) and by 2.
+  antStateCount() {
+    return Math.max(2, Math.max(this.turnOps.length, this.numStates));
+  }
 
   clear() {
     this.state.fill(0);
     this.generation = 0;
+    this.ants = [];
   }
 
   randomize(density = 0.3, seed = null) {
@@ -123,6 +207,9 @@ export class CA {
     if (tileIdx >= 0 && tileIdx < this.state.length) {
       this.state[tileIdx] = value % this.numStates;
     }
+    // For Langton's Ant, the "seed" is the ant's starting position rather
+    // than a live cell. Place a single ant at tileIdx facing edge slot 0.
+    this.placeAnt(tileIdx, 0);
   }
   // Seed a named shape centered on tileIdx (default origin).
   seedShape(shape, tileIdx = 0) {
@@ -220,6 +307,75 @@ export class CA {
     // For binary-feeling editing: cycle through states 0..numStates-1.
     this.state[idx] = (this.state[idx] + 1) % this.numStates;
   }
+  // ── Langton's Ant helpers ──────────────────────────────────────────────
+  // Place (or replace) a single ant. Use addAnt() to keep multiple.
+  placeAnt(tileIdx, edge = 0) {
+    if (tileIdx < 0 || tileIdx >= this.state.length) {
+      this.ants = [];
+      return;
+    }
+    this.ants = [
+      {
+        tile: tileIdx,
+        edge: this.firstValidEdge(tileIdx, edge),
+        id: 0,
+        color: ANT_COLORS[0],
+        steps: 0,
+      },
+    ];
+  }
+  addAnt(tileIdx, edge = 0) {
+    if (tileIdx < 0 || tileIdx >= this.state.length) return;
+    const id = this.ants.length;
+    this.ants.push({
+      tile: tileIdx,
+      edge: this.firstValidEdge(tileIdx, edge),
+      id,
+      color: ANT_COLORS[id % ANT_COLORS.length],
+      steps: 0,
+    });
+  }
+  // Seed a small swarm of ants arranged around a tile, each facing a
+  // different edge so they fan out into distinct patterns.
+  placeAntSwarm(tileIdx, count = 4) {
+    this.clear();
+    const t = this.lattice.tiles[tileIdx];
+    if (!t) return;
+    const nE = t.neighbors.length;
+    this.ants = [];
+    const k = Math.max(1, Math.min(count, 8));
+    for (let i = 0; i < k; i++) {
+      const id = i;
+      this.ants.push({
+        tile: tileIdx,
+        edge: this.firstValidEdge(tileIdx, Math.round((i * nE) / k)),
+        id,
+        color: ANT_COLORS[id % ANT_COLORS.length],
+        steps: 0,
+      });
+    }
+  }
+  // Return true if a Langton ant currently occupies this tile.
+  antOn(tileIdx) {
+    for (let i = 0; i < this.ants.length; i++) {
+      if (this.ants[i].tile === tileIdx) return true;
+    }
+    return false;
+  }
+  // Find an edge slot at `tile` that has a real neighbor, starting the
+  // search at `preferred` and wrapping around. Respects activeEdges
+  // (e.g. pinwheel inactive hypotenuse) when present.
+  firstValidEdge(tile, preferred = 0) {
+    const t = this.lattice.tiles[tile];
+    const nb = t.neighbors;
+    const nE = nb.length;
+    for (let s = 0; s < nE; s++) {
+      const e = (((preferred + s) % nE) + nE) % nE;
+      if (t.activeEdges && !t.activeEdges[e]) continue;
+      if (nb[e] !== null) return e;
+    }
+    return preferred; // no valid edge; ant will be a no-op
+  }
 
   step() {
     const tiles = this.lattice.tiles;
@@ -228,6 +384,13 @@ export class CA {
     const ns = this.numStates;
     // Number of edges/neighbours varies by polygon type.
     const nEdges = (i) => tiles[i].neighbors.length;
+    // Langton's Ant is an agent-based rule: it mutates `state` in place and
+    // advances ants, so it doesn't use the double-buffered totalistic path.
+    if (this.family === 'langton') {
+      this.stepLangton();
+      this.generation++;
+      return;
+    }
     switch (this.family) {
       case 'life': {
         const { birth, survive } = this.lifeRule;
@@ -363,6 +526,88 @@ export class CA {
     this.next = tmp;
     this.generation++;
   }
+  // One generation of Langton's Ant(s).
+  //
+  // Programmable turmite rule (generalised to n-neighbour tiles):
+  //   1. Read the current cell colour `c` under the ant.
+  //   2. Look up the turn op for colour `c` in the turn string. The op
+  //      specifies a relative rotation (R=+1, L=-1, U=reverse, N=straight,
+  //      S=stay, digits=explicit) and whether the ant moves this step.
+  //   3. Flip the cell colour: c -> (c + 1) mod antStateCount().
+  //   4. Move forward one tile along the new heading (unless op.move is
+  //      false). If that edge has no neighbour, the ant rotates until it
+  //      finds a valid edge (it never leaves the lattice).
+  //
+  // All ants are advanced from a snapshot of headings so order within a
+  // single generation is consistent.
+  stepLangton() {
+    if (this.ants.length === 0) return;
+    const tiles = this.lattice.tiles;
+    const ops = this.turnOps;
+    const cycle = this.antStateCount();
+    const moves = [];
+    for (let i = 0; i < this.ants.length; i++) {
+      const ant = this.ants[i];
+      const tile = ant.tile;
+      const t = tiles[tile];
+      const nb = t.neighbors;
+      const nE = nb.length;
+      const c = this.state[tile] | 0;
+      // Look up the programmable op for this colour (wrap into range).
+      const op = ops[((c % ops.length) + ops.length) % ops.length];
+      // Resolve the relative turn into an integer edge rotation.
+      let turn;
+      if (op.turn === 'reverse') {
+        turn = Math.floor(nE / 2);
+      } else {
+        turn = op.turn | 0;
+      }
+      if (this.antMirror) turn = -turn;
+      // New heading = current edge rotated by `turn`, then snapped to the
+      // nearest valid (in-lattice, active) edge.
+      let heading = (((ant.edge + turn) % nE) + nE) % nE;
+      heading = this.firstValidEdge(tile, heading);
+      // Flip the cell colour through the rule's colour cycle.
+      this.state[tile] = (c + 1) % cycle;
+      ant.steps = (ant.steps || 0) + 1;
+      // If this op says "stay", don't move — just keep the new heading.
+      if (op.move === false) {
+        moves.push({ ...ant, tile, edge: heading });
+        continue;
+      }
+      // Move forward.
+      const dest = nb[heading];
+      if (dest === null || dest === undefined) {
+        // Stuck: stay put but keep the new heading.
+        moves.push({ ...ant, tile, edge: heading });
+        continue;
+      }
+      // After arriving at `dest`, choose an incoming heading for the next
+      // step. We pick the edge slot on `dest` that points back where we
+      // came from, so "forward" continues roughly straight. Find the slot
+      // on dest whose neighbour is the tile we just left, then that is the
+      // ant's "behind"; facing is the opposite-ish slot. Simplest stable
+      // choice: use the matching back-edge as the new edge baseline.
+      const dt = tiles[dest];
+      const dnb = dt.neighbors;
+      let backEdge = 0;
+      for (let k = 0; k < dnb.length; k++) {
+        if (dnb[k] === tile) {
+          backEdge = k;
+          break;
+        }
+      }
+      // Face roughly forward by stepping past the back-edge (opposite-ish
+      // slot) so straight-ahead motion continues across the new tile.
+      const dnE = dnb.length;
+      const forwardEdge = this.firstValidEdge(
+        dest,
+        (((backEdge + Math.floor(dnE / 2)) % dnE) + dnE) % dnE
+      );
+      moves.push({ ...ant, tile: dest, edge: forwardEdge });
+    }
+    this.ants = moves;
+  }
 
   // Diagnostics
   population() {
@@ -387,5 +632,9 @@ export class CA {
       by.set(sh, (by.get(sh) || 0) + 1);
     }
     return by;
+  }
+  // Expose the per-ant colour list (used by the renderer).
+  antColors() {
+    return ANT_COLORS;
   }
 }

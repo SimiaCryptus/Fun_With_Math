@@ -234,6 +234,7 @@ export class LatticeView {
         this._drawTile(t, this.options.alphaSelected, true);
       }
       if (this.path) this._drawPath();
+      this._drawAnts();
       if (sel && this.options.showSelGlow) this._drawSelection(sel);
       return;
     }
@@ -338,6 +339,63 @@ export class LatticeView {
     };
     mark(p.start, '#7ee787', 'A');
     if (p.end !== p.start) mark(p.end, '#ff7b72', 'B');
+    ctx.restore();
+  }
+  // Draw Langton's Ant agents (if the CA is running the 'langton' family).
+  _drawAnts() {
+    const ca = this.ca;
+    if (!ca || ca.family !== 'langton' || !ca.ants || ca.ants.length === 0) return;
+    if (!this.options.caOverlay) return;
+    const ctx = this.ctx;
+    const tiles = this.lattice.tiles;
+    ctx.save();
+    for (const ant of ca.ants) {
+      const t = tiles[ant.tile];
+      if (!t) continue;
+      const [cx, cy] = this.worldToScreen(...t.centroidF);
+      const bodyColor = ant.color || '#ff4d6d';
+      // Body.
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.fillStyle = bodyColor;
+      ctx.fill();
+      ctx.lineWidth = 1.6;
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.stroke();
+      // Subtle glow scaled by how long this ant has been running.
+      ctx.save();
+      ctx.shadowColor = bodyColor;
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.strokeStyle = bodyColor;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+      // Heading indicator: a short line toward the faced edge's neighbour
+      // centroid (or edge midpoint if the neighbour is missing).
+      const nb = t.neighbors;
+      let tx, ty;
+      const dest = nb[ant.edge];
+      if (dest !== null && dest !== undefined && tiles[dest]) {
+        [tx, ty] = this.worldToScreen(...tiles[dest].centroidF);
+      } else {
+        const v0 = t.vertsF[ant.edge % t.vertsF.length];
+        const v1 = t.vertsF[(ant.edge + 1) % t.vertsF.length];
+        [tx, ty] = this.worldToScreen((v0[0] + v1[0]) / 2, (v0[1] + v1[1]) / 2);
+      }
+      const dx = tx - cx;
+      const dy = ty - cy;
+      const len = Math.hypot(dx, dy) || 1;
+      const ux = dx / len;
+      const uy = dy / len;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + ux * 12, cy + uy * 12);
+      ctx.strokeStyle = '#ffd24d';
+      ctx.lineWidth = 2.2;
+      ctx.stroke();
+    }
     ctx.restore();
   }
 

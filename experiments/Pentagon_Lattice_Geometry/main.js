@@ -108,6 +108,13 @@ const els = {
   caThreshold: $('caThreshold'),
   caThresholdLabel: $('caThresholdLabel'),
   caThresholdVal: $('caThresholdVal'),
+  caLangtonBlock: $('caLangtonBlock'),
+  caTurnString: $('caTurnString'),
+  caTurmitePreset: $('caTurmitePreset'),
+  caAntMirror: $('caAntMirror'),
+  caAntSwarm: $('caAntSwarm'),
+  caAntCount: $('caAntCount'),
+  caAntInfo: $('caAntInfo'),
   caPlay: $('caPlay'),
   caStep: $('caStep'),
   caReset: $('caReset'),
@@ -326,8 +333,10 @@ function initCA() {
     numStates,
     family: els.caFamily.value,
     cyclicThreshold: parseInt(els.caThreshold.value, 10) || 1,
+    turnString: els.caTurnString ? els.caTurnString.value : 'RL',
   });
   ca.setLifeRule(els.caLifeRule.value);
+  if (els.caAntMirror) ca.setAntMirror(els.caAntMirror.checked);
   ca.seedPoint(0, 1);
   view.setCA(ca);
   updateCAStats();
@@ -343,6 +352,15 @@ function updateCAStats() {
   } else {
     const parts = [...by.entries()].sort((a, b) => a[0] - b[0]).map(([s, n]) => `s${s}:${n}`);
     els.caBySheet.textContent = parts.join('  ');
+  }
+  if (els.caAntInfo) {
+    if (ca.family === 'langton' && ca.ants.length) {
+      els.caAntInfo.textContent = ca.ants
+        .map((a, i) => `#${i}@${a.tile}(${a.steps || 0})`)
+        .join('  ');
+    } else {
+      els.caAntInfo.textContent = '—';
+    }
   }
 }
 function recomputePath() {
@@ -419,6 +437,7 @@ function updateFamilyVisibility() {
   els.caLifeRuleLabel.style.display = fam === 'life' ? '' : 'none';
   els.caLifePresetLabel.style.display = fam === 'life' ? '' : 'none';
   els.caThresholdLabel.style.display = fam === 'cyclic' ? '' : 'none';
+  if (els.caLangtonBlock) els.caLangtonBlock.style.display = fam === 'langton' ? '' : 'none';
 }
 
 // ── Event wiring ─────────────────────────────────────────────────────────────
@@ -581,6 +600,51 @@ els.caThreshold.addEventListener('input', () => {
   els.caThresholdVal.textContent = String(t);
   if (ca) ca.setCyclicThreshold(t);
 });
+if (els.caTurnString) {
+  els.caTurnString.addEventListener('change', () => {
+    if (ca) ca.setTurnString(els.caTurnString.value);
+    // Sync numStates display in case the ruleset grew it.
+    if (ca) els.caNumStates.value = String(ca.numStates);
+    // Clear preset selection if it no longer matches.
+    if (els.caTurmitePreset && els.caTurmitePreset.value !== els.caTurnString.value) {
+      els.caTurmitePreset.value = '';
+    }
+    view.draw();
+  });
+}
+if (els.caTurmitePreset) {
+  els.caTurmitePreset.addEventListener('change', () => {
+    const v = els.caTurmitePreset.value;
+    if (!v) return;
+    els.caTurnString.value = v;
+    if (ca) {
+      ca.setTurnString(v);
+      els.caNumStates.value = String(ca.numStates);
+    }
+    view.draw();
+  });
+}
+if (els.caAntMirror) {
+  els.caAntMirror.addEventListener('change', () => {
+    if (ca) ca.setAntMirror(els.caAntMirror.checked);
+    view.draw();
+  });
+}
+if (els.caAntSwarm) {
+  els.caAntSwarm.addEventListener('click', () => {
+    if (!ca) return;
+    if (ca.family !== 'langton') {
+      els.caFamily.value = 'langton';
+      ca.setFamily('langton');
+      updateFamilyVisibility();
+    }
+    const count = Math.max(1, Math.min(8, parseInt(els.caAntCount.value, 10) || 4));
+    ca.placeAntSwarm(currentTileIdx, count);
+    ensureCAOverlayOn();
+    view.draw();
+    updateCAStats();
+  });
+}
 els.caDensity.addEventListener('input', () => {
   const d = (parseInt(els.caDensity.value, 10) || 0) / 100;
   els.caDensityVal.textContent = d.toFixed(2);
@@ -624,6 +688,9 @@ els.caSeedShapeApply.addEventListener('click', () => {
   if (!ca) return;
   const shape = els.caSeedShape.value;
   ca.seedShape(shape, currentTileIdx);
+  // In Langton mode, a "shape" seed leaves the colours but no ant; drop an
+  // ant at the selected tile so stepping does something visible.
+  if (ca.family === 'langton') ca.placeAnt(currentTileIdx, 0);
   ensureCAOverlayOn();
   view.draw();
   updateCAStats();
@@ -715,7 +782,12 @@ window.addEventListener('mouseup', (e) => {
         renderTileInfo(els.tileInfo, lattice.tiles[idx], lattice);
         recomputePath();
       } else if (els.caPaintMode.checked && ca) {
-        ca.toggleCell(idx);
+        if (ca.family === 'langton') {
+          // Place the ant at the clicked tile (facing first valid edge).
+          ca.placeAnt(idx, 0);
+        } else {
+          ca.toggleCell(idx);
+        }
         ensureCAOverlayOn();
         view.draw();
         updateCAStats();
