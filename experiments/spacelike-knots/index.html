@@ -587,24 +587,24 @@
           /></label>
           <input type="range" id="param-lr" min="0.001" max="0.1" step="0.001" value="0.01" />
         </div>
-       <div class="panel-header">Entropy-Extremal</div>
-       <div class="control-group">
-         <label
-           >Distance-Entropy Weight
-           <input type="number" class="value-input" id="val-entropy" value="0.0" step="0.01"
-         /></label>
-         <input type="range" id="param-entropy" min="0" max="2.0" step="0.01" value="0.0" />
-         <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: -2px">
-           Maximize Shannon entropy of pairwise distances (0 = off)
-         </div>
-       </div>
-       <div class="control-group">
-         <label
-           >Entropy Bin Width (τ)
-           <input type="number" class="value-input" id="val-entropy-tau" value="0.1" step="0.01"
-         /></label>
-         <input type="range" id="param-entropy-tau" min="0.02" max="0.5" step="0.01" value="0.1" />
-       </div>
+        <div class="panel-header">Entropy-Extremal</div>
+        <div class="control-group">
+          <label
+            >Distance-Entropy Weight
+            <input type="number" class="value-input" id="val-entropy" value="0.0" step="0.01"
+          /></label>
+          <input type="range" id="param-entropy" min="0" max="2.0" step="0.01" value="0.0" />
+          <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: -2px">
+            Maximize Shannon entropy of pairwise distances (0 = off)
+          </div>
+        </div>
+        <div class="control-group">
+          <label
+            >Entropy Bin Width (τ)
+            <input type="number" class="value-input" id="val-entropy-tau" value="0.1" step="0.01"
+          /></label>
+          <input type="range" id="param-entropy-tau" min="0.02" max="0.5" step="0.01" value="0.1" />
+        </div>
         <div class="panel-header">Metric Optimization</div>
         <div class="control-group">
           <div class="button-group">
@@ -643,25 +643,24 @@
           <button id="btn-orbit-knot" class="btn-secondary">Orbit Knot</button>
           <button id="btn-export-stl" class="btn-secondary">Export STL</button>
         </div>
-       <div class="panel-header">Immersive (WebXR)</div>
-       <div class="control-group">
-         <button id="btn-enter-vr" class="btn-secondary" disabled>Enter VR</button>
-         <div id="vr-status" class="math-block" style="margin-top: 0.5rem">
-           Checking VR support...
-         </div>
-       </div>
-
+        <div class="panel-header">Immersive (WebXR)</div>
+        <div class="control-group">
+          <button id="btn-enter-vr" class="btn-secondary" disabled>Enter VR</button>
+          <div id="vr-status" class="math-block" style="margin-top: 0.5rem">
+            Checking VR support...
+          </div>
+        </div>
 
         <div class="math-block">
           <strong>Loss Function:</strong><br />
           L = L_edge + L_repel<br /><br />
           L_edge = k Σ(|pᵢ - pᵢ₊₁| - d₀)²<br />
-         L_repel = r Σᵢ≠ⱼ±₁ 1/(|pᵢ - pⱼ|² + ε)<br /><br />
-         <strong>Entropy-Extremal:</strong><br />
-         L_entropy = −w · H(D)<br />
-         H(D) = −Σₖ pₖ log pₖ<br />
-         pₖ = soft-histogram of {|pᵢ−pⱼ|}<br />
-         Maximizes distance diversity (Erdős reframing)
+          L_repel = r Σᵢ≠ⱼ±₁ 1/(|pᵢ - pⱼ|² + ε)<br /><br />
+          <strong>Entropy-Extremal:</strong><br />
+          L_entropy = −w · H(D)<br />
+          H(D) = −Σₖ pₖ log pₖ<br />
+          pₖ = soft-histogram of {|pᵢ−pⱼ|}<br />
+          Maximizes distance diversity (Erdős reframing)
         </div>
       </aside>
 
@@ -684,12 +683,12 @@
               >--</span
             >
           </div>
-         <div class="metric-card">
-           <span class="metric-label">Dist. Entropy</span>
-           <span class="metric-value" id="metric-entropy" style="color: var(--accent-secondary)"
-             >--</span
-           >
-         </div>
+          <div class="metric-card">
+            <span class="metric-label">Dist. Entropy</span>
+            <span class="metric-value" id="metric-entropy" style="color: var(--accent-secondary)"
+              >--</span
+            >
+          </div>
           <div class="metric-card">
             <span class="metric-label">Step</span>
             <span class="metric-value" id="metric-step">0</span>

@@ -36,8 +36,8 @@ const state = {
     lr: 0.01,
     redistributeLr: 0.05,
     redistributeEvery: 1,
-   entropyWeight: 0.0,
-   entropyTau: 0.1,
+    entropyWeight: 0.0,
+    entropyTau: 0.1,
     c: 1.0,
     knotType: 'random',
     metricMode: 'euclidean',
@@ -47,8 +47,8 @@ const state = {
     totalLoss: 0,
     edgeLoss: 0,
     repulsionLoss: 0,
-   entropyLoss: 0,
-   entropy: 0,
+    entropyLoss: 0,
+    entropy: 0,
     minDist: 0,
     maxDist: 0,
     avgDist: 0,
@@ -58,7 +58,7 @@ const state = {
   redistributeOptimizer: null,
   arcLengthVar: null,
   arcLengthTable: null,
-   xr: null,
+  xr: null,
 };
 
 const els = {
@@ -89,11 +89,11 @@ const els = {
   valRedist: document.getElementById('val-redist'),
   redistItersInput: document.getElementById('param-redist-iters'),
   valRedistIters: document.getElementById('val-redist-iters'),
-entropyInput: document.getElementById('param-entropy'),
-valEntropy: document.getElementById('val-entropy'),
-entropyTauInput: document.getElementById('param-entropy-tau'),
-valEntropyTau: document.getElementById('val-entropy-tau'),
-metricEntropy: document.getElementById('metric-entropy'),
+  entropyInput: document.getElementById('param-entropy'),
+  valEntropy: document.getElementById('val-entropy'),
+  entropyTauInput: document.getElementById('param-entropy-tau'),
+  valEntropyTau: document.getElementById('val-entropy-tau'),
+  metricEntropy: document.getElementById('metric-entropy'),
   chkAutoRotate: document.getElementById('chk-autorotate'),
   chkEdges: document.getElementById('chk-edges'),
   btnToggle: document.getElementById('btn-toggle'),
@@ -109,8 +109,8 @@ metricEntropy: document.getElementById('metric-entropy'),
   btnOptSpace: document.getElementById('btn-opt-space'),
   btnOptLight: document.getElementById('btn-opt-light'),
   btnAlignTime: document.getElementById('btn-align-time'),
-   btnEnterVr: document.getElementById('btn-enter-vr'),
-   vrStatus: document.getElementById('vr-status'),
+  btnEnterVr: document.getElementById('btn-enter-vr'),
+  vrStatus: document.getElementById('vr-status'),
   metricLoss: document.getElementById('metric-loss'),
   metricEdge: document.getElementById('metric-edge'),
   metricRepel: document.getElementById('metric-repel'),
@@ -149,64 +149,66 @@ function createRedistributeOptimizer() {
   return new OptimizerLbfgs(lr);
 }
 /**
-  * Get the current knot points as a plain JS array [[x,y,z],...].
-  * Used by the WebXR renderer to mirror the live optimization state.
-  */
+ * Get the current knot points as a plain JS array [[x,y,z],...].
+ * Used by the WebXR renderer to mirror the live optimization state.
+ */
 function getPointsArray() {
-   if (!state.points) return [];
-   const data = state.points.dataSync();
-   const n = state.params.n;
-   const out = [];
-   for (let i = 0; i < n; i++) {
-     out.push([data[i * 3], data[i * 3 + 1], data[i * 3 + 2]]);
-   }
-   return out;
+  if (!state.points) return [];
+  const data = state.points.dataSync();
+  const n = state.params.n;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    out.push([data[i * 3], data[i * 3 + 1], data[i * 3 + 2]]);
+  }
+  return out;
 }
 /**
-  * Initialize WebXR support and wire up the Enter VR button.
-  */
+ * Initialize WebXR support and wire up the Enter VR button.
+ */
 async function setupXR() {
-   if (!els.btnEnterVr) return;
-   state.xr = new KnotXR({
-     getPoints: getPointsArray,
-     getShowEdges: () => state.showEdges,
-     getSolidView: () => state.solidView,
-     onSessionStart: () => {
-       els.btnEnterVr.textContent = 'Exit VR';
-       els.btnEnterVr.classList.add('btn-primary');
-       els.btnEnterVr.classList.remove('btn-secondary');
-       if (els.vrStatus) els.vrStatus.textContent = 'In VR session. Remove headset or press Exit VR to return.';
-     },
-     onSessionEnd: () => {
-       els.btnEnterVr.textContent = 'Enter VR';
-       els.btnEnterVr.classList.remove('btn-primary');
-       els.btnEnterVr.classList.add('btn-secondary');
-       if (els.vrStatus) els.vrStatus.textContent = 'VR ready. Click "Enter VR" with a headset connected.';
-     },
-   });
-   const supported = await state.xr.checkSupport();
-   if (supported) {
-     els.btnEnterVr.disabled = false;
-     if (els.vrStatus) els.vrStatus.textContent = 'VR ready. Click "Enter VR" with a headset connected.';
-   } else {
-     els.btnEnterVr.disabled = true;
-     if (els.vrStatus)
-       els.vrStatus.textContent =
-         'WebXR immersive-vr not supported in this browser/device.';
-   }
-   els.btnEnterVr.addEventListener('click', async () => {
-     if (!state.xr) return;
-     try {
-       if (state.xr.session) {
-         await state.xr.exit();
-       } else {
-         await state.xr.enter();
-       }
-     } catch (err) {
-       console.error('XR error:', err);
-       if (els.vrStatus) els.vrStatus.textContent = 'VR error: ' + err.message;
-     }
-   });
+  if (!els.btnEnterVr) return;
+  state.xr = new KnotXR({
+    getPoints: getPointsArray,
+    getShowEdges: () => state.showEdges,
+    getSolidView: () => state.solidView,
+    onSessionStart: () => {
+      els.btnEnterVr.textContent = 'Exit VR';
+      els.btnEnterVr.classList.add('btn-primary');
+      els.btnEnterVr.classList.remove('btn-secondary');
+      if (els.vrStatus)
+        els.vrStatus.textContent = 'In VR session. Remove headset or press Exit VR to return.';
+    },
+    onSessionEnd: () => {
+      els.btnEnterVr.textContent = 'Enter VR';
+      els.btnEnterVr.classList.remove('btn-primary');
+      els.btnEnterVr.classList.add('btn-secondary');
+      if (els.vrStatus)
+        els.vrStatus.textContent = 'VR ready. Click "Enter VR" with a headset connected.';
+    },
+  });
+  const supported = await state.xr.checkSupport();
+  if (supported) {
+    els.btnEnterVr.disabled = false;
+    if (els.vrStatus)
+      els.vrStatus.textContent = 'VR ready. Click "Enter VR" with a headset connected.';
+  } else {
+    els.btnEnterVr.disabled = true;
+    if (els.vrStatus)
+      els.vrStatus.textContent = 'WebXR immersive-vr not supported in this browser/device.';
+  }
+  els.btnEnterVr.addEventListener('click', async () => {
+    if (!state.xr) return;
+    try {
+      if (state.xr.session) {
+        await state.xr.exit();
+      } else {
+        await state.xr.enter();
+      }
+    } catch (err) {
+      console.error('XR error:', err);
+      if (els.vrStatus) els.vrStatus.textContent = 'VR error: ' + err.message;
+    }
+  });
 }
 /**
  * Optimize rotation for metric properties
@@ -657,18 +659,18 @@ function computeRepulsionLoss(points, strength, cutoff) {
   });
 }
 /**
-* Compute Shannon entropy of the pairwise-distance distribution.
-*
-* We build a soft histogram of all non-adjacent pairwise distances using a
-* Gaussian (RBF) soft-assignment to a set of fixed bin centers, giving a
-* differentiable probability distribution p_k over distance bins. The Shannon
-* entropy H = -Σ p_k log p_k measures the *diversity* of distances present in
-* the knot (an Erdős-distance style reframing for a 1-manifold in 3-space).
-*
-* Returns { entropyLoss, entropy } where:
-*   entropy     = the (positive) Shannon entropy, for reporting
-*   entropyLoss = -weight * entropy  (so minimizing increases diversity)
-*/
+ * Compute Shannon entropy of the pairwise-distance distribution.
+ *
+ * We build a soft histogram of all non-adjacent pairwise distances using a
+ * Gaussian (RBF) soft-assignment to a set of fixed bin centers, giving a
+ * differentiable probability distribution p_k over distance bins. The Shannon
+ * entropy H = -Σ p_k log p_k measures the *diversity* of distances present in
+ * the knot (an Erdős-distance style reframing for a 1-manifold in 3-space).
+ *
+ * Returns { entropyLoss, entropy } where:
+ *   entropy     = the (positive) Shannon entropy, for reporting
+ *   entropyLoss = -weight * entropy  (so minimizing increases diversity)
+ */
 function computeEntropyLoss(points, weight, tau) {
   return tf.tidy(() => {
     const n = points.shape[0];
@@ -713,7 +715,6 @@ function computeEntropyLoss(points, weight, tau) {
     return { entropyLoss, entropy };
   });
 }
-
 
 /**
  * Sample a point on a closed Catmull-Rom spline defined by controlPoints at parameter t in [0,1)
@@ -932,16 +933,16 @@ function trainStep() {
         state.params.repulsionStrength,
         state.params.repulsionCutoff
       );
-     let total = tf.add(edgeLoss, repulsionLoss);
-     if (state.params.entropyWeight > 0) {
-       const { entropyLoss } = computeEntropyLoss(
-         state.points,
-         state.params.entropyWeight,
-         state.params.entropyTau
-       );
-       total = tf.add(total, entropyLoss);
-     }
-     return total;
+      let total = tf.add(edgeLoss, repulsionLoss);
+      if (state.params.entropyWeight > 0) {
+        const { entropyLoss } = computeEntropyLoss(
+          state.points,
+          state.params.entropyWeight,
+          state.params.entropyTau
+        );
+        total = tf.add(total, entropyLoss);
+      }
+      return total;
     };
 
     const { value, grads } = state.optimizer.computeGradients(lossFunction);
@@ -970,23 +971,23 @@ function trainStep() {
     const total = tf.add(edgeLoss, repulsionLoss);
     state.metrics.edgeLoss = edgeLoss.dataSync()[0];
     state.metrics.repulsionLoss = repulsionLoss.dataSync()[0];
-   let totalVal = total.dataSync()[0];
-   if (state.params.entropyWeight > 0) {
-     const { entropyLoss, entropy } = computeEntropyLoss(
-       state.points,
-       state.params.entropyWeight,
-       state.params.entropyTau
-     );
-     state.metrics.entropyLoss = entropyLoss.dataSync()[0];
-     state.metrics.entropy = entropy.dataSync()[0];
-     totalVal += state.metrics.entropyLoss;
-   } else {
-     // Still report the raw entropy for inspection
-     const { entropy } = computeEntropyLoss(state.points, 0, state.params.entropyTau);
-     state.metrics.entropy = entropy.dataSync()[0];
-     state.metrics.entropyLoss = 0;
-   }
-   state.metrics.totalLoss = totalVal;
+    let totalVal = total.dataSync()[0];
+    if (state.params.entropyWeight > 0) {
+      const { entropyLoss, entropy } = computeEntropyLoss(
+        state.points,
+        state.params.entropyWeight,
+        state.params.entropyTau
+      );
+      state.metrics.entropyLoss = entropyLoss.dataSync()[0];
+      state.metrics.entropy = entropy.dataSync()[0];
+      totalVal += state.metrics.entropyLoss;
+    } else {
+      // Still report the raw entropy for inspection
+      const { entropy } = computeEntropyLoss(state.points, 0, state.params.entropyTau);
+      state.metrics.entropy = entropy.dataSync()[0];
+      state.metrics.entropyLoss = 0;
+    }
+    state.metrics.totalLoss = totalVal;
   });
   state.step++;
 
@@ -1527,7 +1528,7 @@ function updateUI() {
   els.metricEdge.textContent = state.metrics.edgeLoss.toFixed(5);
   els.metricRepel.textContent = state.metrics.repulsionLoss.toFixed(5);
   els.metricStep.textContent = state.step;
-if (els.metricEntropy) els.metricEntropy.textContent = state.metrics.entropy.toFixed(4);
+  if (els.metricEntropy) els.metricEntropy.textContent = state.metrics.entropy.toFixed(4);
   els.metricMinDist.textContent = state.metrics.minDist.toFixed(4);
   els.metricMaxDist.textContent = state.metrics.maxDist.toFixed(4);
   els.metricAvgDist.textContent = state.metrics.avgDist.toFixed(4);
@@ -1655,12 +1656,12 @@ function setupEventListeners() {
       Math.floor(v)
     );
   }
-if (els.entropyInput && els.valEntropy) {
-   setupSlider(els.entropyInput, els.valEntropy, 'entropyWeight');
-}
-if (els.entropyTauInput && els.valEntropyTau) {
-   setupSlider(els.entropyTauInput, els.valEntropyTau, 'entropyTau');
-}
+  if (els.entropyInput && els.valEntropy) {
+    setupSlider(els.entropyInput, els.valEntropy, 'entropyWeight');
+  }
+  if (els.entropyTauInput && els.valEntropyTau) {
+    setupSlider(els.entropyTauInput, els.valEntropyTau, 'entropyTau');
+  }
 
   // N change requires reinitialization
   els.nInput.addEventListener('change', () => {
@@ -1866,7 +1867,7 @@ async function init() {
     resizeCanvases();
     initializeKnot();
     updateDistanceMatrix();
-     setupXR();
+    setupXR();
     animate();
   } catch (err) {
     console.error(err);

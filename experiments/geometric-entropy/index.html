@@ -630,23 +630,22 @@
           </button>
           <button id="btn-stl" class="btn-secondary" style="grid-column: span 2">Export STL</button>
         </div>
-       <div class="panel-header">Immersive (WebXR)</div>
-       <div class="button-group">
-         <button id="btn-vr" class="btn-secondary" disabled>Enter VR</button>
-         <button id="btn-ar" class="btn-secondary" disabled>Enter AR</button>
-         <div
-           id="xr-status"
-           style="
-             grid-column: span 2;
-             font-size: 0.6rem;
-             color: var(--text-muted);
-             font-family: var(--font-mono);
-           "
-         >
-           Checking WebXR support...
-         </div>
-       </div>
-
+        <div class="panel-header">Immersive (WebXR)</div>
+        <div class="button-group">
+          <button id="btn-vr" class="btn-secondary" disabled>Enter VR</button>
+          <button id="btn-ar" class="btn-secondary" disabled>Enter AR</button>
+          <div
+            id="xr-status"
+            style="
+              grid-column: span 2;
+              font-size: 0.6rem;
+              color: var(--text-muted);
+              font-family: var(--font-mono);
+            "
+          >
+            Checking WebXR support...
+          </div>
+        </div>
 
         <div class="math-block">
           <strong>Gram Matrix Input:</strong><br />
@@ -692,7 +691,7 @@
       import { OptimizerLbfgs } from './js/optimizer-lbfgs.js';
       import { OptimizerAdam } from './js/optimizer-adam.js';
       import { OptimizerQQN } from './js/optimizer-qqn.js';
-     import { WebXRViewer } from './js/webxr.js';
+      import { WebXRViewer } from './js/webxr.js';
 
       /**
        * Spherical Gram Entropy - Interactive Demo
@@ -781,9 +780,9 @@
         stlControls: document.getElementById('stl-controls'),
         torusControls: document.getElementById('torus-controls'),
         stlFile: document.getElementById('stl-file'),
-       btnVr: document.getElementById('btn-vr'),
-       btnAr: document.getElementById('btn-ar'),
-       xrStatus: document.getElementById('xr-status'),
+        btnVr: document.getElementById('btn-vr'),
+        btnAr: document.getElementById('btn-ar'),
+        xrStatus: document.getElementById('xr-status'),
       };
 
       const ctx = els.canvas.getContext('2d');
@@ -1572,68 +1571,67 @@
         }
         return new OptimizerLbfgs(state.params.lr);
       }
-     // --- WebXR Setup ---
-     let xrViewer = null;
-     async function setupWebXR() {
-       if (!WebXRViewer.isSupported()) {
-         els.xrStatus.textContent = 'WebXR not available in this browser.';
-         return;
-       }
-       // Provide the viewer with a live snapshot of the current scene.
-       xrViewer = new WebXRViewer(() => {
-         let triangles = null;
-         if (
-           (state.showTriangulation || state.showSolidFill) &&
-           state.points &&
-           state.params.geometry === 'sphere'
-         ) {
-           try {
-             triangles = getTriangles(state.points.dataSync());
-           } catch (e) {
-             triangles = null;
-           }
-         }
-         return {
-           points: state.points,
-           densities: state.metrics.densities,
-           geometry: state.params.geometry,
-           triangles,
-         };
-       });
-       xrViewer.onEnd(() => {
-         els.btnVr.textContent = 'Enter VR';
-         els.btnAr.textContent = 'Enter AR';
-       });
-       const { vr, ar } = await xrViewer.checkSessionSupport();
-       if (vr) {
-         els.btnVr.disabled = false;
-       }
-       if (ar) {
-         els.btnAr.disabled = false;
-       }
-       if (vr || ar) {
-         els.xrStatus.textContent =
-           'Ready: ' + [vr ? 'VR' : null, ar ? 'AR' : null].filter(Boolean).join(' & ');
-       } else {
-         els.xrStatus.textContent = 'No immersive VR/AR devices detected.';
-       }
-       const enter = async (mode, btn) => {
-         if (xrViewer.session) {
-           await xrViewer.end();
-           return;
-         }
-         try {
-           await xrViewer.start(mode);
-           btn.textContent = mode === 'immersive-ar' ? 'Exit AR' : 'Exit VR';
-         } catch (err) {
-           console.error(err);
-           els.xrStatus.textContent = 'Failed to start session: ' + err.message;
-         }
-       };
-       els.btnVr.addEventListener('click', () => enter('immersive-vr', els.btnVr));
-       els.btnAr.addEventListener('click', () => enter('immersive-ar', els.btnAr));
-     }
-
+      // --- WebXR Setup ---
+      let xrViewer = null;
+      async function setupWebXR() {
+        if (!WebXRViewer.isSupported()) {
+          els.xrStatus.textContent = 'WebXR not available in this browser.';
+          return;
+        }
+        // Provide the viewer with a live snapshot of the current scene.
+        xrViewer = new WebXRViewer(() => {
+          let triangles = null;
+          if (
+            (state.showTriangulation || state.showSolidFill) &&
+            state.points &&
+            state.params.geometry === 'sphere'
+          ) {
+            try {
+              triangles = getTriangles(state.points.dataSync());
+            } catch (e) {
+              triangles = null;
+            }
+          }
+          return {
+            points: state.points,
+            densities: state.metrics.densities,
+            geometry: state.params.geometry,
+            triangles,
+          };
+        });
+        xrViewer.onEnd(() => {
+          els.btnVr.textContent = 'Enter VR';
+          els.btnAr.textContent = 'Enter AR';
+        });
+        const { vr, ar } = await xrViewer.checkSessionSupport();
+        if (vr) {
+          els.btnVr.disabled = false;
+        }
+        if (ar) {
+          els.btnAr.disabled = false;
+        }
+        if (vr || ar) {
+          els.xrStatus.textContent =
+            'Ready: ' + [vr ? 'VR' : null, ar ? 'AR' : null].filter(Boolean).join(' & ');
+        } else {
+          els.xrStatus.textContent = 'No immersive VR/AR devices detected.';
+        }
+        const enter = async (mode, btn) => {
+          if (xrViewer.session) {
+            await xrViewer.end();
+            return;
+          }
+          try {
+            await xrViewer.start(mode);
+            btn.textContent = mode === 'immersive-ar' ? 'Exit AR' : 'Exit VR';
+          } catch (err) {
+            console.error(err);
+            els.xrStatus.textContent = 'Failed to start session: ' + err.message;
+          }
+        };
+        els.btnVr.addEventListener('click', () => enter('immersive-vr', els.btnVr));
+        els.btnAr.addEventListener('click', () => enter('immersive-ar', els.btnAr));
+      }
 
       function resetPoints() {
         if (state.points) state.points.dispose();
@@ -2000,7 +1998,7 @@
           setupEventListeners();
           resetPoints();
           resizeCanvas();
-         setupWebXR();
+          setupWebXR();
           animate();
         } catch (err) {
           console.error(err);
