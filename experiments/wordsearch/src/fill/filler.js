@@ -36,48 +36,46 @@ export function select(dist, mode, rng, fallbackAlphabet) {
 }
 
 /**
-  * Step-by-step generator version of fillGrid. Yields after each cell
-  * is filled so callers can visualise the buildout.
-  *
-  * @param {import('../grid/Grid.js').Grid} grid
-  * @param {import('../markov/MarkovModel.js').MarkovModel} model
-  * @param {object} config
-  * @yields {{x:number,y:number,ch:string,contexts:Array}}
-  */
+ * Step-by-step generator version of fillGrid. Yields after each cell
+ * is filled so callers can visualise the buildout.
+ *
+ * @param {import('../grid/Grid.js').Grid} grid
+ * @param {import('../markov/MarkovModel.js').MarkovModel} model
+ * @param {object} config
+ * @yields {{x:number,y:number,ch:string,contexts:Array}}
+ */
 export function* fillGridSteps(grid, model, config = {}) {
-   const {
-     combiner = 'product',
-     sampling = 'weighted',
-     rng = Math.random,
-      lattice = 'square',
-      includeBackwards = true,
-   } = config;
-   const alphabet = [...model.alphabet];
-   let cell;
-   let guard = grid.width * grid.height + 1;
-    while ((cell = pickNextCell(grid, rng, lattice)) && guard-- > 0) {
-     const { x, y } = cell;
-     const dists = [];
-     const contexts = [];
-      const dirs = latticeDirections(lattice, y, { includeBackwards });
-      for (const d of dirs) {
-        const ctx = readContext(grid, x, y, d, model.order, lattice);
-       if (ctx) {
-         const dist = model.predict(ctx);
-         if (dist.size) {
-           dists.push(dist);
-           contexts.push({ dir: d.name, ctx });
-         }
-       }
-     }
-     const combined = dists.length
-       ? combine(dists, combiner)
-       : model.predict('');
-     const ch = select(combined, sampling, rng, alphabet);
-     grid.set(x, y, ch);
-     yield { x, y, ch, contexts };
-   }
-   return grid;
+  const {
+    combiner = 'product',
+    sampling = 'weighted',
+    rng = Math.random,
+    lattice = 'square',
+    includeBackwards = true,
+  } = config;
+  const alphabet = [...model.alphabet];
+  let cell;
+  let guard = grid.width * grid.height + 1;
+  while ((cell = pickNextCell(grid, rng, lattice)) && guard-- > 0) {
+    const { x, y } = cell;
+    const dists = [];
+    const contexts = [];
+    const dirs = latticeDirections(lattice, y, { includeBackwards });
+    for (const d of dirs) {
+      const ctx = readContext(grid, x, y, d, model.order, lattice);
+      if (ctx) {
+        const dist = model.predict(ctx);
+        if (dist.size) {
+          dists.push(dist);
+          contexts.push({ dir: d.name, ctx });
+        }
+      }
+    }
+    const combined = dists.length ? combine(dists, combiner) : model.predict('');
+    const ch = select(combined, sampling, rng, alphabet);
+    grid.set(x, y, ch);
+    yield { x, y, ch, contexts };
+  }
+  return grid;
 }
 /**
  * Fill all empty cells of the grid using directional Markov
@@ -95,28 +93,26 @@ export function fillGrid(grid, model, config = {}) {
     combiner = 'product',
     sampling = 'weighted',
     rng = Math.random,
-     lattice = 'square',
-     includeBackwards = true,
+    lattice = 'square',
+    includeBackwards = true,
   } = config;
   const alphabet = [...model.alphabet];
 
   let cell;
   let guard = grid.width * grid.height + 1;
-   while ((cell = pickNextCell(grid, rng, lattice)) && guard-- > 0) {
+  while ((cell = pickNextCell(grid, rng, lattice)) && guard-- > 0) {
     const { x, y } = cell;
     const dists = [];
-     const dirs = latticeDirections(lattice, y, { includeBackwards });
-     for (const d of dirs) {
-       const ctx = readContext(grid, x, y, d, model.order, lattice);
+    const dirs = latticeDirections(lattice, y, { includeBackwards });
+    for (const d of dirs) {
+      const ctx = readContext(grid, x, y, d, model.order, lattice);
       if (ctx) {
         const dist = model.predict(ctx);
         if (dist.size) dists.push(dist);
       }
     }
     // If no directional context available, fall back to unigram.
-    const combined = dists.length
-      ? combine(dists, combiner)
-      : model.predict('');
+    const combined = dists.length ? combine(dists, combiner) : model.predict('');
     const ch = select(combined, sampling, rng, alphabet);
     grid.set(x, y, ch);
   }

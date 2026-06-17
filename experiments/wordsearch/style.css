@@ -1,202 +1,202 @@
 :root {
-    --gap: 0.75rem;
+  --gap: 0.75rem;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: system-ui, sans-serif;
-    margin: 0;
-    padding: var(--gap);
-    color: #1a1a1a;
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 1.5rem;
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  padding: var(--gap);
+  color: #1a1a1a;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
 }
 
 h1 {
-    font-size: 1.25rem;
-    margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
 }
 
 fieldset {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
 legend {
-    font-weight: 600;
-    padding: 0 0.4rem;
+  font-weight: 600;
+  padding: 0 0.4rem;
 }
 
 label {
-    display: block;
-    font-size: 0.85rem;
-    margin: 0.4rem 0 0.15rem;
+  display: block;
+  font-size: 0.85rem;
+  margin: 0.4rem 0 0.15rem;
 }
 
 input,
 select,
 textarea {
-    width: 100%;
-    padding: 0.4rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.9rem;
+  width: 100%;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
 textarea {
-    resize: vertical;
-    min-height: 5rem;
-    font-family: monospace;
+  resize: vertical;
+  min-height: 5rem;
+  font-family: monospace;
 }
 
 .row {
-    display: flex;
-    gap: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
-.row>* {
-    flex: 1;
+.row > * {
+  flex: 1;
 }
 
 button {
-    padding: 0.5rem 0.8rem;
-    border: 0;
-    border-radius: 6px;
-    background: #3367d6;
-    color: #fff;
-    cursor: pointer;
-    font-size: 0.9rem;
+  padding: 0.5rem 0.8rem;
+  border: 0;
+  border-radius: 6px;
+  background: #3367d6;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
 }
 
 button.secondary {
-    background: #555;
+  background: #555;
 }
 
 .actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
 }
 
 #status {
-    font-size: 0.8rem;
-    color: #444;
-    margin-top: 0.5rem;
-    min-height: 1.2em;
+  font-size: 0.8rem;
+  color: #444;
+  margin-top: 0.5rem;
+  min-height: 1.2em;
 }
 
 table.ws-grid {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 table.ws-grid td {
-    width: 1.9rem;
-    height: 1.9rem;
-    text-align: center;
-    font-family: monospace;
-    font-size: 1rem;
-    border: 1px solid #eee;
-    user-select: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  text-align: center;
+  font-family: monospace;
+  font-size: 1rem;
+  border: 1px solid #eee;
+  user-select: none;
 }
 
 table.ws-grid td.locked {
-    background: #fff3cd;
+  background: #fff3cd;
 }
 
 table.ws-grid td.just-filled {
-    background: #cfe8ff;
+  background: #cfe8ff;
 }
 
 table.ws-grid-play td {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 table.ws-grid-play td.selecting {
-    background: #ffe08a;
+  background: #ffe08a;
 }
 
 table.ws-grid-play td.found-cell {
-    background: #c8f7c5;
+  background: #c8f7c5;
 }
 
 .mode-tabs {
-    display: flex;
-    gap: 0.4rem;
-    margin-bottom: 1rem;
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
 }
 
 .mode-tab {
-    flex: 1;
-    background: #777;
-    font-size: 0.8rem;
-    padding: 0.4rem;
+  flex: 1;
+  background: #777;
+  font-size: 0.8rem;
+  padding: 0.4rem;
 }
 
 .mode-tab.active {
-    background: #3367d6;
+  background: #3367d6;
 }
 
 [hidden] {
-    display: none !important;
+  display: none !important;
 }
 
 #play-words {
-    list-style: none;
-    padding: 0;
-    margin: 0.5rem 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
 }
 
 #play-words li {
-    padding: 0.2rem 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.85rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.85rem;
 }
 
 #play-words li.found {
-    text-decoration: line-through;
-    background: #c8f7c5;
-    color: #555;
+  text-decoration: line-through;
+  background: #c8f7c5;
+  color: #555;
 }
 
 #play-timer {
-    font-variant-numeric: tabular-nums;
-    font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 @media (max-width: 720px) {
-    body {
-        grid-template-columns: 1fr;
-    }
+  body {
+    grid-template-columns: 1fr;
+  }
 }
 
 table.ws-grid td.locked {
-    background: #fff3cd;
+  background: #fff3cd;
 }
 
 table.ws-grid td.just-filled {
-    background: #cfe8ff;
+  background: #cfe8ff;
 }
 
 table.ws-grid-play td {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 table.ws-grid-play td.selecting {
-    background: #ffe08a;
+  background: #ffe08a;
 }
 
 table.ws-grid-play td.found-cell {
-    background: #c8f7c5;
+  background: #c8f7c5;
 }
 
 /* Offset alternate rows for hex / triangular lattices so the
@@ -204,23 +204,23 @@ table.ws-grid-play td.found-cell {
     (odd-r offset coordinates). */
 table.ws-lattice-hex tr.odd-row td:first-child,
 table.ws-lattice-triangular tr.odd-row td:first-child {
-    position: relative;
+  position: relative;
 }
 
 table.ws-lattice-hex tr.odd-row,
 table.ws-lattice-triangular tr.odd-row {
-    transform: translateX(0.95rem);
-    /* half of the 1.9rem cell width */
+  transform: translateX(0.95rem);
+  /* half of the 1.9rem cell width */
 }
 
 /* Round hex cells slightly to hint at the lattice shape. */
 table.ws-lattice-hex td,
 table.ws-lattice-triangular td {
-    border-radius: 50%;
+  border-radius: 50%;
 }
 
 .mode-tabs {
-    display: flex;
-    gap: 0.4rem;
-    margin-bottom: 1rem;
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
 }

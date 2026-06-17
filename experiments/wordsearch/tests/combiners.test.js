@@ -15,7 +15,10 @@ describe('combiners', () => {
   });
 
   it('vote picks per-direction argmax', () => {
-    const out = combine([d({ a: 0.9, b: 0.1 }), d({ a: 0.6, b: 0.4 }), d({ b: 0.7, a: 0.3 })], 'vote');
+    const out = combine(
+      [d({ a: 0.9, b: 0.1 }), d({ a: 0.6, b: 0.4 }), d({ b: 0.7, a: 0.3 })],
+      'vote'
+    );
     assert.ok(out.get('a') > out.get('b'));
   });
 

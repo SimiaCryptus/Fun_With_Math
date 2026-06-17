@@ -8,15 +8,15 @@
  * @param {boolean} [opts.debug] highlight locked cells
  */
 export function renderGrid(container, grid, opts = {}) {
-   const { debug = false, lattice = 'square' } = opts;
+  const { debug = false, lattice = 'square' } = opts;
   container.innerHTML = '';
   const table = document.createElement('table');
-   table.className = `ws-grid ws-lattice-${lattice}`;
+  table.className = `ws-grid ws-lattice-${lattice}`;
   for (let y = 0; y < grid.height; y++) {
     const tr = document.createElement('tr');
-     if (lattice === 'hex' || lattice === 'triangular') {
-       tr.classList.toggle('odd-row', (y & 1) === 1);
-     }
+    if (lattice === 'hex' || lattice === 'triangular') {
+      tr.classList.toggle('odd-row', (y & 1) === 1);
+    }
     for (let x = 0; x < grid.width; x++) {
       const td = document.createElement('td');
       td.textContent = (grid.get(x, y) || '').toUpperCase();
@@ -59,36 +59,36 @@ export function gridToText(grid) {
   return grid.toStringGrid().toUpperCase().replace(/\./g, ' ');
 }
 /**
-  * Render an interactive grid for play mode. Each cell is a <td> with
-  * data-x / data-y attributes so callers can wire selection handlers.
-  * @param {HTMLElement} container
-  * @param {import('../grid/Grid.js').Grid} grid
-  * @returns {HTMLTableElement}
-  */
+ * Render an interactive grid for play mode. Each cell is a <td> with
+ * data-x / data-y attributes so callers can wire selection handlers.
+ * @param {HTMLElement} container
+ * @param {import('../grid/Grid.js').Grid} grid
+ * @returns {HTMLTableElement}
+ */
 export function renderInteractiveGrid(container, grid, opts = {}) {
-    const { lattice = 'square' } = opts;
-   container.innerHTML = '';
-   const table = document.createElement('table');
-    table.className = `ws-grid ws-grid-play ws-lattice-${lattice}`;
-   for (let y = 0; y < grid.height; y++) {
-     const tr = document.createElement('tr');
-      if (lattice === 'hex' || lattice === 'triangular') {
-        tr.classList.toggle('odd-row', (y & 1) === 1);
-      }
-     for (let x = 0; x < grid.width; x++) {
-       const td = document.createElement('td');
-       td.textContent = (grid.get(x, y) || '').toUpperCase();
-       td.dataset.x = String(x);
-       td.dataset.y = String(y);
-       tr.appendChild(td);
-     }
-     table.appendChild(tr);
-   }
-   container.appendChild(table);
-   return table;
+  const { lattice = 'square' } = opts;
+  container.innerHTML = '';
+  const table = document.createElement('table');
+  table.className = `ws-grid ws-grid-play ws-lattice-${lattice}`;
+  for (let y = 0; y < grid.height; y++) {
+    const tr = document.createElement('tr');
+    if (lattice === 'hex' || lattice === 'triangular') {
+      tr.classList.toggle('odd-row', (y & 1) === 1);
+    }
+    for (let x = 0; x < grid.width; x++) {
+      const td = document.createElement('td');
+      td.textContent = (grid.get(x, y) || '').toUpperCase();
+      td.dataset.x = String(x);
+      td.dataset.y = String(y);
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  container.appendChild(table);
+  return table;
 }
 /** Get the <td> element for a coordinate within a rendered table. */
 export function cellAt(table, x, y) {
-   const row = table.rows[y];
-   return row ? row.cells[x] : null;
+  const row = table.rows[y];
+  return row ? row.cells[x] : null;
 }

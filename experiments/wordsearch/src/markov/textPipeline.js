@@ -28,7 +28,5 @@ export function normaliseText(text, opts = {}) {
  * @returns {string[]}
  */
 export function tokenise(text) {
-  return normaliseText(text, { keepSpaces: true })
-    .split(' ')
-    .filter(Boolean);
+  return normaliseText(text, { keepSpaces: true }).split(' ').filter(Boolean);
 }

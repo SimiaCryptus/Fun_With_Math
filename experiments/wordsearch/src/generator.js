@@ -27,39 +27,39 @@ export function generatePuzzle(opts) {
     combiner = 'product',
     sampling = 'weighted',
     rng = Math.random,
-     lattice = 'square',
-     includeBackwards = true,
+    lattice = 'square',
+    includeBackwards = true,
     model: providedModel,
   } = opts;
 
   const model = providedModel || new MarkovModel(order).train(referenceText, order);
 
   const grid = new Grid(width, height);
-   const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
-   fillGrid(grid, model, { combiner, sampling, rng, lattice, includeBackwards });
-   grid.lattice = lattice;
+  const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
+  fillGrid(grid, model, { combiner, sampling, rng, lattice, includeBackwards });
+  grid.lattice = lattice;
 
   return { grid, placement, model };
 }
 /**
-  * Build the puzzle scaffold (grid + placed words + trained model) but
-  * do NOT fill the empty cells. Used by the step-through / watch mode.
-  * @param {object} opts same shape as generatePuzzle
-  */
+ * Build the puzzle scaffold (grid + placed words + trained model) but
+ * do NOT fill the empty cells. Used by the step-through / watch mode.
+ * @param {object} opts same shape as generatePuzzle
+ */
 export function preparePuzzle(opts) {
-   const {
-     referenceText = '',
-     words = [],
-     width = 15,
-     height = 15,
-     order = 3,
-     rng = Math.random,
-      lattice = 'square',
-      includeBackwards = true,
-     model: providedModel,
-   } = opts;
-   const model = providedModel || new MarkovModel(order).train(referenceText, order);
-   const grid = new Grid(width, height);
-    const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
-   return { grid, placement, model };
+  const {
+    referenceText = '',
+    words = [],
+    width = 15,
+    height = 15,
+    order = 3,
+    rng = Math.random,
+    lattice = 'square',
+    includeBackwards = true,
+    model: providedModel,
+  } = opts;
+  const model = providedModel || new MarkovModel(order).train(referenceText, order);
+  const grid = new Grid(width, height);
+  const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
+  return { grid, placement, model };
 }

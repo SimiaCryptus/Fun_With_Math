@@ -3,13 +3,7 @@
 import { generatePuzzle } from '../generator.js';
 import { renderGrid, gridToPNG, gridToText } from './render.js';
 import { readConfig, wireFileUpload } from './controls.js';
-import {
-   initWatch,
-   watchStep,
-   watchPlay,
-   watchPause,
-   watchFinish,
-} from './watchMode.js';
+import { initWatch, watchStep, watchPlay, watchPause, watchFinish } from './watchMode.js';
 import { initPlay, stopPlay } from './playMode.js';
 
 let lastGrid = null;
@@ -31,17 +25,16 @@ function regenerate(root) {
   try {
     const { grid, placement } = generatePuzzle(cfg);
     lastGrid = grid;
-     lastPlacement = placement;
-     renderGrid(root.querySelector('#grid'), grid, {
-       debug: cfg.debug,
-       lattice: cfg.lattice,
-     });
+    lastPlacement = placement;
+    renderGrid(root.querySelector('#grid'), grid, {
+      debug: cfg.debug,
+      lattice: cfg.lattice,
+    });
     if (status) {
       const failed = placement.failed.length
         ? ` (couldn't place: ${placement.failed.join(', ')})`
         : '';
-      status.textContent =
-        `Placed ${placement.placed.length} word(s)${failed}.`;
+      status.textContent = `Placed ${placement.placed.length} word(s)${failed}.`;
     }
   } catch (err) {
     if (status) status.textContent = `Error: ${err.message}`;
@@ -50,31 +43,31 @@ function regenerate(root) {
   }
 }
 function setMode(root, next) {
-   // Tear down previous mode.
-   if (mode === 'watch') watchPause();
-   if (mode === 'play') stopPlay();
-   mode = next;
-   const panels = {
-     design: root.querySelector('#panel-design'),
-     watch: root.querySelector('#panel-watch'),
-     play: root.querySelector('#panel-play'),
-   };
-   for (const [name, el] of Object.entries(panels)) {
-     if (el) el.hidden = name !== mode;
-   }
-   root.querySelectorAll('.mode-tab').forEach((b) => {
-     b.classList.toggle('active', b.dataset.mode === mode);
-   });
-   const cfg = readConfig(root);
-   if (mode === 'design') {
-     regenerate(root);
-   } else if (mode === 'watch') {
-     initWatch(root, cfg);
-   } else if (mode === 'play') {
-     // Ensure we have a fully-generated puzzle to play.
-     if (!lastGrid || !lastPlacement) regenerate(root);
-     initPlay(root, lastGrid, lastPlacement);
-   }
+  // Tear down previous mode.
+  if (mode === 'watch') watchPause();
+  if (mode === 'play') stopPlay();
+  mode = next;
+  const panels = {
+    design: root.querySelector('#panel-design'),
+    watch: root.querySelector('#panel-watch'),
+    play: root.querySelector('#panel-play'),
+  };
+  for (const [name, el] of Object.entries(panels)) {
+    if (el) el.hidden = name !== mode;
+  }
+  root.querySelectorAll('.mode-tab').forEach((b) => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  const cfg = readConfig(root);
+  if (mode === 'design') {
+    regenerate(root);
+  } else if (mode === 'watch') {
+    initWatch(root, cfg);
+  } else if (mode === 'play') {
+    // Ensure we have a fully-generated puzzle to play.
+    if (!lastGrid || !lastPlacement) regenerate(root);
+    initPlay(root, lastGrid, lastPlacement);
+  }
 }
 
 export function initApp(root = document) {
@@ -82,39 +75,36 @@ export function initApp(root = document) {
 
   const regenBtn = root.querySelector('#btn-regen');
   if (regenBtn) regenBtn.addEventListener('click', () => regenerate(root));
-   // Mode tabs.
-   root.querySelectorAll('.mode-tab').forEach((btn) => {
-     btn.addEventListener('click', () => setMode(root, btn.dataset.mode));
-   });
-   // Watch-mode controls.
-   const wStep = root.querySelector('#btn-watch-step');
-   if (wStep) wStep.addEventListener('click', () => watchStep(root));
-   const wPlay = root.querySelector('#btn-watch-play');
-   if (wPlay) {
-     wPlay.addEventListener('click', () => {
-       const speed = parseInt(
-         (root.querySelector('#watch-speed') || {}).value || '120',
-         10,
-       ) || 120;
-       watchPlay(root, speed);
-     });
-   }
-   const wPause = root.querySelector('#btn-watch-pause');
-   if (wPause) wPause.addEventListener('click', () => watchPause());
-   const wFinish = root.querySelector('#btn-watch-finish');
-   if (wFinish) wFinish.addEventListener('click', () => watchFinish(root));
-   const wReset = root.querySelector('#btn-watch-reset');
-   if (wReset) {
-     wReset.addEventListener('click', () => initWatch(root, readConfig(root)));
-   }
-   // Play-mode controls.
-   const pNew = root.querySelector('#btn-play-new');
-   if (pNew) {
-     pNew.addEventListener('click', () => {
-       regenerate(root);
-       initPlay(root, lastGrid, lastPlacement);
-     });
-   }
+  // Mode tabs.
+  root.querySelectorAll('.mode-tab').forEach((btn) => {
+    btn.addEventListener('click', () => setMode(root, btn.dataset.mode));
+  });
+  // Watch-mode controls.
+  const wStep = root.querySelector('#btn-watch-step');
+  if (wStep) wStep.addEventListener('click', () => watchStep(root));
+  const wPlay = root.querySelector('#btn-watch-play');
+  if (wPlay) {
+    wPlay.addEventListener('click', () => {
+      const speed = parseInt((root.querySelector('#watch-speed') || {}).value || '120', 10) || 120;
+      watchPlay(root, speed);
+    });
+  }
+  const wPause = root.querySelector('#btn-watch-pause');
+  if (wPause) wPause.addEventListener('click', () => watchPause());
+  const wFinish = root.querySelector('#btn-watch-finish');
+  if (wFinish) wFinish.addEventListener('click', () => watchFinish(root));
+  const wReset = root.querySelector('#btn-watch-reset');
+  if (wReset) {
+    wReset.addEventListener('click', () => initWatch(root, readConfig(root)));
+  }
+  // Play-mode controls.
+  const pNew = root.querySelector('#btn-play-new');
+  if (pNew) {
+    pNew.addEventListener('click', () => {
+      regenerate(root);
+      initPlay(root, lastGrid, lastPlacement);
+    });
+  }
 
   const pngBtn = root.querySelector('#btn-png');
   if (pngBtn) {

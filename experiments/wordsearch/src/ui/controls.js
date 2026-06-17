@@ -14,20 +14,28 @@ export function readConfig(root = document) {
   const order = parseInt(val('cfg-order', '3'), 10) || 3;
   const combiner = val('cfg-combiner', 'product');
   const sampling = val('cfg-sampling', 'weighted');
-   const lattice = val('cfg-lattice', 'square');
+  const lattice = val('cfg-lattice', 'square');
   const referenceText = val('cfg-reftext', '');
   const debug = !!(root.querySelector('#cfg-debug') || {}).checked;
-   const includeBackwards = !(root.querySelector('#cfg-no-backwards') || {}).checked;
+  const includeBackwards = !(root.querySelector('#cfg-no-backwards') || {}).checked;
 
   const words = val('cfg-words', '')
     .split(/[\n,]+/)
     .map((w) => w.trim())
     .filter(Boolean);
 
-   return {
-     width, height, order, combiner, sampling, lattice,
-     referenceText, words, debug, includeBackwards,
-   };
+  return {
+    width,
+    height,
+    order,
+    combiner,
+    sampling,
+    lattice,
+    referenceText,
+    words,
+    debug,
+    includeBackwards,
+  };
 }
 
 /**

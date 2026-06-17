@@ -22,7 +22,7 @@ This project flips that around. The filler is generated to **mimic the
 statistical texture of natural language** along all eight reading directions.
 When the noise itself looks word-like, the target words blend in, and the
 puzzle becomes meaningfully harder — not because of grid size, but because of
-*camouflage*.
+_camouflage_.
 
 ---
 
@@ -49,7 +49,7 @@ largely determined by how well the filler hides the targets.
 ### Markov Models
 
 A **Markov model** predicts the next item in a sequence based on the recent
-history. For text, we model it at the *character* level: given the previous
+history. For text, we model it at the _character_ level: given the previous
 few characters, what is the probability distribution over the next character?
 
 Training is simply counting. We slide a window over a reference text and
@@ -117,10 +117,10 @@ while empty cells remain:
 
 The key insight is the **combination step**. A single cell is read as part of
 potentially several different lines (one per direction), so its letter should
-be plausible for *all* of them at once. We support several combiners:
+be plausible for _all_ of them at once. We support several combiners:
 
 | Combiner  | Behaviour                                                                        |
-|-----------|----------------------------------------------------------------------------------|
+| --------- | -------------------------------------------------------------------------------- |
 | `product` | Multiply probabilities — AND-like; favours letters that all directions agree on. |
 | `sum`     | Average the distributions — OR-like; more permissive.                            |
 | `max`     | Take the single strongest directional vote.                                      |
@@ -140,11 +140,11 @@ them:
 ### vs. Random / Frequency-Weighted Filler
 
 The overwhelmingly common approach is to fill empty cells with **uniformly
-random** letters, or occasionally letters drawn from a language's *unigram*
+random** letters, or occasionally letters drawn from a language's _unigram_
 frequency table (so `E` and `T` appear more than `Q` and `Z`). Both ignore
-*sequence* structure entirely. We model the **conditional** distribution
-(order-N), so the filler exhibits realistic letter *transitions*, not just
-realistic letter *counts*.
+_sequence_ structure entirely. We model the **conditional** distribution
+(order-N), so the filler exhibits realistic letter _transitions_, not just
+realistic letter _counts_.
 
 ### vs. Single-Direction Text Generation
 
@@ -153,13 +153,13 @@ generated in **one** direction (left to right). A wordsearch is read in
 **eight**. A naive Markov fill that only respects, say, the horizontal
 direction would still produce nonsense vertically and diagonally. Our
 **multi-directional combination** is the core difference: each cell is
-optimised to be plausible across *all* the lines it participates in
+optimised to be plausible across _all_ the lines it participates in
 simultaneously.
 
 ### vs. Dictionary / Constraint-Solver Filler
 
 Some sophisticated generators (closer to crossword construction) try to make
-the filler spell *real* words in multiple directions using dictionaries and
+the filler spell _real_ words in multiple directions using dictionaries and
 constraint solvers. That is computationally expensive, often infeasible for
 dense grids, and produces a different feel (it leaks real words, which can be
 distracting). We deliberately aim for **plausible-but-not-real** texture:
@@ -172,12 +172,12 @@ Many generators make puzzles "harder" simply by enlarging the grid or adding
 more words. Our difficulty lever is **statistical camouflage**: by matching
 the noise to the language model, target words blend into their surroundings
 regardless of grid size. The Markov order and combiner give fine-grained,
-*qualitative* control over difficulty.
+_qualitative_ control over difficulty.
 
 ### Summary
 
 | Approach                       | Sequence-aware | Multi-directional | Produces real words |    Cost    |
-|--------------------------------|:--------------:|:-----------------:|:-------------------:|:----------:|
+| ------------------------------ | :------------: | :---------------: | :-----------------: | :--------: |
 | Uniform random filler          |       ✗        |         ✗         |          ✗          |    Low     |
 | Unigram-frequency filler       |       ✗        |         ✗         |          ✗          |    Low     |
 | Single-direction Markov        |       ✓        |         ✗         |          ✗          |    Low     |
@@ -189,7 +189,7 @@ regardless of grid size. The Markov order and combiner give fine-grained,
 ## Configuration
 
 | Option    | Default    | Notes                                          |
-|-----------|------------|------------------------------------------------|
+| --------- | ---------- | ---------------------------------------------- |
 | grid size | 15 × 15    | Width × height of the lattice.                 |
 | order (N) | 3          | Markov context length.                         |
 | combiner  | `product`  | How directional predictions are merged.        |

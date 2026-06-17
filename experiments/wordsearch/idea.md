@@ -12,6 +12,7 @@ backwards), making the hidden target words harder to spot.
 ## 2. Goals & Non-Goals
 
 ### Goals
+
 - Train an order-N Markov model from arbitrary reference text.
 - Place a user-supplied set of target words on the lattice.
 - Fill remaining cells using directional Markov predictions combined
@@ -20,6 +21,7 @@ backwards), making the hidden target words harder to spot.
   required).
 
 ### Non-Goals
+
 - Server-side processing (everything runs client-side).
 - Solving / auto-finding words (generation only, for now).
 - Multi-language morphology (we operate on raw character sequences).
@@ -27,7 +29,7 @@ backwards), making the hidden target words harder to spot.
 ## 3. Definitions
 
 | Term            | Meaning                                                        |
-|-----------------|----------------------------------------------------------------|
+| --------------- | -------------------------------------------------------------- |
 | Lattice / Grid  | 2D array of cells, each holding a single character.            |
 | Direction       | One of 8 unit vectors: N, S, E, W, NE, NW, SE, SW.             |
 | Order (N)       | Number of preceding characters used as Markov context.         |
@@ -64,6 +66,7 @@ manifest.webmanifest
 ## 5. Component Specifications
 
 ### 5.1 MarkovModel
+
 - `train(text, order)`: builds nested frequency maps
   `context -> { char -> count }`.
 - `predict(context)`: returns a normalised `Map<char, prob>`.
@@ -72,43 +75,49 @@ manifest.webmanifest
 - Serialisable to/from JSON for caching.
 
 ### 5.2 Grid & Directions
+
 - `Grid(width, height)` stores cells; `get/set(x, y)`, `inBounds(x, y)`.
 - `directions.js` exports the 8 vectors and a helper to read the
   context string of length ≤ N preceding a cell along a direction.
 
 ### 5.3 Placement
+
 - Randomly position each target word along a random direction,
   rejecting placements that conflict with already-placed letters
   (unless overlapping letters match).
 - Mark placed cells as **locked** (never overwritten by the filler).
 
 ### 5.4 Fill Order (Adjacency)
+
 - Maintain a priority queue of empty cells keyed by adjacency score.
 - Cells with more filled neighbours are filled first; ties broken
   randomly. Re-score neighbours after each fill.
 
 ### 5.5 Prediction Combination
+
 For a target empty cell, for each of the 8 directions that has a
 defined (non-empty) preceding context, request a prediction. Then
 combine the resulting distributions using a configurable method:
 
-| Combiner   | Description                                             |
-|------------|---------------------------------------------------------|
-| `product`  | Multiply probabilities (logarithmic, AND-like).         |
-| `sum`      | Average / weighted sum (OR-like).                       |
-| `max`      | Take the strongest single directional vote.             |
-| `vote`     | Each direction votes for its argmax; majority wins.     |
+| Combiner  | Description                                         |
+| --------- | --------------------------------------------------- |
+| `product` | Multiply probabilities (logarithmic, AND-like).     |
+| `sum`     | Average / weighted sum (OR-like).                   |
+| `max`     | Take the strongest single directional vote.         |
+| `vote`    | Each direction votes for its argmax; majority wins. |
 
 The combined distribution is sampled (or argmax-selected per config)
 to choose the cell's letter.
 
 ### 5.6 UI
+
 - Controls: grid size, Markov order, combiner method, sampling mode,
   reference text input/upload, target word list.
 - Render grid (highlight locked target letters in debug mode).
 - Regenerate / export (text, PNG) actions.
 
 ### 5.7 PWA
+
 - `manifest.webmanifest` + service worker caching app shell for
   offline use. Installable on desktop/mobile.
 
@@ -131,13 +140,13 @@ while empty cells remain:
 
 ## 7. Configuration Defaults
 
-| Option       | Default     |
-|--------------|-------------|
-| grid size    | 15 × 15     |
-| order (N)    | 3           |
-| combiner     | `product`   |
-| sampling     | `weighted`  |
-| back-off     | enabled     |
+| Option    | Default    |
+| --------- | ---------- |
+| grid size | 15 × 15    |
+| order (N) | 3          |
+| combiner  | `product`  |
+| sampling  | `weighted` |
+| back-off  | enabled    |
 
 ## 8. Implementation Plan (Milestones)
 
@@ -151,11 +160,13 @@ while empty cells remain:
 7. **M7 — Polish**: presets, sample reference texts, accessibility.
 
 ## 9. Testing Strategy
+
 - Unit tests for model back-off, combiner math, placement conflicts.
 - Property test: every locked target word is readable post-fill.
 - Visual/manual QA for generated grid plausibility.
 
 ## 10. Stretch Goals
+
 - Per-direction weighting of contributions.
 - Difficulty estimation heuristics.
 - Shareable puzzle URLs (encode grid + word list).
