@@ -2,3 +2,5 @@ tests/
 *.md
 node_modules/
 .idea/
+package-lock.json
+wordlist.txt

@@ -1,0 +1,47 @@
+// Kids preset: reference corpus + target words.
+
+export const kids = {
+  label: 'Kids',
+  referenceText:
+    'the happy puppy played with a red ball in the sunny park while a little kitten ' +
+    'chased butterflies near the flowers a friendly bear shared honey with his pals ' +
+    'and the children laughed as they ran and jumped and sang silly songs all day ' +
+    'long before going home to eat tasty cookies and drink warm milk and sleep tight ' +
+    'a yellow duck swam in the pond and a fluffy bunny hopped along the grassy hill ' +
+    'while the kids built a sandy castle and flew a bright kite high up in the sky ' +
+    'a tiny mouse nibbled on cheese in the cozy barn and a spotted cow mooed in the ' +
+    'meadow while a woolly lamb skipped beside its mother near the wooden fence the ' +
+    'jolly clown juggled colorful balloons at the fair and a merry pony gave rides ' +
+    'around the ring as music played and everyone clapped and cheered with glee a ' +
+    'gentle turtle crawled along the path and a noisy parrot squawked from its cage ' +
+    'the toddlers stacked wooden blocks and rolled marbles across the floor while ' +
+    'mommy read a bedtime story about a brave little train that climbed a steep hill ' +
+    'and reached the top with a cheerful toot everyone yawned and hugged their teddy ' +
+    'bears tight as the stars twinkled and the moon smiled down on the quiet town',
+  words: [
+    'puppy',
+    'kitten',
+    'ball',
+    'bear',
+    'honey',
+    'duck',
+    'bunny',
+    'kite',
+    'mouse',
+    'cheese',
+    'cow',
+    'lamb',
+    'clown',
+    'pony',
+    'turtle',
+    'parrot',
+    'balloon',
+    'cookie',
+    'marble',
+    'train',
+    'teddy',
+    'flower',
+    'castle',
+    'milk',
+  ],
+};

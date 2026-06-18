@@ -1,6 +1,52 @@
 // Helpers for handling (potentially large) target word lists.
 
 import { normaliseText } from '../markov/textPipeline.js';
+// Cache for the externally-loaded forbidden word list (wordlist.txt) so we
+// only fetch/parse it once per session.
+let externalWordsCache = null;
+/**
+ * Fetch and cache the project-level `wordlist.txt` (located alongside
+ * index.html, i.e. one level above the `src/` directory). The list is used
+ * as an additional dictionary of "real" words we must avoid accidentally
+ * forming while filling the grid. Returns a cleaned array of words.
+ *
+ * Safe to call in non-browser/test environments: if `fetch` is unavailable
+ * or the request fails, it resolves to an empty list.
+ * @param {string} [url]
+ * @returns {Promise<string[]>}
+ */
+export async function loadExternalWordList(url = 'wordlist.txt') {
+  if (externalWordsCache) return externalWordsCache;
+  if (typeof fetch !== 'function') {
+    externalWordsCache = [];
+    return externalWordsCache;
+  }
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) {
+      console.warn(`[wordlist] fetch ${url} failed: ${resp.status}`);
+      externalWordsCache = [];
+      return externalWordsCache;
+    }
+    const text = await resp.text();
+    externalWordsCache = cleanWordList(text.split(/\r?\n/));
+    console.log(`[wordlist] loaded ${externalWordsCache.length} words from ${url}`);
+  } catch {
+    console.warn(`[wordlist] error loading ${url}`);
+    externalWordsCache = [];
+  }
+  return externalWordsCache;
+}
+
+/** Override / preload the external word cache (handy for tests). */
+export function setExternalWordList(words = []) {
+  externalWordsCache = cleanWordList(words);
+}
+
+/** Synchronously read the currently-cached external word list. */
+export function getExternalWordList() {
+  return externalWordsCache || [];
+}
 
 /**
  * Clean a raw word list: normalise, drop empties, de-duplicate.
@@ -47,17 +93,30 @@ export function selectWords(words = [], count = 0, rng = Math.random) {
  * during grid filling. We store every word AND its reverse (so the check
  * is direction-agnostic), plus the maximum word length to bound how far
  * back we need to read along each direction.
+ *
+ * `extraWords` lets callers merge in an additional dictionary (e.g. the
+ * project-level wordlist.txt) so common real words are never accidentally
+ * formed by the random fill letters.
  * @param {string[]} words
+ * @param {string[]} [extraWords]
  * @returns {{set:Set<string>, maxLen:number}}
  */
-export function buildForbiddenIndex(words = []) {
+export function buildForbiddenIndex(words = [], extraWords = getExternalWordList(), minLen = 4) {
   const set = new Set();
   let maxLen = 0;
-  for (const w of cleanWordList(words)) {
-    if (w.length < 2) continue; // single letters can't be "accidentally" made
+  const all = cleanWordList([...words, ...extraWords]);
+  console.log(
+    `[wordlist] buildForbiddenIndex: target=${words.length} extra=${extraWords.length} combined=${all.length}`
+  );
+  for (const w of all) {
+    // Short fragments (a, is, the, cat...) occur so often that forbidding
+    // them removes nearly every candidate letter and collapses the fill
+    // distribution. Only guard against longer, "real" words.
+    if (w.length < minLen) continue;
     set.add(w);
     set.add([...w].reverse().join(''));
     if (w.length > maxLen) maxLen = w.length;
   }
+  console.log(`[wordlist] forbidden index: ${set.size} entries, maxLen=${maxLen}`);
   return { set, maxLen };
 }

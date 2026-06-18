@@ -70,6 +70,7 @@
       "title": "Predictive Markov Wordsearch",
       "href": "experiments/wordsearch/index.html",
       "readme": "experiments/wordsearch/README.md",
+      "video": "videos/wordsearch.mp4",
       "launchLabel": "Open the Predictive Markov Wordsearch lab",
       "pitch": "A wordsearch generator where the filler letters aren't random — a character-level Markov model trained on reference text predicts plausible language fragments in all eight reading directions, camouflaging hidden words by matching the statistical texture of natural language."
     }

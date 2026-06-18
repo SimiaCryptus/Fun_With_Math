@@ -9,10 +9,16 @@ import { buildForbiddenIndex } from '../grid/wordlist.js';
  * @param {'weighted'|'argmax'} mode
  * @param {() => number} rng
  * @param {string[]} fallbackAlphabet
+ * @param {Set<string>} [avoid]
  */
-export function select(dist, mode, rng, fallbackAlphabet) {
+export function select(dist, mode, rng, fallbackAlphabet, avoid = null) {
   if (!dist || dist.size === 0) {
-    const a = fallbackAlphabet;
+    // No usable distribution: pick a random alphabet char that isn't forbidden.
+    let a = fallbackAlphabet;
+    if (avoid && avoid.size) {
+      const safe = a.filter((c) => !avoid.has(c));
+      if (safe.length) a = safe;
+    }
     return a.length ? a[Math.floor(rng() * a.length)] : 'x';
   }
   if (mode === 'argmax') {
@@ -59,6 +65,10 @@ function forbiddenChars(grid, x, y, dirs, forbidden, lattice) {
   const reach = forbidden.maxLen - 1;
   for (const d of dirs) {
     const { before, after } = readLineAround(grid, x, y, d, reach, reach, lattice);
+    if ((before && before.length) || (after && after.length)) {
+      // Trace what context the avoidance check is actually seeing.
+      console.debug(`[fill] (${x},${y}) dir=${d.name} before="${before}" after="${after}"`);
+    }
     // The candidate char sits between `before` and `after`. Any contiguous
     // substring of `${before}${candidate}${after}` that includes the
     // candidate and matches a forbidden word is disallowed.
@@ -87,6 +97,9 @@ function forbiddenChars(grid, x, y, dirs, forbidden, lattice) {
       }
     }
   }
+  if (avoid.size) {
+    console.debug(`[fill] (${x},${y}) avoiding chars: ${[...avoid].join(',')}`);
+  }
   return avoid;
 }
 /**
@@ -95,7 +108,6 @@ function forbiddenChars(grid, x, y, dirs, forbidden, lattice) {
  * original distribution is returned unchanged (we'd rather risk a word
  * than fail to fill a cell).
  * @param {Map<string,number>} dist
- * @param {Set<string>} avoid
  * @returns {Map<string,number>}
  */
 function pruneDistribution(dist, avoid) {
@@ -107,7 +119,14 @@ function pruneDistribution(dist, avoid) {
     out.set(c, p);
     total += p;
   }
-  if (out.size === 0 || total <= 0) return dist;
+  if (out.size === 0 || total <= 0) {
+    // Everything in the model distribution was forbidden. Before giving up,
+    // try ANY alphabet character that isn't in the avoid set — the model
+    // distribution is only a subset of the alphabet, so there are usually
+    // plenty of safe (if unlikely) letters available.
+    console.warn('[fill] all model candidates forbidden; searching alphabet for a safe char');
+    return new Map(); // signal caller to fall back to alphabet-level selection
+  }
   for (const [c, p] of out) out.set(c, p / total);
   return out;
 }
@@ -158,7 +177,7 @@ export function* fillGridSteps(grid, model, config = {}) {
     // Avoid accidentally constructing any target word in the filler.
     const avoid = forbiddenChars(grid, x, y, dirs, forbidden, lattice);
     combined = pruneDistribution(combined, avoid);
-    const ch = select(combined, sampling, rng, alphabet);
+    const ch = select(combined, sampling, rng, alphabet, avoid);
     grid.set(x, y, ch);
     yield { x, y, ch, contexts };
   }
@@ -209,7 +228,7 @@ export function fillGrid(grid, model, config = {}) {
     // Avoid accidentally constructing any target word in the filler.
     const avoid = forbiddenChars(grid, x, y, dirs, forbidden, lattice);
     combined = pruneDistribution(combined, avoid);
-    const ch = select(combined, sampling, rng, alphabet);
+    const ch = select(combined, sampling, rng, alphabet, avoid);
     grid.set(x, y, ch);
   }
   return grid;

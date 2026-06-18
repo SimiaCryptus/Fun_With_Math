@@ -2,10 +2,18 @@
 
 import { generatePuzzle } from '../generator.js';
 import { renderGrid, gridToPNG, gridToText } from './render.js';
-import { readConfig, wireFileUpload } from './controls.js';
+import { readConfig, wireFileUpload, wireConfigPersistence } from './controls.js';
+import { loadExternalWordList } from '../grid/wordlist.js';
 import { initWatch, watchStep, watchPlay, watchPause, watchFinish } from './watchMode.js';
-import { initPlay, stopPlay } from './playMode.js';
+import { initPlay, stopPlay, togglePausePlay } from './playMode.js';
 import { populatePresetSelect, applyPreset, DEFAULT_PRESET } from './presets.js';
+import {
+  applyConfigFromUrl,
+  hasUrlConfig,
+  persistConfigToUrl,
+  getModeFromUrl,
+  persistModeToUrl,
+} from './urlState.js';
 
 let lastGrid = null;
 let lastPlacement = null;
@@ -50,6 +58,8 @@ function setMode(root, next) {
   if (mode === 'watch') watchPause();
   if (mode === 'play') stopPlay();
   mode = next;
+  // Persist the active mode to the URL so the link is shareable in-mode.
+  persistModeToUrl(mode);
   const panels = {
     design: root.querySelector('#panel-design'),
     watch: root.querySelector('#panel-watch'),
@@ -76,18 +86,39 @@ function setMode(root, next) {
   }
 }
 
-export function initApp(root = document) {
+export async function initApp(root = document) {
+  // Load the project-level dictionary (wordlist.txt) up front so the grid
+  // filler can avoid accidentally forming any of those real words. Failures
+  // are non-fatal: generation simply proceeds without the extra filter.
+  await loadExternalWordList();
   wireFileUpload(root);
   // Presets: populate dropdown, apply default, and re-apply on change.
   const presetEl = root.querySelector('#cfg-preset');
   if (presetEl) {
     populatePresetSelect(presetEl);
+    // Apply the URL preset (if any) before applying its text/words so the
+    // dropdown reflects the shared configuration.
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('preset') && urlParams.get('preset')) {
+      presetEl.value = urlParams.get('preset');
+    }
     applyPreset(root, presetEl.value || DEFAULT_PRESET);
     presetEl.addEventListener('change', () => {
       applyPreset(root, presetEl.value);
+      persistConfigToUrl(root);
       regenerate(root);
     });
   }
+  // Restore any saved configuration from the URL. This must run *after* the
+  // preset has populated its default text/words so URL values win.
+  if (hasUrlConfig()) {
+    applyConfigFromUrl(root);
+  }
+  // Persist all config changes to the URL for shareable links. A change to a
+  // value that affects the puzzle regenerates it in design mode.
+  wireConfigPersistence(root, () => {
+    if (mode === 'design') regenerate(root);
+  });
 
   const regenBtn = root.querySelector('#btn-regen');
   if (regenBtn) regenBtn.addEventListener('click', () => regenerate(root));
@@ -119,6 +150,13 @@ export function initApp(root = document) {
     pNew.addEventListener('click', () => {
       regenerate(root);
       initPlay(root, lastGrid, lastPlacement, readConfig(root));
+    });
+  }
+  const pPause = root.querySelector('#btn-play-pause');
+  if (pPause) {
+    pPause.addEventListener('click', () => {
+      const paused = togglePausePlay();
+      pPause.textContent = paused ? 'Resume' : 'Pause';
     });
   }
 
@@ -169,4 +207,15 @@ export function initApp(root = document) {
 
   // Generate an initial puzzle.
   regenerate(root);
+  // Write the current (possibly default) configuration to the URL so the
+  // page is immediately shareable.
+  persistConfigToUrl(root);
+  // If the URL requested a specific mode, switch to it now that the puzzle
+  // has been generated. Otherwise persist the default mode.
+  const urlMode = getModeFromUrl();
+  if (urlMode && urlMode !== mode) {
+    setMode(root, urlMode);
+  } else {
+    persistModeToUrl(mode);
+  }
 }

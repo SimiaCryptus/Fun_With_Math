@@ -48,7 +48,12 @@
           <div>Time: <span id="play-timer">00:00</span></div>
           <p>Click the first letter, then the last letter of a word.</p>
           <ul id="play-words"></ul>
+          <div id="play-bonus-wrap" hidden>
+            <strong>Bonus words found:</strong>
+            <ul id="play-bonus"></ul>
+          </div>
           <div class="actions">
+            <button id="btn-play-pause" class="secondary">Pause</button>
             <button id="btn-play-new">New game</button>
           </div>
           <div id="play-status"></div>
@@ -81,7 +86,7 @@
             <!--            <option value="triangular">triangular (8-dir)</option>-->
           </select>
           <label>
-            <input id="cfg-no-backwards" type="checkbox" />
+            <input id="cfg-no-backwards" type="checkbox" checked="true" />
             Disable backwards-oriented directions
           </label>
 
@@ -119,6 +124,15 @@
           </label>
           <input id="cfg-wordcount" type="number" min="0" max="200" value="0" />
           <label><input id="cfg-debug" type="checkbox" /> Highlight placed words</label>
+          <label for="cfg-max-adjacency">Max word adjacency</label>
+          <input type="number" id="cfg-max-adjacency" min="0" max="5" step="1" value="1" />
+        </fieldset>
+        <fieldset>
+          <legend>Randomness</legend>
+          <label for="cfg-seed">
+            Seed (blank = random; set a value for a shareable, repeatable game)
+          </label>
+          <input id="cfg-seed" type="text" placeholder="e.g. dragon-42" />
         </fieldset>
 
         <fieldset>
@@ -144,5 +158,7 @@
     </main>
 
     <script type="module" src="./src/index.js"></script>
+
+    <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
   </body>
 </html>

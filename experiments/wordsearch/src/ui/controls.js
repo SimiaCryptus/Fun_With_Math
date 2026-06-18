@@ -1,5 +1,7 @@
 // Read configuration from the controls form.
 import { updateGridFont } from './render.js';
+import { persistConfigToUrl } from './urlState.js';
+import { makeRng } from '../util/rng.js';
 
 /**
  * Collect config values from form elements.
@@ -24,10 +26,17 @@ export function readConfig(root = document) {
   const fontFamily = val('cfg-fontfamily', "'JetBrains Mono', monospace");
   const debug = !!(root.querySelector('#cfg-debug') || {}).checked;
   const includeBackwards = !(root.querySelector('#cfg-no-backwards') || {}).checked;
+  // Maximum number of other words a placed word may overlap/touch.
+  // 0 disables intersection-seeking entirely. Range 0–5, default 1.
+  const maxAdjacencyRaw = parseInt(val('cfg-max-adjacency', '1'), 10);
+  const maxAdjacency =
+    Number.isFinite(maxAdjacencyRaw) && maxAdjacencyRaw >= 0 ? Math.min(maxAdjacencyRaw, 5) : 1;
   // Optional cap on how many words to randomly select from the (possibly
   // large) target list. 0 / blank means "use all".
   const wordCountRaw = val('cfg-wordcount', '');
   const wordCount = parseInt(wordCountRaw, 10);
+  // Optional random seed for deterministic, linkable games. Blank = random.
+  const seed = val('cfg-seed', '').trim();
 
   const words = val('cfg-words', '')
     .split(/[\n,]+/)
@@ -47,7 +56,10 @@ export function readConfig(root = document) {
     fontFamily,
     debug,
     includeBackwards,
+    maxAdjacency,
     wordCount: Number.isFinite(wordCount) && wordCount > 0 ? wordCount : 0,
+    seed,
+    rng: makeRng(seed),
   };
 }
 
@@ -81,4 +93,39 @@ export function wireLiveFontControls(container, root = document) {
   };
   if (scaleEl) scaleEl.addEventListener('input', apply);
   if (familyEl) familyEl.addEventListener('change', apply);
+}
+/**
+ * Wire every configuration control so that any change is persisted to the URL.
+ * Optionally invokes a callback after persisting (e.g. to regenerate).
+ * @param {Document|HTMLElement} root
+ * @param {() => void} [onChange]
+ */
+export function wireConfigPersistence(root = document, onChange) {
+  const ids = [
+    'cfg-preset',
+    'cfg-width',
+    'cfg-height',
+    'cfg-order',
+    'cfg-lattice',
+    'cfg-combiner',
+    'cfg-sampling',
+    'cfg-reftext',
+    'cfg-words',
+    'cfg-wordcount',
+    'cfg-max-adjacency',
+    'cfg-fontscale',
+    'cfg-fontfamily',
+    'cfg-no-backwards',
+    'cfg-debug',
+    'cfg-seed',
+  ];
+  for (const id of ids) {
+    const el = root.querySelector(`#${id}`);
+    if (!el) continue;
+    const evt = el.tagName === 'SELECT' || el.type === 'checkbox' ? 'change' : 'input';
+    el.addEventListener(evt, () => {
+      persistConfigToUrl(root);
+      if (typeof onChange === 'function') onChange();
+    });
+  }
 }
