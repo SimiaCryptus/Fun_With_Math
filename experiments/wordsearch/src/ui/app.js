@@ -30,6 +30,8 @@ function regenerate(root) {
     renderGrid(root.querySelector('#grid'), grid, {
       debug: cfg.debug,
       lattice: cfg.lattice,
+      fontScale: cfg.fontScale,
+      fontFamily: cfg.fontFamily,
     });
     if (status) {
       const failed = placement.failed.length
@@ -70,7 +72,7 @@ function setMode(root, next) {
   } else if (mode === 'play') {
     // Ensure we have a fully-generated puzzle to play.
     if (!lastGrid || !lastPlacement) regenerate(root);
-    initPlay(root, lastGrid, lastPlacement);
+    initPlay(root, lastGrid, lastPlacement, cfg);
   }
 }
 
@@ -116,14 +118,23 @@ export function initApp(root = document) {
   if (pNew) {
     pNew.addEventListener('click', () => {
       regenerate(root);
-      initPlay(root, lastGrid, lastPlacement);
+      initPlay(root, lastGrid, lastPlacement, readConfig(root));
     });
   }
 
   const pngBtn = root.querySelector('#btn-png');
   if (pngBtn) {
     pngBtn.addEventListener('click', () => {
-      if (lastGrid) downloadDataURL(gridToPNG(lastGrid), 'wordsearch.png');
+      if (lastGrid) {
+        const cfg = readConfig(root);
+        downloadDataURL(
+          gridToPNG(lastGrid, 32, {
+            fontScale: cfg.fontScale,
+            fontFamily: cfg.fontFamily,
+          }),
+          'wordsearch.png'
+        );
+      }
     });
   }
 
@@ -145,11 +156,13 @@ export function initApp(root = document) {
         renderGrid(root.querySelector('#grid'), lastGrid, {
           debug: cfg.debug,
           lattice: cfg.lattice,
+          fontScale: cfg.fontScale,
+          fontFamily: cfg.fontFamily,
         });
       } else if (mode === 'play' && lastGrid && lastPlacement) {
         // Re-render the interactive grid (resets selection but preserves found
         // state via re-init).
-        initPlay(root, lastGrid, lastPlacement);
+        initPlay(root, lastGrid, lastPlacement, readConfig(root));
       }
     }, 150);
   });

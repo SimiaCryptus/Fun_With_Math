@@ -1,4 +1,5 @@
 // Read configuration from the controls form.
+import { updateGridFont } from './render.js';
 
 /**
  * Collect config values from form elements.
@@ -16,6 +17,11 @@ export function readConfig(root = document) {
   const sampling = val('cfg-sampling', 'weighted');
   const lattice = val('cfg-lattice', 'square');
   const referenceText = val('cfg-reftext', '');
+  // Optional text rendering controls. fontScale multiplies the auto-computed
+  // font size (default 1.0 = 50% of cell). fontFamily is a CSS font stack.
+  const fontScaleRaw = parseFloat(val('cfg-fontscale', '1'));
+  const fontScale = Number.isFinite(fontScaleRaw) && fontScaleRaw > 0 ? fontScaleRaw : 1;
+  const fontFamily = val('cfg-fontfamily', "'JetBrains Mono', monospace");
   const debug = !!(root.querySelector('#cfg-debug') || {}).checked;
   const includeBackwards = !(root.querySelector('#cfg-no-backwards') || {}).checked;
   // Optional cap on how many words to randomly select from the (possibly
@@ -37,6 +43,8 @@ export function readConfig(root = document) {
     lattice,
     referenceText,
     words,
+    fontScale,
+    fontFamily,
     debug,
     includeBackwards,
     wordCount: Number.isFinite(wordCount) && wordCount > 0 ? wordCount : 0,
@@ -55,4 +63,22 @@ export function wireFileUpload(root = document) {
     if (!file) return;
     textEl.value = await file.text();
   });
+}
+/**
+ * Wire the text-size (font scale) and font-family controls so they update
+ * the rendered grid in realtime, without regenerating the puzzle.
+ * @param {HTMLElement} container the #grid host element
+ * @param {Document|HTMLElement} root the form root
+ */
+export function wireLiveFontControls(container, root = document) {
+  const scaleEl = root.querySelector('#cfg-fontscale');
+  const familyEl = root.querySelector('#cfg-fontfamily');
+  const apply = () => {
+    const scaleRaw = parseFloat(scaleEl ? scaleEl.value : '1');
+    const fontScale = Number.isFinite(scaleRaw) && scaleRaw > 0 ? scaleRaw : 1;
+    const fontFamily = familyEl ? familyEl.value : undefined;
+    updateGridFont(container, { fontScale, fontFamily });
+  };
+  if (scaleEl) scaleEl.addEventListener('input', apply);
+  if (familyEl) familyEl.addEventListener('change', apply);
 }

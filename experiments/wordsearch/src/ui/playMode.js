@@ -121,7 +121,7 @@ function finishIfDone(root) {
   }
 }
 
-export function initPlay(root, grid, placement) {
+export function initPlay(root, grid, placement, cfg = {}) {
   if (state && state.tick) clearInterval(state.tick);
   const container = root.querySelector('#grid');
   for (const c of container.querySelectorAll('.confetti-layer')) c.remove();
@@ -132,6 +132,8 @@ export function initPlay(root, grid, placement) {
   }
   const table = renderInteractiveGrid(container, grid, {
     lattice: grid.lattice || 'square',
+    fontScale: cfg.fontScale,
+    fontFamily: cfg.fontFamily,
   });
 
   state = {

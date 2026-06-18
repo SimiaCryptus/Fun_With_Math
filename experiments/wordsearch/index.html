@@ -120,6 +120,22 @@
           <input id="cfg-wordcount" type="number" min="0" max="200" value="0" />
           <label><input id="cfg-debug" type="checkbox" /> Highlight placed words</label>
         </fieldset>
+
+        <fieldset>
+          <legend>Text</legend>
+
+          <label for="cfg-fontscale">Text size</label>
+          <input type="range" id="cfg-fontscale" min="0.5" max="5" step="0.05" value="1" />
+
+          <label for="cfg-fontfamily">Font</label>
+          <select id="cfg-fontfamily">
+            <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+            <option value="'Space Grotesk', system-ui, sans-serif">Space Grotesk</option>
+            <option value="Georgia, 'Times New Roman', serif">Serif</option>
+            <option value="system-ui, sans-serif">System Sans</option>
+            <option value="'Courier New', monospace">Courier</option>
+          </select>
+        </fieldset>
       </div>
     </aside>
 

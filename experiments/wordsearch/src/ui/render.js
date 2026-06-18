@@ -38,9 +38,32 @@ export function computeCellSize(container, grid) {
 }
 
 /** Apply a computed cell size to a rendered table via CSS variables. */
-function applyCellSize(table, size) {
+function applyCellSize(table, size, opts = {}) {
+  const { fontScale = 1, fontFamily } = opts;
   table.style.setProperty('--cell-size', `${size}px`);
-  table.style.setProperty('--cell-font', `${Math.max(10, Math.floor(size * 0.5))}px`);
+  const baseFont = Math.max(10, Math.floor(size * 0.5 * fontScale));
+  table.style.setProperty('--cell-font', `${baseFont}px`);
+  if (fontFamily) table.style.setProperty('--cell-font-family', fontFamily);
+}
+/**
+ * Update only the font-related CSS variables on an already-rendered grid,
+ * without re-rendering / regenerating the puzzle. The cell pixel size is
+ * preserved (read back from the existing --cell-size variable) so only the
+ * glyph size and font family change.
+ * @param {HTMLElement} container the #grid host element
+ * @param {object} [opts]
+ * @param {number} [opts.fontScale] multiplier for glyph size
+ * @param {string} [opts.fontFamily] CSS font family
+ */
+export function updateGridFont(container, opts = {}) {
+  const { fontScale = 1, fontFamily } = opts;
+  const table = container.querySelector('table.ws-grid');
+  if (!table) return;
+  const sizeRaw = parseFloat(table.style.getPropertyValue('--cell-size'));
+  const size = Number.isFinite(sizeRaw) && sizeRaw > 0 ? sizeRaw : 32;
+  const baseFont = Math.max(10, Math.floor(size * 0.5 * fontScale));
+  table.style.setProperty('--cell-font', `${baseFont}px`);
+  if (fontFamily) table.style.setProperty('--cell-font-family', fontFamily);
 }
 
 /**
@@ -51,13 +74,13 @@ function applyCellSize(table, size) {
  * @param {boolean} [opts.debug] highlight locked cells
  */
 export function renderGrid(container, grid, opts = {}) {
-  const { debug = false, lattice = 'square' } = opts;
+  const { debug = false, lattice = 'square', fontScale = 1, fontFamily } = opts;
   // Measure available space *before* clearing so the region layout is stable.
   const cellSize = computeCellSize(container, grid);
   container.innerHTML = '';
   const table = document.createElement('table');
   table.className = `ws-grid ws-lattice-${lattice}`;
-  applyCellSize(table, cellSize);
+  applyCellSize(table, cellSize, { fontScale, fontFamily });
   for (let y = 0; y < grid.height; y++) {
     const tr = document.createElement('tr');
     if (lattice === 'hex' || lattice === 'triangular') {
@@ -78,9 +101,13 @@ export function renderGrid(container, grid, opts = {}) {
  * Export grid to a PNG data URL via canvas.
  * @param {import('../grid/Grid.js').Grid} grid
  * @param {number} [cell] cell size in px
+ * @param {object} [opts]
+ * @param {number} [opts.fontScale] multiplier for glyph size
+ * @param {string} [opts.fontFamily] CSS font family
  * @returns {string} data URL
  */
-export function gridToPNG(grid, cell = 32) {
+export function gridToPNG(grid, cell = 32, opts = {}) {
+  const { fontScale = 1, fontFamily = 'monospace' } = opts;
   const canvas = document.createElement('canvas');
   canvas.width = grid.width * cell;
   canvas.height = grid.height * cell;
@@ -88,7 +115,7 @@ export function gridToPNG(grid, cell = 32) {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = '#111111';
-  ctx.font = `${Math.floor(cell * 0.6)}px monospace`;
+  ctx.font = `${Math.floor(cell * 0.6 * fontScale)}px ${fontFamily}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   for (let y = 0; y < grid.height; y++) {
@@ -112,13 +139,13 @@ export function gridToText(grid) {
  * @returns {HTMLTableElement}
  */
 export function renderInteractiveGrid(container, grid, opts = {}) {
-  const { lattice = 'square' } = opts;
+  const { lattice = 'square', fontScale = 1, fontFamily } = opts;
   // Measure available space *before* clearing so the region layout is stable.
   const cellSize = computeCellSize(container, grid);
   container.innerHTML = '';
   const table = document.createElement('table');
   table.className = `ws-grid ws-grid-play ws-lattice-${lattice}`;
-  applyCellSize(table, cellSize);
+  applyCellSize(table, cellSize, { fontScale, fontFamily });
   for (let y = 0; y < grid.height; y++) {
     const tr = document.createElement('tr');
     if (lattice === 'hex' || lattice === 'triangular') {

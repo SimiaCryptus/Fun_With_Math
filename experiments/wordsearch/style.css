@@ -530,8 +530,8 @@ table.ws-grid td {
   width: 2rem;
   height: 2rem;
   text-align: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem;
+  font-family: var(--cell-font-family, 'JetBrains Mono', monospace);
+  font-size: var(--cell-font, 1rem);
   font-weight: 500;
   color: var(--text);
   border: 1px solid var(--border);
