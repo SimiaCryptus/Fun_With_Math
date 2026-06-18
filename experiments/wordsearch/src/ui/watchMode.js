@@ -59,10 +59,14 @@ function doStep(root) {
 export function initWatch(root, cfg) {
   clearTimer();
   stepCount = 0;
-  const { grid, model, reverseModel } = preparePuzzle(cfg);
+  const { grid, model, reverseModel, selectedWords } = preparePuzzle(cfg);
   stepGrid = grid;
   stepLattice = cfg.lattice || 'square';
-  stepGen = fillGridSteps(grid, model, { ...cfg, reverseModel });
+  stepGen = fillGridSteps(grid, model, {
+    ...cfg,
+    reverseModel,
+    words: selectedWords,
+  });
   renderState(root, null);
 }
 

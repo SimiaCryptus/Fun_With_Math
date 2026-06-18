@@ -135,6 +135,24 @@ export function initApp(root = document) {
       downloadDataURL(URL.createObjectURL(blob), 'wordsearch.txt');
     });
   }
+  // Re-fit the grid when the viewport changes size (debounced).
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (mode === 'design' && lastGrid) {
+        const cfg = readConfig(root);
+        renderGrid(root.querySelector('#grid'), lastGrid, {
+          debug: cfg.debug,
+          lattice: cfg.lattice,
+        });
+      } else if (mode === 'play' && lastGrid && lastPlacement) {
+        // Re-render the interactive grid (resets selection but preserves found
+        // state via re-init).
+        initPlay(root, lastGrid, lastPlacement);
+      }
+    }, 150);
+  });
 
   // Generate an initial puzzle.
   regenerate(root);

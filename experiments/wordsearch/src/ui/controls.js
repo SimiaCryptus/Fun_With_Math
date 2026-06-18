@@ -18,6 +18,10 @@ export function readConfig(root = document) {
   const referenceText = val('cfg-reftext', '');
   const debug = !!(root.querySelector('#cfg-debug') || {}).checked;
   const includeBackwards = !(root.querySelector('#cfg-no-backwards') || {}).checked;
+  // Optional cap on how many words to randomly select from the (possibly
+  // large) target list. 0 / blank means "use all".
+  const wordCountRaw = val('cfg-wordcount', '');
+  const wordCount = parseInt(wordCountRaw, 10);
 
   const words = val('cfg-words', '')
     .split(/[\n,]+/)
@@ -35,6 +39,7 @@ export function readConfig(root = document) {
     words,
     debug,
     includeBackwards,
+    wordCount: Number.isFinite(wordCount) && wordCount > 0 ? wordCount : 0,
   };
 }
 

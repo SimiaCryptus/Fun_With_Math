@@ -1,6 +1,7 @@
-import { latticeDirections, readContext } from '../grid/directions.js';
+import { latticeDirections, readContext, readLineAround } from '../grid/directions.js';
 import { combine } from './combiners.js';
 import { pickNextCell } from './adjacency.js';
+import { buildForbiddenIndex } from '../grid/wordlist.js';
 
 /**
  * Select a character from a distribution.
@@ -34,6 +35,82 @@ export function select(dist, mode, rng, fallbackAlphabet) {
   // floating point fallback
   return [...dist.keys()].pop();
 }
+/**
+ * Determine which candidate characters at (x, y) would accidentally
+ * complete a forbidden word along any lattice direction, given the
+ * already-filled neighbours.
+ *
+ * For each direction we read the filled run behind and ahead of the cell,
+ * then for every possible split position within a window of (maxLen) we
+ * check whether placing a character would form a forbidden word that spans
+ * the cell. Returns a Set of characters to avoid.
+ *
+ * @param {import('../grid/Grid.js').Grid} grid
+ * @param {number} x
+ * @param {number} y
+ * @param {Array<{name:string,dx:number,dy:number}>} dirs
+ * @param {{set:Set<string>, maxLen:number}} forbidden
+ * @param {'square'|'hex'|'triangular'} lattice
+ * @returns {Set<string>}
+ */
+function forbiddenChars(grid, x, y, dirs, forbidden, lattice) {
+  const avoid = new Set();
+  if (!forbidden || forbidden.maxLen < 2 || forbidden.set.size === 0) return avoid;
+  const reach = forbidden.maxLen - 1;
+  for (const d of dirs) {
+    const { before, after } = readLineAround(grid, x, y, d, reach, reach, lattice);
+    // The candidate char sits between `before` and `after`. Any contiguous
+    // substring of `${before}${candidate}${after}` that includes the
+    // candidate and matches a forbidden word is disallowed.
+    for (const word of forbidden.set) {
+      const L = word.length;
+      if (L < 2 || L > before.length + 1 + after.length) continue;
+      // The candidate occupies index `before.length` in the combined line.
+      // Try every alignment of `word` over the combined line that covers it.
+      for (let start = before.length - (L - 1); start <= before.length; start++) {
+        if (start < 0) continue;
+        const candIdx = before.length - start; // position of candidate within word
+        if (candIdx < 0 || candIdx >= L) continue;
+        let ok = true;
+        for (let i = 0; i < L; i++) {
+          if (i === candIdx) continue; // this is the candidate slot
+          const lineIdx = start + i; // index within combined line
+          let ch;
+          if (lineIdx < before.length) ch = before[lineIdx];
+          else ch = after[lineIdx - before.length - 1];
+          if (ch == null || ch !== word[i]) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok) avoid.add(word[candIdx]);
+      }
+    }
+  }
+  return avoid;
+}
+/**
+ * Return a copy of `dist` with forbidden characters removed and the
+ * remaining mass re-normalised. If everything would be removed, the
+ * original distribution is returned unchanged (we'd rather risk a word
+ * than fail to fill a cell).
+ * @param {Map<string,number>} dist
+ * @param {Set<string>} avoid
+ * @returns {Map<string,number>}
+ */
+function pruneDistribution(dist, avoid) {
+  if (!avoid || avoid.size === 0 || !dist || dist.size === 0) return dist;
+  const out = new Map();
+  let total = 0;
+  for (const [c, p] of dist) {
+    if (avoid.has(c)) continue;
+    out.set(c, p);
+    total += p;
+  }
+  if (out.size === 0 || total <= 0) return dist;
+  for (const [c, p] of out) out.set(c, p / total);
+  return out;
+}
 
 /**
  * Step-by-step generator version of fillGrid. Yields after each cell
@@ -52,8 +129,10 @@ export function* fillGridSteps(grid, model, config = {}) {
     lattice = 'square',
     includeBackwards = true,
     reverseModel = null,
+    words = [],
   } = config;
   const alphabet = [...model.alphabet];
+  const forbidden = buildForbiddenIndex(words);
   let cell;
   let guard = grid.width * grid.height + 1;
   while ((cell = pickNextCell(grid, rng, lattice)) && guard-- > 0) {
@@ -75,7 +154,10 @@ export function* fillGridSteps(grid, model, config = {}) {
         }
       }
     }
-    const combined = dists.length ? combine(dists, combiner) : model.predict('');
+    let combined = dists.length ? combine(dists, combiner) : model.predict('');
+    // Avoid accidentally constructing any target word in the filler.
+    const avoid = forbiddenChars(grid, x, y, dirs, forbidden, lattice);
+    combined = pruneDistribution(combined, avoid);
     const ch = select(combined, sampling, rng, alphabet);
     grid.set(x, y, ch);
     yield { x, y, ch, contexts };
@@ -101,8 +183,10 @@ export function fillGrid(grid, model, config = {}) {
     lattice = 'square',
     includeBackwards = true,
     reverseModel = null,
+    words = [],
   } = config;
   const alphabet = [...model.alphabet];
+  const forbidden = buildForbiddenIndex(words);
 
   let cell;
   let guard = grid.width * grid.height + 1;
@@ -121,7 +205,10 @@ export function fillGrid(grid, model, config = {}) {
       }
     }
     // If no directional context available, fall back to unigram.
-    const combined = dists.length ? combine(dists, combiner) : model.predict('');
+    let combined = dists.length ? combine(dists, combiner) : model.predict('');
+    // Avoid accidentally constructing any target word in the filler.
+    const avoid = forbiddenChars(grid, x, y, dirs, forbidden, lattice);
+    combined = pruneDistribution(combined, avoid);
     const ch = select(combined, sampling, rng, alphabet);
     grid.set(x, y, ch);
   }

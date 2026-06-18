@@ -50,12 +50,14 @@
       100% 100%,
       50% 50%;
   }
+
   50% {
     background-position:
       100% 50%,
       0% 50%,
       60% 40%;
   }
+
   100% {
     background-position:
       0% 0%,
@@ -69,6 +71,7 @@
     opacity: 0;
     transform: translateY(14px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -80,9 +83,11 @@
     opacity: 0;
     transform: scale(0.6);
   }
+
   60% {
     transform: scale(1.12);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -94,6 +99,7 @@
   100% {
     box-shadow: 0 0 0 0 rgba(255, 92, 174, 0.55);
   }
+
   50% {
     box-shadow: 0 0 0 7px rgba(255, 92, 174, 0);
   }
@@ -103,9 +109,11 @@
   0% {
     transform: scale(0.55) rotate(-8deg);
   }
+
   55% {
     transform: scale(1.18) rotate(3deg);
   }
+
   100% {
     transform: scale(1) rotate(0);
   }
@@ -115,6 +123,7 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -125,6 +134,7 @@
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-3px);
   }
@@ -497,11 +507,23 @@ main {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  width: 100%;
+  height: -webkit-fill-available;
+  /* Establish a container so the grid can measure available space */
+  container-type: size;
+  display: grid;
+  place-items: center;
 }
 
 table.ws-grid {
   border-collapse: separate;
   border-spacing: 4px;
+  aspect-ratio: 1;
+  /* Pick whichever dimension is smaller so the square always fits.
+        100cqw = container width, 100cqh = container height.
+        min() chooses the limiting axis automatically. */
+  width: min(100cqw, 100cqh);
+  height: min(100cqw, 100cqh);
 }
 
 table.ws-grid td {
@@ -664,31 +686,38 @@ p {
     max-height: none;
   }
 }
+
 /* ---------------------- Play-mode feedback FX ---------------------- */
 @keyframes wrong-shake {
   0%,
   100% {
     transform: translateX(0);
   }
+
   20% {
     transform: translateX(-3px);
   }
+
   40% {
     transform: translateX(3px);
   }
+
   60% {
     transform: translateX(-2px);
   }
+
   80% {
     transform: translateX(2px);
   }
 }
+
 table.ws-grid-play td.wrong-flash {
   background: linear-gradient(135deg, #ff5c5c, #ff3b6b) !important;
   color: #fff !important;
   border-color: transparent !important;
   animation: wrong-shake 0.4s var(--ease);
 }
+
 #play-status.win {
   color: #fff;
   font-weight: 700;
@@ -698,17 +727,20 @@ table.ws-grid-play td.wrong-flash {
   background-size: 200% 100%;
   animation: shimmer 2.4s linear infinite;
 }
+
 /* Confetti burst */
 #grid {
   position: relative;
   overflow: hidden;
 }
+
 .confetti-layer {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 5;
 }
+
 .confetti {
   position: absolute;
   top: -12px;
@@ -720,11 +752,13 @@ table.ws-grid-play td.wrong-flash {
   animation-timing-function: ease-in;
   animation-fill-mode: forwards;
 }
+
 @keyframes confetti-fall {
   0% {
     transform: translateY(-12px) rotate(0deg);
     opacity: 1;
   }
+
   100% {
     transform: translateY(620px) rotate(720deg);
     opacity: 0;

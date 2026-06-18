@@ -1,4 +1,47 @@
 // Render a grid to the DOM and to PNG.
+/**
+ * Compute the optimal cell size (in px) so the rendered grid fits within the
+ * available space of its container's parent region.
+ * @param {HTMLElement} container the #grid host element
+ * @param {import('../grid/Grid.js').Grid} grid
+ * @returns {number} cell size in px
+ */
+export function computeCellSize(container, grid) {
+  const MIN = 16;
+  const MAX = 44;
+
+  const SPACING = 4; // matches border-spacing in CSS
+  // Determine the region we can paint into. Prefer the <main> region (the
+  // container's offset parent) so we account for surrounding layout.
+  const region = container.parentElement || container;
+  const regionRect = region.getBoundingClientRect();
+  // Subtract the grid host's own padding (1.5rem each side ~= 24px) plus a
+  // little breathing room so we never overflow.
+  const cs = window.getComputedStyle(container);
+  const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) || 48;
+  const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) || 48;
+  // Available width is bounded by the region width; available height is
+  // bounded by the viewport height below the region's top edge. Both account
+  // for the grid host padding plus a small safety margin.
+  const regionW = regionRect.width || window.innerWidth;
+  const regionH = regionRect.height || window.innerHeight - regionRect.top;
+  const availW = Math.max(0, regionW - padX - 8);
+  const availH = Math.max(0, Math.min(regionH, window.innerHeight - regionRect.top) - padY - 24);
+
+  const totalSpacingX = SPACING * (grid.width + 1);
+  const totalSpacingY = SPACING * (grid.height + 1);
+  const byW = (availW - totalSpacingX) / grid.width;
+  const byH = (availH - totalSpacingY) / grid.height;
+  let size = Math.floor(Math.min(byW, byH));
+  if (!Number.isFinite(size)) size = MAX;
+  return Math.max(MIN, Math.min(MAX, size));
+}
+
+/** Apply a computed cell size to a rendered table via CSS variables. */
+function applyCellSize(table, size) {
+  table.style.setProperty('--cell-size', `${size}px`);
+  table.style.setProperty('--cell-font', `${Math.max(10, Math.floor(size * 0.5))}px`);
+}
 
 /**
  * Render grid into a container as a table of cells.
@@ -9,9 +52,12 @@
  */
 export function renderGrid(container, grid, opts = {}) {
   const { debug = false, lattice = 'square' } = opts;
+  // Measure available space *before* clearing so the region layout is stable.
+  const cellSize = computeCellSize(container, grid);
   container.innerHTML = '';
   const table = document.createElement('table');
   table.className = `ws-grid ws-lattice-${lattice}`;
+  applyCellSize(table, cellSize);
   for (let y = 0; y < grid.height; y++) {
     const tr = document.createElement('tr');
     if (lattice === 'hex' || lattice === 'triangular') {
@@ -67,9 +113,12 @@ export function gridToText(grid) {
  */
 export function renderInteractiveGrid(container, grid, opts = {}) {
   const { lattice = 'square' } = opts;
+  // Measure available space *before* clearing so the region layout is stable.
+  const cellSize = computeCellSize(container, grid);
   container.innerHTML = '';
   const table = document.createElement('table');
   table.className = `ws-grid ws-grid-play ws-lattice-${lattice}`;
+  applyCellSize(table, cellSize);
   for (let y = 0; y < grid.height; y++) {
     const tr = document.createElement('tr');
     if (lattice === 'hex' || lattice === 'triangular') {

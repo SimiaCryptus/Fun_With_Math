@@ -15,6 +15,7 @@ const ASSETS = [
   './src/grid/Grid.js',
   './src/grid/directions.js',
   './src/grid/placement.js',
+  './src/grid/wordlist.js',
   './src/fill/adjacency.js',
   './src/fill/combiners.js',
   './src/fill/filler.js',

@@ -4,6 +4,7 @@ import { Grid } from './grid/Grid.js';
 import { placeWords } from './grid/placement.js';
 import { fillGrid } from './fill/filler.js';
 import { MarkovModel } from './markov/MarkovModel.js';
+import { selectWords } from './grid/wordlist.js';
 
 /**
  * @param {object} opts
@@ -29,9 +30,12 @@ export function generatePuzzle(opts) {
     rng = Math.random,
     lattice = 'square',
     includeBackwards = true,
+    wordCount = 0,
     model: providedModel,
     reverseModel: providedReverseModel,
   } = opts;
+  // Sample down (potentially large) word lists to the configured count.
+  const selectedWords = selectWords(words, wordCount, rng);
 
   const model = providedModel || new MarkovModel(order).train(referenceText, order);
   // Reverse model only matters when backward-oriented vectors participate.
@@ -40,7 +44,7 @@ export function generatePuzzle(opts) {
     : null;
 
   const grid = new Grid(width, height);
-  const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
+  const placement = placeWords(grid, selectedWords, rng, { lattice, includeBackwards });
   fillGrid(grid, model, {
     combiner,
     sampling,
@@ -48,6 +52,7 @@ export function generatePuzzle(opts) {
     lattice,
     includeBackwards,
     reverseModel,
+    words: selectedWords,
   });
   grid.lattice = lattice;
 
@@ -68,14 +73,17 @@ export function preparePuzzle(opts) {
     rng = Math.random,
     lattice = 'square',
     includeBackwards = true,
+    wordCount = 0,
     model: providedModel,
     reverseModel: providedReverseModel,
   } = opts;
+  // Sample down (potentially large) word lists to the configured count.
+  const selectedWords = selectWords(words, wordCount, rng);
   const model = providedModel || new MarkovModel(order).train(referenceText, order);
   const reverseModel = includeBackwards
     ? providedReverseModel || new MarkovModel(order).train(referenceText, order, { reverse: true })
     : null;
   const grid = new Grid(width, height);
-  const placement = placeWords(grid, words, rng, { lattice, includeBackwards });
-  return { grid, placement, model, reverseModel };
+  const placement = placeWords(grid, selectedWords, rng, { lattice, includeBackwards });
+  return { grid, placement, model, reverseModel, selectedWords };
 }

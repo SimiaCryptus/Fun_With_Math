@@ -17,6 +17,44 @@
         <button class="mode-tab" data-mode="play">Play</button>
       </div>
 
+      <div id="panel-design">
+        <div class="actions">
+          <button id="btn-regen">Generate</button>
+          <!--          <button id="btn-png" class="secondary">Export PNG</button>-->
+          <button id="btn-txt" class="secondary">Export TXT</button>
+        </div>
+        <div id="status"></div>
+      </div>
+
+      <div id="panel-watch" hidden>
+        <fieldset>
+          <legend>Watch buildout</legend>
+          <label for="watch-speed">Auto-play speed (ms/step)</label>
+          <input id="watch-speed" type="number" min="10" max="2000" value="120" />
+          <div class="actions">
+            <button id="btn-watch-step">Step</button>
+            <button id="btn-watch-play" class="secondary">Play</button>
+            <button id="btn-watch-pause" class="secondary">Pause</button>
+            <button id="btn-watch-finish" class="secondary">Finish</button>
+            <button id="btn-watch-reset" class="secondary">Reset</button>
+          </div>
+          <div id="watch-status"></div>
+        </fieldset>
+      </div>
+
+      <div id="panel-play" hidden>
+        <fieldset>
+          <legend>Play</legend>
+          <div>Time: <span id="play-timer">00:00</span></div>
+          <p>Click the first letter, then the last letter of a word.</p>
+          <ul id="play-words"></ul>
+          <div class="actions">
+            <button id="btn-play-new">New game</button>
+          </div>
+          <div id="play-status"></div>
+        </fieldset>
+      </div>
+
       <div id="config-controls">
         <fieldset>
           <legend>Grid</legend>
@@ -49,10 +87,10 @@
 
           <label for="cfg-combiner">Combiner</label>
           <select id="cfg-combiner">
-            <option value="product" selected>product (AND)</option>
+            <option value="vote" selected>vote</option>
+            <option value="product">product (AND)</option>
             <option value="sum">sum (OR)</option>
             <option value="max">max</option>
-            <option value="vote">vote</option>
           </select>
 
           <label for="cfg-sampling">Sampling</label>
@@ -76,45 +114,11 @@
           <legend>Target words</legend>
           <label for="cfg-words">One per line or comma-separated</label>
           <textarea id="cfg-words"></textarea>
+          <label for="cfg-wordcount">
+            Words to use (0 or blank = all; randomly sampled for large lists)
+          </label>
+          <input id="cfg-wordcount" type="number" min="0" max="200" value="0" />
           <label><input id="cfg-debug" type="checkbox" /> Highlight placed words</label>
-        </fieldset>
-      </div>
-
-      <div id="panel-design">
-        <div class="actions">
-          <button id="btn-regen">Generate</button>
-          <button id="btn-png" class="secondary">Export PNG</button>
-          <button id="btn-txt" class="secondary">Export TXT</button>
-        </div>
-        <div id="status"></div>
-      </div>
-
-      <div id="panel-watch" hidden>
-        <fieldset>
-          <legend>Watch buildout</legend>
-          <label for="watch-speed">Auto-play speed (ms/step)</label>
-          <input id="watch-speed" type="number" min="10" max="2000" value="120" />
-          <div class="actions">
-            <button id="btn-watch-step">Step</button>
-            <button id="btn-watch-play" class="secondary">Play</button>
-            <button id="btn-watch-pause" class="secondary">Pause</button>
-            <button id="btn-watch-finish" class="secondary">Finish</button>
-            <button id="btn-watch-reset" class="secondary">Reset</button>
-          </div>
-          <div id="watch-status"></div>
-        </fieldset>
-      </div>
-
-      <div id="panel-play" hidden>
-        <fieldset>
-          <legend>Play</legend>
-          <div>Time: <span id="play-timer">00:00</span></div>
-          <p>Click the first letter, then the last letter of a word.</p>
-          <ul id="play-words"></ul>
-          <div class="actions">
-            <button id="btn-play-new">New game</button>
-          </div>
-          <div id="play-status"></div>
         </fieldset>
       </div>
     </aside>

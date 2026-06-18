@@ -179,3 +179,53 @@ export function readContext(grid, x, y, d, order, lattice = 'square') {
   // chars are ordered nearest-first; reverse for reading order.
   return chars.reverse().join('');
 }
+/**
+ * Read up to `back` filled characters behind (x, y) and up to `fwd` filled
+ * characters ahead of (x, y) along direction d, accounting for row-parity
+ * offsets in hex/triangular lattices.
+ *
+ * Returns { before, after } strings in reading order. The cell (x, y)
+ * itself is NOT included.
+ *
+ * @param {import('./Grid.js').Grid} grid
+ * @param {number} x
+ * @param {number} y
+ * @param {{dx:number,dy:number,name?:string}} d
+ * @param {number} back
+ * @param {number} fwd
+ * @param {'square'|'hex'|'triangular'} [lattice]
+ * @returns {{before:string, after:string}}
+ */
+export function readLineAround(grid, x, y, d, back, fwd, lattice = 'square') {
+  const before = [];
+  const after = [];
+  // Walk backwards (opposite of d).
+  let cx = x;
+  let cy = y;
+  for (let k = 0; k < back; k++) {
+    const vecs =
+      lattice === 'hex' ? hexVectors(cy) : lattice === 'triangular' ? triVectors(cy) : DIRECTIONS;
+    const v = d.name && vecs[d.name] ? vecs[d.name] : d;
+    cx = cx - v.dx;
+    cy = cy - v.dy;
+    if (!grid.inBounds(cx, cy)) break;
+    const ch = grid.get(cx, cy);
+    if (!ch) break;
+    before.push(ch);
+  }
+  // Walk forwards (along d).
+  cx = x;
+  cy = y;
+  for (let k = 0; k < fwd; k++) {
+    const vecs =
+      lattice === 'hex' ? hexVectors(cy) : lattice === 'triangular' ? triVectors(cy) : DIRECTIONS;
+    const v = d.name && vecs[d.name] ? vecs[d.name] : d;
+    cx = cx + v.dx;
+    cy = cy + v.dy;
+    if (!grid.inBounds(cx, cy)) break;
+    const ch = grid.get(cx, cy);
+    if (!ch) break;
+    after.push(ch);
+  }
+  return { before: before.reverse().join(''), after: after.join('') };
+}
