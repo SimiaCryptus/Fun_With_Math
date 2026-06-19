@@ -10,28 +10,12 @@
       "pitch": "A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy — a discrete model where a single loop requires two passes to return to identity."
     },
     {
-      "icon": "SY",
-      "title": "Space-Color Symmetry",
-      "href": "experiments/symmetry_simple/index.html",
-      "readme": "experiments/symmetry_simple/README.md",
-      "video": "videos/Symmetry_Diffusion.mp4",
-      "pitch": "A pixel canvas where symmetry doesn't just mirror your strokes — it rewires the diffusion graph. Heat flows along symmetry orbits, producing kaleidoscope dynamics on a quotient-like manifold."
-    },
-    {
       "icon": "GE",
       "title": "Geometric Entropy",
       "href": "experiments/geometric-entropy/index.html",
       "readme": "experiments/geometric-entropy/README.md",
       "video": "videos/Geometric_Entropy.mp4",
       "pitch": "A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize the Shannon entropy of their pairwise-distance distribution."
-    },
-    {
-      "icon": "SK",
-      "title": "Spacelike Knots",
-      "href": "experiments/spacelike-knots/index.html",
-      "readme": "experiments/spacelike-knots/README.md",
-      "video": "videos/Spacelike_Knots.mp4",
-      "pitch": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot."
     },
     {
       "icon": "CA",
@@ -42,11 +26,20 @@
       "pitch": "Langton's ants write a colored substrate that gates where Conway's Life is allowed to live. Three feedback layers — ants → substrate → life → substrate → ants — produce highways, colonies, and fractal boundaries. For a playable take on Conway's Life and 50+ other rulesets, see the sister site <a href=\"https://aol.cognotik.com/\" target=\"_blank\" rel=\"noopener\">The Arcade of Life ↗</a>."
     },
     {
-      "icon": "FL",
-      "title": "Fractal Learning",
-      "href": "experiments/fractal_learning/index.html",
-      "readme": "experiments/fractal_learning/idea.md",
-      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
+      "icon": "SK",
+      "title": "Spacelike Knots",
+      "href": "experiments/spacelike-knots/index.html",
+      "readme": "experiments/spacelike-knots/README.md",
+      "video": "videos/Spacelike_Knots.mp4",
+      "pitch": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot."
+    },
+    {
+      "icon": "SY",
+      "title": "Space-Color Symmetry",
+      "href": "experiments/symmetry_simple/index.html",
+      "readme": "experiments/symmetry_simple/README.md",
+      "video": "videos/Symmetry_Diffusion.mp4",
+      "pitch": "A pixel canvas where symmetry doesn't just mirror your strokes — it rewires the diffusion graph. Heat flows along symmetry orbits, producing kaleidoscope dynamics on a quotient-like manifold."
     },
     {
       "icon": "IL",
@@ -73,6 +66,21 @@
       "video": "videos/wordsearch.mp4",
       "launchLabel": "Open the Predictive Markov Wordsearch lab",
       "pitch": "A wordsearch generator where the filler letters aren't random — a character-level Markov model trained on reference text predicts plausible language fragments in all eight reading directions, camouflaging hidden words by matching the statistical texture of natural language."
+    },
+    {
+      "icon": "FL",
+      "title": "Fractal Learning",
+      "href": "experiments/fractal_learning/index.html",
+      "readme": "experiments/fractal_learning/idea.md",
+      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
+    },
+    {
+      "icon": "3L",
+      "title": "No-Three-in-Line Explorer",
+      "href": "experiments/3inline/index.html",
+      "readme": "experiments/3inline/README.md",
+      "launchLabel": "Open the No-Three-in-Line Explorer lab",
+      "pitch": "An interactive laboratory for the classic no-three-in-line problem: place ~2n points on an n×n grid so no three are collinear along any rational slope. Solve it by hand with instant collinearity feedback, or watch an entropic simulated-annealing solver with parabola warm starts, sublattice mutations, and a tabu list search for dense configurations — all powered by an incremental line index for fast O(k) move checks."
     }
   ],
   "essays": [],

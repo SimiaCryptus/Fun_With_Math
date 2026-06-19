@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>No-Three-in-Line Explorer</title>
+    <link rel="stylesheet" href="styles/lab.css" />
+  </head>
+  <body>
+    <header>
+      <h1>No-Three-in-Line Explorer</h1>
+      <p class="sub">Place points so no three are collinear. Target ≈ 2n.</p>
+    </header>
+
+    <main>
+      <section class="canvas-wrap">
+        <canvas id="grid" width="640" height="640"></canvas>
+        <div class="legend" id="legend">
+          <span><i class="sw pt"></i> point</span>
+          <span><i class="sw safe"></i> safe cell</span>
+          <span><i class="sw blocked"></i> blocked</span>
+          <span><i class="sw line"></i> carrier line</span>
+          <span><i class="sw violation"></i> violation</span>
+          <span><i class="sw sub"></i> sublattice</span>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <div class="control-group">
+          <label>Grid size n: <span id="nLabel">10</span></label>
+          <input type="range" id="nSlider" min="4" max="500" value="10" />
+        </div>
+
+        <div class="control-group">
+          <label>Mode</label>
+          <div class="btn-row">
+            <button id="modeManual" class="active">Manual</button>
+            <button id="modeAuto">Auto-solve</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="btn-row">
+            <button id="btnWarmStart">Warm Start</button>
+            <button id="btnClear">Clear</button>
+          </div>
+        </div>
+
+        <div class="control-group" id="manualControls">
+          <div class="btn-row">
+            <button id="btnUndo">Undo</button>
+            <button id="btnRedo">Redo</button>
+            <button id="btnHint">Hint</button>
+          </div>
+        </div>
+
+        <div class="control-group" id="autoControls" style="display: none">
+          <div class="btn-row">
+            <button id="btnStep">Step</button>
+            <button id="btnRun">Run</button>
+            <button id="btnPause">Pause</button>
+            <button id="btnEscape">Escape</button>
+          </div>
+          <label>Temperature: <span id="tLabel">1.00</span></label>
+          <input type="range" id="tSlider" min="1" max="500" value="100" />
+          <label>Cooling rate: <span id="cLabel">0.999</span></label>
+          <input type="range" id="cSlider" min="900" max="9999" value="9990" />
+          <label>Sublattice size: <span id="ssLabel">3</span></label>
+          <input type="range" id="ssSlider" min="3" max="15" step="2" value="3" />
+        </div>
+
+        <div class="control-group overlays">
+          <label>Overlays</label>
+          <label><input type="checkbox" id="ovLines" /> Carrier lines</label>
+          <label><input type="checkbox" id="ovFrontier" checked /> Frontier</label>
+          <label><input type="checkbox" id="ovHeatmap" checked /> Blocked heatmap</label>
+          <label><input type="checkbox" id="ovSublattice" checked /> Sublattice</label>
+        </div>
+
+        <div class="control-group metrics">
+          <h3>Metrics</h3>
+          <div class="metric">
+            Points: <span id="mCount">0</span> / target <span id="mTarget">20</span>
+          </div>
+          <div class="metric">Frontier: <span id="mFrontier">0</span></div>
+          <div class="metric">Saturated: <span id="mSat">no</span></div>
+          <div class="metric">Best: <span id="mBest">0</span></div>
+          <div class="metric">Step: <span id="mStep">0</span></div>
+          <div class="metric">Entropy: <span id="mEntropy">0.00</span></div>
+          <div class="metric">Diagonal: <span id="mDiagonal">0.00</span></div>
+          <div class="metric">Accept rate: <span id="mAccept">0%</span></div>
+          <canvas id="chart" width="280" height="120"></canvas>
+        </div>
+      </aside>
+    </main>
+
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>
