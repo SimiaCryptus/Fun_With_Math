@@ -67,7 +67,7 @@ function forbiddenChars(grid, x, y, dirs, forbidden, lattice) {
     const { before, after } = readLineAround(grid, x, y, d, reach, reach, lattice);
     if ((before && before.length) || (after && after.length)) {
       // Trace what context the avoidance check is actually seeing.
-      console.debug(`[fill] (${x},${y}) dir=${d.name} before="${before}" after="${after}"`);
+      //console.debug(`[fill] (${x},${y}) dir=${d.name} before="${before}" after="${after}"`);
     }
     // The candidate char sits between `before` and `after`. Any contiguous
     // substring of `${before}${candidate}${after}` that includes the
@@ -98,7 +98,7 @@ function forbiddenChars(grid, x, y, dirs, forbidden, lattice) {
     }
   }
   if (avoid.size) {
-    console.debug(`[fill] (${x},${y}) avoiding chars: ${[...avoid].join(',')}`);
+//    console.debug(`[fill] (${x},${y}) avoiding chars: ${[...avoid].join(',')}`);
   }
   return avoid;
 }

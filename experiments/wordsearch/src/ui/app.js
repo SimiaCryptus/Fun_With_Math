@@ -7,6 +7,7 @@ import { loadExternalWordList } from '../grid/wordlist.js';
 import { initWatch, watchStep, watchPlay, watchPause, watchFinish } from './watchMode.js';
 import { initPlay, stopPlay, togglePausePlay } from './playMode.js';
 import { populatePresetSelect, applyPreset, DEFAULT_PRESET } from './presets.js';
+   import { loadReferenceFromUrl, loadWordsFromUrl } from './remoteText.js';
 import {
   applyConfigFromUrl,
   hasUrlConfig,
@@ -87,11 +88,14 @@ function setMode(root, next) {
 }
 
 export async function initApp(root = document) {
-  // Load the project-level dictionary (wordlist.txt) up front so the grid
-  // filler can avoid accidentally forming any of those real words. Failures
-  // are non-fatal: generation simply proceeds without the extra filter.
-  await loadExternalWordList();
   wireFileUpload(root);
+     // Helper to read the configured global wordlist URL (defaulting to the
+     // project-root wordlist.txt).
+     const wordlistUrl = () => {
+       const el = root.querySelector('#cfg-wordlist-url');
+       const v = el && el.value && el.value.trim();
+       return v || 'wordlist.txt';
+     };
   // Presets: populate dropdown, apply default, and re-apply on change.
   const presetEl = root.querySelector('#cfg-preset');
   if (presetEl) {
@@ -114,6 +118,51 @@ export async function initApp(root = document) {
   if (hasUrlConfig()) {
     applyConfigFromUrl(root);
   }
+     // Resolve referenced URLs into the actual text controls. The URL fields
+     // (relative or absolute) are the canonical, shareable reference; the
+     // textareas are populated from them. If a fetch fails we keep whatever the
+     // preset/inline value already provided.
+     {
+       const refUrlEl = root.querySelector('#cfg-reftext-url');
+       if (refUrlEl && refUrlEl.value) await loadReferenceFromUrl(root, refUrlEl.value.trim());
+       const wordsUrlEl = root.querySelector('#cfg-words-url');
+       if (wordsUrlEl && wordsUrlEl.value) await loadWordsFromUrl(root, wordsUrlEl.value.trim());
+     }
+     // Load the global dictionary (wordlist.txt or a user-supplied URL) up front
+     // so the grid filler can avoid accidentally forming those real words.
+     // Failures are non-fatal: generation simply proceeds without the filter.
+     await loadExternalWordList(wordlistUrl());
+     // Wire the explicit "Load" buttons for the three configurable URLs.
+     const loadRefBtn = root.querySelector('#btn-load-reftext-url');
+     if (loadRefBtn) {
+       loadRefBtn.addEventListener('click', async () => {
+         const el = root.querySelector('#cfg-reftext-url');
+         if (el && el.value) {
+           await loadReferenceFromUrl(root, el.value.trim());
+           persistConfigToUrl(root);
+           if (mode === 'design') regenerate(root);
+         }
+       });
+     }
+     const loadWordsBtn = root.querySelector('#btn-load-words-url');
+     if (loadWordsBtn) {
+       loadWordsBtn.addEventListener('click', async () => {
+         const el = root.querySelector('#cfg-words-url');
+         if (el && el.value) {
+           await loadWordsFromUrl(root, el.value.trim());
+           persistConfigToUrl(root);
+           if (mode === 'design') regenerate(root);
+         }
+       });
+     }
+     const loadWordlistBtn = root.querySelector('#btn-load-wordlist-url');
+     if (loadWordlistBtn) {
+       loadWordlistBtn.addEventListener('click', async () => {
+         await loadExternalWordList(wordlistUrl(), { force: true });
+         persistConfigToUrl(root);
+         if (mode === 'design') regenerate(root);
+       });
+     }
   // Persist all config changes to the URL for shareable links. A change to a
   // value that affects the puzzle regenerates it in design mode.
   wireConfigPersistence(root, () => {

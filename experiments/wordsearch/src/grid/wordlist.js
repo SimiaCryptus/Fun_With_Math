@@ -4,6 +4,7 @@ import { normaliseText } from '../markov/textPipeline.js';
 // Cache for the externally-loaded forbidden word list (wordlist.txt) so we
 // only fetch/parse it once per session.
 let externalWordsCache = null;
+   let externalWordsUrl = null;
 /**
  * Fetch and cache the project-level `wordlist.txt` (located alongside
  * index.html, i.e. one level above the `src/` directory). The list is used
@@ -13,10 +14,15 @@ let externalWordsCache = null;
  * Safe to call in non-browser/test environments: if `fetch` is unavailable
  * or the request fails, it resolves to an empty list.
  * @param {string} [url]
+    * @param {object} [opts]
+    * @param {boolean} [opts.force] re-fetch even if a list is already cached
  * @returns {Promise<string[]>}
  */
-export async function loadExternalWordList(url = 'wordlist.txt') {
-  if (externalWordsCache) return externalWordsCache;
+   export async function loadExternalWordList(url = 'wordlist.txt', opts = {}) {
+     const { force = false } = opts;
+     // Reuse the cache only when the URL hasn't changed and no reload is forced.
+     if (externalWordsCache && !force && url === externalWordsUrl) return externalWordsCache;
+     externalWordsUrl = url;
   if (typeof fetch !== 'function') {
     externalWordsCache = [];
     return externalWordsCache;

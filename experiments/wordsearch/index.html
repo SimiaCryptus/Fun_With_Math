@@ -109,6 +109,11 @@
           <legend>Reference text</legend>
           <label for="cfg-preset">Preset</label>
           <select id="cfg-preset"></select>
+         <label for="cfg-reftext-url">Reference text URL (relative or absolute)</label>
+         <div class="row">
+           <input id="cfg-reftext-url" type="text" placeholder="./src/ui/presets/fantasy/reference.txt" />
+           <button id="btn-load-reftext-url" type="button" class="secondary">Load</button>
+         </div>
           <label for="cfg-reffile">Upload text file</label>
           <input id="cfg-reffile" type="file" accept=".txt,text/plain" />
           <label for="cfg-reftext">Or paste text</label>
@@ -117,6 +122,11 @@
 
         <fieldset>
           <legend>Target words</legend>
+         <label for="cfg-words-url">Target words URL (relative or absolute)</label>
+         <div class="row">
+           <input id="cfg-words-url" type="text" placeholder="./src/ui/presets/fantasy/words.txt" />
+           <button id="btn-load-words-url" type="button" class="secondary">Load</button>
+         </div>
           <label for="cfg-words">One per line or comma-separated</label>
           <textarea id="cfg-words"></textarea>
           <label for="cfg-wordcount">
@@ -127,6 +137,16 @@
           <label for="cfg-max-adjacency">Max word adjacency</label>
           <input type="number" id="cfg-max-adjacency" min="0" max="5" step="1" value="1" />
         </fieldset>
+       <fieldset>
+         <legend>Global word list</legend>
+         <label for="cfg-wordlist-url">
+           Global wordlist URL (real words to avoid forming; defaults to root wordlist.txt)
+         </label>
+         <div class="row">
+           <input id="cfg-wordlist-url" type="text" placeholder="wordlist.txt" value="wordlist.txt" />
+           <button id="btn-load-wordlist-url" type="button" class="secondary">Load</button>
+         </div>
+       </fieldset>
         <fieldset>
           <legend>Randomness</legend>
           <label for="cfg-seed">
