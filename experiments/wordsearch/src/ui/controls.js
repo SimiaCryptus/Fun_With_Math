@@ -42,7 +42,6 @@ export function readConfig(root = document) {
   // the goal is to FIND words. Default on.
   const avoidWords = !(root.querySelector('#cfg-no-avoid-words') || {}).checked;
 
-
   const words = val('cfg-words', '')
     .split(/[\n,]+/)
     .map((w) => w.trim())

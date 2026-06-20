@@ -151,9 +151,9 @@ function evaluateSelection(cells) {
 /**
  * Remove the given cells, collapse columns downward, and refill the
  * vacated top cells using the Markov model.
-* Returns a map of cellKey -> drop distance (in rows) for animation:
-*   - survivors that fell: positive number of rows dropped
-*   - freshly spawned top cells: marked with `spawn` set
+ * Returns a map of cellKey -> drop distance (in rows) for animation:
+ *   - survivors that fell: positive number of rows dropped
+ *   - freshly spawned top cells: marked with `spawn` set
  * @param {Array<{x:number,y:number}>} cells
  */
 function collapseAndRefill(cells) {
@@ -302,13 +302,13 @@ function flashCleared(cells, done) {
   setTimeout(done, 260);
 }
 /**
-* Animate dropped + spawned tiles into place. Each affected cell starts
-* offset upward by its fall distance (in cell heights) and transitions back
-* to its final position, giving a "tiles falling" effect.
-* @param {HTMLTableElement} table
-* @param {Map<string, number>} dropRows key -> rows fallen
-* @param {Set<string>} spawned keys of freshly spawned top cells
-*/
+ * Animate dropped + spawned tiles into place. Each affected cell starts
+ * offset upward by its fall distance (in cell heights) and transitions back
+ * to its final position, giving a "tiles falling" effect.
+ * @param {HTMLTableElement} table
+ * @param {Map<string, number>} dropRows key -> rows fallen
+ * @param {Set<string>} spawned keys of freshly spawned top cells
+ */
 function animateDrops(table, dropRows, spawned) {
   if ((!dropRows || dropRows.size === 0) && (!spawned || spawned.size === 0)) return;
   // Determine the cell height (px) from the table's CSS variable plus the
