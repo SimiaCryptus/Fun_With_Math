@@ -6,8 +6,9 @@ import { readConfig, wireFileUpload, wireConfigPersistence } from './controls.js
 import { loadExternalWordList } from '../grid/wordlist.js';
 import { initWatch, watchStep, watchPlay, watchPause, watchFinish } from './watchMode.js';
 import { initPlay, stopPlay, togglePausePlay } from './playMode.js';
+import { initCollapse, stopCollapse, togglePauseCollapse } from './collapseMode.js';
 import { populatePresetSelect, applyPreset, DEFAULT_PRESET } from './presets.js';
-   import { loadReferenceFromUrl, loadWordsFromUrl } from './remoteText.js';
+import { loadReferenceFromUrl, loadWordsFromUrl } from './remoteText.js';
 import {
   applyConfigFromUrl,
   hasUrlConfig,
@@ -18,6 +19,8 @@ import {
 
 let lastGrid = null;
 let lastPlacement = null;
+let lastModel = null;
+let lastReverseModel = null;
 let mode = 'design';
 
 function downloadDataURL(dataUrl, filename) {
@@ -33,9 +36,11 @@ function regenerate(root) {
   const cfg = readConfig(root);
   const status = root.querySelector('#status');
   try {
-    const { grid, placement } = generatePuzzle(cfg);
+    const { grid, placement, model, reverseModel } = generatePuzzle(cfg);
     lastGrid = grid;
     lastPlacement = placement;
+    lastModel = model;
+    lastReverseModel = reverseModel;
     renderGrid(root.querySelector('#grid'), grid, {
       debug: cfg.debug,
       lattice: cfg.lattice,
@@ -58,6 +63,7 @@ function setMode(root, next) {
   // Tear down previous mode.
   if (mode === 'watch') watchPause();
   if (mode === 'play') stopPlay();
+  if (mode === 'collapse') stopCollapse();
   mode = next;
   // Persist the active mode to the URL so the link is shareable in-mode.
   persistModeToUrl(mode);
@@ -65,13 +71,14 @@ function setMode(root, next) {
     design: root.querySelector('#panel-design'),
     watch: root.querySelector('#panel-watch'),
     play: root.querySelector('#panel-play'),
+    collapse: root.querySelector('#panel-collapse'),
   };
   for (const [name, el] of Object.entries(panels)) {
     if (el) el.hidden = name !== mode;
   }
   // Hide configuration controls in play mode for a streamlined UI.
   const configControls = root.querySelector('#config-controls');
-  if (configControls) configControls.hidden = mode === 'play';
+  if (configControls) configControls.hidden = mode === 'play' || mode === 'collapse';
   root.querySelectorAll('.mode-tab').forEach((b) => {
     b.classList.toggle('active', b.dataset.mode === mode);
   });
@@ -84,18 +91,26 @@ function setMode(root, next) {
     // Ensure we have a fully-generated puzzle to play.
     if (!lastGrid || !lastPlacement) regenerate(root);
     initPlay(root, lastGrid, lastPlacement, cfg);
+  } else if (mode === 'collapse') {
+    // Ensure we have a fully-generated puzzle to play.
+    if (!lastGrid || !lastPlacement) regenerate(root);
+    initCollapse(root, lastGrid, {
+      ...cfg,
+      model: lastModel,
+      reverseModel: lastReverseModel,
+    });
   }
 }
 
 export async function initApp(root = document) {
   wireFileUpload(root);
-     // Helper to read the configured global wordlist URL (defaulting to the
-     // project-root wordlist.txt).
-     const wordlistUrl = () => {
-       const el = root.querySelector('#cfg-wordlist-url');
-       const v = el && el.value && el.value.trim();
-       return v || 'wordlist.txt';
-     };
+  // Helper to read the configured global wordlist URL (defaulting to the
+  // project-root wordlist.txt).
+  const wordlistUrl = () => {
+    const el = root.querySelector('#cfg-wordlist-url');
+    const v = el && el.value && el.value.trim();
+    return v || 'wordlist.txt';
+  };
   // Presets: populate dropdown, apply default, and re-apply on change.
   const presetEl = root.querySelector('#cfg-preset');
   if (presetEl) {
@@ -118,51 +133,51 @@ export async function initApp(root = document) {
   if (hasUrlConfig()) {
     applyConfigFromUrl(root);
   }
-     // Resolve referenced URLs into the actual text controls. The URL fields
-     // (relative or absolute) are the canonical, shareable reference; the
-     // textareas are populated from them. If a fetch fails we keep whatever the
-     // preset/inline value already provided.
-     {
-       const refUrlEl = root.querySelector('#cfg-reftext-url');
-       if (refUrlEl && refUrlEl.value) await loadReferenceFromUrl(root, refUrlEl.value.trim());
-       const wordsUrlEl = root.querySelector('#cfg-words-url');
-       if (wordsUrlEl && wordsUrlEl.value) await loadWordsFromUrl(root, wordsUrlEl.value.trim());
-     }
-     // Load the global dictionary (wordlist.txt or a user-supplied URL) up front
-     // so the grid filler can avoid accidentally forming those real words.
-     // Failures are non-fatal: generation simply proceeds without the filter.
-     await loadExternalWordList(wordlistUrl());
-     // Wire the explicit "Load" buttons for the three configurable URLs.
-     const loadRefBtn = root.querySelector('#btn-load-reftext-url');
-     if (loadRefBtn) {
-       loadRefBtn.addEventListener('click', async () => {
-         const el = root.querySelector('#cfg-reftext-url');
-         if (el && el.value) {
-           await loadReferenceFromUrl(root, el.value.trim());
-           persistConfigToUrl(root);
-           if (mode === 'design') regenerate(root);
-         }
-       });
-     }
-     const loadWordsBtn = root.querySelector('#btn-load-words-url');
-     if (loadWordsBtn) {
-       loadWordsBtn.addEventListener('click', async () => {
-         const el = root.querySelector('#cfg-words-url');
-         if (el && el.value) {
-           await loadWordsFromUrl(root, el.value.trim());
-           persistConfigToUrl(root);
-           if (mode === 'design') regenerate(root);
-         }
-       });
-     }
-     const loadWordlistBtn = root.querySelector('#btn-load-wordlist-url');
-     if (loadWordlistBtn) {
-       loadWordlistBtn.addEventListener('click', async () => {
-         await loadExternalWordList(wordlistUrl(), { force: true });
-         persistConfigToUrl(root);
-         if (mode === 'design') regenerate(root);
-       });
-     }
+  // Resolve referenced URLs into the actual text controls. The URL fields
+  // (relative or absolute) are the canonical, shareable reference; the
+  // textareas are populated from them. If a fetch fails we keep whatever the
+  // preset/inline value already provided.
+  {
+    const refUrlEl = root.querySelector('#cfg-reftext-url');
+    if (refUrlEl && refUrlEl.value) await loadReferenceFromUrl(root, refUrlEl.value.trim());
+    const wordsUrlEl = root.querySelector('#cfg-words-url');
+    if (wordsUrlEl && wordsUrlEl.value) await loadWordsFromUrl(root, wordsUrlEl.value.trim());
+  }
+  // Load the global dictionary (wordlist.txt or a user-supplied URL) up front
+  // so the grid filler can avoid accidentally forming those real words.
+  // Failures are non-fatal: generation simply proceeds without the filter.
+  await loadExternalWordList(wordlistUrl());
+  // Wire the explicit "Load" buttons for the three configurable URLs.
+  const loadRefBtn = root.querySelector('#btn-load-reftext-url');
+  if (loadRefBtn) {
+    loadRefBtn.addEventListener('click', async () => {
+      const el = root.querySelector('#cfg-reftext-url');
+      if (el && el.value) {
+        await loadReferenceFromUrl(root, el.value.trim());
+        persistConfigToUrl(root);
+        if (mode === 'design') regenerate(root);
+      }
+    });
+  }
+  const loadWordsBtn = root.querySelector('#btn-load-words-url');
+  if (loadWordsBtn) {
+    loadWordsBtn.addEventListener('click', async () => {
+      const el = root.querySelector('#cfg-words-url');
+      if (el && el.value) {
+        await loadWordsFromUrl(root, el.value.trim());
+        persistConfigToUrl(root);
+        if (mode === 'design') regenerate(root);
+      }
+    });
+  }
+  const loadWordlistBtn = root.querySelector('#btn-load-wordlist-url');
+  if (loadWordlistBtn) {
+    loadWordlistBtn.addEventListener('click', async () => {
+      await loadExternalWordList(wordlistUrl(), { force: true });
+      persistConfigToUrl(root);
+      if (mode === 'design') regenerate(root);
+    });
+  }
   // Persist all config changes to the URL for shareable links. A change to a
   // value that affects the puzzle regenerates it in design mode.
   wireConfigPersistence(root, () => {
@@ -206,6 +221,25 @@ export async function initApp(root = document) {
     pPause.addEventListener('click', () => {
       const paused = togglePausePlay();
       pPause.textContent = paused ? 'Resume' : 'Pause';
+    });
+  }
+  // Collapse-mode controls.
+  const cNew = root.querySelector('#btn-collapse-new');
+  if (cNew) {
+    cNew.addEventListener('click', () => {
+      regenerate(root);
+      initCollapse(root, lastGrid, {
+        ...readConfig(root),
+        model: lastModel,
+        reverseModel: lastReverseModel,
+      });
+    });
+  }
+  const cPause = root.querySelector('#btn-collapse-pause');
+  if (cPause) {
+    cPause.addEventListener('click', () => {
+      const paused = togglePauseCollapse();
+      cPause.textContent = paused ? 'Resume' : 'Pause';
     });
   }
 

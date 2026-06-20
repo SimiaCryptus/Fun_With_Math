@@ -98,7 +98,7 @@ function forbiddenChars(grid, x, y, dirs, forbidden, lattice) {
     }
   }
   if (avoid.size) {
-//    console.debug(`[fill] (${x},${y}) avoiding chars: ${[...avoid].join(',')}`);
+    //    console.debug(`[fill] (${x},${y}) avoiding chars: ${[...avoid].join(',')}`);
   }
   return avoid;
 }
