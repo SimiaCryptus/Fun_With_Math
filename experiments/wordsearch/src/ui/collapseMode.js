@@ -151,6 +151,9 @@ function evaluateSelection(cells) {
 /**
  * Remove the given cells, collapse columns downward, and refill the
  * vacated top cells using the Markov model.
+* Returns a map of cellKey -> drop distance (in rows) for animation:
+*   - survivors that fell: positive number of rows dropped
+*   - freshly spawned top cells: marked with `spawn` set
  * @param {Array<{x:number,y:number}>} cells
  */
 function collapseAndRefill(cells) {
@@ -165,27 +168,36 @@ function collapseAndRefill(cells) {
     }
     set.add(c.y);
   }
+  // Track how far each (new position) cell dropped, and which cells are
+  // freshly spawned, so the renderer can animate them.
+  const dropRows = new Map(); // key -> rows fallen
+  const spawned = new Set(); // key of freshly filled top cells
   // For each affected column, compact the surviving letters toward the
   // bottom, then refill the top with fresh fill letters.
   for (const [x, removed] of removedByCol) {
-    const survivors = [];
+    const survivors = []; // { ch, srcY }
     for (let y = 0; y < grid.height; y++) {
       if (removed.has(y)) continue;
       const ch = grid.get(x, y);
-      survivors.push(ch); // may be null but board is fully filled in play
+      survivors.push({ ch, srcY: y }); // may be null but board is fully filled in play
     }
     const newCount = grid.height - survivors.length;
     // Place new (empty) cells on top, survivors fall to the bottom.
     for (let y = 0; y < grid.height; y++) {
       if (y < newCount) {
         grid.set(x, y, null);
+        spawned.add(key(x, y));
       } else {
-        grid.set(x, y, survivors[y - newCount]);
+        const s = survivors[y - newCount];
+        grid.set(x, y, s.ch);
+        const dist = y - s.srcY;
+        if (dist > 0) dropRows.set(key(x, y), dist);
       }
     }
   }
   // Refill empty cells (top of affected columns) using the model.
   refillEmpty(grid);
+  return { dropRows, spawned };
 }
 
 /**
@@ -289,6 +301,56 @@ function flashCleared(cells, done) {
   }
   setTimeout(done, 260);
 }
+/**
+* Animate dropped + spawned tiles into place. Each affected cell starts
+* offset upward by its fall distance (in cell heights) and transitions back
+* to its final position, giving a "tiles falling" effect.
+* @param {HTMLTableElement} table
+* @param {Map<string, number>} dropRows key -> rows fallen
+* @param {Set<string>} spawned keys of freshly spawned top cells
+*/
+function animateDrops(table, dropRows, spawned) {
+  if ((!dropRows || dropRows.size === 0) && (!spawned || spawned.size === 0)) return;
+  // Determine the cell height (px) from the table's CSS variable plus the
+  // border spacing so the offset lines up with a whole number of rows.
+  const sizeRaw = parseFloat(table.style.getPropertyValue('--cell-size'));
+  const cell = (Number.isFinite(sizeRaw) && sizeRaw > 0 ? sizeRaw : 32) + 4; // +spacing
+  const animated = [];
+  const setup = (td, rows) => {
+    if (!td || rows <= 0) return;
+    td.style.transition = 'none';
+    td.style.transform = `translateY(${-rows * cell}px)`;
+    td.classList.add('dropping');
+    animated.push(td);
+  };
+  for (let y = 0; y < state.grid.height; y++) {
+    for (let x = 0; x < state.grid.width; x++) {
+      const k = key(x, y);
+      const td = cellAt(table, x, y);
+      if (dropRows && dropRows.has(k)) setup(td, dropRows.get(k));
+      else if (spawned && spawned.has(k)) {
+        // Spawned cells fall from just above the top of their column.
+        setup(td, y + 1);
+      }
+    }
+  }
+  if (!animated.length) return;
+  // Force a reflow so the initial transform is applied before transitioning.
+  void table.offsetHeight;
+  requestAnimationFrame(() => {
+    for (const td of animated) {
+      td.style.transition = 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)';
+      td.style.transform = 'translateY(0)';
+    }
+    setTimeout(() => {
+      for (const td of animated) {
+        td.style.transition = '';
+        td.style.transform = '';
+        td.classList.remove('dropping');
+      }
+    }, 360);
+  });
+}
 
 export function initCollapse(root, grid, cfg = {}) {
   if (state && state.tick) clearInterval(state.tick);
@@ -361,13 +423,14 @@ export function initCollapse(root, grid, cfg = {}) {
       }
       state.busy = true;
       flashCleared(cells, () => {
-        collapseAndRefill(cells);
+        const { dropRows, spawned } = collapseAndRefill(cells);
         // Re-render to reflect the dropped + refilled board.
         state.table = renderInteractiveGrid(container, state.grid, {
           lattice: state.grid.lattice || 'square',
           fontScale: cfg.fontScale,
           fontFamily: cfg.fontFamily,
         });
+        animateDrops(state.table, dropRows, spawned);
         wireTable();
         state.busy = false;
       });
@@ -401,7 +464,8 @@ function buildFillState(grid, cfg, dictWords) {
     rng: cfg.rng || Math.random,
     lattice: cfg.lattice || 'square',
     includeBackwards: cfg.includeBackwards !== false,
-    forbidden: buildForbiddenIndex(cfg.words || [], dictWords),
+    // Collapse mode is about FINDING words, so we don't avoid forming them.
+    forbidden: { set: new Set(), maxLen: 0 },
     alphabet: cfg.model ? [...cfg.model.alphabet] : 'abcdefghijklmnopqrstuvwxyz'.split(''),
   };
   return { generateFillState };

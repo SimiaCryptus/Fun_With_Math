@@ -23,6 +23,7 @@ const FIELDS = [
   { id: 'cfg-seed', key: 'seed', type: 'value' },
   { id: 'cfg-no-backwards', key: 'nobackwards', type: 'checked' },
   { id: 'cfg-debug', key: 'debug', type: 'checked' },
+  { id: 'cfg-no-avoid-words', key: 'noavoidwords', type: 'checked' },
 ];
 /**
  * Read the current mode from the URL, if present.

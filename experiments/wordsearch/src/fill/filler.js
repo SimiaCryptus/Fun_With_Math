@@ -149,9 +149,10 @@ export function* fillGridSteps(grid, model, config = {}) {
     includeBackwards = true,
     reverseModel = null,
     words = [],
+    avoidWords = true,
   } = config;
   const alphabet = [...model.alphabet];
-  const forbidden = buildForbiddenIndex(words);
+  const forbidden = avoidWords ? buildForbiddenIndex(words) : { set: new Set(), maxLen: 0 };
   let cell;
   let guard = grid.width * grid.height + 1;
   while ((cell = pickNextCell(grid, rng, lattice)) && guard-- > 0) {
@@ -203,9 +204,10 @@ export function fillGrid(grid, model, config = {}) {
     includeBackwards = true,
     reverseModel = null,
     words = [],
+    avoidWords = true,
   } = config;
   const alphabet = [...model.alphabet];
-  const forbidden = buildForbiddenIndex(words);
+  const forbidden = avoidWords ? buildForbiddenIndex(words) : { set: new Set(), maxLen: 0 };
 
   let cell;
   let guard = grid.width * grid.height + 1;

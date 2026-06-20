@@ -9,6 +9,7 @@ import { initPlay, stopPlay, togglePausePlay } from './playMode.js';
 import { initCollapse, stopCollapse, togglePauseCollapse } from './collapseMode.js';
 import { populatePresetSelect, applyPreset, DEFAULT_PRESET } from './presets.js';
 import { loadReferenceFromUrl, loadWordsFromUrl } from './remoteText.js';
+import { wireSidebarResize } from './sidebarResize.js';
 import {
   applyConfigFromUrl,
   hasUrlConfig,
@@ -104,6 +105,8 @@ function setMode(root, next) {
 
 export async function initApp(root = document) {
   wireFileUpload(root);
+  // Allow the user to drag-resize the sidebar.
+  wireSidebarResize(root);
   // Helper to read the configured global wordlist URL (defaulting to the
   // project-root wordlist.txt).
   const wordlistUrl = () => {

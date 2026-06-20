@@ -37,6 +37,11 @@ export function readConfig(root = document) {
   const wordCount = parseInt(wordCountRaw, 10);
   // Optional random seed for deterministic, linkable games. Blank = random.
   const seed = val('cfg-seed', '').trim();
+  // Whether to avoid accidentally forming real words while filling. This is
+  // desirable for classic wordsearches but undesired for collapse mode where
+  // the goal is to FIND words. Default on.
+  const avoidWords = !(root.querySelector('#cfg-no-avoid-words') || {}).checked;
+
 
   const words = val('cfg-words', '')
     .split(/[\n,]+/)
@@ -60,6 +65,7 @@ export function readConfig(root = document) {
     wordCount: Number.isFinite(wordCount) && wordCount > 0 ? wordCount : 0,
     seed,
     rng: makeRng(seed),
+    avoidWords,
   };
 }
 
@@ -121,6 +127,7 @@ export function wireConfigPersistence(root = document, onChange) {
     'cfg-no-backwards',
     'cfg-debug',
     'cfg-seed',
+    'cfg-no-avoid-words',
   ];
   for (const id of ids) {
     const el = root.querySelector(`#${id}`);

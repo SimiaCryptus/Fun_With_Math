@@ -31,6 +31,7 @@ export function generatePuzzle(opts) {
     lattice = 'square',
     includeBackwards = true,
     wordCount = 0,
+    avoidWords = true,
     model: providedModel,
     reverseModel: providedReverseModel,
   } = opts;
@@ -53,6 +54,7 @@ export function generatePuzzle(opts) {
     includeBackwards,
     reverseModel,
     words: selectedWords,
+    avoidWords,
   });
   grid.lattice = lattice;
 

@@ -15,6 +15,7 @@ const ASSETS = [
   './src/ui/watchMode.js',
   './src/ui/playMode.js',
   './src/ui/collapseMode.js',
+  './src/ui/sidebarResize.js',
   './src/generator.js',
   './src/grid/Grid.js',
   './src/grid/directions.js',
