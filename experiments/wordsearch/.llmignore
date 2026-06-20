@@ -3,6 +3,6 @@ tests/
 node_modules/
 .idea/
 package-lock.json
-wordlist.txt
+wordlist*.txt
 reference.txt
 *.css
