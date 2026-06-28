@@ -64,6 +64,14 @@
       "video": "videos/Relativistic_Gravity.mp4",
       "launchLabel": "Open the Relativistic 2-Body Gravity lab",
       "pitch": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits."
+    },
+    {
+      "icon": "NM",
+      "title": "nam — Numbers as Machines",
+      "href": "experiments/nam-calculator/index.html",
+      "readme": "experiments/nam-calculator/README.md",
+      "launchLabel": "Open the nam interactive calculator",
+      "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie."
     }
   ],
   "demos": [

@@ -81,6 +81,14 @@
       "readme": "experiments/3inline/README.md",
       "launchLabel": "Open the No-Three-in-Line Explorer lab",
       "pitch": "An interactive laboratory for the classic no-three-in-line problem: place ~2n points on an n×n grid so no three are collinear along any rational slope. Solve it by hand with instant collinearity feedback, or watch an entropic simulated-annealing solver with parabola warm starts, sublattice mutations, and a tabu list search for dense configurations — all powered by an incremental line index for fast O(k) move checks."
+    },
+    {
+      "icon": "NM",
+      "title": "nam — Numbers as Machines",
+      "href": "experiments/nam-calculator/index.html",
+      "readme": "experiments/nam-calculator/README.md",
+      "launchLabel": "Open the nam interactive calculator",
+      "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie."
     }
   ],
   "essays": [],
