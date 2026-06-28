@@ -19,7 +19,7 @@ sporadically beyond. For large n the problem remains **open**:
   more than 2n points for sufficiently large n (each of the n columns can contain
   at most 2 points, immediately giving the 2n ceiling).
 - **Conjectured asymptotics:** Guy and Kelly conjectured the true maximum density
-  tends to roughly (π²/3)^(1/3) · n ≈ 1.874·n as n → ∞, suggesting one *cannot*
+  tends to roughly (π²/3)^(1/3) · n ≈ 1.874·n as n → ∞, suggesting one _cannot_
   reach 2n for all large n.
 
 The difficulty is not merely combinatorial counting — it is the **geometry of
@@ -50,7 +50,7 @@ frustration before it becomes a hard violation.
 
 The key challenges this raises:
 
-1. How do we make a *line* (an infinite, continuous object) into a differentiable
+1. How do we make a _line_ (an infinite, continuous object) into a differentiable
    penalty?
 2. How do we encode the rule "2 points on a line is fine, 3 is forbidden"?
 3. How do we keep points snapping toward integer lattice positions while still
@@ -77,7 +77,7 @@ The defining feature of the well is its non-monotonic response to population:
   excess points off the line (enforcing the constraint).
 
 Formally, if p denotes the soft population of a line, we want a fitness f(p) such
-that the *force* (negative gradient w.r.t. point positions) changes sign at p = 2.
+that the _force_ (negative gradient w.r.t. point positions) changes sign at p = 2.
 A convenient family:
 
 ```
@@ -192,9 +192,9 @@ The UI visualizes the optimization in real time:
   with lattice cells marked.
 - **Well highlighting** — each tracked line is colored by a **population/magnitude
   color scheme**:
-    - Blue / cool → under-populated, attractive wells.
-    - Green → neutral (population ≈ 2), satisfied.
-    - Red / hot → over-populated, repulsive wells (violations).
+  - Blue / cool → under-populated, attractive wells.
+  - Green → neutral (population ≈ 2), satisfied.
+  - Red / hot → over-populated, repulsive wells (violations).
 - **Live metrics** — current energy, soft point count, number of violating lines,
   σ and grid-weight schedule values.
 - **Controls** — choose optimizer (GD / Adam / L-BFGS), grid size n, σ schedule,
