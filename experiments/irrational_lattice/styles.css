@@ -134,6 +134,10 @@ canvas {
   padding: 0.35rem;
   font-size: 0.8rem;
 }
+.offset-buttons button.active {
+  background: var(--accent);
+  color: #0a0c10;
+}
 /* --- Integer stepper (numerator-style control) --- */
 .int-stepper {
   display: flex;

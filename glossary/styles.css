@@ -35,7 +35,6 @@ body {
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid var(--border);
   background: var(--panel);
@@ -55,6 +54,7 @@ body {
   border-radius: 6px;
   margin-left: 0.4rem;
 }
+
 .mode-switch button.active {
   color: var(--text);
   border-color: var(--accent);
@@ -90,6 +90,7 @@ body {
   gap: 0.5rem;
   padding: 0 0.75rem 0.75rem;
 }
+
 .filters select {
   flex: 1;
   background: var(--panel-2);
@@ -112,9 +113,11 @@ body {
   border-bottom: 1px solid var(--border);
   cursor: pointer;
 }
+
 .concept-list li:hover {
   background: var(--panel-2);
 }
+
 .concept-list li.selected {
   background: var(--panel-2);
   border-left: 3px solid var(--accent);
@@ -123,6 +126,7 @@ body {
 .concept-list .ci-term {
   font-weight: 600;
 }
+
 .concept-list .ci-summary {
   font-size: 0.8rem;
   color: var(--muted);
@@ -142,18 +146,22 @@ body {
   margin-right: 0.3rem;
   letter-spacing: 0.04em;
 }
+
 .badge.foundational {
   background: rgba(78, 201, 168, 0.15);
   color: var(--found);
 }
+
 .badge.intermediate {
   background: rgba(226, 197, 74, 0.15);
   color: var(--inter);
 }
+
 .badge.advanced {
   background: rgba(255, 122, 122, 0.15);
   color: var(--adv);
 }
+
 .badge.domain {
   background: rgba(122, 162, 255, 0.15);
   color: var(--accent);
@@ -171,13 +179,16 @@ body {
 .detail h2 {
   margin-top: 0;
 }
+
 .detail .summary {
   color: var(--muted);
   font-size: 1.05rem;
 }
+
 .detail section {
   margin-top: 1.5rem;
 }
+
 .detail section h3 {
   font-size: 0.85rem;
   text-transform: uppercase;
@@ -190,10 +201,12 @@ body {
 .rel-group {
   margin-bottom: 0.75rem;
 }
+
 .rel-group .rel-label {
   font-size: 0.75rem;
   color: var(--muted);
 }
+
 .chip {
   display: inline-block;
   background: var(--panel-2);
@@ -204,9 +217,11 @@ body {
   cursor: pointer;
   font-size: 0.85rem;
 }
+
 .chip:hover {
   border-color: var(--accent);
 }
+
 .chip.missing {
   opacity: 0.5;
   cursor: default;
@@ -218,9 +233,11 @@ body {
   border-radius: 6px;
   margin: 0.5rem 0;
 }
+
 .formula code {
   color: var(--accent);
 }
+
 .example {
   background: var(--panel-2);
   padding: 0.6rem 0.8rem;
@@ -234,6 +251,7 @@ body {
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
+
 .path-actions button {
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -242,10 +260,12 @@ body {
   color: var(--text);
   background: var(--panel-2);
 }
+
 .path-actions .know {
   border-color: var(--good);
   color: var(--good);
 }
+
 .path-actions .dont-know {
   border-color: var(--bad);
   color: var(--bad);
@@ -267,4 +287,31 @@ body {
 
 a {
   color: var(--accent);
+}
+
+.home-link {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: rgba(26, 29, 36, 0.92);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.15s ease;
+}
+
+.home-link:hover {
+  background: var(--card-hover);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
 }

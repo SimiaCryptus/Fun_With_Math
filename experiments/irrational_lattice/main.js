@@ -5,6 +5,7 @@ import { renderField } from './render.js';
 import { computeFFT2D, renderFFT3D } from './fft.js';
 import { topAutocorrVectors } from './autocorr.js';
 import { wireRationalControls } from './rational.js';
+import { FieldAudio } from './audio.js';
 
 const canvas = document.getElementById('field');
 const statsEl = document.getElementById('stats');
@@ -184,6 +185,8 @@ function regenerate() {
     pending = null;
     updateFFT();
     drawAcVectors();
+    // Keep the audio engine's field in sync with the latest computation.
+    if (fieldAudio.playing) fieldAudio.updateField(lastResult, lastOpts);
   });
 }
 
@@ -747,6 +750,57 @@ acShow.addEventListener('click', () => {
     // Re-render to add or clear the overlay.
     regenerate();
   }
+});
+// --- Audio sonification ---
+// Map the scalar field to sound. The "scan" mode sweeps a spectral frame
+// across the field columns; the "sample" mode plays the field as a looping
+// waveform. Playback requires a cached field (computed synchronously here if
+// one is not yet available, since regenerate() defers via rAF).
+const fieldAudio = new FieldAudio();
+const audioPlay = document.getElementById('audioPlay');
+const audioMode = document.getElementById('audioMode');
+const audioVol = document.getElementById('audioVol');
+const audioVolOut = document.getElementById('audioVolOut');
+const audioRate = document.getElementById('audioRate');
+const audioRateOut = document.getElementById('audioRateOut');
+function ensureFieldForAudio() {
+  if (!lastResult || !lastOpts) {
+    const opts = readOpts();
+    updateOutputs(opts);
+    const result = computeField(opts);
+    renderField(canvas, result, opts);
+    lastResult = result;
+    lastOpts = opts;
+  }
+  return lastResult && lastOpts;
+}
+audioPlay.addEventListener('click', () => {
+  // A user gesture is required to start the AudioContext.
+  fieldAudio.setVolume(parseFloat(audioVol.value));
+  fieldAudio.setScanRate(parseFloat(audioRate.value));
+  if (fieldAudio.playing) {
+    fieldAudio.stop();
+    audioPlay.textContent = '▶ play audio';
+    audioPlay.classList.remove('active');
+    return;
+  }
+  if (!ensureFieldForAudio()) return;
+  fieldAudio.start(lastResult, lastOpts);
+  audioPlay.textContent = '❚❚ stop audio';
+  audioPlay.classList.add('active');
+});
+audioMode.addEventListener('change', () => {
+  fieldAudio.setMode(audioMode.value);
+});
+audioVol.addEventListener('input', () => {
+  const v = parseFloat(audioVol.value);
+  audioVolOut.textContent = v.toFixed(2);
+  fieldAudio.setVolume(v);
+});
+audioRate.addEventListener('input', () => {
+  const r = parseFloat(audioRate.value);
+  audioRateOut.textContent = String(r);
+  fieldAudio.setScanRate(r);
 });
 
 // Initial render.
