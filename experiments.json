@@ -72,6 +72,14 @@
       "readme": "experiments/nam-calculator/README.md",
       "launchLabel": "Open the nam interactive calculator",
       "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie."
+    },
+    {
+      "icon": "VP",
+      "title": "Vocal Parkour — Live Diagnostics",
+      "href": "https://vp.cognotik.com/#/diagnostics",
+      "readme": "experiments/beatbox-diagnostics/README.md",
+      "launchLabel": "Open the Vocal Parkour diagnostics panel",
+      "pitch": "A real-time audio-DSP diagnostics view from Vocal Parkour: a live feature visualizer (spectral radar, scrolling history, pitch readout) driven by an FFT + autocorrelation pipeline and an in-browser RBF-SVM classifier. All mic analysis runs client-side — nothing leaves your device."
     }
   ],
   "demos": [

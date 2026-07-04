@@ -67,8 +67,8 @@ those thoughts.
 A lattice is the most orderly object in mathematics: a perfect grid, the same in every direction. Three labs ask
 what happens when you _break_ that perfection in principled ways.
 
-- **[Irrational Lattice](experiments/irrational_lattice/index.html)** introduces a new primitive: *algebraic colored
-  lattice fields*. Instead of adding random noise to a grid (structureless) or leaving it periodic (sterile), it
+- **[Irrational Lattice](experiments/irrational_lattice/index.html)** introduces a new primitive: _algebraic colored
+  lattice fields_. Instead of adding random noise to a grid (structureless) or leaving it periodic (sterile), it
   deforms each point by a displacement living in a quadratic number field $\mathbb{Q}(\sqrt{D})$, then snaps back to
   the nearest lattice point. The result is **deterministic, provably aperiodic, spectrally tunable** disorder — and
   it's computed with pure integer arithmetic, making it embarrassingly parallel. Visually it conjures the moiré
@@ -110,7 +110,7 @@ Now we hand the steering wheel to an optimizer and watch points settle into conf
   spacetime. Physics-based optimization (edge springs + repulsion) keeps the knot from collapsing, and you can rotate
   it to extremize its causal structure.
 
-- **[No-Three-in-Line](experiments/3inline/README.md)** (the *3inline* lab) tackles a hard combinatorial problem —
+- **[No-Three-in-Line](experiments/3inline/README.md)** (the _3inline_ lab) tackles a hard combinatorial problem —
   place as many points as possible on an $n \times n$ grid so no three are collinear — by **relaxing it into
   continuous space**. Collinearity is penalized by an angle-based energy that diverges as any triple straightens out.
   Gradient descent crystallizes the points back onto the lattice, and a validation pass checks every triple exactly.
@@ -270,6 +270,89 @@ A few threads tie the collection together. Pull any one and the rest follow:
 
 Whether you arrived to zoom a fractal or to argue about decidability, there's a door for you — and they all open into
 the same building.
+
+## 📚 Prior Art, References & Novelty Appraisal
+
+This section situates each piece against existing work and gives an honest assessment of what is genuinely new versus
+what is a fresh recombination of known ideas. Where something is _not_ novel, it says so; where novelty is plausible
+but unverified, it is flagged as such rather than asserted.
+
+### Methodological lineage (the recurring moves)
+
+- **Continuous relaxation of discrete problems** is old and deep: LP/SDP relaxations (Lovász ϑ, Goemans–Williamson
+  MAX-CUT, 1995), the Hopfield–Tank neural TSP relaxation (1985), and "soft" differentiable combinatorics
+  (e.g. Gumbel-softmax, Jang et al. 2016; differentiable sorting, Cuturi et al. 2019). The labs here apply this
+  well-established lens to _recreational/geometric_ problems rather than inventing the lens itself.
+- **Optimizer comparison / "fingerprinting"** intersects the loss-landscape visualization literature (Li et al.,
+  _Visualizing the Loss Landscape of Neural Nets_, 2018) and basin-of-attraction studies. The specific framing —
+  _reading the optimizer's identity off a degenerate optimum's geometry_ — is an unusual and, as far as I can tell,
+  underexplored presentation, even if the underlying phenomenon (path-dependence under degeneracy) is well known.
+
+### Room-by-room appraisal
+
+- **Mandelbrot / Primes / Fourier / Collatz.** Purely pedagogical reimplementations of classics
+  (Mandelbrot 1980; Sieve of Eratosthenes; Fourier 1822; Collatz 1937). No novelty claimed, and none should be.
+- **Irrational Lattice.** Closely related to _aperiodic order_ and _cut-and-project / model sets_ (Meyer 1972;
+  de Bruijn 1981 on Penrose tilings; Baake & Grimm, _Aperiodic Order_, 2013) and to lattice-displacement noise.
+  The specific recipe — per-point displacement in $\mathbb{Q}(\sqrt{D})$ followed by snap-to-lattice, computed in
+  exact integer arithmetic for embarrassingly-parallel, provably-aperiodic "colored" disorder — appears to be a
+  genuinely original _construction_, even if every ingredient (quadratic fields, quasicrystals, blue/colored noise)
+  is individually classical. **Plausibly novel construction; utility: procedural texturing / sampling — niche.**
+- **Pentagonal Lattice Geometry.** The pentagon's non-tiling and its $\mathbb{Q}(\sqrt 5)$ / golden-ratio ties are
+  textbook (Penrose 1974; Conway–Coxeter). Branched/covering-space resolutions of geometric frustration echo
+  translation-surface and orbifold ideas (Thurston; Veech surfaces). The claimed _emergent fractional dimension
+  $d\approx2.37$_ and _spinor-like $4\pi$ holonomy_ are striking but should be read as **numerically observed
+  properties of this specific construction**, not established theorems — worth independent verification.
+- **Space-Color Symmetry.** Kaleidoscopic symmetry drawing is ubiquitous; the distinctive move is letting symmetry
+  **rewire the diffusion graph** (a quotient-manifold Laplacian) with moment-preserving renormalization. Related to
+  reaction–diffusion on symmetric/quotient domains (Turing 1952; graph-Laplacian diffusion). **Novel framing of a
+  familiar toy; utility: aesthetic.**
+- **Geometric Entropy.** Directly engages the Erdős distinct-distances problem (Erdős 1946; resolved up to logs by
+  Guth–Katz 2015). Recasting it as **Shannon-entropy maximization of the pairwise-distance distribution on arbitrary
+  manifolds/meshes** is a continuous, differentiable reformulation that I have not seen stated this way.
+  **Plausibly novel reformulation; primary value is conceptual/illustrative** (the README's own "useless" caveat is
+  apt — the optimum's degeneracy undercuts any single "best" configuration).
+- **Spacelike Knots.** Knot energies (Möbius energy, O'Hara 1991; Freedman–He–Wang 1994) and causal-set/Lorentzian
+  geometry (Bombelli–Lee–Meyer–Sorkin 1987) are both mature, but **imposing a Minkowski metric on a knot so that
+  crossings become causal inversions** is an unusual cross-pollination. **Likely novel as a juxtaposition; utility:
+  intuition-building, not a research tool.**
+- **No-Three-in-Line.** The combinatorial problem is classic (Dudeney 1917; Hall–Jackson–Sudbery–Wild 1975).
+  The **angle-based collinearity penalty that diverges as triples straighten, plus exact validation**, is a
+  reasonable continuous heuristic. It will not match exhaustive/SAT methods on guarantees, and is honest about that.
+  **Sound engineering, modest novelty.**
+- **Layered Cellular Automata.** Langton's ant (1986) and Conway's Life (1970) are foundational; **coupling them so
+  the ant's trail gates where Life may evolve** is a fun composite in the spirit of multi-layer/coupled CA. **Novelty
+  is in the coupling; utility: emergence demonstration.**
+- **Fractal Learning.** Inverse-IFS / fractal inverse problems have a real literature (Barnsley's _collage theorem_,
+  1985; Vrscay; later neural approaches). Fitting an IFS by **gradient descent under a Chamfer distance** is a modern,
+  reasonable instantiation. **Technique is established in spirit; this is a clean differentiable implementation.**
+- **QQN (Quadratic Quasi-Newton).** Sits among quasi-Newton/trust-region/line-search hybrids (Nocedal–Wright,
+  _Numerical Optimization_). Interpolating GD↔L-BFGS via a **quadratic fit along the search direction** resembles
+  model-based line searches and damped/regularized Newton steps. **Convergence/benchmark claims should be checked
+  against standard baselines before treating it as a contribution rather than a well-motivated heuristic.**
+- **RCC / NAM / x+sin(x).** These engage real foundations: computable/constructive reals (Turing 1936; Bishop;
+  exact real arithmetic — Boehm's "constructive reals," and `iRRAM`/MPFR-style libraries), and irrationality/
+  complexity measures of constants. **NAM's generator-based "number as forkable VM" with tri-state comparison** is a
+  pedagogically excellent packaging of _undecidable equality of computable reals_ — a known fact made tangible.
+  The **x+sin(x) cubic iteration for π** is a clean, likely-known fixed-point/Householder-flavored scheme; the value
+  is exposition. **RCC's "certificate-cost taxonomy" is the most speculative essay — interesting framing, needs
+  formalization to claim more.**
+- **Relativistic 2-Body Gravity.** Retarded-potential / finite-c gravity toys exist widely; it explicitly disclaims
+  being a GR solver. **No novelty claimed; honest intuition tool.**
+- **Predictive Markov Wordsearch.** Markov-chain text generation is textbook (Shannon 1948). The clever twist is
+  using it so **filler reads like language in all eight directions**, making concealment a property of the _noise's
+  statistics_ rather than grid size. **Novelty is the application/insight; utility: genuinely better puzzles.**
+
+### Bottom line
+
+The collection's strongest original contributions are **constructions and framings** — the algebraic colored lattice,
+the entropy reformulation of Erdős distances, the Minkowski-metric knot, optimizer fingerprinting, and the
+tangible-undecidability NAM tooling — rather than new theorems. Several quantitative claims (Pentagon's $d\approx2.37$
+and $4\pi$ holonomy; QQN's performance) are **empirical observations worth independent verification**. This appraisal
+is offered in the same spirit the site advertises: prefer an honest "plausibly novel, unverified" over a comfortable
+overclaim.
+
+---
 
 ---
 
