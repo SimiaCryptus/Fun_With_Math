@@ -117,7 +117,7 @@ questions and upgrade numerical observations to theorems.
     - Tier C (interpretive / speculative): the CDT, quasicrystal, and
       topological-quantum-computing _applications_.
       Skepticism mostly attaches to Tier C bleeding into Tier A/B framing.
-  - [ ] Cross-check d_eff against an _independent_ method (e.g. box-counting vs.
+  - [ ] Cross-check d*eff against an \_independent* method (e.g. box-counting vs.
         BFS-growth) so the dimension isn't an artifact of one estimator.
   - [ ] Write the "doubt-killer" command for the holonomy result specifically —
         it's the most striking and most checkable single claim.

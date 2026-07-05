@@ -99,6 +99,14 @@
       "pitch": "A real-time audio-DSP diagnostics view from Vocal Parkour: a live feature visualizer (spectral radar, scrolling history, pitch readout) driven by an FFT + autocorrelation pipeline and an in-browser RBF-SVM classifier. All mic analysis runs client-side — nothing leaves your device."
     },
     {
+      "icon": "MA",
+      "title": "Bidirectional Markov Text Analyzer",
+      "href": "experiments/markov-analysis/index.html",
+      "readme": "experiments/markov-analysis/README.md",
+      "launchLabel": "Open the Bidirectional Markov Text Analyzer lab",
+      "pitch": "Build a language model from your own corpus, then watch another text light up token-by-token by how <em>surprising</em> it is. Forward and backward order-n Markov models are merged into a single surprise heatmap, with click-to-replace predictions, add-k smoothing, backoff, and live perplexity."
+    },
+    {
       "icon": "ME",
       "title": "Constrained Mesh Enclosure Lab",
       "href": "experiments/mesh/index.html",
