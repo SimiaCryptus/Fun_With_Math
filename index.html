@@ -62,6 +62,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/home.css" />
     <link rel="stylesheet" href="css/videos.css" />
+    <link rel="stylesheet" href="css/home-nav.css" />
     <script src="js/marked.min.js"></script>
     <!-- MathJax configuration must be set before the library loads -->
     <script>
@@ -203,6 +204,10 @@
         <span class="brand-text">Mathematical Explorations</span>
       </a>
       <span class="spacer"></span>
+      <a class="nav-link nav-section-link" href="#featured">Labs</a>
+      <a class="nav-link nav-section-link" href="#games">Games</a>
+      <a class="nav-link nav-section-link" href="#essays">Essays</a>
+      <a class="nav-link nav-section-link" href="#demos">Demos</a>
       <a
         class="nav-link"
         href="glossary/"
@@ -210,22 +215,6 @@
         rel="noopener"
         aria-label="Visit the Mathematical Explorations Glossary — companion reference for concepts and notation used in the labs"
         >Glossary <span class="arrow">↗</span></a
-      >
-      <a
-        class="nav-link"
-        href="https://aol.cognotik.com/"
-        target="_blank"
-        rel="noopener"
-        aria-label="Visit The Arcade of Life — sister site"
-        >Arcade of Life <span class="arrow">↗</span></a
-      >
-      <a
-        class="nav-link"
-        href="https://vp.cognotik.com/"
-        target="_blank"
-        rel="noopener"
-        aria-label="Visit Vocal Parkour — vocal-gesture rhythm game"
-        >Vocal Parkour <span class="arrow">↗</span></a
       >
       <a
         class="nav-link"
@@ -310,7 +299,7 @@
       </p>
     </div>
 
-    <p class="section-title">
+    <p class="section-title" id="featured">
       <span class="section-title-num">01</span>
       Featured Laboratories
       <span class="section-title-sub">— in-depth experiments</span>
@@ -325,8 +314,20 @@
       <!-- Populated from labs.json by js/home-data.js -->
     </div>
 
-    <p class="section-title">
+    <p class="section-title" id="games">
       <span class="section-title-num">03</span>
+      Games <span class="section-title-sub">— interactive, playable</span>
+    </p>
+    <p class="section-subtitle">
+      Playable sister projects and game-like labs — built on the same browser-native tooling as the
+      experiments above. Click a card to read its notes; use the Open button to launch the game.
+    </p>
+    <div class="featured-grid" id="gamesGrid">
+      <!-- Populated from games.json by js/home-data.js -->
+    </div>
+
+    <p class="section-title" id="essays">
+      <span class="section-title-num">04</span>
       Essays <span class="section-title-sub">— long-form explorations</span>
     </p>
     <p class="section-subtitle">
@@ -340,8 +341,8 @@
       <!-- Populated from labs.json by js/home-data.js -->
     </div>
 
-    <p class="section-title">
-      <span class="section-title-num">02</span>
+    <p class="section-title" id="demos">
+      <span class="section-title-num">05</span>
       Short Demonstrations
       <span class="section-title-sub">— classical concepts, concisely</span>
     </p>
@@ -363,12 +364,6 @@
         >
         &middot; no build step, no dependencies beyond a couple of CDN-loaded libraries
       </p>
-      <p style="opacity: 0.8; font-size: 0.92em">
-        Sister site:
-        <a href="https://aol.cognotik.com/" target="_blank" rel="noopener">The Arcade of Life</a>
-        &mdash; a browser-based arcade built on Conway's Game of Life and 50+ cellular automaton
-        rulesets.
-      </p>
       <p style="opacity: 0.75; font-size: 0.9em; max-width: 60ch; margin: 1em auto">
         Human insight, finished with AI-assisted tooling. A lifetime of mathematical curiosity that
         finally had the means to be explored to its conclusion and published — not machine-generated
@@ -376,6 +371,16 @@
       </p>
       <p class="footer-mark">∑</p>
     </footer>
+    <!-- Back-to-top shortcut -->
+    <button
+      type="button"
+      class="back-to-top"
+      id="backToTop"
+      aria-label="Back to top"
+      title="Back to top"
+    >
+      ↑
+    </button>
 
     <!-- Modal for expanded README view -->
     <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-hidden="true">

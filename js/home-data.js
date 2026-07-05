@@ -147,15 +147,23 @@
       safeFetch('labs.json', { featured: [] }),
       safeFetch('essays.json', { essays: [] }),
       safeFetch('experiments.json', { demos: [] }),
+      safeFetch('games.json', { games: [] }),
     ])
-      .then(([labs, essaysData, experiments]) => {
+      .then(([labs, essaysData, experiments, gamesData]) => {
         const featured = (labs && labs.featured) || (experiments && experiments.featured) || [];
         const essays = (essaysData && essaysData.essays) || (labs && labs.essays) || [];
         const demos = (experiments && experiments.demos) || (labs && labs.demos) || [];
+        const games = (gamesData && gamesData.games) || (labs && labs.games) || [];
 
         fill(document.getElementById('featuredGrid'), featured, buildFeaturedCard);
         fill(document.getElementById('essaysGrid'), essays, buildFeaturedCard);
         fill(document.getElementById('demoGrid'), demos, buildDemoCard);
+        fill(document.getElementById('gamesGrid'), games, buildFeaturedCard);
+        // Signal that the dynamic grids are now in the DOM so consumers
+        // (e.g. home.js) can correct anchor-based scroll positions that
+        // were computed before the page was fully built.
+        window.__homeGridsReady = true;
+        document.dispatchEvent(new CustomEvent('home-grids-ready'));
       })
       .finally(() => {
         // Load home.js after the grids are populated so its DOM queries succeed.

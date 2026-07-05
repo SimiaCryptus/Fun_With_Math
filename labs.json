@@ -59,22 +59,6 @@
       "pitch": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits."
     },
     {
-      "icon": "WS",
-      "title": "Predictive Markov Wordsearch",
-      "href": "experiments/wordsearch/index.html",
-      "readme": "experiments/wordsearch/README.md",
-      "video": "videos/wordsearch.mp4",
-      "launchLabel": "Open the Predictive Markov Wordsearch lab",
-      "pitch": "A wordsearch generator where the filler letters aren't random — a character-level Markov model trained on reference text predicts plausible language fragments in all eight reading directions, camouflaging hidden words by matching the statistical texture of natural language."
-    },
-    {
-      "icon": "FL",
-      "title": "Fractal Learning",
-      "href": "experiments/fractal_learning/index.html",
-      "readme": "experiments/fractal_learning/idea.md",
-      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
-    },
-    {
       "icon": "3L",
       "title": "No-Three-in-Line Explorer",
       "href": "experiments/3inline/index.html",
@@ -91,14 +75,6 @@
       "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie."
     },
     {
-      "icon": "VP",
-      "title": "Vocal Parkour — Live Diagnostics",
-      "href": "https://vp.cognotik.com/#/diagnostics",
-      "readme": "experiments/beatbox-diagnostics/README.md",
-      "launchLabel": "Open the Vocal Parkour diagnostics panel",
-      "pitch": "A real-time audio-DSP diagnostics view from Vocal Parkour: a live feature visualizer (spectral radar, scrolling history, pitch readout) driven by an FFT + autocorrelation pipeline and an in-browser RBF-SVM classifier. All mic analysis runs client-side — nothing leaves your device."
-    },
-    {
       "icon": "MA",
       "title": "Bidirectional Markov Text Analyzer",
       "href": "experiments/markov-analysis/index.html",
@@ -113,6 +89,13 @@
       "readme": "experiments/mesh/README.md",
       "launchLabel": "Open the Constrained Mesh Enclosure Lab",
       "pitch": "A deformable surface mesh flows downhill on geometric fitness functionals (area, volume, edge-length entropy, angular regularity, Laplacian smoothness) while an exact continuous collision-detection pipeline guarantees it never intrudes into an inner keep-out volume — a differentiable shrink-wrap where every gradient step is clipped at the moment of contact."
+    },
+    {
+      "icon": "FL",
+      "title": "Fractal Learning",
+      "href": "experiments/fractal_learning/index.html",
+      "readme": "experiments/fractal_learning/idea.md",
+      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
     }
   ],
   "essays": [],

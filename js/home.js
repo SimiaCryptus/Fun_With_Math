@@ -231,6 +231,9 @@ async function loadReadmes() {
       console.warn('Failed to load README:', path, err);
     }
   }
+  // READMEs have finished loading (and thus changed page height). Let the
+  // anchor-scroll fixer re-correct the viewport position.
+  document.dispatchEvent(new CustomEvent('home-readmes-ready'));
 }
 
 loadReadmes();
@@ -452,4 +455,88 @@ document.addEventListener('keydown', (e) => {
     card.addEventListener('focusin', start);
     card.addEventListener('focusout', stop);
   });
+})();
+/* ── Section navigation: scroll-spy + back-to-top ──────────── */
+(function initSectionNavigation() {
+  const sections = Array.from(document.querySelectorAll('.section-title[id]'));
+  const navLinks = Array.from(document.querySelectorAll('.nav-section-link'));
+  const backToTop = document.getElementById('backToTop');
+  // Map section id -> nav link for quick highlighting.
+  const linkFor = new Map();
+  navLinks.forEach((link) => {
+    const id = (link.getAttribute('href') || '').replace(/^#/, '');
+    if (id) linkFor.set(id, link);
+  });
+  // Smooth-scroll for section shortcut links (also works when
+  // scroll-behavior isn't honored) and keeps the URL hash tidy.
+  navLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const id = (link.getAttribute('href') || '').replace(/^#/, '');
+      const target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', '#' + id);
+    });
+  });
+  // Highlight the nav link for whichever section is currently in view.
+  if ('IntersectionObserver' in window && sections.length) {
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const active = linkFor.get(entry.target.id);
+          if (!active) return;
+          navLinks.forEach((l) => l.classList.remove('is-active'));
+          active.classList.add('is-active');
+        });
+      },
+      { rootMargin: '-40% 0px -55% 0px', threshold: 0 }
+    );
+    sections.forEach((s) => spy.observe(s));
+  }
+  // Back-to-top visibility + action.
+  if (backToTop) {
+    const toggleBackToTop = () => {
+      if (window.scrollY > window.innerHeight * 0.75) {
+        backToTop.classList.add('is-visible');
+      } else {
+        backToTop.classList.remove('is-visible');
+      }
+    };
+    window.addEventListener('scroll', toggleBackToTop, { passive: true });
+    toggleBackToTop();
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      history.replaceState(null, '', window.location.pathname);
+    });
+  }
+})();
+/* ── Correct anchor scroll after dynamic grids are built ───── */
+/* The featured/essays/demos/games grids are populated asynchronously,
+   so a hash present on initial page load (e.g. #essays) is resolved by
+   the browser before those cards exist — leaving the viewport parked at
+   the wrong offset. Re-run the scroll once the DOM is complete. */
+(function initAnchorScrollFix() {
+  function scrollToHash(smooth) {
+    const id = decodeURIComponent((window.location.hash || '').replace(/^#/, ''));
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  }
+  if (!window.location.hash) return;
+  const correct = () => requestAnimationFrame(() => scrollToHash(false));
+  // 1) Grids may already be built (home.js is normally loaded *after* the
+  //    grids are populated and the 'home-grids-ready' event has fired, so
+  //    a plain event listener would miss it — check the flag too).
+  if (window.__homeGridsReady) {
+    correct();
+  }
+  document.addEventListener('home-grids-ready', correct, { once: true });
+  // 2) README markdown loads asynchronously and changes page height, which
+  //    invalidates the offset computed above — re-correct once it settles.
+  document.addEventListener('home-readmes-ready', correct, { once: true });
+  // 3) Final safety net: after images/videos have loaded and shifted layout.
+  window.addEventListener('load', () => correct(), { once: true });
 })();
