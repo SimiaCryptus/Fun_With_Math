@@ -1,13 +1,5 @@
 {
   "featured": [
-    {
-       "icon": "ME",
-       "title": "Constrained Mesh Enclosure Lab",
-       "href": "experiments/mesh/index.html",
-       "readme": "experiments/mesh/README.md",
-       "launchLabel": "Open the Constrained Mesh Enclosure Lab",
-       "pitch": "A deformable surface mesh flows downhill on geometric fitness functionals (area, volume, edge-length entropy, angular regularity, Laplacian smoothness) while an exact continuous collision-detection pipeline guarantees it never intrudes into an inner keep-out volume — a differentiable shrink-wrap where every gradient step is clipped at the moment of contact."
-     },
      {
       "icon": "PL",
       "title": "Pentagonal Lattice Geometry",
@@ -105,6 +97,14 @@
       "readme": "experiments/beatbox-diagnostics/README.md",
       "launchLabel": "Open the Vocal Parkour diagnostics panel",
       "pitch": "A real-time audio-DSP diagnostics view from Vocal Parkour: a live feature visualizer (spectral radar, scrolling history, pitch readout) driven by an FFT + autocorrelation pipeline and an in-browser RBF-SVM classifier. All mic analysis runs client-side — nothing leaves your device."
+    },
+    {
+      "icon": "ME",
+      "title": "Constrained Mesh Enclosure Lab",
+      "href": "experiments/mesh/index.html",
+      "readme": "experiments/mesh/README.md",
+      "launchLabel": "Open the Constrained Mesh Enclosure Lab",
+      "pitch": "A deformable surface mesh flows downhill on geometric fitness functionals (area, volume, edge-length entropy, angular regularity, Laplacian smoothness) while an exact continuous collision-detection pipeline guarantees it never intrudes into an inner keep-out volume — a differentiable shrink-wrap where every gradient step is clipped at the moment of contact."
     }
   ],
   "essays": [],
