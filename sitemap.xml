@@ -127,12 +127,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://math.cognotik.com/experiments/wordsearch/</loc>
-    <lastmod>2026-06-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://math.cognotik.com/experiments/basic/collatz.html</loc>
     <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>
@@ -309,6 +303,12 @@
   <url>
     <loc>https://math.cognotik.com/essays/TEL/alternate.html</loc>
     <lastmod>2026-06-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/games/wordsearch/</loc>
+    <lastmod>2026-06-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
