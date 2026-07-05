@@ -40,6 +40,7 @@ header h1 {
 
 .layout {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   padding: 1rem;
   align-items: flex-start;
@@ -49,6 +50,7 @@ header h1 {
 .col-right {
   flex: 1;
   min-width: 0;
+  min-width: 320px;
 }
 
 .panel {
@@ -129,6 +131,28 @@ button:disabled {
 .warn {
   color: #f7a072;
 }
+/* Stats / metric rows */
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.85rem;
+  padding: 2px 0;
+  border-bottom: 1px dotted var(--border);
+}
+.stats-label {
+  color: #aaa;
+}
+.stats-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.stats-empty {
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}
 
 .analysis-view {
   line-height: 2;
@@ -179,6 +203,28 @@ button:disabled {
 .popup h3 {
   margin: 0 0 0.4rem;
   font-size: 0.85rem;
+}
+.popup-head-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #9aa;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+.popup-col-tok {
+  flex: 0 0 60px;
+}
+.popup-col-bar {
+  flex: 1;
+}
+.popup-col-num {
+  flex: 0 0 60px;
+  text-align: right;
 }
 .popup-row {
   display: flex;
@@ -242,4 +288,78 @@ button:disabled {
   .layout {
     flex-direction: column;
   }
+}
+
+/* --- Cellular Automaton --- */
+#caPanel {
+  flex: 1 1 100%;
+  width: 100%;
+}
+#caPanel textarea {
+  margin-bottom: 0.5rem;
+}
+#caPanel .config-grid {
+  margin-bottom: 0.75rem;
+}
+#caPanel .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+#caPanel .actions button {
+  margin: 0;
+}
+.ca-status {
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin: 0.4rem 0;
+}
+.ca-metrics {
+  margin: 0.5rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.25rem 1rem;
+}
+.ca-view-controls {
+  margin: 0.4rem 0;
+}
+.ca-view {
+  margin-top: 0.75rem;
+}
+.ca-view-controls select {
+  background: #1a1a28;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 0.25rem 0.4rem;
+}
+.ca-view h2 {
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+.ca-spacetime {
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  background: #14141f;
+  border-radius: 4px;
+  padding: 2px;
+  font-family: ui-monospace, monospace;
+  line-height: 1;
+  white-space: nowrap;
+}
+.ca-row {
+  display: block;
+  white-space: pre;
+}
+.ca-cell {
+  display: inline-block;
+  min-width: 0.7ch;
+  text-align: center;
+  cursor: pointer;
+  padding: 0 1px;
+  color: var(--text);
+}
+.ca-cell:hover {
+  outline: 1px solid var(--accent);
 }

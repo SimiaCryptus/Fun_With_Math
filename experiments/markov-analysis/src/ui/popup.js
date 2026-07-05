@@ -32,6 +32,7 @@ export function showPopup(anchorEl, result, onReplace) {
 
   const header = el('div', { class: 'popup-head-row' }, [
     el('span', { class: 'popup-col-tok', text: 'token' }),
+    el('span', { class: 'popup-col-bar', text: '' }),
     el('span', { class: 'popup-col-num', text: 'fwd' }),
     el('span', { class: 'popup-col-num', text: 'bwd' }),
     el('span', { class: 'popup-col-num', text: 'joint' }),

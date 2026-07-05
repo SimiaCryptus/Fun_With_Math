@@ -1,0 +1,89 @@
+// caView.js — renders CA generations as a spacetime diagram
+
+import { el, clear } from '../util/dom.js';
+import { colorFor } from '../util/colorScale.js';
+
+// A row = tape at generation t. Cells colored by mode:
+//  'change'    — flipped this step (highlighted) vs stable
+//  'surprise'  — probability under model (needs perCellP)
+//  'stability' — steps since last change (needs perCellAge)
+export function createCaView(container, opts = {}) {
+  const cfg = opts.config || {};
+  let colorMode = opts.colorMode || 'change';
+
+  container.appendChild(el('h2', { text: 'Spacetime' }));
+  const controlsRow = el('div', { class: 'ca-view-controls' });
+  const modeSelect = el('select', {}, [
+    el('option', { value: 'change', text: 'Color: change' }),
+    el('option', { value: 'surprise', text: 'Color: surprise' }),
+    el('option', { value: 'stability', text: 'Color: stability' }),
+  ]);
+  modeSelect.value = colorMode;
+  modeSelect.addEventListener('change', () => {
+    colorMode = modeSelect.value;
+    rerender();
+  });
+  controlsRow.appendChild(modeSelect);
+  container.appendChild(controlsRow);
+
+  const grid = el('div', { class: 'ca-spacetime' });
+  container.appendChild(grid);
+
+  // rows: [{ tape, changed, perCellP?, age? }]
+  let rows = [];
+  let onCellClick = opts.onCellClick || null;
+
+  function cellColor(row, i) {
+    if (colorMode === 'surprise' && row.perCellP) {
+      return colorFor(row.perCellP[i], cfg);
+    }
+    if (colorMode === 'stability' && row.age) {
+      const a = Math.min(1, row.age[i] / 10);
+      const g = Math.round(200 * a);
+      return `rgba(80,${120 + g / 2},${200 * a},0.6)`;
+    }
+    // change mode (default)
+    return row.changed && row.changed[i] ? 'rgba(255,90,60,0.85)' : 'rgba(0,0,0,0)';
+  }
+
+  function renderRow(row, t) {
+    const rowEl = el('div', { class: 'ca-row' });
+    for (let i = 0; i < row.tape.length; i++) {
+      const chip = el('span', {
+        class: 'ca-cell',
+        style: `background:${cellColor(row, i)}`,
+        title: `gen ${t}, pos ${i}: ${JSON.stringify(row.tape[i])}`,
+        text: row.tape[i],
+      });
+      if (onCellClick) {
+        chip.addEventListener('click', () => onCellClick(t, i, row));
+      }
+      rowEl.appendChild(chip);
+    }
+    return rowEl;
+  }
+
+  function rerender() {
+    clear(grid);
+    const frag = document.createDocumentFragment();
+    rows.forEach((row, t) => frag.appendChild(renderRow(row, t)));
+    grid.appendChild(frag);
+  }
+
+  return {
+    setRows(newRows) {
+      rows = newRows;
+      rerender();
+    },
+    appendRow(row) {
+      rows.push(row);
+      grid.appendChild(renderRow(row, rows.length - 1));
+      grid.scrollTop = grid.scrollHeight;
+    },
+    clear() {
+      rows = [];
+      clear(grid);
+    },
+    getRows: () => rows,
+  };
+}

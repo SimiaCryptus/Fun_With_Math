@@ -8,6 +8,7 @@ import { createStatsPanel } from './ui/statsPanel.js';
 import { BidirectionalModel } from './model/bidirectional.js';
 import { getTokenizer, applyRegexConfig } from './tokenizers/index.js';
 import { analyze } from './model/scoring.js';
+import { createCaControls } from './ca/caControls.js';
 
 const config = loadConfig();
 
@@ -19,6 +20,7 @@ const testTextEl = document.getElementById('testText');
 const analyzeBtn = document.getElementById('analyzeBtn');
 const statsPanelEl = document.getElementById('statsPanel');
 const statsPanel = statsPanelEl ? createStatsPanel(statsPanelEl) : null;
+const caPanelEl = document.getElementById('caPanel');
 
 let modelReady = false;
 let lastResults = null;
@@ -169,3 +171,42 @@ createConfigPanel(document.getElementById('configPanel'), {
 
 analyzeBtn.addEventListener('click', runAnalysis);
 renderLegend(legendEl, config);
+// --- Cellular Automaton panel ---
+// Uses the same built model. In worker mode we still need a model instance on
+// the main thread for the CA, so build a lightweight fallback model lazily.
+let caModel = null;
+let caModelKey = null;
+function currentCorpus() {
+  return corpusPanel.getCorpus();
+}
+// Build (or reuse) a main-thread model for the CA layer. The worker model
+// can't be queried synchronously per-cell, so the CA always uses a local one.
+function getCaModel() {
+  if (!modelReady) return null;
+  const corpus = currentCorpus();
+  const key = `${config.tokenizerId}|${config.order}|${config.lowercase}|${config.regexPattern}|${corpus.length}`;
+  if (caModel && caModelKey === key) return caModel;
+  if (fallbackModel && useFallback()) {
+    caModel = fallbackModel;
+    caModelKey = key;
+    return caModel;
+  }
+  // Rebuild locally for CA use.
+  const tok = getTokenizer(config.tokenizerId);
+  applyRegexConfig(config);
+  const tokens = tok.tokenize(corpus);
+  if (!tokens.length) return null;
+  caModel = new BidirectionalModel(config.order);
+  caModel.build(tokens);
+  caModelKey = key;
+  return caModel;
+}
+if (caPanelEl) {
+  const caControls = createCaControls(caPanelEl, {
+    getModel: getCaModel,
+    getConfig: () => config,
+    getTokenizer: () => getTokenizer(config.tokenizerId),
+  });
+  // Seed the CA with whatever is in the test text box.
+  if (testTextEl && testTextEl.value) caControls.setSeedText(testTextEl.value);
+}
