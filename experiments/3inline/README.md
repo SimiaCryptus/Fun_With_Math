@@ -1,175 +1,120 @@
 # No-Three-in-Line Lab
 
-An interactive, browser-based solver for the classic **no-three-in-line
-problem** using **continuous relaxation** driven by gradient descent in
-[TensorFlow.js](https://www.tensorflow.org/js). Works in both **2D** (n×n
-grid) and **3D** (n×n×n cubic lattice).
+An interactive, browser-based playground for one
+of my favorite deceptively-simple puzzles in geometry — the **no-three-in-line
+problem** — rather than solve it the usual combinatorial way, it watches
+points drift, jostle, and settle across a grid in real time, driven by a kind
+of physics you can reshape with a handful of sliders.
 
-> Place as many points as possible on a lattice so that **no three are
-> collinear**.
+## The Puzzle in One Breath
 
-## Quick Start
+Picture a square grid of dots, like a checkerboard's intersections. The
+challenge: place as many points as you can so that **no three of them ever
+line up straight**. Not just the obvious rows, columns, and diagonals — _any_
+line at all, however oddly angled, is forbidden the moment a third point falls
+on it.
 
-Open `index.html` in a modern browser (no build step required — TensorFlow.js
-is loaded from a CDN). Then:
+It sounds easy until you try it. Two points always define a line, and every
+new point you add threatens to become the third on some line you hadn't even
+noticed. The constraints reach across the whole board, coupling distant
+corners in ways that make the puzzle genuinely hard.
 
-1. Press **▶ Play** to start the optimization.
-2. Adjust sliders live to reshape the energy landscape.
-3. **Drag points** directly on the canvas to nudge them (auto-pauses).
-4. Watch the **best valid** metric for the largest collinearity-free
-   configuration found so far.
+## A Little Background
 
-Toggle **3D mode** to switch to a cubic lattice. In 3D, drag to **orbit** the
-camera and scroll to **zoom**.
+Mathematicians have studied this since the early twentieth century, and much
+of it remains open. For an n×n grid you can never do better than **2n**
+points (each column can hold at most two), and that ceiling is actually
+reachable for grids up to around 46 on a side, with scattered results beyond.
+For large grids, though, nobody knows the true answer — and there's a
+long-standing conjecture that you eventually _can't_ quite reach 2n, with the
+achievable density settling near 1.87·n instead. In short: a puzzle simple
+enough to explain to a child, yet stubborn enough to resist a clean solution.
 
-## The Idea in One Paragraph
+## The Idea: Let the Points Move
 
-Instead of searching the discrete lattice combinatorially, points move freely
-in continuous space. Collinearity is penalized directly through an
-**angle-based fitness**: for every triplet of points forming a triangle, each
-interior angle θ contributes a penalty that **diverges as θ → 0 or θ → π**
-(i.e. as the triplet becomes collinear). Using the triangle identity
+Here is the twist that makes this project fun to watch. Instead of testing
+discrete arrangements one by one, the Lab **lets the points float freely** and
+gives them something like a personality:
 
-```
-sin(angle at A) = 2·area / (|AB|·|AC|)
-```
+- Points feel a gentle pull toward the grid's integer positions, as if the
+  lattice were slightly magnetic.
+- Whenever three points threaten to become collinear, a **repulsive force**
+  builds — mild when they're merely close, and rising sharply as they line up
+  exactly. (The math measures the angle each triangle of points makes; a
+  flattening triangle means a near-collinearity, and the penalty climbs.)
+- An optional spacing force keeps points from piling on top of one another.
 
-the solver computes each angle's sine from edge lengths and triangle area
-(the cross-product magnitude), then runs it through a chosen fitness function.
-A grid-snapping potential pulls points toward integer coordinates, an optional
-repulsion term keeps points from overlapping, and auto-rescaling keeps the
-configuration spread across the whole lattice. The same math works in 3D,
-where the cross product becomes a vector and area is its norm.
+Add these up and you get an **energy landscape** — a hilly terrain where the
+valleys correspond to good, valid configurations. The optimizer simply rolls
+the whole arrangement downhill, and you watch it happen. It's a physical
+intuition standing in for a combinatorial search; the points "feel" the
+frustration of an over-crowded line before it ever becomes a hard violation.
 
-## Energy Function
+There's also a **3D mode**, where the grid becomes a cube and the same rules
+play out in three dimensions — drag to orbit the camera, scroll to zoom.
 
-```
-E = λ_line  · Σ_triplets Σ_angles  g(sin θ)        # collinearity (angle fitness)
-+ λ_grid  · Σ_points  Σ_axes [1 − cos(2π·xₐ)]    # lattice snapping
-+ λ_repel · Σ_pairs   max(0, r − d) / (d² + ε)   # point spacing / anti-overlap
-```
+## What You'll See On Screen
 
-where `g` is the selected **angle fitness** and `d` is the Euclidean distance
-between a pair of points.
+The canvas shows the live arrangement as it evolves. In 2D, the tracked lines
+are tinted by how crowded they are:
 
-### Angle Fitness Functions
+- 🔵 **blue** — under-populated, still inviting another point;
+- 🟢 **green** — just right, holding exactly two;
+- 🔴 **red** — over-crowded, a brewing violation.
 
-All variants share the limit `g → ∞` as `sin θ → 0` (collinear), but differ in
-shape near it. `sharp` scales steepness; `eps` softens `sin θ` at exact
-collinearity.
+A small panel of metrics tracks the running energy, the current point count
+that survives a strict validity check, and the **best valid** configuration
+found so far this run.
 
-| Option    | Form                     | Character                   |
-| --------- | ------------------------ | --------------------------- |
-| `invsin`  | `1/sin θ`                | classic, mild tail          |
-| `invsin2` | `1/sin² θ`               | sharper, area-like          |
-| `logsin`  | `−log(sin θ)`            | gentle, log divergence      |
-| `cotsq`   | `cot² θ = 1/sin² − 1`    | cotangent-squared           |
-| `exp`     | `exp(sharp·(1/sin − 1))` | very steep barrier          |
-| `cossq`   | `cos² θ = 1 − sin² θ`    | bounded, peaks at collinear |
-| `cos2x`   | `cos 2θ = 1 − 2sin² θ`   | bounded, peaks at collinear |
+You steer the process with sliders that reshape the landscape as it runs:
+how strongly the grid pulls, how aggressively near-collinearity is punished,
+how much points repel, and how much random "entropic" jitter is injected to
+shake the arrangement out of shallow dead-ends. You can also **drag points**
+yourself to nudge the search — it politely pauses while you do — and hit
+**Restart** to reroll the random starting positions, since the landscape is
+bumpy and every run tells a slightly different story.
 
-## Files
+## Why It's Interesting
 
-| File                     | Purpose                                               |
-| ------------------------ | ----------------------------------------------------- |
-| `index.html`             | UI, 2D/3D canvas rendering, controls, animation loop. |
-| `js/no-three-in-line.js` | The solver: energy, optimizers, validation.           |
-| `js/optimizer-lbfgs.js`  | Custom L-BFGS optimizer.                              |
-| `js/optimizer-qqn.js`    | Custom QQN (quasi-Newton + quadratic) optimizer.      |
-| `idea.md`                | Detailed write-up of the problem and the method.      |
+A few reasons I keep coming back to it:
 
-## Controls
+1. **It makes an abstract constraint tangible.** Collinearity is an
+   all-or-nothing algebraic fact, yet here it becomes a smooth, visible force
+   you can feel through the animation.
+2. **It's a case study in continuous relaxation** — turning a discrete,
+   combinatorial problem into a continuous one that gradient methods can
+   explore. That trick shows up all over modern optimization and machine
+   learning, and this puzzle is a wonderfully visual place to see it work.
+3. **The landscape is honestly frustrating**, in the technical sense: full of
+   local minima, long-range coupling, and near-solutions that aren't quite
+   valid. Watching it struggle and occasionally break through is oddly
+   compelling.
+   This puzzle sits alongside a family of related "geometric attractor" labs that
+   share the same recipe — scatter points, define an energy, flow downhill. The
+   **Geometric Entropy Lab** plays the _continuous_ analogue of Erdős's
+   distinct-distance problem; the **Dihedral Attractors** lab climbs to
+   curvature-defined energies; and the **Constrained Mesh Enclosure Lab** adds an
+   exact collision wall. If you enjoy the physics-style framing here, those are
+   natural next stops.
 
-| Control                     | Effect                                                       |
-| --------------------------- | ------------------------------------------------------------ |
-| **3D mode (cubic lattice)** | Switch between planar n² and cubic n³ search (restart).      |
-| **Grid size n**             | Side length of the lattice (restart).                        |
-| **Points to place**         | Number of points _k_ to optimize (restart).                  |
-| **Optimizer**               | Adam, SGD + Momentum, L-BFGS, or QQN.                        |
-| **Learning rate**           | Optimizer step size.                                         |
-| **Angle fitness**           | Functional form of the collinearity penalty (see table).     |
-| **Angle sharpness**         | How aggressively the penalty climbs near collinearity.       |
-| **Angle ε (softening)**     | Softens `sin θ` to avoid infinite gradients at collinearity. |
-| **λ grid (snap)**           | Strength of integer-lattice snapping.                        |
-| **λ line (collinear)**      | Weight on the angle-fitness collinearity term.               |
-| **λ repel (point spacing)** | Weight on the pairwise anti-overlap force.                   |
-| **repel radius r**          | Distance below which repulsion phases in.                    |
-| **Entropic noise**          | Gaussian noise injected each step to escape local minima.    |
-| **Auto-anneal σ & λ grid**  | Grow sharpness and λ grid ~3× over ~600 steps.               |
+I'll be candid: this is an exploratory playground, not a record-setting
+solver — the continuous approach usually lands near, not at, the known optima,
+and that gap is itself part of what makes it interesting to poke at.
 
-Buttons: **▶ Play / ⏸ Pause**, **Step** (single iteration), **Restart**.
+## Who Might Enjoy This
 
-## Interaction
+- **The mathematically curious**, who want to _see_ a famous open problem
+  breathe rather than read about it.
+- **Students and educators** looking for an intuitive, hands-on illustration
+  of optimization, energy landscapes, and how continuous methods attack
+  discrete problems.
+- **Puzzle and recreational-math enthusiasts**, who can simply play — dragging
+  points, tuning forces, and racing their own best score.
+- **Anyone interested in how "physics-style" thinking** (potential wells,
+  forces, annealing) can be borrowed to tackle problems that look purely
+  combinatorial.
 
-- **2D** — hover a point to get a grab cursor, then drag to reposition it.
-  Optimization auto-pauses during a drag and resumes afterward.
-- **3D** — drag anywhere to **orbit** the camera; scroll to **zoom**. The
-  bounding cube and a sparse floor grid provide spatial reference; points are
-  drawn back-to-front with depth-scaled radii.
+No installation, no setup — just open it in a modern browser, press **Play**,
+and watch the points negotiate their way toward a solution.
 
-## Visualization Legend (2D)
-
-Tracked lines (rows, columns, ±1 diagonals, and lines through every active
-pair) are colored by a **soft population** `p(ℓ) = Σ exp(−d²/2σ²)`, used purely
-for display — the optimizer itself is driven by the angle fitness above:
-
-- 🔵 **blue** — under-populated (`p < 2`)
-- 🟢 **green** — neutral (`p ≈ 2`)
-- 🔴 **red** — over-populated (`p > 2`)
-
-White dots are the continuous point positions; line opacity grows with the
-distance of `p` from 2.
-
-## How It Works (Solver Internals)
-
-1. **Initialization** — _k_ points are seeded at random positions in
-   `[0, n−1]^dim` as a trainable `tf.variable` (dim = 2 or 3).
-2. **Collinearity energy** — every distinct triplet `(i<j<l)` is enumerated;
-   edge lengths and twice the triangle area (cross-product magnitude) give the
-   sine of each interior angle, which is fed through the chosen angle fitness.
-3. **Grid snap & repulsion** — a `1 − cos(2π·x)` term per axis pulls points
-   onto integers, and an optional hinged `1/d²` term pushes overlapping points
-   apart.
-4. **Step** — Adam, SGD+momentum, L-BFGS, or QQN flows points downhill on `E`.
-   Gradients are **clipped by global norm** for the custom optimizers, since
-   `1/sin θ` can spike near collinearity. Optional entropic noise is added.
-5. **Auto-rescale** — every ~25 steps the bounding box is linearly remapped to
-   fill `[0, n−1]^dim`; teleporting points resets stateful optimizer history to
-   keep search directions sane.
-6. **Annealing** — sharpness and λ grid grow over ~600 steps to crystallize
-   points onto the lattice.
-7. **Validation** — points are rounded, de-duplicated, and **every triple** is
-   checked for exact integer collinearity (2D: scalar cross product `== 0`;
-   3D: cross-product vector is zero). The largest triple-free subset is
-   reported as **valid points**.
-
-## Metrics
-
-| Metric                     | Meaning                                             |
-| -------------------------- | --------------------------------------------------- |
-| **step**                   | Optimization steps taken.                           |
-| **energy**                 | Current total energy `E`.                           |
-| **tracked lines**          | Size of the current 2D line set (0 in 3D).          |
-| **violating lines**        | Lines with soft population `> 2.5` (2D); in 3D this |
-|                            | reports violating triplets directly.                |
-| **valid points (rounded)** | Non-collinear points after rounding/dedup.          |
-| **best valid**             | Largest valid count seen this run.                  |
-
-## Tips
-
-- Start with **lower sharpness** to explore, then enable **auto-anneal** to
-  crystallize onto the lattice.
-- If points pile up, raise **λ repel** and the **repel radius** to spread them.
-- Try the steeper fitness functions (`invsin2`, `exp`) once points are roughly
-  placed — they punish near-collinearity hard but can be numerically stiff, so
-  keep **angle ε** non-trivial and rely on gradient clipping.
-- **L-BFGS / QQN** converge fast on smooth regions but are sensitive to the
-  teleports from rescale/drag; the solver resets their state automatically.
-- A small amount of **entropic noise** can help escape shallow local minima
-  near the frontier.
-- Run multiple **Restart**s; the landscape is non-convex, so the best
-  configuration varies between random seeds.
-
-## License
-
-Part of the experiments collection. See the repository root for license details.
+Enjoy, and I'd love to hear what configurations you discover!

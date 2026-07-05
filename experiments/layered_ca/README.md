@@ -1,132 +1,108 @@
 # Binary Coded Layered Autonoma
 
-An interactive cellular automaton that combines **Langton's Ant**, **multi-color substrates**, and **Conway's Game of
-Life** into a single layered system. Multiple ants traverse a colored grid, encoding their movement rules in binary,
-while a selectively-activated life simulation evolves on top of the substrate they create.
+A single, interactive playground where three of my favorite cellular automata — **Langton's Ant**, a **multi-color
+substrate**, and **Conway's Game of Life** — all run at once, layered on top of one another and
+quietly influencing each other's behavior.
 
-Open `layered_automata.html` in a browser to run the simulation — no build step or dependencies required.
+## A Little Background
 
-## Concept
+Cellular automata are among the most delightful ideas in computing: you write down a handful of
+almost trivially simple rules, apply them uniformly to a grid of cells, and — it turns out —
+startling complexity emerges with no further intervention. Two of them are famous enough to have
+escaped the lab.
 
-The system layers three interacting subsystems:
+- **Conway's Game of Life** (1970) is the classic. Each cell is alive or dead; a small rule about how
+  many neighbors a cell has decides whether it lives, dies, or is born. From this, people have
+  built gliders, oscillators, and even working computers.
+- **Langton's Ant** (1986) is stranger and, to me, more hypnotic. A single "ant" walks a grid,
+  turning left or right depending on the color of the square beneath it and flipping that square's
+  color as it goes. For roughly ten thousand steps it produces apparent chaos — and then, quite
+  suddenly, it builds an orderly "highway" and marches off forever. Nobody told it to; the pattern
+  simply falls out of the rules.
 
-1. **Multi-Color Substrate (2–8 colors)** — a grid of colored cells that ants modify as they move.
-2. **Binary-Coded Ants** — Langton-style ants whose turn behavior (Left/Right) is encoded as a binary string indexed by
-   the substrate color underneath them.
-3. **Selective Conway's Life** — a Game-of-Life layer that only evolves on cells whose substrate color is enabled by an
-   _activation mask_, with positive/negative modes that create or inhibit life.
+What this project does is ask a simple question: _what happens if you let these systems share a
+world?_ The ants don't just wander a two-color grid — they wander a substrate of up to eight colors,
+encoding their own turning rules in binary. And the Game of Life doesn't evolve everywhere; it only
+comes alive on the trails the ants leave behind, and only where the colors they paint are "activated"
+to permit it.
 
-The interplay between these layers produces highway structures, fractal boundaries, and emergent life colonies tuned to
-specific color patterns.
+## What You're Looking At
 
-## How It Works
+The system layers three interacting subsystems, and once you know what each contributes, the
+on-screen behavior becomes much easier to read:
 
-### Ant Movement
+1. **The colored substrate** — a grid of colored cells (you choose between 2 and 8 colors) that the
+   ants continuously repaint as they travel. This is the shared canvas; think of it as the terrain.
+2. **The binary-coded ants** — Langton-style ants (up to eight of them) whose "turn left or turn
+   right" decision is read from a binary rule, indexed by the color they're standing on. The classic
+   Langton ant is just one special case of this more general family.
+3. **The selective life layer** — a Game of Life that evolves _only_ on cells the ants have visited,
+   and _only_ where the underlying color has been switched on by an activation mask. Some colors
+   encourage life; others actively suppress it, creating "inhibition zones" that slowly heal over
+   time.
 
-Each ant reads the substrate color at its current cell and consults its binary **Ant Rule**:
+Out of that interplay you get highways, fractal-looking boundaries, and little colonies of life that
+bloom and compete in regions tuned to particular color patterns. It's the kind of thing you can watch
+far longer than you'd expect.
 
-- Bit `0` → turn Left
-- Bit `1` → turn Right
+## The Controls, in Plain Terms
 
-The ant then increments the cell's color (mod `numColors`), marks the cell, and steps forward. With `numColors = 4` and
-rule `0101`, this generalizes Langton's classic `LRLR` ant.
+You don't need to understand every knob to enjoy the simulation, but a few are worth knowing:
 
-### Life Activation Mask
+- **Number of Substrate Colors** — more colors mean richer, less predictable terrain.
+- **Number of Ants** and **Spawn Mode** — run a single ant for the classic experience, or place a
+  whole team in the corners, along the edges, or scattered at random for kaleidoscopic interference.
+- **Ant Synchronization** — decide whether the ants all obey the same rule, each improvise their own,
+  or share a rotated variation of a common theme (the "offset" mode is my favorite for symmetry).
+- **Ant Rule** and **Activation Mask** — clickable rows of bits that let you author the ants'
+  behavior and decide which colors welcome or forbid life. This is where you become the composer.
+- **Life rules** (birth, survival range, search radius) — a generalized version of Conway's
+  thresholds, so you can tune life from fragile and sparse to slow and organic.
+- **Start / Stop / Step / Reset** and a family of **Randomize** buttons — the fastest way to stumble
+  onto something beautiful is simply to hit _Randomize All_ a few times and see what the system
+  offers up.
 
-A second binary string — the **Activation Mask** — determines which substrate colors are eligible to host life. Each
-color also has an **Activation Mode**:
+Click the canvas to zoom to fullscreen; press Esc to come back. A stats panel keeps a running tally
+of generations, ant steps, live cells, inhibited cells, and the currently active mask, so you can
+watch the numbers breathe along with the picture.
 
-- **Positive (+)**: ant presence spawns life and clears inhibition
-- **Negative (−)**: ant presence kills life and creates an _inhibition zone_ that suppresses spawning (decays at ~
-  10%/generation)
+## A Few Patterns Worth Trying
 
-### Conway's Life Layer
+- Start simple: 4 colors with the rule `0101` reproduces the famous Langton's ant, and if you're
+  patient you'll see it discover its highway around the ten-thousand-step mark.
+- Try `1100` or `0011` for symmetric, expanding structures.
+- Mix positive and negative activation modes to set up competing regions of life with restless,
+  shifting borders.
+- Turn up the life search radius and birth threshold together for slow, almost botanical growth.
 
-Life evolves only on **marked** cells whose substrate color is mask-enabled and not inhibited. The rules are extended:
+## Why I Find It Interesting
 
-- **Search radius** (1–5) — neighborhood size for counting live neighbors
-- **Birth** — exact neighbor count required to spawn life
-- **Survival min/max** — neighbor range that keeps a live cell alive
-- **Mutual inhibition** — neighbors only count if they share the same activation mode (+ or −) as the cell being
-  evaluated
+A few reasons, honestly. First, it's a compact demonstration of _emergence_ — the principle that
+complex, lifelike behavior can arise from rules simple enough to fit on an index card. Second, it's
+generative art that you author rather than merely observe; small changes to a binary string produce
+dramatically different worlds, which makes exploration genuinely rewarding. And third, it's a nice
+illustration of what happens when you _compose_ simple systems: the ants and the life layer are each
+well understood in isolation, but coupling them produces behavior neither exhibits alone.
+That last point — that _composing_ well-understood simple systems yields behavior none of them
+shows alone — is a thread running through several of these experiments. The **Symmetry Diffusion**
+toy composes symmetry groups with heat flow; the **Constrained Mesh** lab composes geometric
+energies with an exact collision wall. If the idea of emergence-through-composition appeals to
+you, those are kindred pieces.
 
-Negative-mode cells use slightly relaxed survival/birth thresholds, making them more fragile.
+I should be candid that this is an aesthetic and exploratory tool rather than a research instrument;
+I make no claims that the layered dynamics reveal anything new about the underlying automata. What it
+does offer is an unusually direct, tactile way to _feel_ how these systems behave.
 
-### Multi-Ant System
+## Who Might Enjoy It
 
-Up to 8 ants can run simultaneously with configurable:
+- **The simply curious**, who like watching complexity unfold from nothing and don't need a reason
+  beyond that.
+- **Educators and students**, as a hands-on illustration of emergence, cellular automata, and how a
+  few binary rules can encode surprisingly rich behavior — no programming background required.
+- **Generative-art enthusiasts**, who want a parameter space to wander and screenshots to capture.
+- **Fans of Conway and Langton**, who've seen each system on its own and are curious what happens
+  when they're made to share a grid.
 
-- **Spawn modes**: `center`, `corners`, `edges`, `random`, `grid`
-- **Synchronization**:
-  - `synchronized` — all ants share the same rule and mask
-  - `independent` — each ant gets a randomized rule/mask
-  - `offset` — each ant uses a rotated version of the base rule
-
-## Controls
-
-| Control                                 | Description                                       |
-| --------------------------------------- | ------------------------------------------------- |
-| **Simulation Speed**                    | Delay between generations (1–2000 ms)             |
-| **Number of Substrate Colors**          | 2–8 colors (sets rule/mask length)                |
-| **Number of Ants**                      | 1–8 simultaneous ants                             |
-| **Ant Spawn Mode**                      | How ants are initially placed                     |
-| **Ant Synchronization**                 | How rules are shared across ants                  |
-| **Ant Rule**                            | Per-color L/R turn instruction (clickable bits)   |
-| **Life Activation Mask**                | Per-color flag for life eligibility               |
-| **Activation Mode**                     | Per-color +/− toggle (spawn vs. inhibit)          |
-| **Life Search Radius**                  | Neighborhood radius for life rules                |
-| **Birth / Survival Min / Survival Max** | Generalized Conway thresholds                     |
-| **Ant Activation Radius**               | Radius around ants where life is seeded/inhibited |
-| **Activation Probability**              | Per-cell chance of activation within radius       |
-| **Grid Size**                           | 50×50 up to 500×500                               |
-
-### Buttons
-
-- **Start / Stop** — toggle continuous simulation
-- **Step** — advance a single generation
-- **Reset** — clear grids and respawn ants
-- **Randomize All** — randomize rule, mask, and parameters
-- **Random Rule** — randomize only the ant rule
-- **Random Mask** — randomize only the activation mask & modes
-
-## Stats Panel
-
-- **Generation** — total simulation steps
-- **Ant Steps** — combined steps across all ants
-- **Marked Cells** — cells visited at least once by an ant
-- **Live Cells** — currently alive Conway cells
-- **Inhibited Cells** — cells suppressed by negative activation
-- **Active Ants** — number of ants currently running
-- **Current Mask** — the active life-activation bitstring
-
-## Visualization
-
-- **Substrate** is rendered using the configurable color palette (only marked cells are drawn).
-- **Live cells** appear as bright green squares.
-- **Inhibited cells** are tinted red.
-- **Ants** are shown as colored squares with a yellow direction indicator and an ID label (when multiple ants are
-  present).
-- **Click the canvas** to enter fullscreen zoom mode; press **Esc** or click again to exit.
-
-## Tips for Interesting Patterns
-
-- Start with `numColors = 4`, rule `0101` (classic Langton's ant) to observe the famous ~10,000-step highway emergence.
-- Try rule `1100` or `0011` with 4 colors for symmetric expanding patterns.
-- Mix positive and negative activation modes to create competing life regions with shifting boundaries.
-- Use multiple ants with the `offset` synchronization to generate kaleidoscopic interference patterns.
-- Larger life search radii (3–5) combined with higher birth thresholds produce slow, organic-looking growth.
-- Use **Randomize All** repeatedly to discover novel rule combinations.
-
-## Files
-
-- `layered_automata.html` — self-contained simulation (HTML + CSS + JS)
-- `README.md` — this document
-
-## Implementation Notes
-
-- Rendering uses a single `ImageData` buffer for substrate and life cells (fast bulk pixel writes), with ants drawn via
-  standard canvas calls for glow effects.
-- Grid wraps toroidally on all edges.
-- Inhibition decays stochastically (10% chance per generation) so negative regions slowly heal.
-- Neighbor counting respects activation-mode matching, producing emergent segregation between positive and negative life
-  populations.
+That's the whole idea: a small world governed by a few honest rules, offered up for you to poke at.
+Open it, randomize a few times, and see where it goes — I'd genuinely love to hear which patterns you
+find. Enjoy!

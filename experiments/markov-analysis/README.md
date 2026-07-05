@@ -1,264 +1,139 @@
 # Bidirectional Markov Text Analyzer
 
-This tool lets you **build a language model from your own text** and then
-see, token by token, how _surprising_ another piece of text is to that model.
-It highlights each token with a heat color, tells you what the model _expected_
-instead, and lets you rewrite the text interactively.
+A browser-based instrument that learns the statistical "feel" of a body of text and then shows
+you, token by token, how _surprising_ some other text looks through that lens.
+It runs entirely in your browser—nothing is uploaded, nothing is installed—and
+it turns an abstract idea (how predictable is this writing?) into something you
+can literally see, colored in like a heat map.
 
 ---
 
-## What It Does (The Big Picture)
+## The Big Idea
 
-You give the tool a **corpus** — any body of text you like (a novel, your
-emails, source code, song lyrics). The tool learns the statistical patterns of
-that corpus. Then you give it a **test text**, and it colors every token by how
-well it fits the patterns the corpus taught it.
+Give the tool a **corpus**—any text you like: a novel, your own emails, source
+code, song lyrics, a decade of diary entries. The tool studies that text and
+learns its patterns; which words tend to follow which, which letters cluster,
+what "normal" looks like for _that_ particular writing.
 
-- **Calm / transparent** = the model expected this. It's typical.
-- **Hot / bright** = the model is surprised. This token is unusual given its
-  neighbors.
+Then you hand it a second piece of text—the **test text**—and it paints every
+token according to how well it fits what the corpus taught it:
 
-Click any token to see what the model _would_ have predicted there, and
-optionally swap it in.
+- **Calm and transparent** means the model expected this; it's typical.
+- **Hot and bright** means the model is surprised; this token is unusual given
+  its neighbors.
 
----
-
-## The Workflow
-
-1. **Corpus panel** — Paste text or upload a `.txt` file. You'll see live
-   stats: character count, token count, and byte size. Very large corpora
-   (over ~2 MB) get a gentle warning, since building may be slow.
-2. **Build Model** — Click the button. A progress indicator shows the build.
-   Building happens off the main thread (in a Web Worker) when available, so
-   the interface stays responsive.
-3. **Test text** — Type or paste the text you want to analyze.
-4. **Analyze** — Press _Analyze_ (or just keep editing; analysis re-runs
-   automatically shortly after you stop typing).
-5. **Read the heatmap** — Hover a token for its exact probabilities; click it
-   for the replacement popup.
-
-Changing most settings does **not** require a rebuild — colors and scoring
-update instantly. Settings that change _how the corpus is learned_ (tokenizer,
-model order, lowercasing, smoothing) require you to rebuild; the tool will tell
-you when a rebuild is needed.
+Click any token and the tool tells you what it _would_ have predicted instead,
+and lets you swap it in. It's a bit like having a very well-read, slightly
+opinionated reader looking over your shoulder, pointing at the words that made
+them raise an eyebrow.
 
 ---
 
-## Reading the Heatmap
+## A Little Background
 
-Each token is drawn as a colored chip.
+Under the hood sits one of the oldest and most charming ideas in text
+modeling: the **Markov chain**. The intuition is simple—the next word (or
+letter) depends mostly on the handful of words just before it. Count how often
+each continuation follows each little context in your corpus, and you have a
+model that can estimate "how likely is _this_ word, right _here_?"
 
-- The **color intensity** encodes _surprise_ — the inverse of probability.
-- **Hover** a token to see a tooltip:
-  `p=… (fwd=…, bwd=…)` — the combined probability, plus the separate
-  forward and backward probabilities.
+This tool adds a twist worth dwelling on. Ordinary models read left to right,
+the way we do. This one reads **both directions**: it builds one model that
+predicts each token from the words on its left, and a second that predicts it
+from the words on its _right_. Every token therefore gets two opinions—one from
+its past, one from its future—which are combined into a single verdict. A token
+is comfortably "expected" only when both directions agree; that turns out to be
+a much richer signal than either alone.
 
-### Palettes
-
-- **Heat** — transparent when calm, glowing red/orange when surprising.
-- **Viridis** — a perceptually uniform blue→green→yellow scale.
-
-### Color scale
-
-- **Linear** — color tracks probability directly.
-- **Log** — color tracks the _logarithm_ of probability. Because natural
-  language probabilities span many orders of magnitude, log scale usually
-  reveals far more structure. This is the default.
-
-A **legend** runs from "calm" to "surprising" so you can read the gradient at
-a glance.
+From those probabilities the tool computes a **surprise** score for every
+token, and (for the whole passage) a single summary number called
+**perplexity**—loosely, the effective number of choices the model felt it faced
+at each step. Lower perplexity means the text felt more predictable. It's the
+standard yardstick language researchers use, and here you get to watch it move.
 
 ---
 
-## The Replacement Popup
+## What You Actually See
 
-Click (or focus and press Enter/Space on) any token to open a popup showing the
-model's **top predictions** for that position.
+The interface is deliberately hands-on:
 
-Each row shows:
+- **The corpus panel.** Paste text or drop in a `.txt` file. You'll see live
+  stats—character count, token count, size—and a gentle warning if your corpus
+  is very large (building can be slow, though it happens quietly in the
+  background so the page stays responsive).
+- **The heatmap.** Your test text, rendered inline, every token a colored chip.
+  Hover one to see its exact probabilities; the color intensity encodes
+  surprise. You can choose between a **Heat** palette (transparent when calm,
+  glowing when surprising) and the perceptually even **Viridis** scale, and
+  between a **linear** or **logarithmic** color scale. Log is the default,
+  because natural-language probabilities span many orders of magnitude and log
+  spreads out the structure you'd otherwise miss.
+- **The replacement popup.** Click a token to see the model's top predictions
+  for that spot, each with a little bar and its forward, backward, and combined
+  probabilities. The word actually in your text is marked as the original;
+  click any alternative to substitute it, and the analysis re-runs instantly.
+  It's an oddly addictive way to ask, "what would make this sentence _less_
+  surprising?"—one word at a time.
+- **Match statistics.** Below the heatmap, a panel summarizes the whole
+  passage: how often the model's top guess matched, how often the real word
+  landed in its top-N, mean and geometric-mean probabilities, and perplexity.
 
-- the candidate token,
-- a bar sized relative to the strongest candidate,
-- **fwd** — its forward probability,
-- **bwd** — its backward probability,
-- **joint** — the combined probability under your chosen strategy.
-
-The token that actually appears in your text is marked as the **original**.
-Click any other candidate to **replace** that token in your test text; the
-analysis immediately re-runs on the edited text. This makes it easy to explore
-"what would make this sentence less surprising?" one token at a time.
-
-Press **Escape** or click outside to dismiss the popup.
-
----
-
-## Match Statistics
-
-Below the heatmap, a **Match Statistics** panel summarizes the whole test text:
-
-- **Tokens analyzed** — how many tokens were scored.
-- **Top-1 match rate** — fraction of tokens where the model's single best
-  guess equaled the actual token.
-- **Top-N match rate** — fraction of tokens where the actual token appeared
-  anywhere in the model's Top-N candidate list.
-- **Mean probability** — the ordinary average of combined probabilities.
-- **Geometric mean** — the geometric average, which is more meaningful for
-  probabilities (see the math below).
-- **Perplexity** — a single number summarizing how "confused" the model is by
-  the text. Lower is better.
+Most settings—how scores are combined, the palette, the color scale—update
+everything instantly. A few settings change _how the corpus is learned_ (the
+tokenizer, the model's order, lowercasing, smoothing) and so require a rebuild;
+the tool tells you when.
 
 ---
 
-## The Math
+## Why It's Interesting
 
-### Tokens and context
+It turns out that "surprise" is a surprisingly expressive quantity. A few
+things I find genuinely fun about watching it:
 
-Text is first broken into **tokens**. A token can be a single character, a
-whitespace-separated word, a word-or-punctuation unit, or whatever a custom
-regular expression matches (see _Tokenizers_ below).
+- **Anomalies light up.** Train on "normal" text, paste in something
+  out-of-place, and the odd bits practically glow. It's a visceral, visual take
+  on outlier detection.
+- **Style becomes measurable.** Train on one author and test another; the
+  heatmap and the perplexity number quietly quantify how far apart two voices
+  are. Prose, code, and poetry each have their own fingerprint.
+- **You can feel the trade-offs.** Nudge the model's order (how much context it
+  uses) or its smoothing (how it handles things it's never seen) and watch
+  predictability trade off against data sparsity in real time. It's an
+  intuition pump for ideas that are usually buried in equations.
+- **Rewriting becomes exploration.** The click-to-replace loop makes the model's
+  preferences tangible; you're not reading _about_ a language model, you're
+  poking one and watching it flinch.
 
-### The Markov model
-
-The tool builds an **order-n Markov model**. It assumes the probability of a
-token depends only on the _n_ tokens immediately before it:
-
-```
-P(token | history) ≈ P(token | previous n tokens)
-```
-
-These conditional probabilities are estimated by **counting** how often each
-continuation follows each context in your corpus:
-
-```
-P(w | context) = count(context, w) / count(context)
-```
-
-The **order (n)** setting controls how much context is used. Higher orders
-capture longer patterns but need more corpus text to be reliable.
-
-### Bidirectional scoring
-
-Unlike a plain left-to-right model, this tool builds **two** models:
-
-- a **forward** model that predicts each token from the tokens on its _left_,
-- a **backward** model that predicts each token from the tokens on its _right_
-  (trained on the reversed corpus).
-
-For every token you get two probabilities, **pF** (forward) and **pB**
-(backward). They are merged into a single score by the **combine strategy** you
-choose:
-
-| Strategy       | Combined probability |
-| -------------- | -------------------- |
-| Forward        | `pF`                 |
-| Backward       | `pB`                 |
-| Average        | `(pF + pB) / 2`      |
-| Min            | `min(pF, pB)`        |
-| Max            | `max(pF, pB)`        |
-| Geometric mean | `√(pF · pB)`         |
-
-_Average_ is the default. _Min_ is strict (a token is only "safe" if **both**
-directions like it); _Max_ is lenient (either direction is enough).
-
-### Smoothing
-
-What if a context+token combination never appeared in the corpus? Raw counts
-would assign it probability zero. Two mechanisms guard against this.
-
-- **Add-k smoothing** — add a small constant _k_ to every count:
-
-```
-P(w | context) = (count(context, w) + k) / (count(context) + k · V)
-```
-
-where _V_ is the vocabulary size. With `k = 0` (the default) no smoothing is
-applied.
-
-- **Backoff** — if the full _n_-token context was never seen, "back off" to a
-  shorter context (n−1 tokens, then n−2, …) until one with data is found. This
-  is enabled by default.
-
-- **Floor probability** — a final safety net. If everything else fails, the
-  probability is clamped to a tiny floor value rather than zero. This keeps the
-  logarithms (and therefore perplexity) finite.
-
-### Surprise and color
-
-Color is driven by **surprise**, defined as `1 − (normalized probability)`.
-On the log scale, probability is mapped through its logarithm before
-normalizing, which spreads out the very small probabilities that dominate
-natural text.
-
-### Geometric mean and perplexity
-
-Because probabilities multiply, their **arithmetic** average is misleading —
-one very small value barely moves it. The **geometric mean** averages in
-log-space instead:
-
-```
-geomean = exp( (1/N) · Σ log pᵢ )
-```
-
-**Perplexity** is closely related and is the standard measure of how well a
-language model predicts text:
-
-```
-perplexity = exp( −(1/N) · Σ log pᵢ )
-```
-
-Intuitively, perplexity is the "effective number of equally-likely choices"
-the model faced at each token. **Lower perplexity means the model found your
-text more predictable.**
+None of this requires you to believe Markov models are the last word in
+language—they emphatically aren't. Their charm is that they're simple enough to
+understand completely and yet rich enough to reveal real structure, which makes
+them a wonderful teaching and exploration instrument.
 
 ---
 
-## Tokenizers
+## Who Might Find It Useful
 
-How text is split into tokens deeply affects the results. Available choices:
-
-- **Character** — every Unicode code point is a token. Great for small
-  corpora and revealing letter-level patterns.
-- **Whitespace word** — splits on whitespace; punctuation stays attached to
-  words. Whitespace runs are kept as their own tokens.
-- **Word + punctuation** — letters/numbers form word tokens; each punctuation
-  mark is its own token.
-- **Custom regex** — you supply the pattern. Handy presets include word +
-  punctuation, whitespace runs, single characters, words-with-apostrophes,
-  ASCII words + symbols, and a playful "vowel splits" pattern. Choosing a
-  preset fills the pattern box, which you can then edit freely. Invalid
-  patterns fall back safely to the default.
-
-The regex fields only appear when the **Custom regex** tokenizer is selected.
+- **The curious reader** who's heard about "language models" and "perplexity"
+  and wants to _see_ what those words mean without wading through math.
+- **Writers and editors** interested in a second, statistical opinion on where
+  their prose zigs when a reader expects a zag.
+- **Students and teachers** of linguistics, information theory, or machine
+  learning who want a live, tactile demonstration of n-grams, smoothing, and
+  predictability.
+- **Tinkerers and hobbyists** who enjoy feeding a tool their own corpus—emails,
+  chat logs, a favorite book—and seeing what patterns fall out.
+- **Analysts** who want a quick, visual first pass at "does this text look like
+  that text?" before reaching for heavier tooling.
 
 ---
 
-## Settings Summary
+## Getting Your Bearings Quickly
 
-| Setting              | Effect                                       | Rebuild? |
-| -------------------- | -------------------------------------------- | :------: |
-| Tokenizer            | How text is split into tokens                |   yes    |
-| Regex preset/pattern | The pattern used by the regex tokenizer      |   yes    |
-| Model order (n)      | How much context the model uses              |   yes    |
-| Lowercase corpus     | Fold everything to lowercase before learning |   yes    |
-| Smoothing k          | Add-k smoothing amount                       |   yes    |
-| Combine strategy     | How forward + backward scores merge          |    no    |
-| Backoff enabled      | Use shorter contexts when needed             |    no    |
-| Floor probability    | Minimum probability floor                    |    no    |
-| Top-N replacements   | How many candidates the popup lists          |    no    |
-| Color scale          | Linear vs. log surprise mapping              |    no    |
-| Palette              | Heat vs. Viridis colors                      |    no    |
+If you want a signal fast: paste a page or two of some text you know well into
+the corpus, build the model, then paste a different page into the test area and
+watch the colors. Hover a few tokens to read their probabilities; click one to
+see what the model wanted instead. Then try switching the color scale to log,
+or bumping the model order, and notice how the picture changes.
 
-Your settings are remembered between visits.
-
----
-
-## A Few Ways to Use It
-
-- **Spot anomalies** — build on "normal" text, then paste something suspect
-  and watch the outliers light up.
-- **Compare styles** — train on one author, test another; the heatmap and
-  perplexity reveal stylistic distance.
-- **Interactive rewriting** — use the replacement popup to nudge a sentence
-  toward what the model considers natural.
-- **Explore n-gram behavior** — vary the order and smoothing to feel how
-  context length and data sparsity trade off.
+That's the whole idea—a small, transparent model, made visible. I'm looking
+forward to hearing what patterns you find in your own text. Enjoy!

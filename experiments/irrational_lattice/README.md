@@ -1,223 +1,112 @@
-# Algebraic Colored Lattice Fields: A New Primitive for Structured Aperiodic Geometry
+# Algebraic Colored Lattice Fields
 
-## The Problem with Lattices
-
-Lattices are too clean. The same properties that make them analytically tractable — periodicity, translational symmetry, uniform spacing — are precisely what makes them poor substrates for anything that is supposed to look physical, noisy, or generic. A pure lattice carries no information. Every point is equivalent to every other point under translation, and that uniformity is both a mathematical gift and a physical lie.
-
-The obvious fix is to add noise. But random perturbations introduce a different problem: they are structureless in a different way. White noise has no correlations, no spectral color, no algebraic backbone. Smooth random fields are better, but they still require a probability measure, a choice of distribution, and they lose the exact arithmetic that makes lattices computationally tractable.
-
-What we actually want is something in between: a perturbation that is deterministic, algebraically grounded, provably aperiodic, and spectrally tunable. Not random. Not periodic. Colored noise for fields.
-
-This is the problem that motivates the construction described here.
+_A deterministic way to make a lattice interesting — without randomness, and without losing the exact arithmetic that makes lattices so pleasant to work with._
 
 ---
 
-## The Core Idea: Algebraic Deformation and Nearest-Lattice Snapping
+## Why I Built This
 
-Start with a base lattice, say $L = \mathbb{Z}^d$. The goal is to define a family of point sets $X_\varepsilon$ that are:
+I keep coming back to the same frustration: lattices are too clean. The very properties that make a lattice analytically tractable — periodicity, translational symmetry, uniform spacing — are exactly what make it a poor stand-in for anything that is supposed to look physical, textured, or generic. A pure lattice carries no information; every point is interchangeable with every other point under translation, and that uniformity is both a mathematical gift and, if you're trying to model something real, a quiet lie.
 
-1. **Infinitesimally close** to $L$ as $\varepsilon \to 0$,
-2. **Provably aperiodic** — no nonzero translation $t$ satisfies $X_\varepsilon + t = X_\varepsilon$,
-3. **Algebraically structured** — coordinates live in a number field, not in a probability space,
-4. **Spectrally tunable** — the "color" of the noise can be shaped by design.
+The obvious fix is to sprinkle in some noise. But randomness trades one kind of emptiness for another. White noise has no correlations, no spectral "color," no algebraic backbone; smoother random fields are nicer to look at but still require a probability measure, a choice of distribution, and they throw away the exact arithmetic that made the lattice worth starting from.
 
-The mechanism has two steps.
+So the question that motivated this project was: can we build a perturbation that is _deterministic, algebraically grounded, provably aperiodic, and spectrally tunable_? Not random, not periodic — something genuinely in between. Colored noise, but for fields, and computed in exact integer arithmetic.
 
-**Step one: algebraic deformation.** For each lattice point $x \in \mathbb{Z}^d$, define a displacement vector
-
-$$\eta(x) = a(x) + b(x)\sqrt{D}$$
-
-where $a(x), b(x) \in \mathbb{Q}^d$ are rational vectors computed from $x$, and $D$ is a fixed square-free integer. The coordinates of $\eta(x)$ live in the quadratic number field $K = \mathbb{Q}(\sqrt{D})$. The deformed position is
-
-$$T_\varepsilon(x) = x + \varepsilon \, \eta(x).$$
-
-**Step two: nearest-lattice snapping.** Project back to the original lattice using a nearest-point map under the $\ell^\infty$ norm:
-
-$$S_\varepsilon(x) = \operatorname{argmin}_{y \in \mathbb{Z}^d} \|T_\varepsilon(x) - y\|_\infty.$$
-
-The effective point set is then
-
-$$X_\varepsilon = \{ S_\varepsilon(x) : x \in \mathbb{Z}^d \}.$$
-
-This is the construction. It is deterministic, algebraic, and produces a point set that is geometrically close to the original lattice while being provably free of translational symmetry.
+It turns out you can, and the mechanism is surprisingly simple.
 
 ---
 
-## Why the Irrational Component Is the Key
+## The Idea in Plain Terms
 
-The critical constraint is that the irrational part of $\eta(x)$ must be bounded away from zero:
+Start with an ordinary grid — think of the integer points of the plane, $\mathbb{Z}^2$. Now nudge each point by a tiny amount, and then snap it back to the nearest grid point. That's the whole construction. The magic is entirely in _how_ you compute the nudge.
 
-$$\|b(x)\| \geq c > 0 \quad \text{for all } x \in \mathbb{Z}^d.$$
+There are two steps:
 
-This is not a technical nicety — it is the mechanism that kills periodicity.
+1. **Algebraic deformation.** For each grid point, we compute a small displacement whose coordinates live not in the ordinary rational numbers but in a _quadratic number field_ — numbers of the form $a + b\sqrt{D}$ for a fixed square-free integer $D$ (the golden-ratio field, $\mathbb{Q}(\sqrt{5})$, is a natural example). This displacement field is what I call $\eta$.
 
-Suppose there were a nonzero translation $t$ such that $X_\varepsilon + t = X_\varepsilon$. Tracing this back through the snapping map, it would require that for each $x \in \mathbb{Z}^d$ there exists $y \in \mathbb{Z}^d$ such that
+2. **Nearest-lattice snapping.** After nudging, we project each point back to the nearest grid point. The result is a point set that stays _infinitesimally close_ to the original grid, yet — provably — never repeats.
 
-$$t = (y - x) + \varepsilon(\eta(y) - \eta(x)).$$
-
-The left side is a fixed vector. The right side has an irrational component $\varepsilon(b(y) - b(x))\sqrt{D}$. For this to hold for all $x$ simultaneously, the irrational parts would have to cancel — which requires $b(y) = b(x)$ for all relevant pairs, collapsing the irrational component to zero. But the lower bound $\|b(x)\| \geq c$ forbids this.
-
-The minimum irrational component is a rigidity condition. It prevents the configuration from collapsing into any rationally periodic pattern, regardless of how the snapping map rearranges points.
+The reason it never repeats is worth dwelling on, because it's the heart of the thing. The irrational part of each displacement (the $b\sqrt{D}$ piece) is kept bounded away from zero by construction. If the pattern _did_ have a repeating translation, the irrational parts would have to cancel out everywhere simultaneously — which would force that irrational component to collapse to zero. The lower bound forbids exactly that. In short: the irrational component acts as a rigidity condition, and rigidity is what kills periodicity.
 
 ---
 
-## Relationship to Known Structures
+## What You Actually See
 
-This construction does not live in a vacuum. It touches several well-studied mathematical objects, but it is not identical to any of them.
+Here is the part I find genuinely delightful. If you plot the magnitude of the displacement field $\|\eta(x)\|$ across a large region, you don't get static, and you don't get stripes. You get something that looks strikingly like the large-scale _moiré_ patterns you see when you zoom out on a Penrose tiling — those ghostly bands that almost repeat but never quite do.
 
-### Cut-and-Project Sets and Quasicrystals
+This is not a coincidence. Penrose tilings get their character from projecting a higher-dimensional grid along directions defined by the golden ratio; the shimmering bands are the interference of incommensurate algebraic gratings. Our field is built from the same raw material — a $\sqrt{D}$ grating that is deliberately incommensurate with the integer lattice — so it produces the same family of long-range interference patterns. The difference is that here the pattern is:
 
-The closest relatives are quasicrystals constructed via the cut-and-project method. In that framework, one starts with a periodic lattice in a higher-dimensional space, applies an irrational linear projection to a lower-dimensional subspace, and retains only the points that fall within a bounded "window." The result is an aperiodic but highly ordered point set — Penrose tilings, Ammann-Beenker tilings, and their higher-dimensional generalizations all arise this way.
+- constrained to a plain square grid (not five-fold symmetric),
+- infinitesimal in amplitude (the geometry stays hugging the original lattice),
+- and, crucially, **tunable** — you can dial the "color" of the pattern by choosing which algebraic frequencies to include.
 
-The algebraic structure is similar: quasicrystals built from $\mathbb{Q}(\sqrt{5})$ (the golden ratio field) have the same flavor of "irrational coordinates with algebraic backbone" as the construction here. The key difference is geometric. Cut-and-project sets are not infinitesimal perturbations of a lattice — they are genuinely different point sets, with different local configurations and different density. The construction here stays infinitesimally close to $\mathbb{Z}^d$ and snaps back to it, rather than projecting away from it.
-
-### Perturbed Lattices and Delone Sets
-
-A perturbed lattice in the standard sense is a point set of the form $\{x + \delta_x : x \in \mathbb{Z}^d\}$ where the displacements $\delta_x$ are small and often random. If the perturbation is Lipschitz with small constant, the result is a Delone set: uniformly discrete and relatively dense, bi-Lipschitz equivalent to the original lattice.
-
-The construction here is a perturbed lattice in this sense, but with two non-standard features: the perturbation is algebraically structured (not random), and the snapping step introduces a nonlinear quantization that is not present in the standard theory. The bi-Lipschitz equivalence still holds for small $\varepsilon$, but the mechanism is different.
-
-### Algebraic Number Fields in Geometry
-
-The use of quadratic number fields to generate aperiodic structure is well-established in the theory of substitution tilings, Pisano sequences, and algebraic quasicrystals. What is unusual here is the role of the number field: rather than generating the point set directly, it generates the deformation field that is then snapped back to the lattice. The algebraic structure is one level removed from the geometry, which gives more flexibility in tuning the spectral properties of the resulting field.
+The mental image I keep is "Penrose moiré, constrained to a square grid, with adjustable spectral weight." Long-range quasi-stripes, algebraic interference, no true periodicity, and no randomness anywhere in sight.
 
 ---
 
-## The Field Perspective: Deterministic Colored Noise
+## Using the Tool
 
-The most important reframing is this: the construction is not primarily about the point set $X_\varepsilon$. It is about the field $\eta : \mathbb{Z}^d \to K^d$.
+The interface is built around a single, direct feedback loop: change the algebraic ingredients, watch the field respond. The parameters you can play with map cleanly onto the theory:
 
-Think of $\eta$ as a noise field on the lattice. It is:
+- **The field $D$** — choosing the square-free integer behind $\sqrt{D}$ sets the underlying incommensurate grating. Different fields give different flavors of interference.
+- **The frequencies** — a set of irrational direction vectors that determine _which_ spatial patterns appear in the field.
+- **The coefficients** — the amplitude assigned to each frequency; this is your equalizer for shaping the "color" of the noise (blue, pink, hyperuniform, and everything between).
+- **The amplitude $\varepsilon$** — how far points are allowed to wander before snapping. Small values keep the geometry tight against the grid; larger values make the moiré more dramatic.
 
-- **Not white**: values at different sites are correlated through the algebraic construction. The power spectrum of $\eta$ is not flat.
-- **Not random**: everything is deterministic and algebraic. No probability measure is required.
-- **Colored**: by choosing how $\eta(x)$ depends on $x$ — which algebraic frequencies, which combinations of coordinates — you shape the spectral content of the field.
-
-A concrete example: define
-
-$$\eta(x) = \sum_{k=1}^{K} \left( r_k \sin(2\pi \alpha_k \cdot x) + s_k \sqrt{D} \cos(2\pi \beta_k \cdot x) \right)$$
-
-where $\alpha_k, \beta_k$ are algebraically independent irrational vectors and $r_k, s_k$ are rational coefficients. By choosing the $\alpha_k$ and $\beta_k$, you control which spatial frequencies are present in the field. By choosing the $r_k$ and $s_k$, you control the amplitude at each frequency. The result is a deterministic field with a designed power spectrum — colored noise, but algebraic.
-
-The perturbed lattice $X_\varepsilon$ is then just one geometric manifestation of this field. The field is the primary object; the geometry is derived from it.
+Because everything downstream of the $\sqrt{D}$ constant is integer arithmetic, the visualization updates cleanly and predictably — no floating-point drift, no per-pixel randomness, no seed to remember. The same parameters always give the same picture; the construction is fully reproducible by design.
 
 ---
 
-## Computational Structure: Why Quadratic Rationals Are Efficient
+## A Little Context
 
-The choice of $K = \mathbb{Q}(\sqrt{D})$ is not just mathematically convenient — it is computationally optimal for large-scale parallel generation.
+It's worth locating this in the landscape, because it borrows from several well-studied neighborhoods without being identical to any of them.
 
-Each value of $\eta(x)$ is a pair of integers $(a(x), b(x))$ representing $a(x) + b(x)\sqrt{D}$. If $\eta(x)$ is built from linear forms in the lattice coordinates — say $a(x) = A \cdot x$ and $b(x) = B \cdot x$ for integer matrices $A, B$ — then computing $\eta(x)$ for every point in a large grid requires only integer dot products. There are no transcendental function calls, no floating-point instability, no per-site branching.
+- **Quasicrystals** (Penrose and Ammann–Beenker tilings, cut-and-project sets) share the "irrational coordinates with an algebraic backbone" flavor — but they are genuinely _different_ point sets, not infinitesimal nudges of a lattice. We stay close to the grid and snap back; they project away from it.
+- **Perturbed lattices** in the usual sense nudge each point by a small, often _random_ displacement. Ours is a perturbed lattice too, but with a deterministic, algebraically structured nudge and a nonlinear snapping step that the standard theory doesn't include.
+- **Algebraic number fields in tiling theory** are old friends. What's unusual here is that the number field generates the _deformation_, one level removed from the geometry — which is precisely what buys us the freedom to tune the spectrum.
 
-This is SIMD-friendly and GPU-friendly in the strongest sense: the computation at each lattice site is identical, involves only integer arithmetic, and has no data dependencies between sites. A large field of $\eta$ values can be generated in a single parallel pass over the lattice.
-
-The $\sqrt{D}$ constant is global — it appears once, not per site. If you need actual floating-point geometry (for the snapping step or for visualization), you convert at the last moment. The algebraic structure lives in integer space throughout.
-
-This is a significant practical advantage over smooth random fields, which require pseudorandom number generation (inherently sequential or at least stateful) and floating-point arithmetic throughout.
-
----
-
-## What the Visualization Will Look Like
-
-If you plot the total perturbation magnitude $\|\eta(x)\|$ over a large region of $\mathbb{Z}^2$, the result will be deeply strange — in a structured way.
-
-The most likely visual character is something close to the large-scale moiré patterns visible in Penrose tilings. This is not a coincidence; the mechanism is the same.
-
-### Why Penrose Moiré Appears
-
-Penrose tilings arise from projecting a 5-dimensional cubic lattice along directions defined by the golden ratio $\phi = (1+\sqrt{5})/2$. When you zoom out on a Penrose tiling, you see ghostly bands and interference patterns — quasi-stripes that almost repeat but never quite do. These are the shadow of the 5-dimensional periodicity projected onto 2 dimensions. The "moiré" is the interference of incommensurate algebraic gratings.
-
-The perturbation field $\eta(x)$ built from $\mathbb{Q}(\sqrt{D})$ has the same structure: it is the interference of incommensurate algebraic directions on a square lattice. The $\sqrt{D}$ component introduces a grating that is incommensurate with the integer lattice, and the interaction of these gratings produces large-scale interference patterns.
-
-The differences from Penrose moiré are:
-
-- The underlying lattice is square, not 5-fold symmetric.
-- The aperiodicity lives in a field over the lattice, not in the combinatorics of tiles.
-- The spectral color is tunable by design.
-- The amplitude is infinitesimal, so the geometry stays close to $\mathbb{Z}^2$.
-
-The visual result should feel like "Penrose moiré constrained to a square grid, with adjustable spectral weight." Long-range quasi-stripes, algebraic interference, no true periodicity, no randomness.
-
-### Fourier-Bohr Spectrum
-
-The field $\eta$ has a pure point Fourier-Bohr spectrum — infinitely many "Bragg peaks" at positions determined by the algebraic structure of $K$, with intensities controlled by the coefficients $r_k, s_k$. When you blur or zoom out, these peaks interfere and produce the large-scale modulations visible in the plot.
-
-This is the same mechanism that produces diffraction patterns in physical quasicrystals. The visualization of $\|\eta(x)\|$ is, in a precise sense, a real-space image of this spectrum.
+So this is best thought of as a small hybrid: a bit of quasicrystal theory, a bit of perturbed-lattice theory, a bit of algebraic number theory, and a bit of quantization — assembled into a single primitive that is simpler, and far more computationally tractable, than any of its ancestors.
+It shares its central conviction — that the _number field_ of a construction's
+coordinates, not its visual form, is the real invariant — with the **Pentagon
+Lattice Geometry** work, where exact golden-ratio arithmetic (the field
+$\mathbb{Q}(\sqrt5)$ that also serves as the natural example here) is what keeps
+a delicate multi-sheeted structure from tearing under rounding error. The two
+projects approach algebraic structure from opposite directions: Pentagon
+Geometry _stacks_ frustrated tiles onto extra sheets, while this one _nudges_ a
+flat grid and snaps it back — but both insist on exact arithmetic in a quadratic
+field as the thing that makes the construction well-defined.
 
 ---
 
-## Properties of the Construction
+## Why It's Interesting
 
-Collecting the key properties:
+A few reasons this holds my attention:
 
-**Infinitesimal perturbation.** For small $\varepsilon$, $X_\varepsilon$ is within Hausdorff distance $O(\varepsilon)$ of $\mathbb{Z}^d$. As $\varepsilon \to 0$, $X_\varepsilon \to \mathbb{Z}^d$.
-
-**Bi-Lipschitz equivalence.** If $\eta$ is Lipschitz with constant $L$ and $\varepsilon L < 1/2$, then
-
-$$\frac{1}{2}\|x - y\| \leq \|T_\varepsilon(x) - T_\varepsilon(y)\| \leq \frac{3}{2}\|x - y\|$$
-
-for all $x, y \in \mathbb{Z}^d$. The snapped set $X_\varepsilon$ is bi-Lipschitz equivalent to $\mathbb{Z}^d$.
-
-**Uniform density.** The asymptotic density of $X_\varepsilon$ equals that of $\mathbb{Z}^d$.
-
-**Separation.** The minimum inter-point distance in $X_\varepsilon$ is bounded below by a constant depending on $\varepsilon$ and the Lipschitz constant of $\eta$.
-
-**Provable aperiodicity.** No nonzero translation $t$ satisfies $X_\varepsilon + t = X_\varepsilon$, provided the irrational component of $\eta(x)$ is bounded away from zero.
-
-**Deterministic.** No randomness. The construction is fully explicit and reproducible.
-
-**Algebraic.** All coordinates live in $\mathbb{Q}(\sqrt{D})$. Exact arithmetic is possible throughout.
-
-**Spectrally tunable.** The power spectrum of $\eta$ can be shaped by choosing the algebraic frequencies and coefficients.
+1. **It fills a real gap.** Between "sterile lattice" and "structureless random noise" there's a whole territory of _structured determinism_ that is hard to reach by conventional means. This construction lands squarely in it.
+2. **The spectrum is a design surface, not an accident.** The field has a pure-point (Bragg-peak) spectrum whose intensities you choose. Designing the spectrum is an inverse problem in algebraic harmonic analysis — the kind of open question I find hard to walk away from.
+3. **It's exact.** No probability measure, no distribution, no ensemble. You can reason about it, reproduce it, and compute it in integer arithmetic all the way down.
+4. **It's beautiful.** I'll admit that's not a rigorous criterion, but the visuals genuinely reward exploration.
 
 ---
 
-## What This Is Not
+## Who Might Find This Useful
 
-It is worth being explicit about what this construction is not, to locate it precisely in the landscape.
-
-It is not a quasicrystal. Quasicrystals are not infinitesimal perturbations of a lattice; they are genuinely different point sets with different local structure. This construction stays close to $\mathbb{Z}^d$ and snaps back to it.
-
-It is not a random perturbed lattice. There is no probability measure, no randomness, no ensemble. The perturbation is fully deterministic.
-
-It is not a substitution tiling. There is no inflation rule, no hierarchical decomposition, no tile alphabet.
-
-It is not a smooth deformation. The snapping step introduces a discontinuous, nonlinear quantization that is not present in smooth deformation theory.
-
-It is a new primitive: an algebraic colored lattice field, with a derived geometry given by the snapped perturbation.
+- **Researchers in aperiodic order and quasicrystals**, as a new and unusually simple point of comparison — an _infinitesimal_ aperiodic structure rather than a projected one.
+- **People working with procedural textures and generative art**, who want structured, tunable, repeatable "noise" with a distinctive moiré character and zero randomness to manage.
+- **Anyone modeling structured disorder** — coherence-cost fields, local energy densities, disorder fields — where you'd like the substrate to carry algebraic structure rather than statistical structure.
+- **The mathematically curious**, who simply want to turn some knobs and watch incommensurate gratings interfere.
 
 ---
 
-## Open Directions
+## Where This Could Go
 
-Several natural questions follow from this construction.
+A few directions I'm keen to explore, and would love feedback on:
 
-**Spectral classification.** Given a target power spectrum (blue noise, pink noise, hyperuniform), what choice of algebraic frequencies and coefficients achieves it? This is an inverse problem in algebraic harmonic analysis.
+- **Spectral classification** — given a target spectrum (blue, pink, hyperuniform), which algebraic ingredients get you there?
+- **Multi-scale stacking** — layering fields at different scales and directions for a hierarchical, multi-color result.
+- **Higher-degree fields** — moving beyond $\sqrt{D}$ to algebraic numbers of degree three and up, and asking how field degree translates into visual complexity.
+- **Physical coupling** — treating the field as a substrate that some dynamics live on, and asking how algebraic structure in the substrate propagates into observable behavior.
 
-**Multi-scale stacking.** Define
+None of these are settled. If any of them resonates with your own work, I'd genuinely like to hear about it.
 
-$$\eta(x) = \sum_k \varepsilon_k \, \eta_k(x)$$
-
-with different algebraic directions and scales. For $\sum_k \varepsilon_k$ small, this gives a hierarchical aperiodic lattice with multi-scale colored noise. What are the spectral and geometric properties of this stacked construction?
-
-**Higher-degree fields.** The construction generalizes immediately to number fields of higher degree, $K = \mathbb{Q}(\alpha)$ with $\alpha$ algebraic of degree $n \geq 3$. Higher degree gives more complex quasi-periodic structure and richer interference patterns. What is the relationship between the degree of $K$ and the visual complexity of the resulting field?
-
-**Physical coupling.** If $\eta(x)$ is interpreted as a physical field — a coherence-cost field, a local energy density, a disorder field — then the snapped geometry $X_\varepsilon$ is the substrate that physical processes see. How do dynamics constrained to $X_\varepsilon$ reflect the underlying algebraic noise field? This is the question of how algebraic structure in the substrate propagates into observable physics.
-
-**Formal naming.** The object deserves a name. Candidates include: algebraic snap-lattice, infinitesimal algebraic quasicrystal, algebraically quantized aperiodic perturbed lattice. The name should reflect the three essential features: algebraic origin, infinitesimal amplitude, and nearest-lattice quantization.
-
----
-
-## Summary
-
-The construction described here is a minimal, deterministic, algebraically grounded mechanism for producing a perturbed lattice that is:
-
-- infinitesimally close to the original lattice,
-- provably aperiodic,
-- computationally efficient (integer arithmetic, fully parallelizable),
-- spectrally tunable,
-- and visually rich in a way that resembles, but is distinct from, the moiré patterns of Penrose tilings.
-
-The key insight is that the irrational component of a quadratic number field, when used to define a deformation field on a lattice and then snapped back via a nearest-lattice map, produces exactly the kind of structured irregularity that neither random noise nor smooth deformations can provide. The algebraic backbone gives you exact arithmetic and provable aperiodicity. The snapping gives you a point set that stays close to the original lattice. The spectral tuning gives you control over the "color" of the disorder.
-
-This is not a known object in the literature. It is a hybrid of quasicrystal theory, perturbed lattice theory, algebraic number theory, and quantization theory — assembled into a single primitive that is simpler and more computationally tractable than any of its ancestors.
+More soon, I hope — and in the meantime, enjoy turning the knobs.

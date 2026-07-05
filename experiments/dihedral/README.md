@@ -1,148 +1,126 @@
-# Dihedral Attractors: Optimizing Functionals over Triangulation Dihedral Angles
+# Dihedral Attractors: Sculpting Geometry by Optimizing the Angles Between Faces
 
-## The Unified Vision
+This particular lab reaches for the richest geometric quantity yet — the **dihedral angle**, the fold between two adjacent faces of a mesh.
 
-This experiment sits inside a broader research program: discovering
-**geometric attractor sets** that emerge when you optimize (minimize or
-maximize) some scalar _metric_ defined over a configuration of points. Across
-the collection, the same recipe recurs — place points on a manifold, define a
-differentiable energy, and let gradient descent (Adam / L-BFGS / QQN in
-TensorFlow.js) flow the points into extremal, often highly symmetric,
-configurations.
+## The Big Idea
 
-What changes from lab to lab is the **order of geometric primitive** the
-metric is built on. Each rung up this ladder couples more points together and
-captures richer geometric structure:
+Imagine you have a handful of points floating in space. Now imagine you can
+define a single number — call it an "energy" — that measures something about
+how those points are arranged. If you let the points slowly drift in
+whatever direction lowers that energy, they will eventually settle into a
+special configuration: a low point, an _attractor_. The fascinating part is
+that these attractors are frequently the most symmetric, orderly shapes the
+space allows — regular polygons, spheres of evenly spaced points, and, in
+this lab, folded surfaces reminiscent of the Platonic solids.
 
-| #   | Primitive             | Metric acts on                                     | Example lab                  |
-| --- | --------------------- | -------------------------------------------------- | ---------------------------- |
-| 1   | **Point pairs**       | distance / repulsion / attraction forces           | interaction-force potentials |
-| 2   | **Pair distribution** | Shannon entropy of the pairwise-distance set       | `geometric-entropy`          |
-| 3   | **Point triplets**    | per-triangle vertex-angle functionals              | `3inline` (no-three-in-line) |
-| 4   | **Dihedral angles**   | functional summed over a triangulation's dihedrals | **this lab** (new)           |
+What makes each experiment in this collection different is _which geometric
+ingredient_ the energy is built from. There's a natural ladder here, each
+rung coupling more points together and capturing richer structure:
 
-Rungs 1–3 are explored elsewhere; the **unified framing** and **rung 4** are
-the new contributions here.
+1. **Point pairs** — the simplest case, where every pair of points pushes or
+   pulls on the others by distance alone (think magnets or springs).
+2. **The distribution of distances** — instead of individual forces, you
+   treat the whole collection of pairwise distances as a statistical
+   distribution and reward _diversity_ among them.
+3. **Triangles** — move from pairs to triplets, scoring the shape of each
+   triangle by its interior angles.
+4. **Dihedral angles** — the newest rung, and the subject of this lab.
+   Rungs one and two are the province of the **Geometric Entropy Lab** (which
+   maximizes the diversity of the _distance distribution_); the **No-Three-in-Line
+   Lab** is a close relative that uses a triangle-angle penalty to forbid
+   collinearity. This lab climbs to the top rung, dihedral angles, but shares the
+   same solver, the same manifold constraints, and the same underlying
+   philosophy with all of them.
 
-### The Progression
+## What's New Here: The Fold Between Faces
 
-- **(1) Point-pair metrics.** The simplest coupling: every pair contributes a
-  force depending only on their distance `d`. Repulsion (`1/d²`) spreads
-  points; attraction (`d²`) clusters them. Purely _local, pairwise_.
+A dihedral angle is the angle you'd measure at the crease where two flat
+surfaces meet — like the fold in a piece of paper, or the seam between two
+panels of a soccer ball. To use it, this lab first connects the points into a
+**triangulation** (a mesh of triangles), and then, for every internal edge
+where two triangles share a border, it measures the fold angle between them.
 
-- **(2) Point-pair distribution metrics.** Instead of summing per-pair forces,
-  treat the _multiset_ of pairwise distances as a probability distribution and
-  optimize a functional of the whole distribution — e.g. the Shannon entropy
-  of a Gaussian kernel density. This is the continuous analogue of the Erdős
-  distinct-distance problem: maximizing distance _diversity_ rather than any
-  individual distance. The `geometric-entropy` lab lives here.
+Why bother reaching all the way up to dihedrals? Because, as it turns out,
+these fold angles are the language geometry uses to talk about **curvature**.
+A flat sheet has no folds; a sharply creased or curved surface has many.
+Optimizing over dihedral angles therefore lets us aim directly at
+curvature-defined targets:
 
-- **(3) Triplet-angle metrics.** Move from pairs to triplets. Each triplet of
-  points defines a triangle; sum a functional over the three interior angles.
-  The `3inline` lab uses angle fitnesses that diverge as any angle → 0 or π
-  (collinearity), directly penalizing three-in-a-line arrangements. The metric
-  now sees _shape_, not just _scale_.
+- Rewarding _flatness_ tends to flatten the mesh into developable,
+  paper-like surfaces.
+- Rewarding _equal folds everywhere_ drives the points toward the regular
+  and semi-regular polyhedra — the Platonic and Archimedean solids are
+  precisely the shapes whose folds are all identical.
+- Rewarding _fold diversity_ (maximizing the variety of angles) produces
+  maximally irregular-yet-balanced crinkled structures.
 
-- **(4) Dihedral-angle metrics.** The natural next rung. Build a
-  **triangulation** of the point set, then define the energy as a sum of a
-  functional over all **dihedral angles** — the angles _between adjacent
-  faces_ (in 3D) or _between adjacent triangles across a shared edge_ (in 2D,
-  the "hinge" angle). This couples points through the connectivity of the
-  mesh, not just raw geometry, and reaches genuinely higher-order structure.
+That last variant is a nice closing of the loop: it's the same "maximize
+diversity" idea from rung #2, but applied to folds instead of distances.
 
-## What Is New Here
+## The Interface
 
-Rung **#4** — optimizing a functional over **dihedral angles of a
-triangulation** — is the novel piece, together with the unifying ladder that
-situates all four labs as instances of one idea: _extremize a metric on a
-geometric primitive and watch attractor sets crystallize._
+The lab is meant to be played with, not just read about. In broad strokes,
+the experience works like this:
 
-## The Method (Rung 4)
+- **Choose your points and your space.** You decide how many points to start
+  with, and whether they roam freely or are pinned to a surface — a sphere, a
+  torus, a cube, a saddle, or even a custom shape.
+- **Pick what to reward.** A menu of dihedral "functionals" lets you select
+  the goal: flatness, equal folds, crease formation, minimal bending, or
+  maximal fold diversity. Each one steers the system toward a different
+  family of attractors.
+- **Watch it flow.** Press go and the points begin their descent, the mesh
+  re-knitting itself periodically as the points migrate. You watch order
+  emerge in real time as the shape settles into its attractor.
 
-1. **Points.** Seed `k` trainable points as a `tf.variable`, either free in
-   space or constrained to a manifold (sphere, torus, plane, cube, …), exactly
-   as in the sibling labs.
+Under the hood everything is differentiable, which is a technical way of
+saying the system always knows _which way is downhill_ — and it shares its
+solver machinery, its manifold constraints, and its angle-based philosophy
+with the sibling labs, so results feel of a piece with the rest of the
+collection.
 
-2. **Triangulation.** Compute a triangulation of the current point set
-   (Delaunay in 2D; a surface/tetrahedral triangulation in 3D). Each interior
-   edge is shared by two triangles/faces and thus defines one **dihedral
-   angle** φ.
+## A Little Background
 
-3. **Dihedral angle from geometry.** For a shared edge with the two adjacent
-   face normals `n₁`, `n₂`, the dihedral angle is
+This sits at the intersection of a few well-worn ideas. The
+"spread points evenly on a sphere" problem is a classic (the Thomson
+problem, for the physically inclined); the notion of maximizing distinct
+distances traces back to Erdős; and the study of fold angles as carriers of
+curvature is the heart of _discrete differential geometry_, the field that
+lets computers do calculus on meshes. What this program contributes is a
+unifying frame — one recipe, four rungs — and, on the top rung, the
+still-underexplored move of optimizing directly over dihedral angles.
 
-```
-cos φ = (n₁ · n₂) / (|n₁| · |n₂|)
-```
+## Why It's Interesting
 
-Each face normal is a cross product of two edge vectors of that face, so φ
-is fully differentiable in the point coordinates. (In 2D, the "dihedral"
-is the fold/hinge angle between two triangles sharing an edge, computed the
-same way from the triangle plane normals lifted into 3D, or directly from
-the turning angle.)
+There's a genuine sense of surprise in watching high symmetry appear from a
+simple rule and a random start; you're essentially discovering the "natural
+resting shapes" a space wants to hold. It's also a compact illustration of a
+profound principle — that much of the order we see in nature, from crystals
+to soap films to viral capsids, arises from exactly this kind of energy
+minimization. Turning an abstract mathematical idea into something you can
+nudge and watch unfold makes that principle tangible in a way equations
+alone rarely do.
+As with the sibling **Geometric Entropy** and **Constrained Mesh** labs, the
+"equal folds everywhere" objective is deliberately degenerate — many
+tessellations satisfy it equally well — so the choice of optimizer again
+leaves its fingerprint on which attractor you land in. Switching between Adam,
+L-BFGS, and QQN is the quickest way to see that effect on curvature-defined
+targets.
 
-4. **Energy.** Sum a chosen functional `g(φ)` over every dihedral in the
-   triangulation:
+## Who Might Find It Useful
 
-```
-E_dihedral = λ_dih · Σ_edges  g(φ_edge)
-```
+- **The mathematically curious**, who enjoy watching order emerge from
+  simple rules and want an intuition for optimization and symmetry.
+- **Students and educators** looking for a hands-on way to make curvature,
+  triangulations, and gradient descent concrete rather than abstract.
+- **Artists and designers** hunting for algorithmically generated forms —
+  the folded, faceted attractors have a real aesthetic appeal.
+- **Researchers in geometry and machine learning**, for whom this is a small
+  but honest sandbox for experimenting with mesh-based energies.
 
-Optional companion terms carried over from the other labs — grid snapping,
-pairwise repulsion, manifold constraints, entropic noise — can be added on
-top.
-
-5. **Optimize.** Flow points downhill on `E` with Adam / SGD+momentum /
-   L-BFGS / QQN. Clip gradients by global norm, since angle functionals can
-   spike near degenerate (flat or folded) configurations. Because the
-   triangulation depends on point positions, it is **recomputed periodically**
-   as points move.
-
-### Candidate Dihedral Functionals `g(φ)`
-
-Different functionals target different attractors. Some natural choices:
-
-| Functional            | Form                     | Encourages                          |
-| --------------------- | ------------------------ | ----------------------------------- |
-| **flatness**          | `(φ − π)²`               | flat / developable meshes           |
-| **uniform-dihedral**  | `(φ − φ̄)²` summed        | equal dihedrals (regular polytopes) |
-| **max-fold**          | `−cos φ`                 | crease / fold formation             |
-| **smoothness (bend)** | `1 − cos φ`              | minimal bending energy              |
-| **entropy**           | Shannon entropy of `{φ}` | dihedral-diverse configurations     |
-
-The **entropy** variant closes the loop with rung #2: instead of the _distance_
-distribution, we extremize the entropy of the _dihedral-angle_ distribution —
-the most dihedral-diverse triangulation the manifold admits.
-
-## Why Dihedrals?
-
-Dihedral angles are the discrete-differential-geometry carriers of
-**curvature**. The angle deficit at a vertex encodes Gaussian curvature; the
-dihedral angle along an edge encodes the mesh's **mean curvature / bending**.
-Optimizing functionals over dihedrals therefore reaches directly for
-curvature-defined attractors:
-
-- Minimizing bending energy (`Σ (1 − cos φ)`) tends toward **developable** or
-  **minimal-surface-like** meshes.
-- Equalizing dihedrals drives toward the **regular and semi-regular
-  polytopes** (the Platonic/Archimedean solids are exactly the configurations
-  with all dihedrals equal).
-- Maximizing dihedral entropy produces maximally _irregular-yet-balanced_
-  folded structures — a curvature analogue of the distinct-distance extremizer.
-
-## Relationship to the Sibling Labs
-
-- Shares the **solver core**: TensorFlow.js autodiff, the same optimizer
-  stable (Adam, L-BFGS, QQN), gradient clipping, annealing, entropic noise,
-  and auto-rescaling.
-- Shares the **manifold constraints** from `geometric-entropy` (sphere, torus,
-  cube, saddle, custom STL).
-- Shares the **angle-functional philosophy** from `3inline`, but lifts it from
-  _triangle interior angles_ (rung 3) to _dihedral angles between faces_
-  (rung 4).
-- Shares the **distribution-extremization** idea from `geometric-entropy`,
-  reapplied to the dihedral-angle distribution.
-
-Together the four labs form a coherent study of how the _order_ of the
-geometric metric — pair, distribution, triplet, dihedral — shapes the
-attractor set that gradient descent discovers.
+I'll be candid: this is an exploratory lab, and not every functional
+produces a clean, recognizable attractor — some settle into messy local
+minima, and the interplay between the moving points and the
+re-computed mesh can be finicky. But that unpredictability is part of the
+charm; there's always another combination to try. I'm looking forward to
+seeing what shapes people coax out of it. Enjoy!

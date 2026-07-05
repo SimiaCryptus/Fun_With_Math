@@ -1,521 +1,179 @@
-# QQN Optimizer: Quadratic-Quasi-Newton Optimization Algorithm
+# QQN Optimizer: A Smoother Path to the Bottom of the Hill
 
-A comprehensive optimization library implementing the Quadratic-Quasi-Newton (QQN) algorithm alongside a rigorous benchmarking framework for optimization algorithm evaluation.
-📄 **[Read the Academic Paper](paper.pdf)** - Complete mathematical foundation and theoretical analysis
+📄 **[Read the Academic Paper (PDF)](paper.pdf)** — the complete mathematical foundation and theoretical
+analysis, for those who want the full derivation.
 
 http://dx.doi.org/10.13140/RG.2.2.15200.19206
 
-## Table of Contents
-
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [The QQN Algorithm](#the-qqn-algorithm)
-- [Benchmarking Framework](#benchmarking-framework)
-- [Usage Examples](#usage-examples)
-- [Benchmark Results](#benchmark-results)
-- [API Documentation](#api-documentation)
-- [Contributing](#contributing)
-- [Academic Paper](#academic-paper) 📄 **[PDF](paper.pdf)**
-- [License](#license)
-
-## Overview
-
-The QQN Optimizer introduces a novel optimization algorithm that combines gradient descent and L-BFGS directions through quadratic interpolation. Unlike traditional approaches that choose between optimization directions or solve expensive subproblems, QQN constructs a smooth parametric path that guarantees descent while adaptively balancing first-order and second-order information.
-
-**Key Innovation**: QQN constructs a quadratic path `d(t) = t(1-t)(-∇f) + t²d_LBFGS` that starts tangent to the gradient direction and curves toward the quasi-Newton direction, then performs univariate optimization along this path.
-
-## Key Features
-
-### Algorithm Capabilities
-
-- **Robust Convergence**: Guaranteed descent property regardless of L-BFGS direction quality
-- **No Additional Hyperparameters**: Combines existing methods without introducing new tuning parameters
-- **Superlinear Local Convergence**: Inherits L-BFGS convergence properties near optima
-- **Multiple Line Search Methods**: Supports Backtracking, Strong Wolfe, Golden Section, Bisection, and more
-
-### Comprehensive Benchmarking
-
-- **62 Benchmark Problems**: Covering convex, non-convex, multimodal, and ML problems
-- **25 Optimizer Variants**: QQN, L-BFGS, Trust Region, Gradient Descent, and Adam variants
-- **Statistical Rigor**: Automated statistical testing with Welch's t-test and effect size analysis
-- **Reproducible Results**: Fixed seeds and deterministic algorithms ensure reproducibility
-
-### Reporting and Analysis
-
-- **Multi-Format Output**: Generates Markdown, LaTeX, CSV, and HTML reports
-- **Convergence Visualization**: Automatic generation of convergence plots and performance profiles
-- **Statistical Comparison**: Win/loss/tie matrices with significance testing
-- **Performance Metrics**: Success rates, function evaluations, and convergence analysis
-
-## Installation
-
-### Prerequisites
-
-- For report generation: `pandoc` and LaTeX distribution with `pdflatex` (optional)
-- For OneDNN support: Intel OneDNN library (optional, see [OneDNN Installation](#onednn-installation))
-
-### From Source
-
-```bash
-git clone https://github.com/SimiaCryptus/qqn-optimizer.git
-cd qqn-optimizer
-cargo build --release
-```
-
-### OneDNN Installation
-
-For enhanced performance with neural network problems, you can install Intel OneDNN:
-
-```bash
-# Ubuntu/Debian systems
-./install_onednn.py
-# Or install from source
-./install_onednn.py --source
-# Then build with OneDNN support
-cargo build --release --features onednn
-```
-
-### Using Docker
-
-```bash
-docker build -t qqn-optimizer .
-docker run -v $(pwd)/results:/app/results qqn-optimizer benchmark
-```
-
-### As a Library
-
-Add to your `Cargo.toml`:
-
-```toml
-[dependencies]
-qqn-optimizer = { git = "https://github.com/SimiaCryptus/qqn-optimizer.git" }
-```
-
-## Quick Start
-
-### Running Benchmarks
-
-```bash
-# Run full benchmark suite (may take hours)
-cargo run --release -- benchmark
-
-# Run calibration benchmarks (faster, for testing)
-cargo run --release -- calibration
-
-# Run specific problem sets
-cargo run --release -- benchmark --problems analytic
-cargo run --release -- benchmark --problems ml
-# Generate reports from existing results
-./process_results_md.sh  # Convert markdown to HTML
-./process_results_tex.sh # Convert LaTeX tables to PDF
-```
-
-### Using QQN in Your Code
-
-```rust
-use qqn_optimizer::optimizers::qqn::QQNOptimizer;
-use qqn_optimizer::line_search::strong_wolfe::StrongWolfeLineSearch;
-
-// Define your objective function
-fn rosenbrock(x: &[f64]) -> f64 {
-    let mut sum = 0.0;
-    for i in 0..x.len()-1 {
-        let a = 1.0 - x[i];
-        let b = x[i+1] - x[i] * x[i];
-        sum += a * a + 100.0 * b * b;
-    }
-    sum
-}
-
-// Define gradient function
-fn rosenbrock_grad(x: &[f64]) -> Vec<f64> {
-    let mut grad = vec![0.0; x.len()];
-    for i in 0..x.len()-1 {
-        grad[i] += -2.0 * (1.0 - x[i]) - 400.0 * x[i] * (x[i+1] - x[i] * x[i]);
-        if i > 0 {
-            grad[i] += 200.0 * (x[i] - x[i-1] * x[i-1]);
-        }
-    }
-    if x.len() > 1 {
-        let last = x.len() - 1;
-        grad[last] = 200.0 * (x[last] - x[last-1] * x[last-1]);
-    }
-    grad
-}
-
-// Create and run optimizer
-let line_search = StrongWolfeLineSearch::new();
-let mut optimizer = QQNOptimizer::new(line_search);
-
-let initial_point = vec![-1.0, 1.0]; // Starting point
-let result = optimizer.optimize(
-    &rosenbrock,
-    &rosenbrock_grad,
-    initial_point,
-    1000, // max function evaluations
-    1e-8  // gradient tolerance
-);
-
-println!("Optimum found at: {:?}", result.x);
-println!("Function value: {}", result.fx);
-println!("Function evaluations: {}", result.num_f_evals);
-```
-
-## The QQN Algorithm
-
-### Mathematical Foundation
-
-QQN addresses the fundamental question: given gradient and quasi-Newton directions, how should we combine them? The algorithm constructs a quadratic path satisfying three constraints:
-
-1. **Initial Position**: `d(0) = 0` (starts at current point)
-2. **Initial Tangent**: `d'(0) = -∇f(x)` (begins with steepest descent)
-3. **Terminal Position**: `d(1) = d_LBFGS` (ends at L-BFGS direction)
-
-This yields the canonical form:
-
-```
-d(t) = t(1-t)(-∇f) + t²d_LBFGS
-```
-
-### Key Properties
-
-- **Guaranteed Descent**: The initial tangent condition ensures descent regardless of L-BFGS quality
-- **Adaptive Interpolation**: Automatically balances first-order and second-order information
-- **Robust to Failures**: Gracefully degrades to gradient descent when L-BFGS fails
-- **No Additional Parameters**: Uses existing L-BFGS and line search parameters
-
-### Convergence Guarantees
-
-- **Global Convergence**: Under standard assumptions, converges to stationary points
-- **Superlinear Local Convergence**: Near optima with positive definite Hessian, achieves superlinear convergence matching L-BFGS
-
-## Benchmarking Framework
-
-### Problem Suite
-
-The benchmark suite includes 62 carefully selected problems across five categories:
-
-- **Convex Functions** (6): Sphere, Matyas, Zakharov variants
-- **Non-Convex Unimodal** (12): Rosenbrock, Beale, Levy variants
-- **Highly Multimodal** (24): Rastrigin, Ackley, Michalewicz, StyblinskiTang
-- **ML-Convex** (8): Linear regression, logistic regression, SVM
-- **ML-Non-Convex** (9): Neural networks with varying architectures
-
-### Statistical Analysis
-
-The framework employs rigorous statistical methods:
-
-- **Multiple Runs**: 50 runs per problem-optimizer pair for statistical validity
-- **Welch's t-test**: For comparing means with unequal variances
-- **Cohen's d**: For measuring effect sizes
-- **Bonferroni Correction**: For multiple comparison adjustment
-- **Win/Loss/Tie Analysis**: Comprehensive pairwise comparisons
-
-### Evaluation Methodology
-
-1. **Calibration Phase**: Determines problem-specific convergence thresholds
-2. **Benchmarking Phase**: Evaluates all optimizers with consistent criteria
-3. **Statistical Analysis**: Automated significance testing and effect size calculation
-4. **Report Generation**: Multi-format output with visualizations
-
-## Usage Examples
-
-### Custom Optimizer Implementation
-
-```rust
-use qqn_optimizer::optimizers::traits::Optimizer;
-use qqn_optimizer::line_search::backtracking::BacktrackingLineSearch;
-
-struct MyCustomOptimizer {
-    line_search: BacktrackingLineSearch,
-}
-
-impl Optimizer for MyCustomOptimizer {
-    fn optimize<F, G>(
-        &mut self,
-        f: &F,
-        grad: &G,
-        x0: Vec<f64>,
-        max_f_evals: usize,
-        grad_tol: f64,
-    ) -> OptimizationResult
-    where
-        F: Fn(&[f64]) -> f64,
-        G: Fn(&[f64]) -> Vec<f64>,
-    {
-        // Your optimization logic here
-        todo!()
-    }
-}
-```
-
-### Running Specific Benchmarks
-
-```rust
-use qqn_optimizer::benchmarks::evaluation::run_benchmark;
-use qqn_optimizer::problem_sets::analytic_problems;
-use qqn_optimizer::optimizer_sets::qqn_variants;
-use std::time::Duration;
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let problems = analytic_problems();
-    let optimizers = qqn_variants();
-
-    run_benchmark(
-        "my_benchmark_",
-        1000,  // max function evaluations
-        10,    // number of runs
-        Duration::from_secs(60), // timeout
-        problems,
-        optimizers,
-    ).await?;
-
-    Ok(())
-}
-```
-
-### Custom Problem Definition
-
-```rust
-use qqn_optimizer::benchmarks::evaluation::ProblemSpec;
-
-fn my_custom_problem() -> ProblemSpec {
-    ProblemSpec {
-        name: "MyProblem".to_string(),
-        function: Box::new(|x: &[f64]| {
-            // Your objective function
-            x.iter().map(|xi| xi * xi).sum()
-        }),
-        gradient: Box::new(|x: &[f64]| {
-            // Your gradient function
-            x.iter().map(|xi| 2.0 * xi).collect()
-        }),
-        initial_point: vec![1.0, 1.0, 1.0],
-        bounds: None, // Optional bounds
-        global_minimum: Some(0.0), // Known global minimum
-    }
-}
-```
-
-## Benchmark Results
-
-### Overall Performance
-
-Based on comprehensive evaluation across 62 problems with over 31,000 optimization runs:
-
-- **QQN Dominance**: QQN variants won 36 out of 62 problems (58%)
-- **Top Performers**:
-  - QQN-Bisection-1: 8 wins
-  - QQN-StrongWolfe: 7 wins
-  - L-BFGS: 6 wins
-  - QQN-GoldenSection: 6 wins
-
-### Performance by Problem Type
-
-**Convex Problems**:
-
-- QQN-Bisection: 100% success on Sphere problems with 12-16 evaluations
-- L-BFGS: 100% success on Sphere_10D with only 15 evaluations
-
-**Non-Convex Problems**:
-
-- QQN-StrongWolfe: 35% success on Rosenbrock_5D (best among all)
-- QQN-GoldenSection: 100% success on Beale_2D
-
-**Multimodal Problems**:
-
-- QQN-StrongWolfe: 90% success on StyblinskiTang_2D
-- Adam-Fast: Best on Michalewicz functions (45-60% success)
-
-**Machine Learning Problems**:
-
-- Adam-Fast: Best on neural networks (32.5-60% success)
-- L-BFGS variants: 100% success on SVM problems
-
-### Key Insights
-
-1. **Robustness**: QQN maintains consistent performance across problem types
-2. **Efficiency**: Competitive function evaluation counts with high success rates
-3. **Scalability**: Performance degrades gracefully with dimensionality
-4. **Specialization**: Some algorithms excel on specific problem classes
-
-## API Documentation
-
-### Core Traits
-
-```rust
-pub trait Optimizer {
-    fn optimize<F, G>(
-        &mut self,
-        f: &F,
-        grad: &G,
-        x0: Vec<f64>,
-        max_f_evals: usize,
-        grad_tol: f64,
-    ) -> OptimizationResult;
-}
-
-pub trait LineSearch {
-    fn search<F, G>(
-        &mut self,
-        f: &F,
-        grad: &G,
-        x: &[f64],
-        fx: f64,
-        gx: &[f64],
-        direction: &[f64],
-    ) -> LineSearchResult;
-}
-```
-
-### QQN Optimizer Variants
-
-- `QQNOptimizer<BacktrackingLineSearch>`: Basic backtracking line search
-- `QQNOptimizer<StrongWolfeLineSearch>`: Strong Wolfe conditions
-- `QQNOptimizer<GoldenSectionLineSearch>`: Golden section search
-- `QQNOptimizer<BisectionLineSearch>`: Bisection on derivative
-- `QQNOptimizer<MoreThuenteLineSearch>`: Moré-Thuente line search
-
-### Benchmarking API
-
-```rust
-// Run benchmark with custom configuration
-pub async fn run_benchmark(
-    prefix: &str,
-    max_evals: usize,
-    num_runs: usize,
-    timeout: Duration,
-    problems: Vec<ProblemSpec>,
-    optimizers: Vec<OptimizerSpec>,
-) -> Result<(), Box<dyn Error + Send + Sync>>;
-
-// Generate reports from benchmark results
-pub fn generate_reports(
-    results_dir: &str,
-    output_formats: &[ReportFormat],
-) -> Result<(), Box<dyn Error>>;
-```
-
-## Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Setup
-
-```bash
-git clone https://github.com/SimiaCryptus/qqn-optimizer.git
-cd qqn-optimizer
-cargo build
-cargo test
-```
-
-### Benchmark Report Processing
-
-The project includes scripts to process benchmark results into various formats:
-
-```bash
-# Process markdown reports to HTML
-./process_results_md.sh
-# Process LaTeX table exports to PDF
-./process_results_tex.sh
-```
-
-These scripts automatically:
-
-- Convert `.md` files to `.html` with proper link updates
-- Compile `.tex` files to `.pdf` using pdflatex
-- Handle recursive directory processing
-- Provide detailed logging and error handling
-
-### Running Tests
-
-```bash
-# Unit tests
-cargo test
-
-# Integration tests
-cargo test --test benchmark_reports
-
-# Benchmark tests (slow)
-cargo test --release calibration
-# Test with OneDNN support (if installed)
-cargo test --release --features onednn
-```
-
-### Code Style
-
-We use `rustfmt` and `clippy` for code formatting and linting:
-
-```bash
-cargo fmt
-cargo clippy -- -D warnings
-```
-
-## Academic Paper
-
-📄 **[Download Full Paper (PDF)](paper.pdf)**
-
-This work is documented in our academic paper (in preparation):
-
-**"Quadratic-Quasi-Newton Optimization: Combining Gradient and Quasi-Newton Directions Through Quadratic Interpolation"**
-
-The paper provides:
-
-- Complete mathematical derivation of the QQN algorithm
-- Theoretical convergence analysis
-- Comprehensive experimental evaluation
-- Comparison with existing optimization methods
-
-Paper draft and supplementary materials available in the [`papers/`](papers/) directory. **[Direct link to paper PDF](paper.pdf)**.
-
-## Citing This Work
-
-If you use QQN Optimizer in your research, please cite:
-
-```bibtex
-@article{qqn2024,
-  title={Quadratic-Quasi-Newton Optimization: Combining Gradient and Quasi-Newton Directions Through Quadratic Interpolation},
-  author={[Author Name]},
-  journal={[Journal Name]},
-  year={2024},
-  url={https://github.com/SimiaCryptus/qqn-optimizer/}
-}
-```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- The QQN algorithm was originally developed in 2017
-- AI language models assisted in documentation and benchmarking framework development
-- Thanks to the Rust optimization community for inspiration and feedback
-
-## Support
-
-- **Documentation**: [API Docs](https://docs.rs/qqn-optimizer) (when published)
-
-## Project Structure
-
-```
-qqn-optimizer/
-├── src/                    # Core library source code
-│   ├── optimizers/        # Optimizer implementations
-│   ├── line_search/       # Line search algorithms
-│   ├── benchmarks/        # Benchmarking framework
-│   └── problem_sets/      # Test problem definitions
-├── papers/                # Academic paper drafts
-├── results/               # Benchmark results (generated)
-├── scripts/               # Utility scripts
-├── process_results_*.sh   # Report processing scripts
-├── install_onednn.py      # OneDNN installation script
-└── Dockerfile            # Container configuration
-```
+---
+
+## The Short Version
+
+Optimization is the quiet engine underneath most of modern computing; it is how we teach machines to
+fit curves to data, how we train neural networks, and how we find the "best" answer among a vast space
+of possibilities. This project introduces **QQN** — the Quadratic-Quasi-Newton method — a new way of
+steering that search, along with a rigorous benchmarking framework built to test whether the idea
+actually holds up under scrutiny. (Spoiler: it turns out that it holds up rather well, but I'll get to
+the honest caveats in a moment.)
+
+This document is written for the curious reader rather than the developer. If you want to know _what_
+QQN is, _why_ it might matter, and _who_ could find it useful — without wading through function
+signatures — you're in the right place.
 
 ---
 
-**Note**: This is research software. While we strive for correctness and performance, please validate results for your specific use case. The benchmarking framework is designed to facilitate fair comparison and reproducible research in optimization algorithms.
+## A Little Background
+
+Imagine you're standing somewhere on a foggy hillside, and your goal is to reach the lowest point in
+the valley. You can't see the whole landscape; you can only feel the slope beneath your feet. This is,
+in essence, what a numerical optimizer does. The "landscape" is a mathematical function — the error of
+a model, the cost of a design — and the "lowest point" is the answer we're hunting for.
+
+Over the decades, two broad strategies have emerged for how to take each step:
+
+1. **Gradient descent** — the cautious hiker. Simply walk downhill in the direction of steepest
+   descent. It is reliable and almost always makes progress, but it can be painfully slow, especially
+   in long, narrow valleys where it zig-zags endlessly.
+2. **Quasi-Newton methods (like L-BFGS)** — the ambitious hiker. These build up a mental model of the
+   _curvature_ of the landscape and take clever, long strides toward where they _believe_ the bottom
+   lies. When the model is good, they're wonderfully fast; when the model is misleading, they can
+   stride confidently in entirely the wrong direction.
+
+For years, the practical question has been an awkward either/or: do you take the safe step or the bold
+one? Existing hybrid approaches typically _choose_ between the two directions, or solve an expensive
+extra sub-problem to blend them.
+
+## The Idea Behind QQN
+
+QQN sidesteps the either/or entirely. Instead of picking a direction, it draws a smooth, curved path
+that begins by heading in the safe (gradient) direction and gradually bends toward the bold
+(quasi-Newton) direction. Then it simply searches _along that curve_ for the best place to stop.
+
+The path itself is beautifully compact:
+
+```
+d(t) = t(1 - t)(-∇f) + t² d_LBFGS
+```
+
+You don't need to parse the algebra to appreciate the intuition. Think of it as a road that leaves your
+current position _tangent to the safe downhill direction_ — so the very first thing it does is guarantee
+you're going downhill — and then curves toward the ambitious L-BFGS destination as you travel further
+along it. If the ambitious direction turns out to be nonsense, the curve gracefully keeps you near the
+safe path; if it's excellent, the curve carries you swiftly toward it.
+
+Three properties make this appealing:
+
+- **Guaranteed descent.** Because the path starts tangent to the steepest-descent direction, that first
+  infinitesimal step is _always_ downhill, no matter how badly the curvature model misbehaves.
+- **No new knobs to tune.** QQN reuses the parameters already present in L-BFGS and the line search; it
+  introduces no additional hyperparameters for a practitioner to fuss over.
+- **Graceful degradation.** When the second-order information is unreliable, QQN quietly falls back
+  toward plain gradient descent instead of failing outright.
+
+In short: it's a method that tries to be bold when boldness is warranted and cautious when it isn't —
+and it makes that decision automatically, through the geometry of the path rather than through a pile of
+tuning parameters.
+
+---
+
+## The Benchmarking Framework — and Why It Matters
+
+A new optimization idea is easy to _propose_ and hard to _trust_. New methods have a long history of
+looking spectacular on the three problems their authors happened to try, then quietly disappointing
+everyone else. So a substantial part of this project — arguably the more laborious part — is the
+evaluation harness built to hold QQN honest.
+
+The framework runs a genuine tournament:
+
+- **62 benchmark problems**, spanning smooth convex bowls, twisting non-convex valleys (the notorious
+  Rosenbrock among them), viciously multimodal landscapes riddled with false minima, and real machine
+  learning tasks like regression and small neural networks.
+- **25 optimizer variants**, including several flavors of QQN, L-BFGS, Trust Region methods, gradient
+  descent, and Adam — so QQN is measured against strong, established competition rather than strawmen.
+- **Statistical rigor** — 50 runs per problem-optimizer pairing, Welch's t-test for comparing means,
+  Cohen's _d_ for effect sizes, and Bonferroni correction for the multiple-comparison problem. The aim
+  is fair comparison, not a flattering highlight reel.
+- **Reproducibility** — fixed random seeds and deterministic algorithms, so the numbers can be checked
+  rather than merely believed.
+
+The results are compiled automatically into readable reports (Markdown, LaTeX, CSV, and HTML), complete
+with convergence plots, performance profiles, and win/loss/tie matrices.
+
+### What the Numbers Say
+
+Across more than 31,000 optimization runs, QQN variants won 36 of the 62 problems — a bit under 60%.
+They were especially strong on the smooth and moderately difficult problems, and remained competitive
+almost everywhere. In the interest of intellectual honesty (and this really is a strength worth owning),
+the picture is not one of universal dominance: Adam-style methods held their own on the neural-network
+and highly multimodal problems, and classic L-BFGS remained excellent on several convex and
+support-vector-machine tasks. Different tools still suit different terrain.
+
+The headline, then, is not "QQN beats everything." It's something more useful: **QQN is broadly robust,
+rarely embarrassed, and competitive across a strikingly wide range of problem types — while adding no
+tuning burden.** That combination of reliability and simplicity is, I'd argue, exactly what a
+general-purpose optimizer should aspire to.
+
+---
+
+## What You'd Actually See and Do
+
+While QQN is at its heart a mathematical method, the project is organized around a simple experience:
+you point it at a problem (or a whole suite of them), let it run its tournament, and read the generated
+reports. The convergence plots let you _watch_ the optimizers descend their respective hillsides — some
+plunging quickly, some zig-zagging, some stalling on a false floor. The comparison tables tell you, with
+statistical backing, which method reached the bottom, how quickly, and how often. It's meant to be as
+much an instrument for _understanding_ optimizer behavior as a tool for running it.
+
+---
+
+## Why It's Interesting
+
+A few reasons this work is worth a look, even if you never run a line of it yourself:
+
+- **It's a genuinely elegant idea.** Replacing an either/or decision with a smooth interpolating curve
+  is the kind of small conceptual move that feels obvious only in hindsight.
+- **It resists the usual failure mode of new methods.** The guaranteed-descent property means QQN can't
+  catastrophically march off a cliff the way an over-eager quasi-Newton step sometimes can.
+- **It's tested like a hypothesis, not sold like a product.** The benchmarking framework is built to
+  _risk_ disproving the method, which is what makes the positive results credible.
+- **It costs the user nothing extra to try.** No new hyperparameters means adopting QQN doesn't drag in
+  a fresh tuning headache.
+
+## Who Might Find It Useful
+
+- **Researchers in numerical optimization** who want a well-documented new method, a reproducible
+  baseline, and an honest comparison harness to build on.
+- **Machine learning practitioners** curious about training-time behavior beyond the usual Adam-versus-
+  SGD conversation, especially on smaller or well-structured problems.
+- **Engineers and scientists** who solve fitting or design-optimization problems and would value a
+  robust, low-fuss solver that rarely needs babysitting.
+- **Educators and students** who want a concrete, visual, statistically grounded playground for seeing
+  how different optimizers actually behave on different landscapes.
+- **The simply curious** who enjoy watching a clever geometric idea earn its keep against tough
+  competition.
+  QQN also appears "in the wild" throughout the sibling _geometric attractor_ experiments — the
+  **Constrained Mesh Enclosure Lab**, the **Geometric Entropy Lab**, and the **Dihedral Attractors**
+  lab all offer QQN alongside Adam and L-BFGS. Those labs put QQN's personality on visible display:
+  because each has a deliberately _degenerate_ energy (many configurations tie for best), the
+  optimizer's dynamics select which solution you land in, and QQN's curved, guaranteed-descent path
+  leaves a distinctive geometric fingerprint. If the tournament results here interest you, those labs
+  let you _watch_ the same method negotiate constrained and multi-optimum landscapes in real time.
+
+---
+
+## Learn More
+
+For the complete mathematical derivation, the convergence analysis, and the full experimental write-up,
+see the accompanying paper:
+
+📄 **[Download the Full Paper (PDF)](paper.pdf)**
+
+**"Quadratic-Quasi-Newton Optimization: Combining Gradient and Quasi-Newton Directions Through
+Quadratic Interpolation"**
+
+---
+
+_A closing note, in the spirit of honesty: this is research software and a research method. The results
+here are encouraging and, I think, genuinely interesting — but you should validate them against your own
+problems before trusting them with anything important. If you do try it, I'd love to hear how it goes.
+More soon, I hope._

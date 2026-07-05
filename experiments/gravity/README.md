@@ -1,197 +1,102 @@
 # Relativistic 2-Body Gravity Simulator
 
-## Overview
+## What This Is
 
-A 2D slice of 3D space that simulates a 2-body gravitational system with
-relativistic adjustments and time-delayed (retarded) interactions. The goal is
-to demonstrate phenomena like orbital precession, frame dragging analogues,
-and exotic/chaotic orbits that do not appear in naive Newtonian models.
+An interactive simulation of two bodies orbiting each other under
+gravity—but with a twist that most textbook orbit demos leave out: gravity
+that takes _time_ to travel, and a tunable dial that blends smooth Newtonian
+motion into something closer to Einstein's picture of the world. The result
+is a small, hands-on playground where you can watch orbits do things they
+"aren't supposed to" do; they slowly rotate, wobble, and occasionally fling
+off into chaos, all in response to sliders you control in real time.
 
-Users can manipulate the masses, initial positions/velocities, and the strength
-of relativistic effects to watch the system evolve. This is intended as a
-visually engaging, interactive way to explore concepts spanning classical
-mechanics and general relativity.
+This is meant to be _seen and played with_, not read about. If you have ever
+wondered why Mercury's orbit doesn't quite close on itself the way Newton
+promised, this is a way to build that intuition with your own hands.
 
-## Core Physical Concepts
+## A Little Background
 
-### 1. Newtonian Baseline
+Isaac Newton gave us a wonderfully simple rule: every mass pulls on every
+other mass, with a force that weakens with the square of the distance. That
+rule is astonishingly good—good enough to fly spacecraft across the solar
+system—and it predicts that two bodies trace out perfect, endlessly repeating
+ellipses.
 
-We start from the standard inverse-square law:
+But the universe is subtler than that in two important ways:
 
-```
-F = G * m1 * m2 / r^2
-```
+- **Nothing is instantaneous.** Gravity, like light, travels at a finite
+  speed. So a body doesn't respond to where its partner _is_; it responds to
+  where its partner _was_, a moment ago, when the signal left. Astronomers
+  call this the "retarded" position (a delightfully old-fashioned term for a
+  time-delayed one).
+- **Motion changes gravity.** In Einstein's relativity, fast-moving, massive,
+  tightly-bound systems feel corrections that Newton never accounted for.
 
-applied along the line connecting the two bodies. This gives us a known-good
-reference (closed elliptical orbits) to validate against before layering on
-complexity.
+Individually, these effects are tiny for everyday orbits. But they accumulate.
+The most famous fingerprint is the slow _precession_ of Mercury's orbit—its
+ellipse rotates by a mere 43 arcseconds per century beyond what Newton
+predicts, and explaining that sliver was one of general relativity's first
+great triumphs. This simulator lets you crank those normally-invisible effects
+up until they become impossible to miss.
 
-### 2. Time-Delayed (Retarded) Interactions
+## What You'll See and Control
 
-In reality, gravitational influence propagates at finite speed `c`. Body A does
-not feel where body B _is_, but where body B _was_ at the retarded time:
+On screen: two bodies, their glowing trails, and optional overlays showing
+velocity and force directions. Because gravity here is time-delayed and the
+forces are no longer perfectly balanced, the system genuinely evolves on its
+own—there's no fixed center, and the orbits are free to drift, rotate, and
+surprise you.
 
-```
-t_ret = t - |r_A(t) - r_B(t_ret)| / c
-```
+The controls are where the fun lives:
 
-This is an implicit equation (the delay depends on the distance, which depends
-on the delayed position) and must be solved iteratively per step.
+| Control                | What it does                                        |
+| ---------------------- | --------------------------------------------------- |
+| **Mass 1 / Mass 2**    | How heavy each body is (and thus how hard it pulls) |
+| **Initial velocity**   | Drag to set how fast and which way each body starts |
+| **Speed of light `c`** | Lower it to exaggerate the time-delay effects       |
+| **Relativity `alpha`** | Blend from pure Newton (0) to fully-corrected (1)   |
+| **Gravity `G`**        | Overall strength of the pull                        |
+| **Presets**            | Load a stable binary, a precessing orbit, or chaos  |
 
-**Consequence:** Forces are no longer symmetric (Newton's third law is broken
-for the instantaneous pair). Momentum is carried by the field. Therefore we
-**cannot** naively center the simulation on the center of mass or on a single
-body. We must track full position/velocity histories for both bodies and
-interpolate to evaluate forces at arbitrary past times.
+The two dials I find most rewarding are the **speed of light** and the
+**relativity strength**. Turn them both toward their "off" settings and you
+recover Newton's tidy, closed ellipses—a reassuring sanity check. Nudge them
+the other way and watch the orbit slowly rotate around, trace out flower-petal
+rosettes, and eventually tip into unpredictable, chaotic paths.
 
-### 3. Relativistic Corrections
+## Why It's Interesting
 
-We introduce a tunable "relativity strength" parameter `alpha` in `[0, 1]` that
-blends from pure Newtonian (`alpha = 0`) to fully-corrected (`alpha = 1`).
-Planned correction terms:
+A few reasons this captured my attention enough to build it:
 
-- **Velocity-dependent potential** (Gravitoelectromagnetic / EIH-style terms):
-  corrections of order `(v/c)^2` that cause perihelion precession.
-- **Relativistic mass / energy** factor `gamma = 1 / sqrt(1 - v^2/c^2)`.
-- **Retardation** (above) contributes its own precession and chaotic effects.
+1. **It makes the invisible visible.** The precession that took decades of
+   careful astronomy to detect becomes something you can dial up and watch in
+   seconds.
+2. **It rewards curiosity.** Small changes to the starting conditions can
+   produce wildly different long-term behavior; this is a gentle, visual
+   doorway into chaos and sensitivity to initial conditions.
+3. **It bridges two worlds.** Classical mechanics and general relativity are
+   usually taught in separate courses, years apart. Here they sit on the same
+   screen, connected by a single slider.
 
-The precession of Mercury (~43 arcsec/century from GR) is the canonical target
-behavior we want to reproduce qualitatively.
+A caveat worth stating plainly, in the spirit of honesty: this is an
+_illustrative_ tool, not a precise solver of Einstein's equations. The
+relativistic corrections are qualitative and deliberately tunable—chosen to
+build intuition and delight the eye, not to publish in an astrophysics
+journal. Think of it as a well-made physical analogy rather than a telescope.
 
-## Architecture
+## Who Might Enjoy It
 
-```
-experiments/gravity/
-README.md
-index.html          # canvas + control panel mount point
-src/
-  main.js           # entry point, animation loop, wiring
-  simulation.js     # core integrator + force model
-  body.js           # Body class: state + history ring buffer
-  history.js        # StateHistory: storage + interpolation
-  physics.js        # force models (newtonian, retarded, relativistic)
-  vector.js         # small 2D vector math helpers
-  renderer.js       # canvas drawing (bodies, trails, vectors)
-  controls.js       # UI sliders/inputs -> simulation params
-  presets.js        # named initial conditions (binary, precessing, chaotic)
-styles/
-  main.css
-test/
-  vector.test.js
-  history.test.js
-  physics.test.js
-  simulation.test.js
-```
+- **The simply curious**, who've heard that "gravity bends space and time" and
+  want to poke at what that actually looks like.
+- **Students** meeting orbits, energy conservation, or relativity for the
+  first time, who benefit from seeing a concept move before pinning it down
+  with equations.
+- **Educators** looking for a live, tweakable demo to spark a classroom
+  conversation about why Newton isn't quite the whole story.
+- **Tinkerers and armchair physicists** who like turning knobs until the
+  pretty pictures break in instructive ways.
 
-### Key Data Structures
+No prior physics is required—just a willingness to grab a slider and see what
+happens.
 
-- **Body**: holds current `position`, `velocity`, `mass`, and a reference to its
-  `StateHistory`.
-- **StateHistory**: a ring buffer of `{ t, position, velocity }` samples with an
-  `interpolate(t)` method (linear first, Hermite later) to recover past states
-  needed for retarded force evaluation. Buffer length is bounded by the maximum
-  light-travel delay we expect over the visible region.
-- **Simulation**: owns the bodies, the global clock, parameters (`G`, `c`,
-  `alpha`, `dt`), and the integrator.
-
-## Numerical Methods
-
-- **Integrator:** Velocity Verlet for the Newtonian baseline (good energy
-  behavior, symplectic). For retarded/relativistic forces—which are not simple
-  gradients—fall back to RK4 with a fixed small `dt`. Make the integrator
-  pluggable.
-- **Retarded-time solver:** fixed-point / Newton iteration per body per step:
-
-1. Guess `t_ret = t` (zero delay).
-2. Compute distance to interpolated past position.
-3. Update `t_ret = t - dist / c`.
-4. Repeat until convergence (typically 3-5 iterations).
-
-- **Interpolation:** start with linear interpolation in the history buffer,
-  upgrade to cubic Hermite (using stored velocities) for smoother forces.
-- **Stability guards:** softening parameter `epsilon` in the denominator to avoid
-  singularities on close approach: `r^2 -> r^2 + epsilon^2`.
-
-## Implementation Phases
-
-### Phase 0 — Scaffolding
-
-- Set up `index.html`, canvas, and the animation loop.
-- Implement `vector.js` with full unit tests.
-- Render two static circles to confirm the pipeline.
-
-### Phase 1 — Newtonian Baseline
-
-- Implement `Body`, instantaneous Newtonian force in `physics.js`.
-- Velocity Verlet integrator in `simulation.js`.
-- Verify closed elliptical orbits and conserved energy/angular momentum.
-- Add trail rendering so orbits are visible.
-
-### Phase 2 — History & Interpolation
-
-- Implement `StateHistory` ring buffer + interpolation.
-- Add tests proving interpolation accuracy against analytic curves.
-- Wire the simulation to _record_ state each step (not yet using it for force).
-
-### Phase 3 — Retarded Interactions
-
-- Implement the retarded-time fixed-point solver.
-- Switch force evaluation to use interpolated past positions.
-- Observe and document the resulting precession; compare against `c -> infinity`
-  limit recovering Phase 1 behavior.
-
-### Phase 4 — Relativistic Corrections
-
-- Add `alpha`-blended velocity-dependent / EIH-style terms.
-- Add `gamma` factor handling.
-- Validate qualitative perihelion precession.
-
-### Phase 5 — Interactivity & Presets
-
-- Build the control panel (`controls.js`).
-- Implement drag-to-set-velocity and click-to-place bodies.
-- Ship presets: stable binary, precessing orbit, chaotic fly-by.
-
-### Phase 6 — Polish
-
-- Vector overlays (velocity, force, retarded direction).
-- Energy/momentum readouts and a precession-angle meter.
-- Adaptive trail fading and pan/zoom for exotic orbits.
-
-## User Controls (planned)
-
-| Control             | Range / Type   | Effect                                 |
-| ------------------- | -------------- | -------------------------------------- |
-| Mass 1 / Mass 2     | slider         | Body masses (scales gravity)           |
-| Initial velocity    | drag vector    | Sets each body's starting velocity     |
-| `c` (light speed)   | slider         | Strength of retardation (lower = more) |
-| `alpha` (rel.)      | slider [0,1]   | Blend Newtonian <-> relativistic       |
-| `G`                 | slider         | Overall coupling strength              |
-| `dt`                | slider         | Integration step (accuracy vs. speed)  |
-| softening eps       | slider         | Avoid close-approach singularities     |
-| Play / Pause / Step | buttons        | Timeline control                       |
-| Reset / Preset      | buttons / menu | Load initial conditions                |
-
-## Validation & Testing Strategy
-
-- **Unit tests** for vector math, interpolation, and each force model.
-- **Conservation checks** in the Newtonian limit (energy & angular momentum
-  drift bounded over N orbits).
-- **Limit checks**: as `c -> infinity` and `alpha -> 0`, the simulation must
-  converge to the Newtonian baseline.
-- **Qualitative checks**: precession appears and increases with relativity
-  strength / decreasing `c`.
-
-## Open Questions / Future Ideas
-
-- Should we model the gravitational field's carried momentum explicitly to
-  restore a conserved total (matter + field) momentum?
-- Extend to N bodies (history storage cost grows, but interpolation is reusable).
-- Add gravitational-wave-style energy loss for inspiral demonstrations.
-- GPU/WebGL acceleration for many-sample histories and N-body extensions.
-
-## Non-Goals
-
-- This is an educational/illustrative tool, **not** a physically exact GR
-  solver. Corrections are qualitative and tunable, prioritizing intuition and
-  visual clarity over numerical fidelity to the Einstein field equations.
+I'm looking forward to hearing which orbits you manage to break. Enjoy!

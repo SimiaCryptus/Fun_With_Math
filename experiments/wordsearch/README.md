@@ -1,247 +1,144 @@
 # Predictive Markov Wordsearch Generator
 
-A Progressive Web App (PWA) that generates wordsearch puzzles in which the
-**filler letters are not random**. Instead, they are predicted by a Markov
-model trained on a reference text so that the background of the grid reads
-like plausible fragments of natural language in every direction — making the
-hidden target words genuinely harder to find.
-
-> For the full technical specification, see [`idea.md`](./idea.md).
-
----
-
-## Why This Exists
-
-In a typical wordsearch, the cells that don't belong to a hidden word are
-filled with **uniformly random** letters. This has a giveaway side effect:
-the human eye is very good at noticing structure. A real word standing in a
-sea of random noise (`QXZJ...`) pops out, because the surrounding letters
-almost never form letter combinations that look like language.
-
-This project flips that around. The filler is generated to **mimic the
-statistical texture of natural language** along all eight reading directions.
-When the noise itself looks word-like, the target words blend in, and the
-puzzle becomes meaningfully harder — not because of grid size, but because of
-_camouflage_.
+A wordsearch generator that hides its target words not by making the
+grid bigger, but by making the _background_ smarter. The filler letters —
+the ones that don't belong to any hidden word — are usually pure random
+noise. Here, they're predicted by a language model so that the grid reads
+like plausible fragments of real language in every direction. The result is
+a puzzle that camouflages its answers rather than merely burying them.
 
 ---
 
-## Background Concepts
+## 1. The Idea in a Nutshell
 
-### Wordsearch Puzzles
+Think about the last wordsearch you solved. The trick your eye actually
+performs is subtle: you're not reading, you're _pattern-matching_. A real
+word sitting in a sea of random letters — `QXZJKV` and friends — stands out
+because the surrounding gibberish never looks like language. The structure
+of a genuine word pops against an unstructured background.
 
-A wordsearch is a 2D grid (lattice) of single characters. A set of **target
-words** is hidden inside it, each placed along a straight line in one of eight
-directions:
+So the puzzle poses a question: what if the background looked like language
+too?
 
-```
-NW   N   NE
-\  |  /
-W -- o -- E
-/  |  \
-SW   S   SE
-```
-
-Words may run forwards or backwards, vertically, horizontally, or
-diagonally. Every remaining cell is "filler". The quality of the puzzle is
-largely determined by how well the filler hides the targets.
-
-### Markov Models
-
-A **Markov model** predicts the next item in a sequence based on the recent
-history. For text, we model it at the _character_ level: given the previous
-few characters, what is the probability distribution over the next character?
-
-Training is simply counting. We slide a window over a reference text and
-record, for each observed context, how often each following character
-appears:
-
-```
-context "th" ->  { e: 120, a: 40, i: 30, r: 12, ... }
-context "qu" ->  { i: 95,  e: 30, a: 10, ... }
-```
-
-Normalising those counts gives a probability distribution we can sample from.
-
-### Order & Context
-
-The **order (N)** is how many preceding characters the model looks at:
-
-- Order 0 — ignores history; just the overall letter frequency (unigram).
-- Order 1 — looks at the single previous character.
-- Order 3 — looks at the previous three characters (our default).
-
-Higher orders produce text that looks more convincingly like the source, but
-require more training data and are more likely to hit contexts they've never
-seen before.
-
-### Back-off
-
-When a high-order context has never been observed in the training text, the
-model **backs off** to a shorter context, and keeps shortening until it finds
-one with data — ultimately falling back to the order-0 unigram distribution.
-This guarantees we can always produce a prediction without leaving holes in
-the grid.
+That's the whole premise. Instead of sprinkling random letters into the
+empty cells, this generator fills them with letters that _statistically
+resemble_ natural writing — the sorts of letter combinations you'd plausibly
+find in real text. When the noise itself reads like fragments of words, the
+hidden targets stop standing out. They blend into their surroundings, and the
+puzzle becomes genuinely harder to solve — not because there's more to search,
+but because everything looks equally word-like.
 
 ---
 
-## How It Works
+## 2. A Little Background
 
-At a high level, generation proceeds in three phases:
+### Wordsearches
 
-1. **Train** — Build the Markov model from a reference text by counting
-   `context -> { char -> count }` frequencies up to order N.
+A wordsearch is a grid of single letters with words hidden inside it. Each
+hidden word runs in a straight line — horizontally, vertically, or
+diagonally, and forwards or backwards — giving eight possible directions in
+all. Every cell that isn't part of a hidden word is "filler." The art of a
+good puzzle lies almost entirely in how convincingly that filler hides the
+targets.
 
-2. **Place** — Drop each target word onto the grid at a random position and
-   direction, rejecting placements that conflict (overlaps are allowed only
-   when the shared letters match). Placed cells are **locked** so the filler
-   never overwrites them.
+### Markov Models (the gentle version)
 
-3. **Fill** — Fill the remaining cells, but not left-to-right. We use an
-   **adjacency-ordered** fill: cells surrounded by the most already-filled
-   neighbours are filled first. For each chosen cell, we read the context
-   string in each of the eight directions, ask the model for a prediction
-   per direction, and **combine** those distributions before selecting a
-   letter.
+To generate language-like filler, the project leans on a classic idea called
+a **Markov model**. The intuition is simpler than the name suggests: given
+the last few letters you've seen, some next letters are far more likely than
+others. After `th`, an `e` is very common; a `q` is almost unheard of. After
+`q`, a `u` is nearly guaranteed.
 
-```
-place target words (locked cells)
-compute initial adjacency scores for empty cells
-while empty cells remain:
-   cell  = highest adjacency score (random tie-break)
-   dists = predictions from every direction with a known context
-   combined = combine(dists, config.combiner)
-   cell.char = select(combined, config.sampling)
-   update neighbours' adjacency scores
-```
-
-The key insight is the **combination step**. A single cell is read as part of
-potentially several different lines (one per direction), so its letter should
-be plausible for _all_ of them at once. We support several combiners:
-
-| Combiner  | Behaviour                                                                        |
-| --------- | -------------------------------------------------------------------------------- |
-| `product` | Multiply probabilities — AND-like; favours letters that all directions agree on. |
-| `sum`     | Average the distributions — OR-like; more permissive.                            |
-| `max`     | Take the single strongest directional vote.                                      |
-| `vote`    | Each direction votes for its argmax; majority wins.                              |
-
-Everything runs **client-side** and the app ships as an installable,
-offline-capable PWA — no server, no build step.
+You build such a model just by _counting_. Feed it a chunk of reference text
+— a book, an article, whatever texture you'd like the puzzle to mimic — and
+it tallies which letters tend to follow which short sequences. Turn those
+tallies into probabilities and you have a little engine that can produce
+text which _feels_ like the source without copying it. It's the same family
+of idea behind the predictive text on your phone, just working one letter at
+a time.
 
 ---
 
-## How This Differs From Similar Approaches
+## 3. Why This Is Interesting
 
-Most wordsearch generators — and the academic literature on puzzle generation
-— fall into one of a few buckets. Here's where this project sits relative to
-them:
+It turns out that generating language-like filler for a wordsearch is
+trickier — and more fun — than it first appears, and the reason gets to the
+heart of what makes this project distinct.
 
-### vs. Random / Frequency-Weighted Filler
+Ordinary text flows in _one_ direction: left to right. A wordsearch is read
+in _eight_. A naive approach that made each row look like language would
+still produce nonsense the moment you read a column or a diagonal. So the
+real challenge is choosing each letter so that it looks plausible along
+_every_ line it happens to sit on, all at once. Each cell has to keep several
+directions happy simultaneously.
 
-The overwhelmingly common approach is to fill empty cells with **uniformly
-random** letters, or occasionally letters drawn from a language's _unigram_
-frequency table (so `E` and `T` appear more than `Q` and `Z`). Both ignore
-_sequence_ structure entirely. We model the **conditional** distribution
-(order-N), so the filler exhibits realistic letter _transitions_, not just
-realistic letter _counts_.
+The generator handles this by asking the model for a prediction in each
+direction and then _combining_ those opinions before it commits to a letter.
+You can choose how strict that negotiation is:
 
-### vs. Single-Direction Text Generation
+- **Product** — the demanding option; it favours letters that _all_
+  directions agree are plausible.
+- **Sum** — more permissive; it averages the directions' preferences.
+- **Max** — it goes with the single strongest vote.
+- **Vote** — each direction nominates its favourite, and the majority wins.
 
-Plenty of toys use a Markov chain to generate fake words or text. But text is
-generated in **one** direction (left to right). A wordsearch is read in
-**eight**. A naive Markov fill that only respects, say, the horizontal
-direction would still produce nonsense vertically and diagonally. Our
-**multi-directional combination** is the core difference: each cell is
-optimised to be plausible across _all_ the lines it participates in
-simultaneously.
+This multi-directional balancing act is, to me, the genuinely interesting
+part. It's what separates the project from both the countless "random letter"
+generators and the single-direction Markov toys that only look right along
+one axis.
 
-### vs. Dictionary / Constraint-Solver Filler
-
-Some sophisticated generators (closer to crossword construction) try to make
-the filler spell _real_ words in multiple directions using dictionaries and
-constraint solvers. That is computationally expensive, often infeasible for
-dense grids, and produces a different feel (it leaks real words, which can be
-distracting). We deliberately aim for **plausible-but-not-real** texture:
-cheap to compute, tunable, and statistically camouflaging rather than
-exhaustively word-packed.
-
-### vs. Difficulty-by-Size
-
-Many generators make puzzles "harder" simply by enlarging the grid or adding
-more words. Our difficulty lever is **statistical camouflage**: by matching
-the noise to the language model, target words blend into their surroundings
-regardless of grid size. The Markov order and combiner give fine-grained,
-_qualitative_ control over difficulty.
-
-### Summary
-
-| Approach                       | Sequence-aware | Multi-directional | Produces real words |    Cost    |
-| ------------------------------ | :------------: | :---------------: | :-----------------: | :--------: |
-| Uniform random filler          |       ✗        |         ✗         |          ✗          |    Low     |
-| Unigram-frequency filler       |       ✗        |         ✗         |          ✗          |    Low     |
-| Single-direction Markov        |       ✓        |         ✗         |          ✗          |    Low     |
-| Dictionary / constraint solver |       ✓        |         ✓         |          ✓          |    High    |
-| **This project**               |     **✓**      |       **✓**       | ✗ (plausible-only)  | **Medium** |
+There's also a deliberate design choice worth naming: the filler is meant to
+be _plausible-but-not-real_. Some sophisticated crossword-style tools try to
+pack the background with genuine dictionary words in every direction, which
+is expensive and tends to leak distracting real words. This project aims
+instead for the _texture_ of language — cheap to produce, easy to tune, and
+camouflaging rather than exhaustively word-packed.
 
 ---
 
-## Configuration
+## 4. Using It
 
-| Option    | Default    | Notes                                          |
-| --------- | ---------- | ---------------------------------------------- |
-| grid size | 15 × 15    | Width × height of the lattice.                 |
-| order (N) | 3          | Markov context length.                         |
-| combiner  | `product`  | How directional predictions are merged.        |
-| sampling  | `weighted` | `weighted` (sample) or `argmax` (most likely). |
-| back-off  | enabled    | Shorten context when unseen, down to unigram.  |
+The app runs entirely in your browser — nothing is sent to a server — and it
+installs like a native app for offline use. In practice, using it looks like
+this:
 
----
+1. **Provide a reference text.** This is the source whose "flavour" the filler
+   will imitate. Different texts give different textures.
+2. **List your target words.** These are the words to hide in the grid.
+3. **Tune the difficulty.** A handful of controls shape the result:
 
-## Project Structure
+| Control   | What it does                                                                 |
+| --------- | ---------------------------------------------------------------------------- |
+| Grid size | How large the puzzle is (15 × 15 by default).                                |
+| Order     | How many previous letters the model considers; higher looks more convincing. |
+| Combiner  | How the eight directions negotiate a letter (see above).                     |
+| Sampling  | Whether to pick the most likely letter or sample for variety.                |
 
-```
-src/
- markov/
-   MarkovModel.js      # train + predict next-char distributions
-   textPipeline.js     # normalise / tokenise reference text
- grid/
-   Grid.js             # lattice data structure + cell access
-   directions.js       # 8 direction vectors + helpers
-   placement.js        # place target words randomly w/o conflict
- fill/
-   adjacency.js        # order cells by adjacency score
-   combiners.js        # combine multiple distributions
-   filler.js           # main fill loop
- ui/
-   app.js              # bootstrap, event wiring
-   render.js           # draw grid to DOM/canvas
-   controls.js         # config form (order, combiner, size, words)
- pwa/
-   sw.js               # service worker (offline cache)
- index.js              # entry point
-index.html
-manifest.webmanifest
-```
+4. **Generate, regenerate, and export.** Not happy with a layout? Regenerate
+   for a fresh one, then export the finished puzzle when it feels right.
+
+The lever I find most satisfying is the combiner together with the model
+order: between them they give surprisingly fine, _qualitative_ control over
+difficulty — a puzzle can be made harder without adding a single extra word.
 
 ---
 
-## Status & Roadmap
+## 5. Who Might Find This Useful
 
-This is an experiment under active design. Milestones:
+A few audiences come to mind:
 
-1. **M1 — Core model**: `MarkovModel` train/predict + back-off, with tests.
-2. **M2 — Grid primitives**: `Grid`, `directions`, context reading.
-3. **M3 — Placement**: random non-conflicting word placement + locks.
-4. **M4 — Fill engine**: adjacency ordering + combiners + filler loop.
-5. **M5 — UI**: controls, rendering, regenerate/export.
-6. **M6 — PWA**: manifest + service worker + install flow.
-7. **M7 — Polish**: presets, sample reference texts, accessibility.
+- **Puzzle makers and educators** who want wordsearches with a real
+  difficulty dial, or who'd like the background to reflect a particular
+  theme, language, or text.
+- **Puzzle enthusiasts** who've grown a little too good at spotting words in
+  random noise and want a fresh challenge.
+- **The curious** — anyone interested in a small, tangible demonstration of
+  how simple statistical language models can produce convincing texture, and
+  how a familiar pastime changes when you rethink one overlooked detail.
 
 ---
 
-## Stretch Goals
-
-- Per-direction weighting of contributions.
-- Difficulty estimation heuristics.
-- Shareable puzzle URLs (encode grid + word list).
+In short, this is a small experiment in taking the least-considered part of a
+familiar puzzle — the throwaway filler — and treating it as the main event.
+It was more rewarding to build than I expected, and I'm looking forward to
+seeing what people make with it. Enjoy!

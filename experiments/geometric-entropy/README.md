@@ -1,238 +1,145 @@
 # Geometric Entropy Lab
 
-> **A continuous analogue of the Erdős distinct-distance problem.**
-> Points on a manifold are arranged to extremize the Shannon entropy of their
-> pairwise-distance distribution, producing highly symmetric, extremal
-> configurations on spheres, tori, cubes, and arbitrary STL meshes.
+> **A continuous analogue of the Erdős distinct-distance problem** — points
+> arranged on a manifold to extremize the entropy of their pairwise distances,
+> yielding highly symmetric, self-organizing configurations you can watch
+> assemble in real time.
 
-An interactive browser-based demo for optimizing point distributions on various 3D geometries using **Spherical Gram
-Matrix Entropy** and **TensorFlow.js**.
+Scatter a handful of points across a shape — a sphere, a torus, a cube, or any mesh you
+care to upload — and let them rearrange themselves until the _diversity_ of
+their pairwise distances is as large (or as small) as the geometry allows.
+The result is a small, meditative instrument for watching order emerge from
+randomness.
 
-## Live Demo
+---
 
-Open `index.html` in a modern browser — no build step required.
+## The Idea, in Plain Terms
 
-## What It Does
-
-Points are placed on a chosen geometry (sphere, torus, cube, etc.) and optimized by maximizing or minimizing a Shannon
-entropy derived from a Gaussian kernel density estimate over pairwise distances.
-
-### The Erdős Connection
-
-The classical Erdős distinct-distance problem asks: how many _distinct_ pairwise
-distances must $n$ points in the plane determine? It's a combinatorial counting
-problem with a discrete answer.
+There is a classical question from the mathematician Paul Erdős: if you
+scatter $n$ points on a flat plane, how many _distinct_ distances between
+pairs must you unavoidably create? It's a counting problem with a discrete,
+combinatorial flavor — you tally distances and ask for a lower bound.
+That same Erdős problem surfaces, wearing very different clothes, elsewhere in
+this collection: the **Pentagon Lattice Geometry** work connects it to
+golden-ratio arithmetic acting as a "degeneracy engine," and the **No-Three-in-Line
+Lab** plays a cousin of it as a live optimization. Here we take the _continuous_
+route.
 
 This lab plays the _continuous_ version of the same game. Instead of counting
-distinct distances, we treat the multiset of pairwise distances as a probability
-distribution (via a Gaussian kernel) and maximize its Shannon entropy. The
-result is the most "distance-diverse" configuration the manifold admits — a
-continuous extremizer in place of a discrete counting bound.
+how many different distances appear, we treat the whole collection of
+pairwise distances as a probability distribution — a smeared-out histogram of
+"how far apart are things, typically?" — and then we ask the points to
+rearrange themselves so that this distribution is as spread-out and diverse
+as possible. The mathematical measure of that spread is **Shannon entropy**,
+the same quantity information theory uses to describe uncertainty or surprise.
 
-Maximizing entropy spreads points apart; minimizing concentrates them; matching
-a target value lets you dial in a specific level of distance diversity.
+In short: high entropy means the points have found a maximally
+_distance-diverse_ arrangement, one where the manifold's geometry is being
+used to its fullest. Low entropy means they've huddled together into
+something monotonous and clustered. You can dial the target anywhere in
+between.
 
-### Core Math
-
-```
-G  = X · Xᵀ          (Gram / dot-product matrix)
-ρᵢ = Σⱼ exp(−‖xᵢ−xⱼ‖² / τ)   (kernel density per point)
-p  = ρ / Σρ           (probability distribution)
-H  = −Σ p · log(p)   (Shannon entropy)
-```
-
-The optimizer minimizes a loss that is one of:
-
-| Mode             | Loss                           |
-| ---------------- | ------------------------------ |
-| Maximize Entropy | `−H`                           |
-| Minimize Entropy | `H`                            |
-| Match Target     | `(H − H*)²`                    |
-| Neutral          | `0` (geometry constraint only) |
-
-An optional pairwise **interaction force** (repulsion `1/r²` or attraction `r²`) and a fully **custom JS/TensorFlow.js
-potential** can be added on top.
+It turns out that maximizing this quantity spreads points apart into elegant,
+even packings; minimizing it pulls them into tight knots; and asking for a
+specific target value lets you settle the system at a chosen level of
+"interesting-ness." Watching that happen — points nudging one another across
+the surface of a torus until they lock into a lattice — is genuinely
+hypnotic.
 
 ---
 
-## Geometries
+## What You Actually Do
 
-| Value         | Description                         |
-| ------------- | ----------------------------------- |
-| `sphere`      | Unit sphere surface                 |
-| `shell`       | Spherical shell (inner–outer radii) |
-| `cube`        | Cube surface                        |
-| `cube-shell`  | Cube shell                          |
-| `plane`       | Flat square (z = 0)                 |
-| `cylinder`    | Cylinder along Y axis               |
-| `torus`       | Torus surface (configurable R, r)   |
-| `torus-shell` | Torus shell                         |
-| `cone`        | Cone surface                        |
-| `cone-shell`  | Cone shell                          |
-| `saddle`      | Hyperbolic paraboloid z = x²−y²     |
-| `custom-stl`  | Upload any binary or ASCII STL file |
+The interface is deliberately hands-on, and most of the fun comes from
+fiddling. A few of the knobs worth knowing about:
 
----
+- **Pick a geometry.** A sphere is the natural starting point, but there's a
+  whole menagerie: spherical shells, cubes, cylinders, cones, saddles
+  (those Pringles-chip hyperbolic surfaces), and tori. You can even upload an
+  arbitrary 3D model as an STL file and let the points colonize its surface.
+- **Choose a goal.** Maximize the entropy, minimize it, match a specific
+  target value, or run in a neutral mode where the points simply respect the
+  shape without any entropy pressure at all.
+- **Set the population.** Anywhere from a couple of points to several
+  thousand — small counts reveal crisp symmetry, large counts reveal texture.
+- **Add a force, if you like.** An optional interaction lets points repel one
+  another (like charged particles) or attract (like gravity), layered on top
+  of the entropy objective for extra character. The adventurous can even type
+  in their own custom formula.
+- **Press Start, and watch.** The points glow from cyan (isolated,
+  lonely) to magenta (crowded, clustered), so the emerging structure paints
+  itself as it settles. You can drag to rotate, scroll to zoom, and let the
+  view auto-spin while a live histogram tracks the distribution underneath.
 
-## Controls
-
-### Configuration
-
-| Control                 | Description                                                 |
-| ----------------------- | ----------------------------------------------------------- |
-| **Geometry**            | Select the target manifold                                  |
-| **Shell Inner Radius**  | Inner boundary for shell geometries (0–0.99)                |
-| **Torus R / r**         | Major and minor radii for torus geometries                  |
-| **Optimization Target** | Maximize / Minimize / Match / Neutral                       |
-| **Target Entropy**      | Desired entropy value when using _Match_ mode               |
-| **Point Count (N)**     | Number of points (2–5000)                                   |
-| **Calc Neighbors (k)**  | Restrict entropy kernel to k nearest neighbours; 0 = global |
-
-### Custom Potential
-
-Write any JavaScript expression returning a `tf.Tensor` or scalar.  
-Available variables: `rho` (Nx1), `p` (Nx1x3), `q` (1xNx3), `D` (NxN dist²), `tf`.
-
-### Hyperparameters
-
-| Control                | Description                                      |
-| ---------------------- | ------------------------------------------------ |
-| **Optimizer**          | Adam · QQN · L-BFGS                              |
-| **Temperature (τ)**    | Kernel bandwidth — higher = smoother density     |
-| **Learning Rate**      | Gradient step size                               |
-| **Show Neighbors (k)** | Draw k nearest-neighbour edges in the viewport   |
-| **Neighbor Radius**    | Draw edges within a Euclidean radius             |
-| **Auto-Rotate View**   | Continuously spin the camera                     |
-| **Show Triangulation** | Overlay Delaunay triangulation edges             |
-| **Solid Fill**         | Fill triangulation faces with density colour     |
-| **Interaction Force**  | Negative = repel (1/r²), Positive = attract (r²) |
-
-### Actions
-
-| Button                    | Action                                                |
-| ------------------------- | ----------------------------------------------------- |
-| **Start / Stop Training** | Toggle the optimisation loop                          |
-| **Reset**                 | Re-initialise random points and clear history         |
-| **Copy Coordinates**      | Copy current point array as JSON to clipboard         |
-| **Export STL**            | Download the current triangulated mesh as an STL file |
+When you find an arrangement you like, you can copy the coordinates or export
+the whole thing as a 3D-printable mesh.
 
 ---
 
-## Metrics
+## Why It's Interesting
 
-| Metric                | Description                                         |
-| --------------------- | --------------------------------------------------- |
-| **Spherical Entropy** | Current Shannon entropy H of the point distribution |
-| **Interaction**       | Weighted interaction potential value                |
-| **Total Fitness**     | Raw loss value being minimised                      |
-| **Step**              | Number of optimisation steps taken                  |
+Here is the part that genuinely delighted me, and the reason I think the lab
+is worth more than a passing glance.
 
----
+The maximum achievable entropy for $N$ points is exactly $\ln N$ — a clean,
+universal ceiling from information theory, reached when every point sees the
+same "crowdedness" as every other. Empirically, the maximizer climbs to this
+value on _every_ geometry I've tried, from spheres to saddles to uploaded
+meshes. So far, so tidy.
 
-## Optimizers
+But the _condition_ for reaching that ceiling is wildly underdetermined. The
+objective only insists that every point be locally as crowded as its
+neighbors; it says nothing about _where_ the points actually sit. On a curved
+surface there is typically a vast, continuous family of arrangements — a
+whole landscape of them — all achieving the identical maximum entropy. The
+problem, in optimization terms, is _sparse_: countless distinct-looking
+configurations sit at the same summit.
 
-| Name       | Notes                                                    |
-| ---------- | -------------------------------------------------------- |
-| **Adam**   | Adaptive moment estimation — robust default              |
-| **QQN**    | Quasi-Quasi-Newton — faster convergence on smooth losses |
-| **L-BFGS** | Limited-memory BFGS — best for small N, high precision   |
+And this is where it gets charming. Because the optimum is so degenerate, the
+_route_ the solver takes decides _which_ summit it lands on. The lab offers
+three different optimization strategies, and each one, run on the very same
+problem, reliably produces a visibly different arrangement:
 
-### The ln(N) Bound and Optimizer Fingerprinting
+- one tends toward noisy, isotropic, lattice-like packings;
+- another carves out smoother, curvature-aligned structures;
+- the third snaps quickly into crystalline, near-perfect symmetry.
 
-For a kernel-density entropy of the form $H = -\sum p_i \log p_i$ over $N$
-points, the maximum possible value is $\log N$, attained when the induced
-distribution $p$ is uniform ($p_i = 1/N$ for all $i$). Equivalently, when every
-point has identical local kernel density $\rho_i$, the entropy saturates its
-information-theoretic ceiling:
-
-```
-H_max = ln(N)
-```
-
-This is just the standard Shannon bound applied to the per-point density
-distribution, and it grows **proportionally to $\ln N$** as the point count
-increases. Empirically, runs of the maximizer asymptote at this value for every
-geometry we have tried — sphere, torus, cube, saddle, or arbitrary STL.
-
-#### A Sparse Fitness Landscape
-
-What makes this problem interesting (and a little strange) is that the
-condition for achieving $H = \ln N$ is **highly underdetermined**. The
-objective only requires that all $\rho_i$ be equal; it says nothing about
-_where_ the points sit, only that each one must see the same total kernel mass
-from its neighbours. On a curved or non-trivial manifold there are typically a
-continuous family — sometimes a high-dimensional manifold — of configurations
-satisfying this constraint.
-
-In optimization terms, the fitness function is **sparse**: a vast set of
-distinct geometric arrangements all sit at the same global optimum. The loss
-surface has a large, flat, connected (or near-connected) optimal set rather
-than a single isolated minimum.
-
-#### Optimizer Fingerprinting
-
-Because the optimum is degenerate, the _path_ an optimizer takes through
-configuration space determines _which_ extremal configuration it lands on.
-Running the same problem with **Adam**, **QQN**, and **L-BFGS** — or even the
-same optimizer at different learning rates or temperatures $\tau$ — reliably
-produces visibly different point arrangements, each of which achieves the same
-$H \approx \ln N$ value.
-
-- **Adam** tends to produce slightly noisy, isotropic, lattice-like packings.
-- **QQN** carves out smoother, more symmetric arrangements with visible
-  curvature-aligned structure.
-- **L-BFGS** snaps quickly into crystalline, near-perfectly-regular
-  configurations, often with sharp symmetry groups.
-
-The resulting geometry is, in effect, a **fingerprint** of the optimizer's
-internal dynamics — its preconditioner, momentum, and step-selection rules
-projected onto the manifold of entropy-maximal configurations. This is a
-previously unremarked-upon (and admittedly **useless**) property: the entropy
-value tells you nothing about which optimizer produced it, but the _shape_ of
-the resulting point cloud does. You can identify the optimizer by looking at
-the picture.
-
-This is a small, charming consequence of optimizing a sparse objective on a
-continuous manifold, and the lab is a convenient place to play with it.
+In other words, the final shape is a kind of _fingerprint_ of the method that
+produced it. The entropy number itself is uninformative — every optimizer
+reports the same $\ln N$ — but the _picture_ gives the game away. You can
+identify the optimizer just by looking at the point cloud. It is, I'll freely
+admit, a completely useless property; it's also one of the most delightful
+small surprises I've stumbled into, and the lab is a convenient place to play
+with it.
+This is the same "optimizer fingerprinting" effect that animates the sibling
+**Constrained Mesh Enclosure Lab** and the **Dihedral Attractors** lab. All
+three are built on the same recipe — scatter points, define an energy, flow
+downhill — and all three exploit the fact that when many configurations tie for
+best, the optimizer's dynamics become the tiebreaker. If you find the effect
+intriguing here, the mesh lab shows it in a _constrained_ setting, where an
+exact collision wall adds sharp corners that further distinguish the methods.
 
 ---
 
-## Visualisation
+## Who Might Enjoy This
 
-- **3D viewport** — orthographic projection with mouse drag to rotate and scroll to zoom.  
-  Points are coloured **cyan → magenta** by local density (cyan = isolated, magenta = clustered).
-- **Density histogram** — real-time distribution of per-point kernel densities.
-- **STL wireframe** — when a custom STL is loaded its mesh is drawn as a faint overlay.
+I built it for the joy of it, but a few audiences may find it genuinely
+useful:
 
----
+- **The mathematically curious**, who want an intuitive, visual feel for
+  entropy, distance distributions, and the surprising Erdős-flavored geometry
+  lurking behind them — no equations required to appreciate the show.
+- **Students and educators**, as a hands-on demonstration of optimization,
+  symmetry, and the difference between a well-posed and a sparse objective.
+- **Artists and designers**, who want even, organic point distributions
+  draped over an arbitrary surface — stipple patterns, sampling schemes, or
+  simply attractive procedural geometry to export and print.
+- **Practitioners of optimization**, for whom the "optimizer fingerprinting"
+  behavior is a vivid, tactile illustration of how algorithm dynamics shape
+  the solutions they find on a degenerate landscape.
 
-## File Structure
+None of it requires installing anything; it runs entirely in a modern
+browser. Pick a shape, press Start, and see what falls out.
 
-```
-geometric-entropy/
-├── index.html            # Single-file app entry point
-├── js/
-│   ├── optimizer-adam.js
-│   ├── optimizer-qqn.js
-│   └── optimizer-lbfgs.js
-└── README.md
-```
-
----
-
-## Dependencies (CDN)
-
-| Library                   | Purpose                                          |
-| ------------------------- | ------------------------------------------------ |
-| `@tensorflow/tfjs` 4.15   | Automatic differentiation & GPU tensors          |
-| `d3-geo-voronoi` 2        | Spherical Delaunay triangulation                 |
-| `d3-delaunay` 6           | Planar Delaunay (used internally by geo-voronoi) |
-| `d3-geo` 3 / `d3-array` 3 | Geographic projections & utilities               |
-
-No npm install needed — all loaded from jsDelivr.
-
----
-
-## License
-
-MIT
+I'm looking forward to feedback, and I have some more interesting plans for
+this tool. More soon, I hope — enjoy!

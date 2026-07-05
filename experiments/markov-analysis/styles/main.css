@@ -338,7 +338,7 @@ button:disabled {
   margin-bottom: 0.4rem;
 }
 .ca-spacetime {
-  max-height: 420px;
+  max-height: 90vh;
   overflow: auto;
   border: 1px solid var(--border);
   background: #14141f;
