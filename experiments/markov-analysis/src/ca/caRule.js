@@ -36,7 +36,7 @@ export function makeRule(model, opts) {
   const {
     radius = model.order,
     combine = 'average',
-    temperature = 1,
+    temperature = 0.2,
     deterministic = false,
     limit = 32,
     smoothingK = 0,

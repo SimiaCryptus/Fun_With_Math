@@ -351,7 +351,6 @@ button:disabled {
 .ca-row {
   display: block;
   white-space: pre;
-  overflow: hidden;
 }
 .ca-cell {
   display: inline-block;
@@ -364,4 +363,8 @@ button:disabled {
 }
 .ca-cell:hover {
   outline: 1px solid var(--accent);
+}
+/* Zoomed-in view: let the spacetime grid expand to its full content size. */
+.ca-spacetime.zoomed {
+  max-height: none;
 }

@@ -28,6 +28,19 @@ export function createCaView(container, opts = {}) {
 
   const grid = el('div', { class: 'ca-spacetime' });
   container.appendChild(grid);
+  // Zoom toggle: expand the spacetime grid to its full (unbounded) size.
+  let zoomed = false;
+  const zoomBtn = el('button', {
+    type: 'button',
+    text: 'Zoom in',
+    title: 'Expand the spacetime view to its full size',
+  });
+  zoomBtn.addEventListener('click', () => {
+    zoomed = !zoomed;
+    grid.classList.toggle('zoomed', zoomed);
+    zoomBtn.textContent = zoomed ? 'Zoom out' : 'Zoom in';
+  });
+  controlsRow.appendChild(zoomBtn);
 
   // rows: [{ tape, changed, perCellP?, age? }]
   let rows = [];
@@ -81,10 +94,16 @@ export function createCaView(container, opts = {}) {
     },
     appendRow(row) {
       const nearBottom = grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 4;
+      const pageNearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 4;
       rows.push(row);
       grid.appendChild(renderRow(row, rows.length - 1));
       // Follow the simulation only if the user was already at the bottom.
       if (nearBottom) grid.scrollTop = grid.scrollHeight;
+      // If the whole page was scrolled to the bottom, keep it pinned there so
+      // the newest generation stays visible while the CA is playing.
+      if (pageNearBottom) {
+        window.scrollTo(0, document.body.scrollHeight);
+      }
     },
     clear() {
       rows = [];

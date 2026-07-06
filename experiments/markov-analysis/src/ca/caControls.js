@@ -41,13 +41,13 @@ export function createCaControls(container, { getModel, getConfig, getTokenizer 
   const detChk = el('input', { type: 'checkbox' });
   const tempInput = el('input', {
     type: 'number',
-    value: '1',
+    value: '0.2',
     min: '0',
     step: '0.05',
   });
   const rhoInput = el('input', {
     type: 'number',
-    value: '0.3',
+    value: '1',
     min: '0',
     max: '1',
     step: '0.05',
@@ -120,7 +120,7 @@ export function createCaControls(container, { getModel, getConfig, getTokenizer 
     return {
       radius,
       combine: cfg.combine,
-      temperature: parseFloat(tempInput.value) || 1,
+      temperature: parseFloat(tempInput.value) || 0.2,
       deterministic: detChk.checked,
       smoothingK: cfg.smoothingK,
       backoff: cfg.backoff,
