@@ -54,6 +54,13 @@ export function createCaControls(container, { getModel, getConfig, getTokenizer 
   });
   const radiusInput = el('input', { type: 'number', value: '', min: '1', step: '1' });
   const seedNumInput = el('input', { type: 'text', value: 'ca-1', placeholder: 'PRNG seed' });
+  const speedInput = el('input', {
+    type: 'number',
+    value: '120',
+    min: '0',
+    step: '10',
+    title: 'Delay between generations in ms (0 = as fast as possible)',
+  });
 
   const paramGrid = el('div', { class: 'config-grid' }, [
     el('label', { text: 'Policy' }),
@@ -70,6 +77,8 @@ export function createCaControls(container, { getModel, getConfig, getTokenizer 
     radiusInput,
     el('label', { text: 'PRNG seed' }),
     seedNumInput,
+    el('label', { text: 'Speed (ms/gen)' }),
+    speedInput,
   ]);
 
   // --- action buttons ---
@@ -261,7 +270,8 @@ export function createCaControls(container, { getModel, getConfig, getTokenizer 
         stop();
         return;
       }
-      timer = setTimeout(tick, 120);
+      const delay = Math.max(0, parseInt(speedInput.value, 10) || 0);
+      timer = setTimeout(tick, delay);
     };
     tick();
   }

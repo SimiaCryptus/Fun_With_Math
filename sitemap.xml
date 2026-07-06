@@ -121,6 +121,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://math.cognotik.com/experiments/sterio-tac-toe/</loc>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://math.cognotik.com/experiments/symmetry_simple/</loc>
     <lastmod>2026-06-14</lastmod>
     <changefreq>monthly</changefreq>

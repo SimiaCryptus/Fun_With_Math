@@ -351,6 +351,7 @@ button:disabled {
 .ca-row {
   display: block;
   white-space: pre;
+  overflow: hidden;
 }
 .ca-cell {
   display: inline-block;
@@ -359,6 +360,7 @@ button:disabled {
   cursor: pointer;
   padding: 0 1px;
   color: var(--text);
+  white-space: pre;
 }
 .ca-cell:hover {
   outline: 1px solid var(--accent);

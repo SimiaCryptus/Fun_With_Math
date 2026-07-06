@@ -49,11 +49,15 @@ export function createCaView(container, opts = {}) {
   function renderRow(row, t) {
     const rowEl = el('div', { class: 'ca-row' });
     for (let i = 0; i < row.tape.length; i++) {
+      const raw = row.tape[i];
+      // Render newlines/whitespace-with-newlines as a visible placeholder so
+      // the spacetime grid stays a single-spaced compact grid.
+      const display = typeof raw === 'string' ? raw.replace(/\r/g, '').replace(/\n/g, '\\n') : raw;
       const chip = el('span', {
         class: 'ca-cell',
         style: `background:${cellColor(row, i)}`,
-        title: `gen ${t}, pos ${i}: ${JSON.stringify(row.tape[i])}`,
-        text: row.tape[i],
+        title: `gen ${t}, pos ${i}: ${JSON.stringify(raw)}`,
+        text: display,
       });
       if (onCellClick) {
         chip.addEventListener('click', () => onCellClick(t, i, row));
@@ -76,9 +80,11 @@ export function createCaView(container, opts = {}) {
       rerender();
     },
     appendRow(row) {
+      const nearBottom = grid.scrollTop + grid.clientHeight >= grid.scrollHeight - 4;
       rows.push(row);
       grid.appendChild(renderRow(row, rows.length - 1));
-      grid.scrollTop = grid.scrollHeight;
+      // Follow the simulation only if the user was already at the bottom.
+      if (nearBottom) grid.scrollTop = grid.scrollHeight;
     },
     clear() {
       rows = [];
