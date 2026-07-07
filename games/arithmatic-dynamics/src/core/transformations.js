@@ -263,9 +263,6 @@ export function combine(expr, aId, bId) {
   if (!a || !b || a.container !== b.container) {
     throw new Error('combine: targets are not siblings');
   }
-  if (Math.abs(a.index - b.index) !== 1) {
-    throw new Error('combine: atoms are not adjacent');
-  }
   if (!isNum(a.node) || !isNum(b.node)) {
     throw new Error('combine: both operands must be numbers');
   }
@@ -281,8 +278,12 @@ export function combine(expr, aId, bId) {
   }
   const members = membersOf(container).slice();
   const lo = Math.min(a.index, b.index);
+  const hi = Math.max(a.index, b.index);
   const folded = value < 0 ? num(-value, { neg: true }) : num(value);
-  members.splice(lo, 2, folded);
+  // Members may be non-adjacent; remove the higher index first, then
+  // replace the lower index with the folded result.
+  members.splice(hi, 1);
+  members.splice(lo, 1, folded);
   let next = withMembers(container, members);
   // Collapse a single-member container.
   if (membersOf(next).length === 1) {
@@ -310,7 +311,10 @@ export function cancel(expr, aId, bId) {
   }
   const members = membersOf(container).slice();
   const lo = Math.min(a.index, b.index);
-  members.splice(lo, 2);
+  const hi = Math.max(a.index, b.index);
+  // Remove both members (higher index first so the lower stays valid).
+  members.splice(hi, 1);
+  members.splice(lo, 1);
   let next;
   if (members.length === 0) {
     next = isSum(container) ? num(0) : num(1);

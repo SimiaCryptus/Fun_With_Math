@@ -188,6 +188,19 @@ export function boot(mount) {
     const hintText = state.level.hint ? ` · Hint: ${state.level.hint}` : '';
     statusEl.appendChild(el('span', {}, `Moves: ${s.moveCount}${hintText}`));
   }
+  // Resolve the difficulty passed to legality checks. For 'custom' we pass a
+  // parameter object { threshold, factors } that difficultyAllows understands;
+  // named difficulties are passed through as strings.
+  function resolveDifficulty() {
+    const s = state.settings || {};
+    if (s.difficulty === 'custom') {
+      return {
+        threshold: s.customThreshold !== null ? s.customThreshold : 10,
+        factors: s.customFactors && s.customFactors.length ? s.customFactors : [2, 5],
+      };
+    }
+    return s.difficulty;
+  }
 
   // Tap: build up a selection of up to two adjacent siblings.
   function handleSelect(id, elm) {
@@ -219,7 +232,9 @@ export function boot(mount) {
     const fb = findNode(state.session.expr, bId);
     if (!fa || !fb || !fa.parent || fa.parent !== fb.parent) return false;
     if (!(isSum(fa.parent) || isProduct(fa.parent))) return false;
-    return Math.abs(fa.index - fb.index) === 1;
+    // Members of the same commutative container may be paired even when
+    // they are not physically adjacent.
+    return true;
   }
 
   function findTileEl(id) {
@@ -234,7 +249,7 @@ export function boot(mount) {
 
   function openMenu(ids, elm) {
     const verbs = legalVerbs(state.session.expr, ids, state.session.allowedVerbs, {
-      difficulty: state.settings.difficulty,
+      difficulty: resolveDifficulty(),
     });
     if (verbs.length === 0) {
       radial.hide();
@@ -355,7 +370,7 @@ export function boot(mount) {
   function tryPair(fromId, toId, preferred) {
     if (!areAdjacentSiblings(fromId, toId)) return;
     const verbs = legalVerbs(state.session.expr, [fromId, toId], state.session.allowedVerbs, {
-      difficulty: state.settings.difficulty,
+      difficulty: resolveDifficulty(),
     });
     let verb = preferred;
     if (preferred === 'combine' && !verbs.includes('combine') && verbs.includes('cancel')) {

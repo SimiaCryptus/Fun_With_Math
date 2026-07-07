@@ -50,8 +50,12 @@ export function legalVerbs(expr, selection, allowed = null, opts = {}) {
       const container = a.inContainer.container;
       const ia = a.inContainer.index;
       const ib = b.inContainer.index;
-      const adjacent = Math.abs(ia - ib) === 1;
-      if (adjacent) {
+      // Sums and products are commutative, so any two members of the same
+      // container may be paired (swapped/grouped/combined/cancelled),
+      // whether or not they are physically adjacent.
+      void ia;
+      void ib;
+      {
         verbs.add('swap');
         verbs.add('group');
         if (isNum(a.node) && isNum(b.node)) {
@@ -81,31 +85,48 @@ function combineOk(container, a, b, difficulty = 'easy') {
   return difficultyAllows(difficulty, [va, vb], result);
 }
 
-// Is a number's absolute value factorizable using only 2 and 5?
-function onlyTwoAndFive(n) {
+// Is a number's absolute value factorizable using only the given factors?
+function factorizableBy(n, factors) {
   let v = Math.abs(n);
   if (v === 0) return false;
-  while (v % 2 === 0) v /= 2;
-  while (v % 5 === 0) v /= 5;
+  for (const f of factors) {
+    if (f <= 1) continue;
+    while (v % f === 0) v /= f;
+  }
   return v === 1;
 }
 
 // Difficulty gate for a candidate combination.
 //   easy   - anything
-//   medium - all operands and result magnitude < 10
-//   hard   - all operands and result magnitude < 5, unless every operand
-//            is factorizable using only 2 and 5
+//   medium - each operand and the result is either magnitude < 10 or
+//            factorizable using only 2 and 5
+//   hard   - each operand and the result is either magnitude < 5 or
+//            factorizable using only 2 and 5
+//   custom - each operand and the result is either magnitude < threshold
+//            or factorizable using the allowed factors. Parameterized via
+//            opts: { threshold, factors }.
 export function difficultyAllows(difficulty, operands, result) {
   const vals = [...operands, result];
   if (difficulty === 'easy') return true;
-  if (difficulty === 'medium') {
-    return vals.every((v) => Math.abs(v) < 10);
+  // Resolve threshold + factors for the named/custom difficulty.
+  let threshold;
+  let factors;
+  if (typeof difficulty === 'object' && difficulty) {
+    // Allow passing a parameter object directly.
+    threshold = difficulty.threshold;
+    factors = difficulty.factors || [2, 5];
+  } else if (difficulty === 'medium') {
+    threshold = 10;
+    factors = [2, 5];
+  } else if (difficulty === 'hard') {
+    threshold = 5;
+    factors = [2, 5];
+  } else {
+    return true;
   }
-  if (difficulty === 'hard') {
-    if (operands.every((v) => onlyTwoAndFive(v))) return true;
-    return vals.every((v) => Math.abs(v) < 5);
-  }
-  return true;
+  // Each operand and the result must be individually below the threshold
+  // OR factorizable using only the allowed factors.
+  return vals.every((v) => Math.abs(v) < threshold || factorizableBy(v, factors));
 }
 
 function cancelOk(container, a, b) {

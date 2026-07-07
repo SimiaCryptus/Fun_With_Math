@@ -28,13 +28,16 @@ export class Stage {
     this._capturePositions();
     clear(this.root);
     const row = el('div', { class: 'expr-row' });
-    for (const tile of this._tilesFor(expr, 0)) row.appendChild(tile);
+    for (const tile of this._tilesFor(expr)) row.appendChild(tile);
     this.root.appendChild(row);
     this._playFlip();
   }
 
   // Flatten the AST into an ordered list of tile elements.
-  _tilesFor(node) {
+  // `signHandled` is true when the parent container (sum/product) has
+  // already emitted this node's leading neg/recip sign glyph, so we must
+  // not repeat it here.
+  _tilesFor(node, signHandled = false) {
     const opts = { onSelect: this.onSelect };
 
     if (isNum(node)) {
@@ -47,9 +50,13 @@ export class Stage {
         ...this._tilesFor(node.child),
         parenTile(node.id, 'close', { ...opts, selected: this._isSelected(node.id) }),
       ];
-      // Represent group-level neg/recip with pseudo-operator glyphs.
-      if (node.neg) pieces.unshift(this._glyphTile(node.id, '−'));
-      if (node.recip) pieces.unshift(this._glyphTile(node.id, '1 ÷'));
+      // Represent group-level neg/recip with pseudo-operator glyphs, but
+      // only when the parent container did not already emit that sign
+      // (otherwise we'd render a double minus, e.g. "- -(20 - 5)").
+      if (!signHandled) {
+        if (node.neg) pieces.unshift(this._glyphTile(node.id, '−'));
+        if (node.recip) pieces.unshift(this._glyphTile(node.id, '1 ÷'));
+      }
       return pieces;
     }
 
@@ -58,7 +65,7 @@ export class Stage {
       node.terms.forEach((t, i) => {
         const opGlyph = this._termSign(t, i === 0);
         if (opGlyph) out.push(this._glyphTile(node.id, opGlyph));
-        out.push(...this._tilesFor(t));
+        out.push(...this._tilesFor(t, true));
       });
       return out;
     }
@@ -68,7 +75,7 @@ export class Stage {
       node.factors.forEach((f, i) => {
         const opGlyph = this._factorSign(f, i === 0);
         if (opGlyph) out.push(this._glyphTile(node.id, opGlyph));
-        out.push(...this._tilesFor(f));
+        out.push(...this._tilesFor(f, true));
       });
       return out;
     }

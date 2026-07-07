@@ -14,6 +14,9 @@ export const DEFAULT_SETTINGS = {
   minTerm: 1,
   maxTerm: 30,
   ops: 2,
+  // Custom-difficulty parameters (used when difficulty === 'custom').
+  customThreshold: 10,
+  customFactors: [2, 5],
 };
 
 export class SettingsMenu {
@@ -80,8 +83,9 @@ export class SettingsMenu {
       },
       [
         el('option', { value: 'easy' }, 'Easy — any combination'),
-        el('option', { value: 'medium' }, 'Medium — operands & result < 10'),
-        el('option', { value: 'hard' }, 'Hard — < 5 (unless 2·5 factorable)'),
+        el('option', { value: 'medium' }, 'Medium — each < 10 or 2·5 factorable'),
+        el('option', { value: 'hard' }, 'Hard — each < 5 or 2·5 factorable'),
+        el('option', { value: 'custom' }, 'Custom — each < X or factorable'),
       ],
     );
     diffSel.value = this.settings.difficulty;
@@ -89,6 +93,47 @@ export class SettingsMenu {
       el('span', { class: 'settings-label' }, 'Difficulty:'),
       diffSel,
     ]);
+    // Custom-difficulty parameters: threshold + allowed factors.
+    const thresholdInput = el('input', {
+      type: 'number',
+      class: 'settings-input',
+      id: 'settings-custom-threshold',
+      value: String(this.settings.customThreshold),
+      min: '1',
+    });
+    const factorsInput = el('input', {
+      type: 'text',
+      class: 'settings-input',
+      id: 'settings-custom-factors',
+      value: (this.settings.customFactors || []).join(', '),
+    });
+    const parseFactors = (str) =>
+      String(str)
+        .split(/[\s,]+/)
+        .map((s) => Math.floor(Number(s)))
+        .filter((n) => Number.isFinite(n) && n > 1);
+    const syncCustom = () => {
+      const t = Math.max(1, Math.floor(Number(thresholdInput.value) || 1));
+      thresholdInput.value = String(t);
+      this.settings.customThreshold = t;
+      const f = parseFactors(factorsInput.value);
+      this.settings.customFactors = f.length ? f : [2, 5];
+      this._emit();
+    };
+    thresholdInput.addEventListener('change', syncCustom);
+    factorsInput.addEventListener('change', syncCustom);
+    const customRow = el('div', { class: 'settings-row', id: 'settings-custom-row' }, [
+      el('span', { class: 'settings-label' }, 'Custom:'),
+      el('span', {}, ' below '),
+      thresholdInput,
+      el('span', {}, ' or factors '),
+      factorsInput,
+    ]);
+    const updateCustomVisibility = () => {
+      customRow.style.display = diffSel.value === 'custom' ? '' : 'none';
+    };
+    diffSel.addEventListener('change', updateCustomVisibility);
+    updateCustomVisibility();
 
     // Min / max spawned number.
     const minInput = el('input', {
@@ -148,6 +193,7 @@ export class SettingsMenu {
       el('div', { class: 'settings-title' }, 'Settings'),
       mulRow,
       diffRow,
+      customRow,
       rangeRow,
       opsRow,
     );
