@@ -35,7 +35,9 @@ export function legalVerbs(expr, selection, allowed = null, opts = {}) {
         verbs.add('split');
         verbs.add('factorize');
       }
-      if (isGroup(node) && !node.neg && !node.recip) verbs.add('ungroup');
+       // Groups can always be ungrouped: plain groups splice inline, and
+       // negated/reciprocated groups distribute their inverse.
+       if (isGroup(node)) verbs.add('ungroup');
     }
   } else if (ids.length === 2) {
     const a = locate(expr, ids[0]);
@@ -93,7 +95,10 @@ function factorizableBy(n, factors) {
     if (f <= 1) continue;
     while (v % f === 0) v /= f;
   }
-  return v === 1;
+  // A number counts as "nice" if it reduces fully to 1, or reduces to a
+  // small single-digit residue (e.g. 15 = 3 * 5 leaves 3). This lets
+  // round-ish numbers like 15 participate in combinations.
+  return v === 1 || v < 10;
 }
 
 // Difficulty gate for a candidate combination.
@@ -129,7 +134,7 @@ export function difficultyAllows(difficulty, operands, result) {
   // factors. This lets e.g. 5 + 10 or 1 + 25 combine even when one of
   // the numbers is "ugly".
   const satisfied = vals.filter(
-    (v) => Math.abs(v) < threshold || factorizableBy(v, factors),
+    (v) => Math.abs(v) <= threshold || factorizableBy(v, factors),
   ).length;
   return satisfied >= 2;
 }
