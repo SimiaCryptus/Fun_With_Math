@@ -17,6 +17,7 @@ import { celebrate } from './animate.js';
 import { SettingsMenu, DEFAULT_SETTINGS } from './settings.js';
 
 export function boot(mount) {
+  console.log('[app] booting Arithmetic Dynamics');
   const state = { level: null, session: null, settings: { ...DEFAULT_SETTINGS } };
 
   // Layout scaffold.
@@ -147,7 +148,11 @@ export function boot(mount) {
 
   function loadLevel(id) {
     const level = findLevel(id);
-    if (!level) return;
+    if (!level) {
+      console.warn(`[app] loadLevel: no level found for id "${id}"`);
+      return;
+    }
+    console.log(`[app] loadLevel`, { id });
     startLevel(level, id);
   }
 
@@ -163,6 +168,7 @@ export function boot(mount) {
   }
 
   function startLevel(level, id) {
+    console.log(`[app] startLevel`, { id, start: level.start, allowedVerbs: level.allowedVerbs });
     state.level = level;
     state.session = new GameSession(level);
     selection = [];
@@ -339,6 +345,7 @@ export function boot(mount) {
       stage.setSelection(null);
       radial.hide();
     } catch (err) {
+      console.warn(`[app] commit "${verb}" failed`, err);
       flashError(err.message);
     }
   }
@@ -397,6 +404,7 @@ export function boot(mount) {
   }
 
   function flashError(msg) {
+    console.error(`[app] error:`, msg);
     const note = el('div', { class: 'error-note' }, msg);
     statusEl.appendChild(note);
     setTimeout(() => note.remove(), 1800);

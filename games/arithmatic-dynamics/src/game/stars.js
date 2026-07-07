@@ -10,10 +10,12 @@ export function evaluateStars(session, level) {
   for (const star of stars) {
     try {
       if (star.test(session)) earned.push(star.id);
-    } catch {
+    } catch (err) {
       // A misbehaving test never crashes evaluation.
+      console.warn(`[stars] star test "${star.id}" threw`, err);
     }
   }
+  console.log(`[stars] evaluated`, { levelId: level && level.id, earned });
   return { earned };
 }
 

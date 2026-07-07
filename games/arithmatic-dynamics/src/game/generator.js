@@ -22,6 +22,7 @@ export function generateAdditive({ terms = 2, minTerm = 1, maxTerm = 30 } = {}) 
     parts.push(op, String(randInt(minTerm, maxTerm)));
   }
   const start = parts.join(' ');
+  console.log(`[generator] generateAdditive`, { terms, minTerm, maxTerm, start });
   return defineLevel({
     id: `rand-add-${Date.now()}`,
     start,
@@ -43,6 +44,7 @@ export function generateMultiplicative({ minFactor = 2, maxFactor = 9 } = {}) {
   } else {
     start = `(${a} * ${b}) / ${b}`;
   }
+  console.log(`[generator] generateMultiplicative`, { a, b, start });
   return defineLevel({
     id: `rand-mul-${Date.now()}`,
     start,

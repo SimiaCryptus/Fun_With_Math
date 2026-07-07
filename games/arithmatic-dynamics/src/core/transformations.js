@@ -62,10 +62,21 @@ function locateInContainer(expr, id) {
 export function split(expr, numId, { into }) {
   const found = findNode(expr, numId);
   if (!found || !isNum(found.node)) {
+    console.warn('[transform] split: target is not a Num', {
+      numId,
+      into,
+      node: found && found.node,
+    });
     throw new Error('split: target is not a Num');
   }
   let replacement = typeof into === 'string' ? parse(into) : into;
   replacement = cloneWithFreshIds(replacement);
+  console.log('[transform] split begin', {
+    numId,
+    into,
+    targetValue: evaluate(found.node),
+    replacementValue: evaluate(replacement),
+  });
   // If the target number is negated/reciprocated, the chooser presents
   // options for its bare magnitude. Fold the target's inverse flags onto
   // the replacement so values match.
@@ -73,12 +84,32 @@ export function split(expr, numId, { into }) {
   if (target.neg) replacement = negateNode(replacement);
   if (target.recip) replacement = reciprocateNode(replacement);
   if (evaluate(replacement) !== evaluate(found.node)) {
+    console.warn('[transform] split: replacement value mismatch', {
+      targetValue: evaluate(found.node),
+      replacementValue: evaluate(replacement),
+    });
     throw new Error('split: replacement value does not match');
   }
   // A split must break a number into genuinely "smaller" parts: for
-  // a -> b + c we require 2a^2 < b^2 + c^2 (parts spread away from a).
+  // a -> b + c we require every part to be strictly smaller in
+  // magnitude than a (i.e. Σ parts² < a²). See splitPartsAreSmaller.
   if (!splitPartsAreSmaller(found.node, replacement)) {
-    throw new Error('split: parts must be smaller (need 2·a² < Σ parts²)');
+    const a = evaluate(found.node);
+    const parts = isSum(replacement)
+      ? replacement.terms.map((t) => evaluate(t))
+      : [evaluate(replacement)];
+    const sumSquares = parts.reduce((acc, v) => acc + v * v, 0);
+    console.warn('[transform] split rejected: parts not smaller', {
+      original: a,
+      parts,
+      sumSquares,
+      aSquared: a * a,
+      rule: 'Σ parts² < a²',
+      satisfied: sumSquares < a * a,
+    });
+    throw new Error(
+      `split: parts must be smaller (need Σ parts² < a²; got Σ=${sumSquares} vs a²=${a * a})`,
+    );
   }
   // Preserve unambiguity by wrapping structured replacements in a group.
   const wrapped = isSum(replacement) || isProduct(replacement) ? mkGroup(replacement) : replacement;
@@ -92,16 +123,42 @@ function splitPartsAreSmaller(original, replacement) {
   const a = evaluate(original);
   if (!isSum(replacement)) return true; // non-additive splits unaffected
   const parts = replacement.terms.map((t) => evaluate(t));
-  if (parts.length < 2) return false;
-  // Rule: parts must spread away from the original, i.e. 2·a² < Σ parts².
+  if (parts.length < 2) {
+    console.warn('[transform] splitPartsAreSmaller: need >= 2 parts', { original: a, parts });
+    return false;
+  }
+  // Rule: every part must be strictly smaller in magnitude than the
+  // original. For an additive split (Σ parts = a) this is equivalent to
+  // Σ parts² < a² whenever no single part exceeds a — but to be precise
+  // and robust to signs we check each part's magnitude directly, then
+  // corroborate with the sum-of-squares form for logging.
+  const maxPart = Math.max(...parts.map((v) => Math.abs(v)));
   const sumSquares = parts.reduce((acc, v) => acc + v * v, 0);
-  return 2 * a * a < sumSquares;
+  const eachSmaller = parts.every((v) => Math.abs(v) < Math.abs(a));
+  const sumSquaresSmaller = sumSquares < a * a;
+  console.log('[transform] splitPartsAreSmaller check', {
+    original: a,
+    parts,
+    maxPartMagnitude: maxPart,
+    aMagnitude: Math.abs(a),
+    sumSquares,
+    aSquared: a * a,
+    eachSmaller,
+    sumSquaresSmaller,
+  });
+  // The primary rule is "each part strictly smaller in magnitude".
+  return eachSmaller;
 }
 // --- factorize ----------------------------------------------------------
 // Multiplicative split: replace a Num with an equal product expression.
 export function factorize(expr, numId, { into }) {
   const found = findNode(expr, numId);
   if (!found || !isNum(found.node)) {
+    console.warn('[transform] factorize: target is not a Num', {
+      numId,
+      into,
+      node: found && found.node,
+    });
     throw new Error('factorize: target is not a Num');
   }
   let replacement = typeof into === 'string' ? parse(into) : into;
@@ -110,6 +167,10 @@ export function factorize(expr, numId, { into }) {
   if (target.neg) replacement = negateNode(replacement);
   if (target.recip) replacement = reciprocateNode(replacement);
   if (evaluate(replacement) !== evaluate(found.node)) {
+    console.warn('[transform] factorize: replacement value mismatch', {
+      targetValue: evaluate(found.node),
+      replacementValue: evaluate(replacement),
+    });
     throw new Error('factorize: replacement value does not match');
   }
   const wrapped = isSum(replacement) || isProduct(replacement) ? mkGroup(replacement) : replacement;

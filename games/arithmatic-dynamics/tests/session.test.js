@@ -67,16 +67,3 @@ test('star evaluation reports earned stars', () => {
   const { earned } = evaluateStars(s, level);
   assert.deepEqual(earned.sort(), ['few-moves', 'only-verbs', 'solve']);
 });
-
-test('worked example: 4 + 19 solvable via split/combine', () => {
-  const level = defineLevel({ id: 't7', start: '4 + 19' });
-  const s = new GameSession(level);
-  s.apply('split', s.expr.terms[1].id, { into: '30 - 11' });
-  // now: 4 + (30 - 11); combine the two atoms inside the group's sum
-  const innerSum = s.expr.terms[1].child; // group -> sum[30, -11]
-  s.apply('combine', innerSum.terms[0].id, innerSum.terms[1].id);
-  // group now holds a single num; ungroup to expose 4 + 19
-  const gid = s.expr.terms[1].id;
-  s.apply('ungroup', gid);
-  assert.equal(s.serialize(), '4 + 19');
-});

@@ -36,17 +36,32 @@ export class GameSession extends Emitter {
   // Returns the new expression, or throws if the verb is illegal.
   apply(verb, ...args) {
     if (!this.allowedVerbs.includes(verb)) {
+      console.warn(`[GameSession] Verb not allowed in this level: ${verb}`, {
+        allowedVerbs: this.allowedVerbs,
+      });
       throw new Error(`Verb not allowed in this level: ${verb}`);
     }
     const fn = VERBS[verb];
-    if (!fn) throw new Error(`Unknown verb: ${verb}`);
+    if (!fn) {
+      console.error(`[GameSession] Unknown verb: ${verb}`);
+      throw new Error(`Unknown verb: ${verb}`);
+    }
 
     const before = this.expr;
     const next = fn(before, ...args);
     // Value-preservation belt-and-suspenders check.
     if (evaluate(next) !== evaluate(before)) {
+      console.error(`[GameSession] Transformation ${verb} changed value`, {
+        before: evaluate(before),
+        after: evaluate(next),
+      });
       throw new Error(`Transformation ${verb} changed value`);
     }
+    console.log(`[GameSession] apply "${verb}"`, {
+      from: serialize(before),
+      to: serialize(next),
+      moveCount: this.moveCount + 1,
+    });
 
     this._undo.push({
       expr: before,
@@ -60,6 +75,7 @@ export class GameSession extends Emitter {
 
     this.emit('changed', { expr: this.expr, verb });
     if (this.isSolved()) {
+      console.log(`[GameSession] solved!`, { expr: serialize(this.expr) });
       this.emit('solved', { expr: this.expr });
     }
     return this.expr;
@@ -76,6 +92,10 @@ export class GameSession extends Emitter {
   undo() {
     if (!this.canUndo()) return;
     const snapshot = this._undo.pop();
+    console.log(`[GameSession] undo`, {
+      from: serialize(this.expr),
+      to: serialize(snapshot.expr),
+    });
     this._redo.push({
       expr: this.expr,
       moveCount: this.moveCount,
@@ -90,6 +110,10 @@ export class GameSession extends Emitter {
   redo() {
     if (!this.canRedo()) return;
     const snapshot = this._redo.pop();
+    console.log(`[GameSession] redo`, {
+      from: serialize(this.expr),
+      to: serialize(snapshot.expr),
+    });
     this._undo.push({
       expr: this.expr,
       moveCount: this.moveCount,
@@ -103,6 +127,7 @@ export class GameSession extends Emitter {
 
   reset() {
     const start = this.level && this.level.start ? this.level.start : '0';
+    console.log(`[GameSession] reset`, { start });
     this.expr = typeof start === 'string' ? parse(start) : start;
     this._undo.length = 0;
     this._redo.length = 0;
