@@ -9,7 +9,7 @@
 //   two adjacent Num siblings           -> combine (and cancel if inverse)
 //   two adjacent siblings               -> swap, group
 
-import { isNum, isSum, isProduct, isGroup, findNode, membersOf } from './expression.js';
+import { isNum, isSum, isProduct, isGroup, findNode } from './expression.js';
 import { evaluate } from './value.js';
 
 function locate(expr, id) {

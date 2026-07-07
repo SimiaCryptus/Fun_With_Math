@@ -152,8 +152,13 @@ export function boot(mount) {
   }
 
   function loadGenerated() {
-    const allowMultiply = state.settings ? state.settings.allowMultiply : true;
-    const level = generateRandom({ allowMultiply });
+    const s = state.settings || {};
+    const level = generateRandom({
+      allowMultiply: s.allowMultiply !== undefined ? s.allowMultiply : true,
+      minTerm: s.minTerm,
+      maxTerm: s.maxTerm,
+      ops: s.ops,
+    });
     startLevel(level, null);
   }
 

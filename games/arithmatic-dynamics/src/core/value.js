@@ -5,7 +5,7 @@
 // reciprocal factor, so evaluation walks sums/products and applies the
 // per-atom neg/recip flags.
 
-import { isNum, isSum, isProduct, isGroup, membersOf } from './expression.js';
+import { isNum, isSum, isProduct, isGroup } from './expression.js';
 
 // Raw (unsigned) value of a node ignoring its own neg/recip flags.
 function rawValue(node) {

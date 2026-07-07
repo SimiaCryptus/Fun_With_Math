@@ -15,11 +15,11 @@ function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function generateAdditive({ terms = 2, maxTerm = 30 } = {}) {
-  const parts = [String(randInt(1, maxTerm))];
+export function generateAdditive({ terms = 2, minTerm = 1, maxTerm = 30 } = {}) {
+  const parts = [String(randInt(minTerm, maxTerm))];
   for (let i = 1; i < terms; i++) {
     const op = pick(['+', '-']);
-    parts.push(op, String(randInt(1, maxTerm)));
+    parts.push(op, String(randInt(minTerm, maxTerm)));
   }
   const start = parts.join(' ');
   return defineLevel({
@@ -32,9 +32,10 @@ export function generateAdditive({ terms = 2, maxTerm = 30 } = {}) {
   });
 }
 
-export function generateMultiplicative({ maxFactor = 9 } = {}) {
-  const a = randInt(2, maxFactor);
-  const b = randInt(2, maxFactor);
+export function generateMultiplicative({ minFactor = 2, maxFactor = 9 } = {}) {
+  const lo = Math.max(2, minFactor);
+  const a = randInt(lo, maxFactor);
+  const b = randInt(lo, maxFactor);
   // 50/50: plain product, or product-then-divide cancel.
   let start;
   if (Math.random() < 0.5) {
@@ -52,9 +53,18 @@ export function generateMultiplicative({ maxFactor = 9 } = {}) {
   });
 }
 
-export function generateRandom({ allowMultiply = true } = {}) {
+export function generateRandom({
+  allowMultiply = true,
+  minTerm = 1,
+  maxTerm = 30,
+  ops = null,
+} = {}) {
+  // `ops` counts operators; number of terms is ops + 1.
+  const terms = ops ? ops + 1 : pick([2, 3]);
   if (!allowMultiply) {
-    return generateAdditive({ terms: pick([2, 3]) });
+    return generateAdditive({ terms, minTerm, maxTerm });
   }
-  return Math.random() < 0.6 ? generateAdditive({ terms: pick([2, 3]) }) : generateMultiplicative();
+  return Math.random() < 0.6
+    ? generateAdditive({ terms, minTerm, maxTerm })
+    : generateMultiplicative({ minFactor: Math.max(2, minTerm), maxFactor: Math.max(2, maxTerm) });
 }

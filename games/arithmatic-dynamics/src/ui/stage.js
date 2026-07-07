@@ -3,7 +3,7 @@
 // changes between renders when motion is allowed.
 
 import { el, clear, prefersReducedMotion } from '../util/dom.js';
-import { isNum, isSum, isProduct, isGroup, membersOf } from '../core/expression.js';
+import { isNum, isSum, isProduct, isGroup } from '../core/expression.js';
 import { numberTile, operatorTile, parenTile } from './tile.js';
 
 export class Stage {

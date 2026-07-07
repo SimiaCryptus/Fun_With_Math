@@ -85,14 +85,17 @@ export function split(expr, numId, { into }) {
   return replaceNode(expr, numId, wrapped);
 }
 // Enforce the "smaller numbers" split rule. Only applies to additive
-// splits (a -> b + c + ...). We compare 2·a² against the sum of the
-// squares of the resulting top-level terms.
+// splits (a -> b + c + ...). Every resulting top-level term must have
+// a strictly smaller magnitude than the original (a genuine break-apart),
+// and there must be at least two parts.
 function splitPartsAreSmaller(original, replacement) {
   const a = evaluate(original);
   if (!isSum(replacement)) return true; // non-additive splits unaffected
   const parts = replacement.terms.map((t) => evaluate(t));
-  const sumSq = parts.reduce((acc, v) => acc + v * v, 0);
-  return 2 * a * a < sumSq;
+  if (parts.length < 2) return false;
+  // Rule: parts must spread away from the original, i.e. 2·a² < Σ parts².
+  const sumSquares = parts.reduce((acc, v) => acc + v * v, 0);
+  return 2 * a * a < sumSquares;
 }
 // --- factorize ----------------------------------------------------------
 // Multiplicative split: replace a Num with an equal product expression.

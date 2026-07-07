@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import { GameSession } from '../src/game/session.js';
 import { evaluateStars } from '../src/game/stars.js';
 import { defineLevel, Stars } from '../src/game/level.js';
-import { parse } from '../src/core/serialize.js';
 
 test('session applies verbs and tracks metrics', () => {
   const level = defineLevel({ id: 't1', start: '25 - 2', allowedVerbs: ['combine'] });
