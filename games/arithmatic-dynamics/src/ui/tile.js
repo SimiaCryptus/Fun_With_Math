@@ -24,16 +24,19 @@ export function numberTile(node, { selected, onSelect } = {}) {
 }
 
 // Build an operator tile. `pair` is 'add' for +/- and 'mul' for */÷.
-export function operatorTile(node, { selected, onSelect } = {}) {
-  const pair = node.op === '+' || node.op === '-' ? 'add' : 'mul';
-  const glyph = { '+': '+', '-': '−', '*': '×', '/': '÷' }[node.op] || node.op;
+export function operatorTile(node, { selected, onSelect, rawGlyph } = {}) {
+  const isMul = node.op === '*' || node.op === '/' || node.op === '×' || node.op === '÷';
+  const pair = isMul ? 'mul' : 'add';
+  const glyph = rawGlyph || { '+': '+', '-': '−', '*': '×', '/': '÷' }[node.op] || node.op;
   const t = el(
     'div',
     {
-      class: `tile tile-op tile-op-${pair}${selected ? ' selected' : ''}`,
+      class: `tile tile-op tile-op-${pair}${selected ? ' selected' : ''}${
+        rawGlyph ? ' tile-op-sign' : ''
+      }`,
       dataset: { id: node.id, kind: 'op', key: `op:${node.id}` },
-      role: 'button',
-      tabindex: '0',
+      role: rawGlyph ? undefined : 'button',
+      tabindex: rawGlyph ? undefined : '0',
     },
     glyph,
   );

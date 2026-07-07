@@ -1,34 +1,38 @@
 // Evaluate an expression AST to an exact number.
 //
 // Integer-only semantics: division is only legal when it divides exactly.
-// This mirrors the "exact-division gating" decision from plan.md.
+// The v2 model encodes subtraction as a negated term and division as a
+// reciprocal factor, so evaluation walks sums/products and applies the
+// per-atom neg/recip flags.
 
-import { isNum, isOp, isGroup } from './expression.js';
+import { isNum, isSum, isProduct, isGroup, membersOf } from './expression.js';
 
-export function evaluate(node) {
+// Raw (unsigned) value of a node ignoring its own neg/recip flags.
+function rawValue(node) {
   if (isNum(node)) return node.value;
   if (isGroup(node)) return evaluate(node.child);
-  if (isOp(node)) {
-    const l = evaluate(node.left);
-    const r = evaluate(node.right);
-    switch (node.op) {
-      case '+':
-        return l + r;
-      case '-':
-        return l - r;
-      case '*':
-        return l * r;
-      case '/':
-        if (r === 0) throw new Error('Division by zero');
-        if (l % r !== 0) {
-          throw new Error(`Non-exact division: ${l} / ${r}`);
-        }
-        return l / r;
-      default:
-        throw new Error(`Unknown operator: ${node.op}`);
-    }
+  if (isSum(node)) {
+    let acc = 0;
+    for (const t of node.terms) acc += evaluate(t);
+    return acc;
+  }
+  if (isProduct(node)) {
+    let acc = 1;
+    for (const f of node.factors) acc *= evaluate(f);
+    return acc;
   }
   throw new Error('evaluate: unknown node kind');
+}
+
+export function evaluate(node) {
+  let v = rawValue(node);
+  if ((isNum(node) || isGroup(node)) && node.neg) v = -v;
+  if ((isNum(node) || isGroup(node)) && node.recip) {
+    if (v === 0) throw new Error('Division by zero');
+    // Only report a value; exactness is enforced where products fold.
+    v = 1 / v;
+  }
+  return v;
 }
 
 // Convenience: does `a` evaluate to the same value as `b`?

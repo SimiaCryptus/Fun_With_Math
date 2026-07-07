@@ -3,8 +3,9 @@
 import { GameSession } from '../game/session.js';
 import { evaluateStars } from '../game/stars.js';
 import { allLevels, findLevel } from '../game/levels/index.js';
+import { generateRandom } from '../game/generator.js';
 import { legalVerbs } from '../core/legality.js';
-import { findNode, isNum, isOp } from '../core/expression.js';
+import { findNode, isNum, isSum, isProduct, isGroup, membersOf } from '../core/expression.js';
 import { serialize } from '../core/serialize.js';
 import { el, clear } from '../util/dom.js';
 import { Stage } from './stage.js';
@@ -13,9 +14,10 @@ import { RadialMenu } from './radial-menu.js';
 import { SplitChooser } from './split-chooser.js';
 import { GestureRecognizer } from './gestures.js';
 import { celebrate } from './animate.js';
+import { SettingsMenu, DEFAULT_SETTINGS } from './settings.js';
 
 export function boot(mount) {
-  const state = { level: null, session: null };
+  const state = { level: null, session: null, settings: { ...DEFAULT_SETTINGS } };
 
   // Layout scaffold.
   const stageEl = el('div', { class: 'stage', id: 'stage' });
@@ -24,6 +26,7 @@ export function boot(mount) {
   const historyEl = el('div', { class: 'history', id: 'history' });
   const toolbarEl = el('div', { class: 'toolbar', id: 'toolbar' });
   const levelBarEl = el('div', { class: 'level-bar', id: 'levelbar' });
+  const settingsEl = el('div', { class: 'settings', id: 'settings-menu' });
   const statusEl = el('div', { class: 'status', id: 'status' });
 
   const stageWrap = el('div', { class: 'stage-wrap' }, [stageEl, menuEl, chooserEl]);
@@ -41,15 +44,28 @@ export function boot(mount) {
   const history = new History(historyEl, { onRewind: handleRewind });
   const radial = new RadialMenu(menuEl, { onVerb: applyVerb });
   const chooser = new SplitChooser(chooserEl, { onChoose: onSplitChoose });
+  const settings = new SettingsMenu(settingsEl, {
+    settings: state.settings,
+    onChange: (s) => {
+      state.settings = s;
+    },
+  });
 
-  let selectedId = null;
+  // selection is an array of 0..2 ids.
+  let selection = [];
   let splitTargetId = null;
+  let splitMode = 'split';
+  // Clicking/tapping empty gamespace clears the current selection.
+  stageEl.addEventListener('pointerdown', (e) => {
+    if (e.target.closest && e.target.closest('.tile')) return;
+    if (selection.length) clearSelection();
+  });
 
   new GestureRecognizer(stageEl, {
     onTap: (id, elm, kind) => handleSelect(id, elm),
-    onLongPress: (id, elm) => openMenu(id, elm),
-    onDragCombine: (fromId, toId) => tryCombine(fromId, toId),
-    onDragSwap: (fromId, toId) => trySwap(fromId, toId),
+    onLongPress: (id, elm) => openMenu([id], elm),
+    onDragCombine: (fromId, toId) => tryPair(fromId, toId, 'combine'),
+    onDragSwap: (fromId, toId) => tryPair(fromId, toId, 'swap'),
   });
 
   buildLevelBar();
@@ -67,7 +83,26 @@ export function boot(mount) {
       sel.appendChild(el('option', { value: lvl.id }, lvl.id));
     }
     state._levelSelect = sel;
-    levelBarEl.appendChild(sel);
+    const randBtn = el(
+      'button',
+      {
+        class: 'tool-btn',
+        type: 'button',
+        onClick: () => loadGenerated(),
+      },
+      '🎲 Random',
+    );
+    const mulChk = el('input', {
+      type: 'checkbox',
+      id: 'allow-multiply',
+      checked: true,
+    });
+    state._allowMultiply = mulChk;
+    const mulLabel = el('label', { for: 'allow-multiply', class: 'allow-mul-label' }, [
+      mulChk,
+      ' ×÷',
+    ]);
+    levelBarEl.append(sel, randBtn, mulLabel, settingsEl);
   }
 
   function buildToolbar() {
@@ -111,24 +146,36 @@ export function boot(mount) {
     toolbarEl.append(undoBtn, redoBtn, resetBtn);
   }
 
-  function loadLevel(id) {
-    const level = findLevel(id);
-    if (!level) return;
-    state.level = level;
-    state.session = new GameSession(level);
-    selectedId = null;
-    radial.hide();
-    chooser.hide();
-    history.reset();
-    if (state._levelSelect) state._levelSelect.value = id;
-
+  function bindSession() {
     state.session.on('changed', () => {
-      stage.setSelection(selectedId);
+      stage.setSelection(selection.length ? selection : null);
       stage.render(state.session.expr);
       updateStatus();
     });
     state.session.on('solved', () => onSolved());
+  }
 
+  function loadLevel(id) {
+    const level = findLevel(id);
+    if (!level) return;
+    startLevel(level, id);
+  }
+
+  function loadGenerated() {
+    const allowMultiply = state.settings ? state.settings.allowMultiply : true;
+    const level = generateRandom({ allowMultiply });
+    startLevel(level, null);
+  }
+
+  function startLevel(level, id) {
+    state.level = level;
+    state.session = new GameSession(level);
+    selection = [];
+    radial.hide();
+    chooser.hide();
+    history.reset();
+    if (id && state._levelSelect) state._levelSelect.value = id;
+    bindSession();
     stage.setSelection(null);
     stage.render(state.session.expr);
     updateStatus();
@@ -141,28 +188,55 @@ export function boot(mount) {
     statusEl.appendChild(el('span', {}, `Moves: ${s.moveCount}${hintText}`));
   }
 
+  // Tap: build up a selection of up to two adjacent siblings.
   function handleSelect(id, elm) {
-    selectedId = selectedId === id ? null : id;
-    stage.setSelection(selectedId);
+    if (selection.includes(id)) {
+      selection = selection.filter((x) => x !== id);
+    } else if (selection.length === 0) {
+      selection = [id];
+    } else if (selection.length === 1) {
+      // Only extend to a second id if it is an adjacent sibling.
+      if (areAdjacentSiblings(selection[0], id)) {
+        selection = [selection[0], id];
+      } else {
+        selection = [id];
+      }
+    } else {
+      selection = [id];
+    }
+    stage.setSelection(selection.length ? selection : null);
     stage.render(state.session.expr);
-    if (!selectedId) {
+    if (!selection.length) {
       radial.hide();
       return;
     }
-    openMenu(selectedId, findTileEl(selectedId));
+    openMenu(selection, findTileEl(selection[selection.length - 1]));
+  }
+
+  function areAdjacentSiblings(aId, bId) {
+    const fa = findNode(state.session.expr, aId);
+    const fb = findNode(state.session.expr, bId);
+    if (!fa || !fb || !fa.parent || fa.parent !== fb.parent) return false;
+    if (!(isSum(fa.parent) || isProduct(fa.parent))) return false;
+    return Math.abs(fa.index - fb.index) === 1;
   }
 
   function findTileEl(id) {
     return stageEl.querySelector(`.tile[data-id="${id}"]`);
   }
+  function clearSelection() {
+    selection = [];
+    stage.setSelection(null);
+    stage.render(state.session.expr);
+    radial.hide();
+  }
 
-  function openMenu(id, elm) {
-    const found = findNode(state.session.expr, id);
-    if (!found) return;
-    const verbs = legalVerbs(state.session.expr, id, state.session.allowedVerbs);
-    // A lone number's only verb is split -> open chooser directly.
-    if (isNum(found.node) && verbs.includes('split') && verbs.length === 1) {
-      openSplit(id, found.node.value);
+  function openMenu(ids, elm) {
+    const verbs = legalVerbs(state.session.expr, ids, state.session.allowedVerbs, {
+      difficulty: state.settings.difficulty,
+    });
+    if (verbs.length === 0) {
+      radial.hide();
       return;
     }
     const rect = elm ? elm.getBoundingClientRect() : null;
@@ -170,34 +244,95 @@ export function boot(mount) {
   }
 
   function applyVerb(verb) {
-    const id = selectedId;
-    if (!id) return;
-    const found = findNode(state.session.expr, id);
-    if (!found) return;
+    if (!selection.length) return;
 
     if (verb === 'split') {
-      if (isNum(found.node)) openSplit(id, found.node.value);
+      const id = selection[0];
+      const found = findNode(state.session.expr, id);
+      if (found && isNum(found.node)) openSplit(id, found.node.value, 'split');
       return;
     }
-    commit(verb, id);
+    if (verb === 'factorize') {
+      const id = selection[0];
+      const found = findNode(state.session.expr, id);
+      if (found && isNum(found.node)) openSplit(id, found.node.value, 'factor');
+      return;
+    }
+    if (verb === 'ungroup') {
+      commit('ungroup', selection[0]);
+      return;
+    }
+    if (verb === 'group') {
+      commit('group', selection.slice());
+      return;
+    }
+    // combine / swap / cancel need two ids.
+    if (selection.length === 2) {
+      commit(verb, selection[0], selection[1]);
+    }
   }
 
-  function openSplit(id, value) {
+  function openSplit(id, value, mode = 'split') {
     splitTargetId = id;
-    chooser.show(value);
+    splitMode = mode;
+    chooser.show(value, mode);
   }
 
   function onSplitChoose(into) {
     if (!splitTargetId) return;
     const before = serialize(state.session.expr);
+    const verb = splitMode === 'factor' ? 'factorize' : 'split';
     try {
-      state.session.apply('split', splitTargetId, { into });
-      history.push(before, 'split');
+      state.session.apply(verb, splitTargetId, { into });
+      history.push(before, verb);
+      maybeAutoUngroup();
     } catch (err) {
       flashError(err.message);
     }
     splitTargetId = null;
-    selectedId = null;
+    selection = [];
+  }
+  // After a split/factorize, the replacement is wrapped in a group to
+  // preserve unambiguity. If that group carries no neg/recip flag it is
+  // safe to splice inline immediately, so do so automatically.
+  function maybeAutoUngroup() {
+    const found = findNode(state.session.expr, splitTargetId);
+    // The split target id no longer exists; instead locate the new group
+    // by scanning for a plain (non-inverse) group whose parent is a
+    // matching container. Simpler: attempt ungroup on every plain group
+    // that is a direct member of a sum/product and collapses cleanly.
+    void found;
+    const gid = findPlainSplicableGroup(state.session.expr);
+    if (!gid) return;
+    try {
+      const before = serialize(state.session.expr);
+      state.session.apply('ungroup', gid);
+      history.push(before, 'ungroup');
+    } catch {
+      // If ungrouping would change value or is otherwise illegal, leave
+      // the group in place.
+    }
+  }
+  // Find a group that is a direct member of a matching container
+  // (sum-in-sum or product-in-product) and carries no neg/recip flag.
+  function findPlainSplicableGroup(root, parent = null) {
+    if (!root) return null;
+    if (isGroup(root)) {
+      const inline =
+        parent &&
+        !root.neg &&
+        !root.recip &&
+        ((isSum(parent) && isSum(root.child)) || (isProduct(parent) && isProduct(root.child)));
+      if (inline) return root.id;
+      return findPlainSplicableGroup(root.child, root);
+    }
+    if (isSum(root) || isProduct(root)) {
+      for (const m of membersOf(root)) {
+        const hit = findPlainSplicableGroup(m, root);
+        if (hit) return hit;
+      }
+    }
+    return null;
   }
 
   function commit(verb, ...args) {
@@ -205,7 +340,7 @@ export function boot(mount) {
     try {
       state.session.apply(verb, ...args);
       history.push(before, verb);
-      selectedId = null;
+      selection = [];
       stage.setSelection(null);
       radial.hide();
     } catch (err) {
@@ -213,49 +348,29 @@ export function boot(mount) {
     }
   }
 
-  // Drag-driven combine: pick the op that joins the two tiles.
-  function tryCombine(fromId, toId) {
-    const opId = commonOp(fromId, toId);
-    if (opId) commit('combine', opId);
-  }
-
-  function trySwap(fromId, toId) {
-    const opId = commonOp(fromId, toId);
-    if (opId) commit('swap', opId);
-  }
-
-  // Find an operator node whose operands include both ids (directly).
-  function commonOp(a, b) {
-    let result = null;
-    const walk = (node) => {
-      if (!node || result) return;
-      if (isOp(node)) {
-        const leftId = node.left.id;
-        const rightId = node.right.id;
-        if ((leftId === a && rightId === b) || (leftId === b && rightId === a)) {
-          result = node.id;
-          return;
-        }
-        walk(node.left);
-        walk(node.right);
-      } else if (node.kind === 'group') {
-        walk(node.child);
-      }
-    };
-    walk(state.session.expr);
-    return result;
+  // Drag-driven pairing: attempt the given verb on two dragged atoms if
+  // they are adjacent siblings; combine falls back to cancel when apt.
+  function tryPair(fromId, toId, preferred) {
+    if (!areAdjacentSiblings(fromId, toId)) return;
+    const verbs = legalVerbs(state.session.expr, [fromId, toId], state.session.allowedVerbs, {
+      difficulty: state.settings.difficulty,
+    });
+    let verb = preferred;
+    if (preferred === 'combine' && !verbs.includes('combine') && verbs.includes('cancel')) {
+      verb = 'cancel';
+    }
+    if (!verbs.includes(verb)) return;
+    commit(verb, fromId, toId);
   }
 
   function syncHistoryToSession() {
-    // Keep the ribbon length aligned with the session move count.
     history.truncate(state.session.moveCount);
-    selectedId = null;
+    selection = [];
     stage.setSelection(null);
   }
 
   function handleRewind(index) {
-    // Rewind by undoing until move count matches the target index.
-    const target = index; // steps before this row
+    const target = index;
     while (state.session.moveCount > target && state.session.canUndo()) {
       state.session.undo();
     }

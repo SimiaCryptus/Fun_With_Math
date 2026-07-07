@@ -55,6 +55,12 @@
   background: #ffe0e6;
   color: #a62b52;
 }
+.tile-op-sign {
+  cursor: default;
+  opacity: 0.85;
+  box-shadow: none;
+  background: transparent;
+}
 
 .tile-paren {
   background: transparent;

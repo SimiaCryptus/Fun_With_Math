@@ -1,167 +1,243 @@
-// Player-facing verbs as pure transformations.
+// Player-facing verbs as pure transformations (v2 model).
 //
-// Every transformation returns a NEW tree and is value-preserving by
-// construction. Where a transformation cannot legally apply it throws;
-// legality.js is responsible for only offering legal verbs to the UI.
+// The tree is a flat sum/product of atoms; verbs operate on atoms and on
+// adjacent pairs within a container, not on binary graph branches.
 //
 // Verbs:
-//   split(expr, numId, { into })       - replace a Num with an equal expr
-//   swap(expr, aId, bId)                - swap operands of a commutative op
-//   group(expr, opId)                   - wrap an op in explicit parens
-//   ungroup(expr, groupId)              - remove redundant parens
-//   combine(expr, opId)                 - fold "a <op> b" into one Num
-//   cancel(expr, opId)                  - remove an inverse pair -> identity
+//   split(expr, numId, { into })    - replace a Num with an equal expr
+//   swap(expr, aId, bId)            - swap two adjacent members of a sum/prod
+//   group(expr, [ids])              - wrap a contiguous run of members
+//   ungroup(expr, groupId)          - splice a group's contents back inline
+//   combine(expr, aId, bId)         - fold two adjacent atoms into one Num
+//   cancel(expr, aId, bId)          - remove an inverse pair (x, -x)/(x, /x)
 
 import {
   num,
-  op,
+  sum,
+  product,
   group as mkGroup,
   isNum,
-  isOp,
+  isSum,
+  isProduct,
   isGroup,
   findNode,
   replaceNode,
   cloneWithFreshIds,
-  COMMUTATIVE,
-  INVERSE,
+  membersOf,
+  withMembers,
 } from './expression.js';
 import { evaluate } from './value.js';
-import { parse, serialize } from './serialize.js';
+import { parse } from './serialize.js';
+
+// --- helpers ------------------------------------------------------------
+
+// Signed/reciprocal-aware value of a single atom.
+function atomValue(node) {
+  return evaluate(node);
+}
+
+function findMemberIndex(container, id) {
+  return membersOf(container).findIndex((m) => m.id === id);
+}
+
+// Locate the container (sum/product) that directly holds `id`, plus index.
+function locateInContainer(expr, id) {
+  const found = findNode(expr, id);
+  if (!found || !found.parent || !(isSum(found.parent) || isProduct(found.parent))) {
+    return null;
+  }
+  return { container: found.parent, index: found.index, node: found.node };
+}
 
 // --- split --------------------------------------------------------------
-// `into` may be an AST node or a string (parsed). It must evaluate to the
-// same value as the target number.
 export function split(expr, numId, { into }) {
   const found = findNode(expr, numId);
   if (!found || !isNum(found.node)) {
     throw new Error('split: target is not a Num');
   }
   let replacement = typeof into === 'string' ? parse(into) : into;
-  // Fresh ids so a re-used template subtree cannot collide.
   replacement = cloneWithFreshIds(replacement);
-  if (evaluate(replacement) !== found.node.value) {
+  if (evaluate(replacement) !== evaluate(found.node)) {
     throw new Error('split: replacement value does not match');
   }
-  // A split introduces structure, so wrap in a group to keep precedence
-  // unambiguous within the surrounding expression.
-  const wrapped = isOp(replacement) ? mkGroup(replacement) : replacement;
+  // A split must break a number into genuinely "smaller" parts: for
+  // a -> b + c we require 2a^2 < b^2 + c^2 (parts spread away from a).
+  if (!splitPartsAreSmaller(found.node, replacement)) {
+    throw new Error('split: parts must be smaller (need 2·a² < Σ parts²)');
+  }
+  // Preserve unambiguity by wrapping structured replacements in a group.
+  const wrapped = isSum(replacement) || isProduct(replacement) ? mkGroup(replacement) : replacement;
+  return replaceNode(expr, numId, wrapped);
+}
+// Enforce the "smaller numbers" split rule. Only applies to additive
+// splits (a -> b + c + ...). We compare 2·a² against the sum of the
+// squares of the resulting top-level terms.
+function splitPartsAreSmaller(original, replacement) {
+  const a = evaluate(original);
+  if (!isSum(replacement)) return true; // non-additive splits unaffected
+  const parts = replacement.terms.map((t) => evaluate(t));
+  const sumSq = parts.reduce((acc, v) => acc + v * v, 0);
+  return 2 * a * a < sumSq;
+}
+// --- factorize ----------------------------------------------------------
+// Multiplicative split: replace a Num with an equal product expression.
+export function factorize(expr, numId, { into }) {
+  const found = findNode(expr, numId);
+  if (!found || !isNum(found.node)) {
+    throw new Error('factorize: target is not a Num');
+  }
+  let replacement = typeof into === 'string' ? parse(into) : into;
+  replacement = cloneWithFreshIds(replacement);
+  if (evaluate(replacement) !== evaluate(found.node)) {
+    throw new Error('factorize: replacement value does not match');
+  }
+  const wrapped = isSum(replacement) || isProduct(replacement) ? mkGroup(replacement) : replacement;
   return replaceNode(expr, numId, wrapped);
 }
 
 // --- swap ---------------------------------------------------------------
-// Swaps the operands of a commutative operator (id points at the op node).
-export function swap(expr, opId) {
-  const found = findNode(expr, opId);
-  if (!found || !isOp(found.node)) {
-    throw new Error('swap: target is not an operator');
+// Swap two adjacent members of the same sum/product.
+export function swap(expr, aId, bId) {
+  const a = locateInContainer(expr, aId);
+  const b = locateInContainer(expr, bId);
+  if (!a || !b || a.container !== b.container) {
+    throw new Error('swap: targets are not siblings in a container');
   }
-  const node = found.node;
-  if (!COMMUTATIVE.has(node.op)) {
-    throw new Error(`swap: ${node.op} is not commutative`);
+  if (isProduct(a.container)) {
+    // products are commutative; ok
+  } else if (isSum(a.container)) {
+    // sums are commutative for signed atoms; ok
+  } else {
+    throw new Error('swap: unsupported container');
   }
-  const swapped = { ...node, left: node.right, right: node.left };
-  return replaceNode(expr, opId, swapped);
+  const members = membersOf(a.container).slice();
+  [members[a.index], members[b.index]] = [members[b.index], members[a.index]];
+  const next = withMembers(a.container, members);
+  return replaceNode(expr, a.container.id, next);
 }
 
 // --- group / ungroup ----------------------------------------------------
-export function group(expr, opId) {
-  const found = findNode(expr, opId);
-  if (!found || !isOp(found.node)) {
-    throw new Error('group: target is not an operator');
+// Group a contiguous run of members (by id list) inside their container.
+export function group(expr, ids) {
+  const idList = Array.isArray(ids) ? ids : [ids];
+  const first = locateInContainer(expr, idList[0]);
+  if (!first) throw new Error('group: target not inside a container');
+  const container = first.container;
+  const members = membersOf(container);
+  const indices = idList.map((id) => findMemberIndex(container, id)).sort((x, y) => x - y);
+  if (indices.some((i) => i < 0)) throw new Error('group: ids not all siblings');
+  // must be contiguous
+  for (let i = 1; i < indices.length; i++) {
+    if (indices[i] !== indices[i - 1] + 1) throw new Error('group: selection not contiguous');
   }
-  return replaceNode(expr, opId, mkGroup(found.node));
+  const run = indices.map((i) => members[i]);
+  const inner = isSum(container) ? sum(run) : product(run);
+  const wrapped = mkGroup(inner);
+  const next = [
+    ...members.slice(0, indices[0]),
+    wrapped,
+    ...members.slice(indices[indices.length - 1] + 1),
+  ];
+  return replaceNode(expr, container.id, withMembers(container, next));
 }
 
 export function ungroup(expr, groupId) {
+  const loc = locateInContainer(expr, groupId);
   const found = findNode(expr, groupId);
-  if (!found || !isGroup(found.node)) {
-    throw new Error('ungroup: target is not a group');
+  if (!found || !isGroup(found.node)) throw new Error('ungroup: target is not a group');
+  const grp = found.node;
+  if (grp.neg || grp.recip) {
+    throw new Error('ungroup: group carries an inverse (distribute first)');
   }
-  // Ungrouping is only value-safe if it doesn't change how the surrounding
-  // operators bind. The in-memory tree already encodes binding via its
-  // structure, so simply dropping the group node never changes evaluate().
-  // To detect precedence hazards we compare two serializations of the
-  // surrounding expression: one where the group is preserved and one where
-  // it is dropped. The serializer re-inserts protective parens only when
-  // precedence demands them, so if the parens were load-bearing the
-  // "dropped" form differs from a raw splice of the child text. We detect
-  // this by parsing a splice that omits the parentheses entirely.
-  const candidate = replaceNode(expr, groupId, found.node.child);
-  // Serialize the child at top-level precedence (as raw, unparenthesized
-  // text) and splice it into the surface syntax where the group sat.
-  const spliced = serializeWithRawSplice(expr, groupId, found.node.child);
-  const reparsed = parse(spliced);
-  if (evaluate(reparsed) !== evaluate(expr)) {
-    throw new Error('ungroup: would change value (precedence-unsafe)');
+  const child = grp.child;
+  // If splicing into a matching container, flatten members inline.
+  if (loc) {
+    const container = loc.container;
+    const members = membersOf(container).slice();
+    const inlineMembers =
+      (isSum(container) && isSum(child)) || (isProduct(container) && isProduct(child))
+        ? membersOf(child)
+        : [child];
+    members.splice(loc.index, 1, ...inlineMembers);
+    const next = withMembers(container, members);
+    if (evaluate(next) !== evaluate(expr)) {
+      throw new Error('ungroup: would change value');
+    }
+    return replaceNode(expr, container.id, next);
+  }
+  // Top-level group: just unwrap.
+  const candidate = replaceNode(expr, groupId, child);
+  if (evaluate(candidate) !== evaluate(expr)) {
+    throw new Error('ungroup: would change value');
   }
   return candidate;
 }
 
-// Serialize `expr`, but render the node with id `groupId` as its child's
-// text WITHOUT any surrounding parentheses (a naive textual removal of the
-// parens). This exposes precedence hazards that structural removal hides.
-function serializeWithRawSplice(node, groupId, child, parentPrec = 0) {
-  if (isNum(node)) return String(node.value);
-  if (isGroup(node)) {
-    if (node.id === groupId) {
-      // Drop the parens: serialize the child at top-level precedence.
-      return serialize(child);
-    }
-    return `(${serializeWithRawSplice(node.child, groupId, child, 0)})`;
-  }
-  if (isOp(node)) {
-    const PREC = { '+': 1, '-': 1, '*': 2, '/': 2 };
-    const prec = PREC[node.op];
-    const left = serializeWithRawSplice(node.left, groupId, child, prec);
-    const right = serializeWithRawSplice(node.right, groupId, child, prec + 1);
-    const s = `${left} ${node.op} ${right}`;
-    return prec < parentPrec ? `(${s})` : s;
-  }
-  throw new Error('serializeWithRawSplice: unknown node kind');
-}
-
 // --- combine ------------------------------------------------------------
-// Folds an operator whose operands are both plain Nums into a single Num.
-export function combine(expr, opId) {
-  const found = findNode(expr, opId);
-  if (!found || !isOp(found.node)) {
-    throw new Error('combine: target is not an operator');
+// Fold two adjacent Num atoms in a sum/product into a single Num.
+export function combine(expr, aId, bId) {
+  const a = locateInContainer(expr, aId);
+  const b = locateInContainer(expr, bId);
+  if (!a || !b || a.container !== b.container) {
+    throw new Error('combine: targets are not siblings');
   }
-  const node = found.node;
-  if (!isNum(node.left) || !isNum(node.right)) {
+  if (Math.abs(a.index - b.index) !== 1) {
+    throw new Error('combine: atoms are not adjacent');
+  }
+  if (!isNum(a.node) || !isNum(b.node)) {
     throw new Error('combine: both operands must be numbers');
   }
-  const value = evaluate(node); // throws on non-exact division
-  return replaceNode(expr, opId, num(value));
+  const container = a.container;
+  let value;
+  if (isSum(container)) {
+    value = atomValue(a.node) + atomValue(b.node);
+  } else {
+    // product: enforce exact integer result
+    const prod = atomValue(a.node) * atomValue(b.node);
+    if (!Number.isInteger(prod)) throw new Error('combine: non-exact division');
+    value = prod;
+  }
+  const members = membersOf(container).slice();
+  const lo = Math.min(a.index, b.index);
+  const folded = value < 0 ? num(-value, { neg: true }) : num(value);
+  members.splice(lo, 2, folded);
+  let next = withMembers(container, members);
+  // Collapse a single-member container.
+  if (membersOf(next).length === 1) {
+    next = membersOf(next)[0];
+  }
+  return replaceNode(expr, container.id, next);
 }
 
 // --- cancel -------------------------------------------------------------
-// An inverse pair that nets to identity. For the additive pair this means
-// "a + x - x" style patterns collapsing the "+x -x" to nothing (0), and for
-// "*x /x" collapsing to 1. We support the direct binary form:
-//   (a + x) - x  -> a    /  (a - x) + x -> a
-//   (a * x) / x  -> a    /  (a / x) * x -> a
-// where the op node given is the OUTER operator.
-export function cancel(expr, opId) {
-  const found = findNode(expr, opId);
-  if (!found || !isOp(found.node)) {
-    throw new Error('cancel: target is not an operator');
+// Remove an inverse pair of adjacent atoms: (x, -x) in a sum -> 0 removed,
+// (x, /x) in a product -> 1 removed.
+export function cancel(expr, aId, bId) {
+  const a = locateInContainer(expr, aId);
+  const b = locateInContainer(expr, bId);
+  if (!a || !b || a.container !== b.container) {
+    throw new Error('cancel: targets are not siblings');
   }
-  const outer = found.node;
-  const inner = isGroup(outer.left) ? outer.left.child : outer.left;
-
-  if (!isOp(inner)) {
-    throw new Error('cancel: left operand is not an inverse operation');
+  const container = a.container;
+  const va = atomValue(a.node);
+  const vb = atomValue(b.node);
+  if (isSum(container)) {
+    if (va + vb !== 0) throw new Error('cancel: terms do not cancel');
+  } else {
+    if (va * vb !== 1) throw new Error('cancel: factors do not cancel');
   }
-  if (inner.op !== INVERSE[outer.op]) {
-    throw new Error('cancel: operators are not an inverse pair');
+  const members = membersOf(container).slice();
+  const lo = Math.min(a.index, b.index);
+  members.splice(lo, 2);
+  let next;
+  if (members.length === 0) {
+    next = isSum(container) ? num(0) : num(1);
+  } else if (members.length === 1) {
+    next = members[0];
+  } else {
+    next = withMembers(container, members);
   }
-  // inner.right and outer.right must be equal-value terms to cancel.
-  if (evaluate(inner.right) !== evaluate(outer.right)) {
-    throw new Error('cancel: terms do not cancel');
-  }
-  // The result is inner.left, preserved as-is.
-  const candidate = replaceNode(expr, opId, inner.left);
+  const candidate = replaceNode(expr, container.id, next);
   if (evaluate(candidate) !== evaluate(expr)) {
     throw new Error('cancel: value mismatch (unexpected)');
   }
@@ -169,4 +245,4 @@ export function cancel(expr, opId) {
 }
 
 // Registry so the session layer can dispatch by name.
-export const VERBS = { split, swap, group, ungroup, combine, cancel };
+export const VERBS = { split, factorize, swap, group, ungroup, combine, cancel };

@@ -3,7 +3,7 @@
 // changes between renders when motion is allowed.
 
 import { el, clear, prefersReducedMotion } from '../util/dom.js';
-import { isNum, isOp, isGroup } from '../core/expression.js';
+import { isNum, isSum, isProduct, isGroup, membersOf } from '../core/expression.js';
 import { numberTile, operatorTile, parenTile } from './tile.js';
 
 export class Stage {
@@ -14,15 +14,21 @@ export class Stage {
     this._lastRects = new Map();
   }
 
+  // selection may be a single id or an array of ids.
   setSelection(id) {
     this.selection = id;
+  }
+
+  _isSelected(id) {
+    if (Array.isArray(this.selection)) return this.selection.includes(id);
+    return this.selection === id;
   }
 
   render(expr) {
     this._capturePositions();
     clear(this.root);
     const row = el('div', { class: 'expr-row' });
-    for (const tile of this._tilesFor(expr)) row.appendChild(tile);
+    for (const tile of this._tilesFor(expr, 0)) row.appendChild(tile);
     this.root.appendChild(row);
     this._playFlip();
   }
@@ -30,25 +36,67 @@ export class Stage {
   // Flatten the AST into an ordered list of tile elements.
   _tilesFor(node) {
     const opts = { onSelect: this.onSelect };
-    const sel = this.selection;
+
     if (isNum(node)) {
-      return [numberTile(node, { ...opts, selected: node.id === sel })];
+      return [numberTile(node, { ...opts, selected: this._isSelected(node.id) })];
     }
+
     if (isGroup(node)) {
-      return [
-        parenTile(node.id, 'open', { ...opts, selected: node.id === sel }),
+      const pieces = [
+        parenTile(node.id, 'open', { ...opts, selected: this._isSelected(node.id) }),
         ...this._tilesFor(node.child),
-        parenTile(node.id, 'close', { ...opts, selected: node.id === sel }),
+        parenTile(node.id, 'close', { ...opts, selected: this._isSelected(node.id) }),
       ];
+      // Represent group-level neg/recip with pseudo-operator glyphs.
+      if (node.neg) pieces.unshift(this._glyphTile(node.id, '−'));
+      if (node.recip) pieces.unshift(this._glyphTile(node.id, '1 ÷'));
+      return pieces;
     }
-    if (isOp(node)) {
-      return [
-        ...this._tilesFor(node.left),
-        operatorTile(node, { ...opts, selected: node.id === sel }),
-        ...this._tilesFor(node.right),
-      ];
+
+    if (isSum(node)) {
+      const out = [];
+      node.terms.forEach((t, i) => {
+        const opGlyph = this._termSign(t, i === 0);
+        if (opGlyph) out.push(this._glyphTile(node.id, opGlyph));
+        out.push(...this._tilesFor(t));
+      });
+      return out;
     }
+
+    if (isProduct(node)) {
+      const out = [];
+      node.factors.forEach((f, i) => {
+        const opGlyph = this._factorSign(f, i === 0);
+        if (opGlyph) out.push(this._glyphTile(node.id, opGlyph));
+        out.push(...this._tilesFor(f));
+      });
+      return out;
+    }
+
     return [];
+  }
+
+  _termSign(term, first) {
+    const neg = (isNum(term) || isGroup(term)) && term.neg;
+    if (first) return neg ? '−' : '';
+    return neg ? '−' : '+';
+  }
+
+  _factorSign(factor, first) {
+    const recip = (isNum(factor) || isGroup(factor)) && factor.recip;
+    if (first) return recip ? '1 ÷' : '';
+    return recip ? '÷' : '×';
+  }
+
+  _glyphTile(id, glyph) {
+    return operatorTile(
+      { id: `${id}:op:${glyph}`, op: glyph, kind: 'op' },
+      {
+        onSelect: null,
+        selected: false,
+        rawGlyph: glyph,
+      },
+    );
   }
 
   _capturePositions() {

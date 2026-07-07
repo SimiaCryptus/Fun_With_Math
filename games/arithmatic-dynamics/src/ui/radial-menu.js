@@ -5,6 +5,7 @@ import { el, clear, on } from '../util/dom.js';
 
 const VERB_ICONS = {
   split: { glyph: '✂', label: 'Split' },
+  factorize: { glyph: '⋈', label: 'Factorize' },
   swap: { glyph: '⇄', label: 'Swap' },
   group: { glyph: '( )', label: 'Group' },
   ungroup: { glyph: ')(', label: 'Ungroup' },

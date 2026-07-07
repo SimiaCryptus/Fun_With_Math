@@ -1,44 +1,63 @@
-// Which verbs are legal for a given selection of tile/node ids.
+// Which verbs are legal for a given selection of tile/node ids (v2 model).
 //
-// legalVerbs(expr, selection) -> Verb[]  (array of verb name strings)
+// legalVerbs(expr, selection, allowed?) -> Verb[]
 //
-// The selection is an array of node ids. Different verbs care about
-// different selection shapes:
-//   - split   : a single Num
-//   - swap    : a single commutative op
-//   - group   : a single op (not already directly wrapped)
-//   - ungroup : a single group (value-safe to remove)
-//   - combine : a single op with two Num operands
-//   - cancel  : a single op forming an inverse pair with its left operand
+// Selection semantics:
+//   single Num                          -> split
+//   single group (no inverse)           -> ungroup
+//   single member of a sum/product      -> group (wrap self)
+//   two adjacent Num siblings           -> combine (and cancel if inverse)
+//   two adjacent siblings               -> swap, group
 
-import { isNum, isOp, isGroup, findNode, COMMUTATIVE, INVERSE } from './expression.js';
+import { isNum, isSum, isProduct, isGroup, findNode, membersOf } from './expression.js';
 import { evaluate } from './value.js';
-import { parse, serialize } from './serialize.js';
 
-export function legalVerbs(expr, selection, allowed = null) {
+function locate(expr, id) {
+  const found = findNode(expr, id);
+  if (!found) return null;
+  const inContainer =
+    found.parent && (isSum(found.parent) || isProduct(found.parent))
+      ? { container: found.parent, index: found.index }
+      : null;
+  return { node: found.node, inContainer };
+}
+
+export function legalVerbs(expr, selection, allowed = null, opts = {}) {
+  const difficulty = opts.difficulty || 'easy';
   const ids = Array.isArray(selection) ? selection : [selection];
   const verbs = new Set();
 
   if (ids.length === 1) {
-    const found = findNode(expr, ids[0]);
-    if (found) {
-      const node = found.node;
-
+    const loc = locate(expr, ids[0]);
+    if (loc) {
+      const { node } = loc;
       if (isNum(node)) {
         verbs.add('split');
+        verbs.add('factorize');
       }
-
-      if (isOp(node)) {
-        if (COMMUTATIVE.has(node.op)) verbs.add('swap');
+      if (isGroup(node) && !node.neg && !node.recip) verbs.add('ungroup');
+    }
+  } else if (ids.length === 2) {
+    const a = locate(expr, ids[0]);
+    const b = locate(expr, ids[1]);
+    if (
+      a &&
+      b &&
+      a.inContainer &&
+      b.inContainer &&
+      a.inContainer.container === b.inContainer.container
+    ) {
+      const container = a.inContainer.container;
+      const ia = a.inContainer.index;
+      const ib = b.inContainer.index;
+      const adjacent = Math.abs(ia - ib) === 1;
+      if (adjacent) {
+        verbs.add('swap');
         verbs.add('group');
-        if (isNum(node.left) && isNum(node.right) && exactDivOk(node)) {
-          verbs.add('combine');
+        if (isNum(a.node) && isNum(b.node)) {
+          if (combineOk(container, a.node, b.node, difficulty)) verbs.add('combine');
+          if (cancelOk(container, a.node, b.node)) verbs.add('cancel');
         }
-        if (canCancel(node)) verbs.add('cancel');
-      }
-
-      if (isGroup(node)) {
-        if (ungroupSafe(expr, ids[0])) verbs.add('ungroup');
       }
     }
   }
@@ -48,69 +67,48 @@ export function legalVerbs(expr, selection, allowed = null) {
   return result;
 }
 
-function exactDivOk(node) {
-  if (node.op !== '/') return true;
-  const r = evaluate(node.right);
-  return r !== 0 && evaluate(node.left) % r === 0;
+function combineOk(container, a, b, difficulty = 'easy') {
+  const va = evaluate(a);
+  const vb = evaluate(b);
+  let result;
+  if (isSum(container)) {
+    result = va + vb;
+  } else {
+    result = va * vb;
+    // product: exact integer result only
+    if (!Number.isInteger(result)) return false;
+  }
+  return difficultyAllows(difficulty, [va, vb], result);
 }
 
-function canCancel(outer) {
-  const inner = isGroup(outer.left) ? outer.left.child : outer.left;
-  if (!isOp(inner)) return false;
-  if (inner.op !== INVERSE[outer.op]) return false;
-  try {
-    return evaluate(inner.right) === evaluate(outer.right);
-  } catch {
-    return false;
-  }
+// Is a number's absolute value factorizable using only 2 and 5?
+function onlyTwoAndFive(n) {
+  let v = Math.abs(n);
+  if (v === 0) return false;
+  while (v % 2 === 0) v /= 2;
+  while (v % 5 === 0) v /= 5;
+  return v === 1;
 }
 
-function ungroupSafe(expr, groupId) {
-  const found = findNode(expr, groupId);
-  if (!found || !isGroup(found.node)) return false;
-  // Simulate replacement, then round-trip through the surface syntax so
-  // that precedence hazards (load-bearing parens) are actually detected.
-  try {
-    const spliced = serializeRawSplice(expr, groupId, found.node.child);
-    const reparsed = parse(spliced);
-    return evaluate(reparsed) === evaluate(expr);
-  } catch {
-    return false;
+// Difficulty gate for a candidate combination.
+//   easy   - anything
+//   medium - all operands and result magnitude < 10
+//   hard   - all operands and result magnitude < 5, unless every operand
+//            is factorizable using only 2 and 5
+export function difficultyAllows(difficulty, operands, result) {
+  const vals = [...operands, result];
+  if (difficulty === 'easy') return true;
+  if (difficulty === 'medium') {
+    return vals.every((v) => Math.abs(v) < 10);
   }
+  if (difficulty === 'hard') {
+    if (operands.every((v) => onlyTwoAndFive(v))) return true;
+    return vals.every((v) => Math.abs(v) < 5);
+  }
+  return true;
 }
 
-// Render `expr` but drop the parentheses around the group with `groupId`,
-// exposing precedence hazards a structural removal would hide.
-function serializeRawSplice(node, groupId, child, parentPrec = 0) {
-  if (isNum(node)) return String(node.value);
-  if (isGroup(node)) {
-    if (node.id === groupId) return serialize(child);
-    return `(${serializeRawSplice(node.child, groupId, child, 0)})`;
-  }
-  if (isOp(node)) {
-    const PREC = { '+': 1, '-': 1, '*': 2, '/': 2 };
-    const prec = PREC[node.op];
-    const left = serializeRawSplice(node.left, groupId, child, prec);
-    const right = serializeRawSplice(node.right, groupId, child, prec + 1);
-    const s = `${left} ${node.op} ${right}`;
-    return prec < parentPrec ? `(${s})` : s;
-  }
-  throw new Error('serializeRawSplice: unknown node kind');
-}
-
-// Local helper (avoids importing replaceNode to keep deps light).
-function replaceGroupChild(root, id, child) {
-  if (!root) return root;
-  if (root.id === id && isGroup(root)) return child;
-  if (isGroup(root)) {
-    return { ...root, child: replaceGroupChild(root.child, id, child) };
-  }
-  if (isOp(root)) {
-    return {
-      ...root,
-      left: replaceGroupChild(root.left, id, child),
-      right: replaceGroupChild(root.right, id, child),
-    };
-  }
-  return root;
+function cancelOk(container, a, b) {
+  if (isSum(container)) return evaluate(a) + evaluate(b) === 0;
+  return evaluate(a) * evaluate(b) === 1;
 }

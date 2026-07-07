@@ -36,6 +36,8 @@ export class GestureRecognizer {
   _down(e) {
     const tile = e.target.closest && e.target.closest('.tile');
     if (!tile) return;
+    // Operator-sign glyph tiles are decorative and not selectable.
+    if (tile.classList.contains('tile-op-sign')) return;
     this._state = {
       id: tile.dataset.id,
       kind: tile.dataset.kind,

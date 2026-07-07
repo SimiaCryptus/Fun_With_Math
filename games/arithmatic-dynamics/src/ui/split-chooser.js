@@ -1,5 +1,6 @@
 // Split chooser dialog. Given a target number value, it offers friendly
-// presets (nearest ten ± n, make-a-five) plus a custom "a op b" picker.
+// presets, plus a custom "a op b" picker. In 'factor' mode it offers
+// multiplicative factorizations instead of additive splits.
 // Every option is validated to preserve value before being offered/used.
 
 import { el, clear, on } from '../util/dom.js';
@@ -12,12 +13,14 @@ export class SplitChooser {
     this.hide();
   }
 
-  show(value) {
+  // mode: 'split' (additive) or 'factor' (multiplicative)
+  show(value, mode = 'split') {
     clear(this.root);
-    const options = presetsFor(value);
+    const options = mode === 'factor' ? factorsFor(value) : presetsFor(value);
 
+    const title = mode === 'factor' ? `Factorize ${value}` : `Break apart ${value}`;
     const panel = el('div', { class: 'chooser-panel' }, [
-      el('div', { class: 'chooser-title' }, `Break apart ${value}`),
+      el('div', { class: 'chooser-title' }, title),
     ]);
 
     const list = el('div', { class: 'chooser-options' });
@@ -40,7 +43,7 @@ export class SplitChooser {
     panel.appendChild(list);
 
     // Custom picker: a op b with live validation.
-    const custom = this._customPicker(value);
+    const custom = this._customPicker(value, mode);
     panel.appendChild(custom);
 
     panel.appendChild(
@@ -64,15 +67,12 @@ export class SplitChooser {
     });
   }
 
-  _customPicker(value) {
+  _customPicker(value, mode = 'split') {
     const wrap = el('div', { class: 'chooser-custom' });
     const a = el('input', { type: 'number', class: 'chooser-input', value: String(value) });
-    const opSel = el('select', { class: 'chooser-op' }, [
-      el('option', { value: '+' }, '+'),
-      el('option', { value: '-' }, '−'),
-      el('option', { value: '*' }, '×'),
-      el('option', { value: '/' }, '÷'),
-    ]);
+    const addOps = [el('option', { value: '+' }, '+'), el('option', { value: '-' }, '−')];
+    const mulOps = [el('option', { value: '*' }, '×'), el('option', { value: '/' }, '÷')];
+    const opSel = el('select', { class: 'chooser-op' }, mode === 'factor' ? mulOps : addOps);
     const b = el('input', { type: 'number', class: 'chooser-input', value: '0' });
     const feedback = el('span', { class: 'chooser-feedback' }, '');
     const go = el('button', { class: 'chooser-btn', type: 'button' }, 'Use');
@@ -122,7 +122,7 @@ export class SplitChooser {
   }
 }
 
-// Generate a small set of value-preserving split presets for `value`.
+// Generate a small set of value-preserving additive split presets.
 function presetsFor(value) {
   const out = [];
   const seen = new Set();
@@ -151,6 +151,30 @@ function presetsFor(value) {
   // Halve (if even).
   if (value % 2 === 0 && value !== 0) {
     add(`${value / 2} + ${value / 2}`, `${value / 2} + ${value / 2}`);
+  }
+
+  return out;
+}
+
+// Generate multiplicative factorization presets: a × b for each
+// non-trivial factor pair.
+function factorsFor(value) {
+  const out = [];
+  const seen = new Set();
+  const add = (label, into) => {
+    if (seen.has(into)) return;
+    seen.add(into);
+    out.push({ label, into });
+  };
+
+  const av = Math.abs(value);
+  if (av > 1) {
+    for (let f = 2; f * f <= av; f++) {
+      if (av % f === 0) {
+        const other = value / f;
+        add(`${f} × ${other}`, `${f} * ${other}`);
+      }
+    }
   }
 
   return out;

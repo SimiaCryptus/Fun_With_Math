@@ -5,30 +5,28 @@ import { legalVerbs } from '../src/core/legality.js';
 
 test('split is legal on a number', () => {
   const ast = parse('4 + 19');
-  assert.deepEqual(legalVerbs(ast, ast.left.id), ['split']);
+  const verbs = legalVerbs(ast, ast.terms[0].id);
+  assert.ok(verbs.includes('split'));
+  assert.ok(verbs.includes('factorize'));
 });
 
-test('commutative op offers swap + group', () => {
-  const ast = parse('5 + 3');
-  const verbs = legalVerbs(ast, ast.id);
-  assert.ok(verbs.includes('swap'));
-  assert.ok(verbs.includes('group'));
-  assert.ok(verbs.includes('combine'));
-});
-
-test('subtraction op does not offer swap', () => {
-  const ast = parse('5 - 3');
-  const verbs = legalVerbs(ast, ast.id);
-  assert.ok(!verbs.includes('swap'));
+test('any adjacent number pair in a sum offers combine + swap', () => {
+  const ast = parse('2 + 3 + 4');
+  const first = legalVerbs(ast, [ast.terms[0].id, ast.terms[1].id]);
+  assert.ok(first.includes('combine'));
+  assert.ok(first.includes('swap'));
+  const second = legalVerbs(ast, [ast.terms[1].id, ast.terms[2].id]);
+  assert.ok(second.includes('combine'));
+  assert.ok(second.includes('swap'));
 });
 
 test('cancel offered on inverse pair', () => {
-  const ast = parse('(7 + 3) - 3');
-  assert.ok(legalVerbs(ast, ast.id).includes('cancel'));
+  const ast = parse('7 + 3 - 3');
+  assert.ok(legalVerbs(ast, [ast.terms[1].id, ast.terms[2].id]).includes('cancel'));
 });
 
 test('allowed filter restricts surfaced verbs', () => {
   const ast = parse('5 + 3');
-  const verbs = legalVerbs(ast, ast.id, ['combine']);
+  const verbs = legalVerbs(ast, [ast.terms[0].id, ast.terms[1].id], ['combine']);
   assert.deepEqual(verbs, ['combine']);
 });

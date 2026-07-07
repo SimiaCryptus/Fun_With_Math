@@ -19,6 +19,7 @@ export class GameSession extends Emitter {
     this.expr = typeof start === 'string' ? parse(start) : start;
     this.allowedVerbs = (level && level.allowedVerbs) || [
       'split',
+      'factorize',
       'swap',
       'group',
       'ungroup',

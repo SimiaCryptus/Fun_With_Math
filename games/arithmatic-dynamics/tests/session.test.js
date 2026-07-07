@@ -8,7 +8,7 @@ import { parse } from '../src/core/serialize.js';
 test('session applies verbs and tracks metrics', () => {
   const level = defineLevel({ id: 't1', start: '25 - 2', allowedVerbs: ['combine'] });
   const s = new GameSession(level);
-  s.apply('combine', s.expr.id);
+  s.apply('combine', s.expr.terms[0].id, s.expr.terms[1].id);
   assert.equal(s.serialize(), '23');
   assert.equal(s.moveCount, 1);
   assert.ok(s.verbsUsed.has('combine'));
@@ -18,13 +18,13 @@ test('session applies verbs and tracks metrics', () => {
 test('session refuses disallowed verbs', () => {
   const level = defineLevel({ id: 't2', start: '5 + 3', allowedVerbs: ['combine'] });
   const s = new GameSession(level);
-  assert.throws(() => s.apply('swap', s.expr.id), /not allowed/);
+  assert.throws(() => s.apply('swap', s.expr.terms[0].id, s.expr.terms[1].id), /not allowed/);
 });
 
 test('undo and redo restore state and metrics', () => {
   const level = defineLevel({ id: 't3', start: '25 - 2', allowedVerbs: ['combine'] });
   const s = new GameSession(level);
-  s.apply('combine', s.expr.id);
+  s.apply('combine', s.expr.terms[0].id, s.expr.terms[1].id);
   assert.equal(s.moveCount, 1);
   s.undo();
   assert.equal(s.serialize(), '25 - 2');
@@ -37,7 +37,7 @@ test('undo and redo restore state and metrics', () => {
 test('reset returns to the start expression', () => {
   const level = defineLevel({ id: 't4', start: '5 + 3', allowedVerbs: ['combine'] });
   const s = new GameSession(level);
-  s.apply('combine', s.expr.id);
+  s.apply('combine', s.expr.terms[0].id, s.expr.terms[1].id);
   s.reset();
   assert.equal(s.serialize(), '5 + 3');
   assert.equal(s.moveCount, 0);
@@ -51,7 +51,7 @@ test('changed/solved events fire', () => {
     solved = 0;
   s.on('changed', () => changed++);
   s.on('solved', () => solved++);
-  s.apply('combine', s.expr.id);
+  s.apply('combine', s.expr.terms[0].id, s.expr.terms[1].id);
   assert.equal(changed, 1);
   assert.equal(solved, 1);
 });
@@ -64,7 +64,7 @@ test('star evaluation reports earned stars', () => {
     stars: [Stars.solve(), Stars.fewMoves(1), Stars.onlyVerbs(['combine'])],
   });
   const s = new GameSession(level);
-  s.apply('combine', s.expr.id);
+  s.apply('combine', s.expr.terms[0].id, s.expr.terms[1].id);
   const { earned } = evaluateStars(s, level);
   assert.deepEqual(earned.sort(), ['few-moves', 'only-verbs', 'solve']);
 });
@@ -72,10 +72,12 @@ test('star evaluation reports earned stars', () => {
 test('worked example: 4 + 19 solvable via split/combine', () => {
   const level = defineLevel({ id: 't7', start: '4 + 19' });
   const s = new GameSession(level);
-  s.apply('split', s.expr.right.id, { into: '20 - 1' });
-  // now: 4 + (20 - 1); combine inner group op
-  const innerOp = s.expr.right.child;
-  s.apply('combine', innerOp.id);
-  // now: 4 + 19  -> ungroup happened implicitly? No: group holds a num.
-  assert.equal(s.serialize(), '4 + (19)');
+  s.apply('split', s.expr.terms[1].id, { into: '30 - 11' });
+  // now: 4 + (30 - 11); combine the two atoms inside the group's sum
+  const innerSum = s.expr.terms[1].child; // group -> sum[30, -11]
+  s.apply('combine', innerSum.terms[0].id, innerSum.terms[1].id);
+  // group now holds a single num; ungroup to expose 4 + 19
+  const gid = s.expr.terms[1].id;
+  s.apply('ungroup', gid);
+  assert.equal(s.serialize(), '4 + 19');
 });
