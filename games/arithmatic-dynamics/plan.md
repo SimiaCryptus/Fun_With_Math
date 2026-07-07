@@ -119,7 +119,7 @@ transitions.
 
 - `evaluate(node) -> number` (exact integers; rationals only if `÷`
   introduced — start integer-only, division gated to exact results).
-- Used by tests and by `legality.js` to *verify* a transformation
+- Used by tests and by `legality.js` to _verify_ a transformation
   preserved value (belt-and-suspenders).
 
 ### 2.3 Transformations (`transformations.js`)
@@ -209,8 +209,8 @@ Level schema:
 - Reconcile on `session.changed`: reuse existing tile DOM by id so
   animations can play (FLIP technique for position transitions).
 - Visual language:
-    - "Round" numbers (5, 10, 20…) get a subtle glow class.
-    - `+`/`-` share one color pairing; `×`/`÷` another.
+  - "Round" numbers (5, 10, 20…) get a subtle glow class.
+  - `+`/`-` share one color pairing; `×`/`÷` another.
 
 ### 4.2 Gestures (`gestures.js`)
 
@@ -229,9 +229,9 @@ Design the recognizer as a small state machine emitting semantic events
 
 - `radial-menu.js` — large icon buttons for legal verbs on a selection.
 - `split-chooser.js` — friendly presets:
-    - "nearest ten ± n" (e.g. 19 → 20 − 1)
-    - "make a five"
-    - custom `a op b` picker (still validated for value equality).
+  - "nearest ten ± n" (e.g. 19 → 20 − 1)
+  - "make a five"
+  - custom `a op b` picker (still validated for value equality).
 
 ### 4.4 History Ribbon (`history.js`)
 
@@ -271,10 +271,10 @@ Design the recognizer as a small state machine emitting semantic events
 - **Core is unit-tested** with a lightweight runner (Node's built-in
   `node:test` or a tiny custom harness — no build step).
 - Priority tests:
-    1. Value-preservation invariant for every transformation.
-    2. Legality correctness (no illegal verbs surfaced).
-    3. Solve detection + star evaluation on scripted sessions.
-    4. Serialize round-trip (`parse(serialize(ast)) === ast`).
+  1. Value-preservation invariant for every transformation.
+  2. Legality correctness (no illegal verbs surfaced).
+  3. Solve detection + star evaluation on scripted sessions.
+  4. Serialize round-trip (`parse(serialize(ast)) === ast`).
 - UI smoke tests deferred / manual on a real tablet.
 
 ---

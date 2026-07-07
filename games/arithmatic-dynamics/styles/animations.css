@@ -2,11 +2,11 @@
        animate.js; these classes cover CSS-driven transitions.
        Respect reduced-motion preferences globally. */
 
-    @media (prefers-reduced-motion: reduce) {
-        .tile,
-        .radial,
-        .chooser-panel {
-            transition: none !important;
-            animation: none !important;
-        }
-    }
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .radial,
+  .chooser-panel {
+    transition: none !important;
+    animation: none !important;
+  }
+}

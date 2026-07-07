@@ -33,6 +33,14 @@
       "readme": "games/stereo-tac-toe/README.md",
       "launchLabel": "Open Stereo-Tac-Toe",
       "pitch": "A fully playable game of tic-tac-toe hidden inside a Magic Eye autostereogram. The board, cursor, and marks live entirely in the depth of a shimmering field of noise — relax your eyes to fuse the image and play. Everything derives from a single depth buffer, with live controls for eye separation, pattern width, noise style, and depth contrast (press <kbd>D</kbd> to peek at the raw depth map)."
+    },
+    {
+      "icon": "AD",
+      "title": "Arithmetic Dynamics",
+      "href": "games/arithmatic-dynamics/index.html",
+      "readme": "games/arithmatic-dynamics/README.md",
+      "launchLabel": "Open Arithmetic Dynamics",
+      "pitch": "A touch-first puzzle game that teaches the mechanics of arithmetic — not by drilling facts, but by letting kids bend, break, and recombine numbers until a problem collapses into its simplest shape. Every move (split, swap, group, combine, cancel) is guaranteed to preserve value, so children can experiment freely as fluency emerges quietly through play."
     }
   ]
 }

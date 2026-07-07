@@ -2,144 +2,156 @@
 // presets (nearest ten ± n, make-a-five) plus a custom "a op b" picker.
 // Every option is validated to preserve value before being offered/used.
 
-import {el, clear, on} from '../util/dom.js';
+import { el, clear, on } from '../util/dom.js';
 
 export class SplitChooser {
-    constructor(root, {onChoose} = {}) {
-        this.root = root;
-        this.onChoose = onChoose;
-        this._offDoc = null;
-        this.hide();
-    }
+  constructor(root, { onChoose } = {}) {
+    this.root = root;
+    this.onChoose = onChoose;
+    this._offDoc = null;
+    this.hide();
+  }
 
-    show(value) {
-        clear(this.root);
-        const options = presetsFor(value);
+  show(value) {
+    clear(this.root);
+    const options = presetsFor(value);
 
-        const panel = el('div', {class: 'chooser-panel'}, [
-            el('div', {class: 'chooser-title'}, `Break apart ${value}`),
-        ]);
+    const panel = el('div', { class: 'chooser-panel' }, [
+      el('div', { class: 'chooser-title' }, `Break apart ${value}`),
+    ]);
 
-        const list = el('div', {class: 'chooser-options'});
-        for (const opt of options) {
-            list.appendChild(el('button', {
-                class: 'chooser-btn',
-                type: 'button',
-                onClick: () => {
-                    this.hide();
-                    this.onChoose && this.onChoose(opt.into);
-                },
-            }, opt.label));
-        }
-        panel.appendChild(list);
-
-        // Custom picker: a op b with live validation.
-        const custom = this._customPicker(value);
-        panel.appendChild(custom);
-
-        panel.appendChild(el('button', {
-            class: 'chooser-cancel',
+    const list = el('div', { class: 'chooser-options' });
+    for (const opt of options) {
+      list.appendChild(
+        el(
+          'button',
+          {
+            class: 'chooser-btn',
             type: 'button',
-            onClick: () => this.hide(),
-        }, 'Cancel'));
-
-        this.root.appendChild(panel);
-        this.root.classList.add('visible');
-
-        if (this._offDoc) this._offDoc();
-        this._offDoc = on(document, 'pointerdown', (e) => {
-            if (!this.root.contains(e.target)) this.hide();
-        });
+            onClick: () => {
+              this.hide();
+              this.onChoose && this.onChoose(opt.into);
+            },
+          },
+          opt.label,
+        ),
+      );
     }
+    panel.appendChild(list);
 
-    _customPicker(value) {
-        const wrap = el('div', {class: 'chooser-custom'});
-        const a = el('input', {type: 'number', class: 'chooser-input', value: String(value)});
-        const opSel = el('select', {class: 'chooser-op'}, [
-            el('option', {value: '+'}, '+'),
-            el('option', {value: '-'}, '−'),
-            el('option', {value: '*'}, '×'),
-            el('option', {value: '/'}, '÷'),
-        ]);
-        const b = el('input', {type: 'number', class: 'chooser-input', value: '0'});
-        const feedback = el('span', {class: 'chooser-feedback'}, '');
-        const go = el('button', {class: 'chooser-btn', type: 'button'}, 'Use');
+    // Custom picker: a op b with live validation.
+    const custom = this._customPicker(value);
+    panel.appendChild(custom);
 
-        const validate = () => {
-            const av = Number(a.value);
-            const bv = Number(b.value);
-            const opv = opSel.value;
-            let ok = false;
-            if (Number.isFinite(av) && Number.isFinite(bv)) {
-                if (opv === '/') {
-                    ok = bv !== 0 && av % bv === 0 && av / bv === value;
-                } else if (opv === '*') {
-                    ok = av * bv === value;
-                } else if (opv === '+') {
-                    ok = av + bv === value;
-                } else if (opv === '-') {
-                    ok = av - bv === value;
-                }
-            }
-            feedback.textContent = ok ? '✓ equals ' + value : '✗ not ' + value;
-            feedback.className = 'chooser-feedback ' + (ok ? 'ok' : 'bad');
-            go.disabled = !ok;
-            return ok;
-        };
-        a.addEventListener('input', validate);
-        b.addEventListener('input', validate);
-        opSel.addEventListener('change', validate);
-        go.addEventListener('click', () => {
-            if (!validate()) return;
-            this.hide();
-            this.onChoose && this.onChoose(`${a.value} ${opSel.value} ${b.value}`);
-        });
-        validate();
+    panel.appendChild(
+      el(
+        'button',
+        {
+          class: 'chooser-cancel',
+          type: 'button',
+          onClick: () => this.hide(),
+        },
+        'Cancel',
+      ),
+    );
 
-        wrap.append(a, opSel, b, feedback, go);
-        return wrap;
-    }
+    this.root.appendChild(panel);
+    this.root.classList.add('visible');
 
-    hide() {
-        this.root.classList.remove('visible');
-        clear(this.root);
-        if (this._offDoc) {
-            this._offDoc();
-            this._offDoc = null;
+    if (this._offDoc) this._offDoc();
+    this._offDoc = on(document, 'pointerdown', (e) => {
+      if (!this.root.contains(e.target)) this.hide();
+    });
+  }
+
+  _customPicker(value) {
+    const wrap = el('div', { class: 'chooser-custom' });
+    const a = el('input', { type: 'number', class: 'chooser-input', value: String(value) });
+    const opSel = el('select', { class: 'chooser-op' }, [
+      el('option', { value: '+' }, '+'),
+      el('option', { value: '-' }, '−'),
+      el('option', { value: '*' }, '×'),
+      el('option', { value: '/' }, '÷'),
+    ]);
+    const b = el('input', { type: 'number', class: 'chooser-input', value: '0' });
+    const feedback = el('span', { class: 'chooser-feedback' }, '');
+    const go = el('button', { class: 'chooser-btn', type: 'button' }, 'Use');
+
+    const validate = () => {
+      const av = Number(a.value);
+      const bv = Number(b.value);
+      const opv = opSel.value;
+      let ok = false;
+      if (Number.isFinite(av) && Number.isFinite(bv)) {
+        if (opv === '/') {
+          ok = bv !== 0 && av % bv === 0 && av / bv === value;
+        } else if (opv === '*') {
+          ok = av * bv === value;
+        } else if (opv === '+') {
+          ok = av + bv === value;
+        } else if (opv === '-') {
+          ok = av - bv === value;
         }
+      }
+      feedback.textContent = ok ? '✓ equals ' + value : '✗ not ' + value;
+      feedback.className = 'chooser-feedback ' + (ok ? 'ok' : 'bad');
+      go.disabled = !ok;
+      return ok;
+    };
+    a.addEventListener('input', validate);
+    b.addEventListener('input', validate);
+    opSel.addEventListener('change', validate);
+    go.addEventListener('click', () => {
+      if (!validate()) return;
+      this.hide();
+      this.onChoose && this.onChoose(`${a.value} ${opSel.value} ${b.value}`);
+    });
+    validate();
+
+    wrap.append(a, opSel, b, feedback, go);
+    return wrap;
+  }
+
+  hide() {
+    this.root.classList.remove('visible');
+    clear(this.root);
+    if (this._offDoc) {
+      this._offDoc();
+      this._offDoc = null;
     }
+  }
 }
 
 // Generate a small set of value-preserving split presets for `value`.
 function presetsFor(value) {
-    const out = [];
-    const seen = new Set();
-    const add = (label, into) => {
-        if (seen.has(into)) return;
-        seen.add(into);
-        out.push({label, into});
-    };
+  const out = [];
+  const seen = new Set();
+  const add = (label, into) => {
+    if (seen.has(into)) return;
+    seen.add(into);
+    out.push({ label, into });
+  };
 
-    // Nearest ten ± n.
-    const lowerTen = Math.floor(value / 10) * 10;
-    const upperTen = lowerTen + 10;
-    if (lowerTen !== value && lowerTen > 0) {
-        add(`${lowerTen} + ${value - lowerTen}`, `${lowerTen} + ${value - lowerTen}`);
-    }
-    if (upperTen !== value) {
-        add(`${upperTen} − ${upperTen - value}`, `${upperTen} - ${upperTen - value}`);
-    }
+  // Nearest ten ± n.
+  const lowerTen = Math.floor(value / 10) * 10;
+  const upperTen = lowerTen + 10;
+  if (lowerTen !== value && lowerTen > 0) {
+    add(`${lowerTen} + ${value - lowerTen}`, `${lowerTen} + ${value - lowerTen}`);
+  }
+  if (upperTen !== value) {
+    add(`${upperTen} − ${upperTen - value}`, `${upperTen} - ${upperTen - value}`);
+  }
 
-    // Make a five.
-    const lowerFive = Math.floor(value / 5) * 5;
-    if (lowerFive !== value && lowerFive > 0) {
-        add(`${lowerFive} + ${value - lowerFive}`, `${lowerFive} + ${value - lowerFive}`);
-    }
+  // Make a five.
+  const lowerFive = Math.floor(value / 5) * 5;
+  if (lowerFive !== value && lowerFive > 0) {
+    add(`${lowerFive} + ${value - lowerFive}`, `${lowerFive} + ${value - lowerFive}`);
+  }
 
-    // Halve (if even).
-    if (value % 2 === 0 && value !== 0) {
-        add(`${value / 2} + ${value / 2}`, `${value / 2} + ${value / 2}`);
-    }
+  // Halve (if even).
+  if (value % 2 === 0 && value !== 0) {
+    add(`${value / 2} + ${value / 2}`, `${value / 2} + ${value / 2}`);
+  }
 
-    return out;
+  return out;
 }

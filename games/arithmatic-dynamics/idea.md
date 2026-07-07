@@ -1,6 +1,6 @@
 # Arithmetic Dynamics
 
-An HTML + modular ES6 game that teaches kids the *mechanics* of math
+An HTML + modular ES6 game that teaches kids the _mechanics_ of math
 through a touch-first (mouse-compatible) puzzle interface.
 
 ---
@@ -11,13 +11,13 @@ Traditional arithmetic education leans heavily on memorization and rapid
 recall. This game inverts that priority:
 
 - **Memorization is a side effect, not a goal.** Familiarity with the number
-  line 0–20 and a basic notion of what each operation *does* is the only
+  line 0–20 and a basic notion of what each operation _does_ is the only
   prerequisite.
 - **Understanding the dynamics of math is the goal.** Kids should build an
   intuition for commutativity, associativity, composition, distribution,
   and decomposition through play.
 - **Math is a puzzle, not a quiz.** A problem is a shape to be reshaped, not
-  a fact to be retrieved. The reward loop comes from *transforming* an
+  a fact to be retrieved. The reward loop comes from _transforming_ an
   expression into a simpler one, step by step.
 
 ---
@@ -41,7 +41,7 @@ Solve `4 + 19`:
 4. Finish:
    `23`
 
-The lesson is not "4 + 19 = 23." The lesson is *how* you can bend numbers
+The lesson is not "4 + 19 = 23." The lesson is _how_ you can bend numbers
 into rounder, easier shapes and recombine them.
 
 ---
@@ -75,10 +75,10 @@ The player's toolkit is a small, discoverable set of gestures/actions:
 - **Combine** two adjacent, compatible terms into one (`25 - 2 → 23`).
 - **Cancel** an inverse pair that nets to zero (or one, for `×`/`÷`).
 
-Each verb is *always legal only when it preserves the value.* The game
+Each verb is _always legal only when it preserves the value._ The game
 silently guarantees correctness of the transformation itself, so the child
 experiments freely without fear of "breaking" the math — the only question
-is whether a move gets them *closer* to the goal.
+is whether a move gets them _closer_ to the goal.
 
 ---
 
@@ -87,7 +87,7 @@ is whether a move gets them *closer* to the goal.
 ### Layout
 
 - **Expression Stage** (center): the live expression, rendered as chunky,
-  tappable *tiles* — one tile per number, operator, and parenthesis.
+  tappable _tiles_ — one tile per number, operator, and parenthesis.
 - **History Ribbon** (top or side): each completed transformation appears as
   a stacked row, showing the path taken. This makes the "steps" tangible and
   encourages reflection ("how did I get here?").

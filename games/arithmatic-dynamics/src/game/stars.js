@@ -5,23 +5,23 @@
 // module simply runs the tests defensively.
 
 export function evaluateStars(session, level) {
-    const stars = (level && level.stars) || [];
-    const earned = [];
-    for (const star of stars) {
-        try {
-            if (star.test(session)) earned.push(star.id);
-        } catch {
-            // A misbehaving test never crashes evaluation.
-        }
+  const stars = (level && level.stars) || [];
+  const earned = [];
+  for (const star of stars) {
+    try {
+      if (star.test(session)) earned.push(star.id);
+    } catch {
+      // A misbehaving test never crashes evaluation.
     }
-    return {earned};
+  }
+  return { earned };
 }
 
 // Helper used by level authors: is the set of verbs used a subset of
 // the allowed list?
 export function verbsSubsetOf(session, allowed) {
-    for (const v of session.verbsUsed) {
-        if (!allowed.includes(v)) return false;
-    }
-    return true;
+  for (const v of session.verbsUsed) {
+    if (!allowed.includes(v)) return false;
+  }
+  return true;
 }

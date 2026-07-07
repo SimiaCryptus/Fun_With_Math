@@ -4,11 +4,11 @@
 let counter = 0;
 
 export function nextId(prefix = 'n') {
-    counter += 1;
-    return `${prefix}${counter}`;
+  counter += 1;
+  return `${prefix}${counter}`;
 }
 
 // Reset is exposed primarily for deterministic tests.
 export function resetIds() {
-    counter = 0;
+  counter = 0;
 }
