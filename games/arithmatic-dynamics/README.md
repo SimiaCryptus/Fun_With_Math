@@ -25,4 +25,25 @@
 
     ## Next
 
-    - M2: minimal playable stage (`src/game/session.js`, `src/ui/*`).
+     ## Status — Milestones M2 & M3 (Playable + Gestures)
+
+     Implemented on top of the M1 core:
+
+     - `src/game/session.js` — current expression, unlimited undo/redo,
+       move-count + verbs-used tracking, `changed`/`solved` events.
+     - `src/game/level.js` + `src/game/stars.js` — level schema, star
+       builders, pure star evaluation.
+     - `src/game/levels/*` — additive and multiplicative level packs.
+     - `src/ui/*` — tile stage (FLIP animation), history ribbon, radial
+       verb menu, split chooser, pointer-event gesture recognizer, and the
+       `app.js` bootstrap wiring it all together.
+     - `styles/*` — touch-first, calm visual language (round-number glow,
+       +/− vs ×/÷ color pairings, reduced-motion support).
+
+     Open `index.html` in a browser (served over http for module loading)
+     to play. Choose a level from the top-right selector.
+
+     ## Next
+
+     - M4: richer history rewind + polished merge/pop animations.
+     - M5: progression/unlocks + persistence.

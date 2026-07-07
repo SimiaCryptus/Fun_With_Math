@@ -68,16 +68,17 @@ function canCancel(outer) {
 function ungroupSafe(expr, groupId) {
     const found = findNode(expr, groupId);
     if (!found || !isGroup(found.node)) return false;
-     // Simulate replacement, then round-trip through the surface syntax so
-     // that precedence hazards (load-bearing parens) are actually detected.
-     try {
-         const spliced = serializeRawSplice(expr, groupId, found.node.child);
-         const reparsed = parse(spliced);
-         return evaluate(reparsed) === evaluate(expr);
-     } catch {
-         return false;
-     }
+    // Simulate replacement, then round-trip through the surface syntax so
+    // that precedence hazards (load-bearing parens) are actually detected.
+    try {
+        const spliced = serializeRawSplice(expr, groupId, found.node.child);
+        const reparsed = parse(spliced);
+        return evaluate(reparsed) === evaluate(expr);
+    } catch {
+        return false;
+    }
 }
+
 // Render `expr` but drop the parentheses around the group with `groupId`,
 // exposing precedence hazards a structural removal would hide.
 function serializeRawSplice(node, groupId, child, parentPrec = 0) {

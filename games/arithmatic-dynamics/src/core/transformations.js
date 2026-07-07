@@ -78,15 +78,15 @@ export function ungroup(expr, groupId) {
 // precedence demands them, so if the parens were load-bearing the
 // "dropped" form differs from a raw splice of the child text. We detect
 // this by parsing a splice that omits the parentheses entirely.
-     const candidate = replaceNode(expr, groupId, found.node.child);
+    const candidate = replaceNode(expr, groupId, found.node.child);
 // Serialize the child at top-level precedence (as raw, unparenthesized
 // text) and splice it into the surface syntax where the group sat.
-     const spliced = serializeWithRawSplice(expr, groupId, found.node.child);
-     const reparsed = parse(spliced);
-     if (evaluate(reparsed) !== evaluate(expr)) {
-         throw new Error('ungroup: would change value (precedence-unsafe)');
-     }
-     return candidate;
+    const spliced = serializeWithRawSplice(expr, groupId, found.node.child);
+    const reparsed = parse(spliced);
+    if (evaluate(reparsed) !== evaluate(expr)) {
+        throw new Error('ungroup: would change value (precedence-unsafe)');
+    }
+    return candidate;
 }
 
 // Serialize `expr`, but render the node with id `groupId` as its child's
