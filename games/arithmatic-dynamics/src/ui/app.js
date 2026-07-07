@@ -92,17 +92,7 @@ export function boot(mount) {
       },
       '🎲 Random',
     );
-    const mulChk = el('input', {
-      type: 'checkbox',
-      id: 'allow-multiply',
-      checked: true,
-    });
-    state._allowMultiply = mulChk;
-    const mulLabel = el('label', { for: 'allow-multiply', class: 'allow-mul-label' }, [
-      mulChk,
-      ' ×÷',
-    ]);
-    levelBarEl.append(sel, randBtn, mulLabel, settingsEl);
+    levelBarEl.append(sel, randBtn, settingsEl);
   }
 
   function buildToolbar() {

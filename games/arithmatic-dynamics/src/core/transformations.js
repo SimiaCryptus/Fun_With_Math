@@ -25,6 +25,8 @@ import {
   cloneWithFreshIds,
   membersOf,
   withMembers,
+  negate,
+  reciprocate,
 } from './expression.js';
 import { evaluate } from './value.js';
 import { parse } from './serialize.js';
@@ -34,6 +36,13 @@ import { parse } from './serialize.js';
 // Signed/reciprocal-aware value of a single atom.
 function atomValue(node) {
   return evaluate(node);
+}
+// Apply an additive/multiplicative inverse to a freshly-parsed replacement.
+function negateNode(node) {
+  return negate(node);
+}
+function reciprocateNode(node) {
+  return reciprocate(node);
 }
 
 function findMemberIndex(container, id) {
@@ -57,6 +66,12 @@ export function split(expr, numId, { into }) {
   }
   let replacement = typeof into === 'string' ? parse(into) : into;
   replacement = cloneWithFreshIds(replacement);
+  // If the target number is negated/reciprocated, the chooser presents
+  // options for its bare magnitude. Fold the target's inverse flags onto
+  // the replacement so values match.
+  const target = found.node;
+  if (target.neg) replacement = negateNode(replacement);
+  if (target.recip) replacement = reciprocateNode(replacement);
   if (evaluate(replacement) !== evaluate(found.node)) {
     throw new Error('split: replacement value does not match');
   }
@@ -88,6 +103,9 @@ export function factorize(expr, numId, { into }) {
   }
   let replacement = typeof into === 'string' ? parse(into) : into;
   replacement = cloneWithFreshIds(replacement);
+  const target = found.node;
+  if (target.neg) replacement = negateNode(replacement);
+  if (target.recip) replacement = reciprocateNode(replacement);
   if (evaluate(replacement) !== evaluate(found.node)) {
     throw new Error('factorize: replacement value does not match');
   }
