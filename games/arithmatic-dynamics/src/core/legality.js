@@ -124,9 +124,14 @@ export function difficultyAllows(difficulty, operands, result) {
   } else {
     return true;
   }
-  // Each operand and the result must be individually below the threshold
-  // OR factorizable using only the allowed factors.
-  return vals.every((v) => Math.abs(v) < threshold || factorizableBy(v, factors));
+  // At least two of the three numbers (both operands and the result)
+  // must be below the threshold OR factorizable using only the allowed
+  // factors. This lets e.g. 5 + 10 or 1 + 25 combine even when one of
+  // the numbers is "ugly".
+  const satisfied = vals.filter(
+    (v) => Math.abs(v) < threshold || factorizableBy(v, factors),
+  ).length;
+  return satisfied >= 2;
 }
 
 function cancelOk(container, a, b) {
