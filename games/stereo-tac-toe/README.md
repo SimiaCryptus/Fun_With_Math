@@ -1,4 +1,4 @@
-# Sterio-Tac-Toe
+# Stereo-Tac-Toe
 
 **A game of tic-tac-toe hidden inside a Magic Eye picture.**
 
@@ -36,7 +36,7 @@ repeat a pattern horizontally and subtly shift that repetition based on how
 slightly different copy of the pattern, your brain reconciles the mismatch as
 distance, and a hidden 3D surface emerges from what looks like flat noise.
 
-Sterio-Tac-Toe treats that hidden surface as a _depth map_ — a grayscale
+Stereo-Tac-Toe treats that hidden surface as a _depth map_ — a grayscale
 height-field where the background sits far away, the grid sits a little
 closer, the played marks closer still, and the cursor nearest of all. The
 game never draws pixels you can see directly; it draws _depth_, and the

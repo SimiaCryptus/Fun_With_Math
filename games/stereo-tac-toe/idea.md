@@ -1,4 +1,4 @@
-# Sterio-Tac-Toe
+# Stereo-Tac-Toe
 
 **Magic Eye Tic Tac Toe** — an HTML + modular ES6 browser game where the
 entire game interface is hidden inside an autostereogram ("Magic Eye").
@@ -39,7 +39,7 @@ playing a familiar game through a perception-bending display.
 ## 3. Architecture
 
 ```
-experiments/sterio-tac-toe/
+games/stereo-tac-toe/
 ├── index.html            # Canvas, controls, module entry
 ├── styles.css            # Layout & control styling
 ├── idea.md               # This document

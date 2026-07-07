@@ -28,10 +28,10 @@
     },
     {
       "icon": "ST",
-      "title": "Sterio-Tac-Toe",
-      "href": "experiments/sterio-tac-toe/index.html",
-      "readme": "experiments/sterio-tac-toe/README.md",
-      "launchLabel": "Open Sterio-Tac-Toe",
+      "title": "Stereo-Tac-Toe",
+      "href": "games/stereo-tac-toe/index.html",
+      "readme": "games/stereo-tac-toe/README.md",
+      "launchLabel": "Open Stereo-Tac-Toe",
       "pitch": "A fully playable game of tic-tac-toe hidden inside a Magic Eye autostereogram. The board, cursor, and marks live entirely in the depth of a shimmering field of noise — relax your eyes to fuse the image and play. Everything derives from a single depth buffer, with live controls for eye separation, pattern width, noise style, and depth contrast (press <kbd>D</kbd> to peek at the raw depth map)."
     }
   ]

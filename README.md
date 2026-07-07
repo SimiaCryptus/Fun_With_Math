@@ -1,7 +1,9 @@
 # ![Mathematical Explorations](og-image.png)
 
 A collection of original interactive mathematical experiments and essays—all running live in your browser with no
-installation required. Each lab is a small piece of in-browser mathematical research, not a textbook visualization.
+installation required. Each lab is a small piece of in-browser mathematical research rather than a textbook
+visualization; most began as a question I'd carried for years — sometimes decades — that simply never had the
+tooling to be finished and shared.
 
 🔗 **Live site:** [math.cognotik.com](https://math.cognotik.com/)
 
@@ -14,6 +16,10 @@ know — a Mandelbrot zoom, a Fourier wheel, a prime sieve. Those live here too,
 collection is a set of **original investigations**: questions that were asked, attacked with code and mathematics,
 and written up honestly — including where they lead somewhere new and where they cheerfully admit they lead nowhere
 useful.
+
+A note on provenance, in the interest of honesty: none of this is generated insight. AI-assisted tooling supplied
+the leverage to close the loops, build the visualizations, and handle the publishing — but the questions, the
+intuitions, and the judgment about what was worth chasing are human.
 
 Three ideas recur across nearly everything here, and noticing them turns a grab-bag of demos into a single
 conversation:
