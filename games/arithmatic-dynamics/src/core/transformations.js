@@ -101,11 +101,11 @@ export function split(expr, numId, { into }) {
     console.warn('[transform] split rejected: parts not smaller', {
       original: a,
       parts,
-       rule: 'genuine break-apart (>=2 non-zero parts, none equal to original)',
+      rule: 'genuine break-apart (>=2 non-zero parts, none equal to original)',
     });
-     throw new Error(
-       `split: parts must form a genuine break-apart (need >= 2 non-zero parts, none equal to the original ${a})`,
-     );
+    throw new Error(
+      `split: parts must form a genuine break-apart (need >= 2 non-zero parts, none equal to the original ${a})`,
+    );
   }
   // Preserve unambiguity by wrapping structured replacements in a group.
   const wrapped = isSum(replacement) || isProduct(replacement) ? mkGroup(replacement) : replacement;
@@ -123,29 +123,29 @@ function splitPartsAreSmaller(original, replacement) {
     console.warn('[transform] splitPartsAreSmaller: need >= 2 parts', { original: a, parts });
     return false;
   }
-   // Rule: a split must be a *genuine* break-apart. We require at least
-   // two parts, none of them zero, and no single part equal to the
-   // original (which would make the others sum to zero — a no-op dressed
-   // up as a split). This permits pedagogically useful "rounding" splits
-   // such as 19 -> 20 - 1, where one part temporarily exceeds the
-   // original magnitude, while still rejecting trivial decompositions.
-   const maxPart = Math.max(...parts.map((v) => Math.abs(v)));
-   const sumSquares = parts.reduce((acc, v) => acc + v * v, 0);
-   const anyZero = parts.some((v) => v === 0);
-   const anyEqualsOriginal = parts.some((v) => v === a);
-   const genuine = !anyZero && !anyEqualsOriginal;
-   console.log('[transform] splitPartsAreSmaller check', {
-     original: a,
-     parts,
-     maxPartMagnitude: maxPart,
-     aMagnitude: Math.abs(a),
-     sumSquares,
-     aSquared: a * a,
-     anyZero,
-     anyEqualsOriginal,
-     genuine,
-   });
-   return genuine;
+  // Rule: a split must be a *genuine* break-apart. We require at least
+  // two parts, none of them zero, and no single part equal to the
+  // original (which would make the others sum to zero — a no-op dressed
+  // up as a split). This permits pedagogically useful "rounding" splits
+  // such as 19 -> 20 - 1, where one part temporarily exceeds the
+  // original magnitude, while still rejecting trivial decompositions.
+  const maxPart = Math.max(...parts.map((v) => Math.abs(v)));
+  const sumSquares = parts.reduce((acc, v) => acc + v * v, 0);
+  const anyZero = parts.some((v) => v === 0);
+  const anyEqualsOriginal = parts.some((v) => v === a);
+  const genuine = !anyZero && !anyEqualsOriginal;
+  console.log('[transform] splitPartsAreSmaller check', {
+    original: a,
+    parts,
+    maxPartMagnitude: maxPart,
+    aMagnitude: Math.abs(a),
+    sumSquares,
+    aSquared: a * a,
+    anyZero,
+    anyEqualsOriginal,
+    genuine,
+  });
+  return genuine;
 }
 // --- factorize ----------------------------------------------------------
 // Multiplicative split: replace a Num with an equal product expression.
@@ -226,27 +226,33 @@ export function ungroup(expr, groupId) {
   const found = findNode(expr, groupId);
   if (!found || !isGroup(found.node)) throw new Error('ungroup: target is not a group');
   const grp = found.node;
-   // A group carrying an inverse can still be ungrouped by *distributing*
-   // that inverse across the child's members:
-   //   -(a + b)  =>  (-a) + (-b)      (neg over a sum)
-   //   1/(a * b) =>  (1/a) * (1/b)    (recip over a product)
-   // Distribution is only well-defined when the inverse matches the
-   // child container kind; otherwise we leave the flag on the child.
-   let child = grp.child;
-   if (grp.neg) {
-     if (isSum(child)) {
-       child = withMembers(child, membersOf(child).map((m) => negate(m)));
-     } else {
-       child = negate(child);
-     }
-   }
-   if (grp.recip) {
-     if (isProduct(child)) {
-       child = withMembers(child, membersOf(child).map((m) => reciprocate(m)));
-     } else {
-       child = reciprocate(child);
-     }
-   }
+  // A group carrying an inverse can still be ungrouped by *distributing*
+  // that inverse across the child's members:
+  //   -(a + b)  =>  (-a) + (-b)      (neg over a sum)
+  //   1/(a * b) =>  (1/a) * (1/b)    (recip over a product)
+  // Distribution is only well-defined when the inverse matches the
+  // child container kind; otherwise we leave the flag on the child.
+  let child = grp.child;
+  if (grp.neg) {
+    if (isSum(child)) {
+      child = withMembers(
+        child,
+        membersOf(child).map((m) => negate(m)),
+      );
+    } else {
+      child = negate(child);
+    }
+  }
+  if (grp.recip) {
+    if (isProduct(child)) {
+      child = withMembers(
+        child,
+        membersOf(child).map((m) => reciprocate(m)),
+      );
+    } else {
+      child = reciprocate(child);
+    }
+  }
   // If splicing into a matching container, flatten members inline.
   if (loc) {
     const container = loc.container;

@@ -35,9 +35,9 @@ export function legalVerbs(expr, selection, allowed = null, opts = {}) {
         verbs.add('split');
         verbs.add('factorize');
       }
-       // Groups can always be ungrouped: plain groups splice inline, and
-       // negated/reciprocated groups distribute their inverse.
-       if (isGroup(node)) verbs.add('ungroup');
+      // Groups can always be ungrouped: plain groups splice inline, and
+      // negated/reciprocated groups distribute their inverse.
+      if (isGroup(node)) verbs.add('ungroup');
     }
   } else if (ids.length === 2) {
     const a = locate(expr, ids[0]);
