@@ -40,7 +40,10 @@ export class InputController {
 
   _onDown(e) {
     const coord = this._coordFromEvent(e);
-    if (!coord) return;
+     if (!coord) {
+       console.log('[InputController] pointerdown outside grid');
+       return;
+     }
     this._pointerDown = true;
     this.canvas.setPointerCapture?.(e.pointerId);
     this.callbacks.onStart?.(coord);
@@ -56,6 +59,7 @@ export class InputController {
   _onUp() {
     if (!this._pointerDown) return;
     this._pointerDown = false;
+     console.log('[InputController] pointerup - ending selection');
     this.callbacks.onEnd?.();
   }
 }
