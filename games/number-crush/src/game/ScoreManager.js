@@ -14,14 +14,14 @@ export class ScoreManager {
     const lengthBonus = base * (n - 1) * 0.5; // 0 for 1, scales up
     const gained = Math.round(base + lengthBonus);
     this.score += gained;
-     console.log(
-       `[ScoreManager] scoreClear(${n}): base=${base}, lengthBonus=${lengthBonus}, gained=${gained}, total=${this.score}`
-     );
+    console.log(
+      `[ScoreManager] scoreClear(${n}): base=${base}, lengthBonus=${lengthBonus}, gained=${gained}, total=${this.score}`
+    );
     return gained;
   }
 
   reset() {
-     console.log('[ScoreManager] Score reset');
+    console.log('[ScoreManager] Score reset');
     this.score = 0;
   }
 }

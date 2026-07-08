@@ -47,6 +47,24 @@ export class HexGrid {
   allCells() {
     return this.cells;
   }
+  // Overall pixel size needed to render the grid (with one-hex margin).
+  pixelBounds() {
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const c of this.cells) {
+      const { x, y } = axialToPixel(c.q, c.r, this.size);
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+    return {
+      width: maxX - minX + this.size * 2,
+      height: maxY - minY + this.size * 2,
+    };
+  }
 
   // Pixel position of a coordinate, offset so the whole grid fits nicely.
   toPixel(coord) {

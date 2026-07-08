@@ -20,13 +20,13 @@ export class RuleEngine {
   evaluate(tiles) {
     if (!this.rule) return { valid: false };
     if (!tiles || tiles.length === 0) return { valid: false };
-     const valid = !!this.rule.validate(tiles);
-     console.log(
-       `[RuleEngine] evaluate rule '${this.rule.id}' on values`,
-       tiles.map((t) => t.value),
-       '->',
-       valid
-     );
-     return { valid };
+    const valid = !!this.rule.validate(tiles);
+    console.log(
+      `[RuleEngine] evaluate rule '${this.rule.id}' on values`,
+      tiles.map((t) => t.value),
+      '->',
+      valid
+    );
+    return { valid };
   }
 }

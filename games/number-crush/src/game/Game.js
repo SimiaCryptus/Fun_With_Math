@@ -20,7 +20,7 @@ import { keyOf, coordKey } from '../model/coords.js';
 
 export class Game {
   constructor(canvas, config = {}) {
-     console.log('[Game] Initializing with config:', config);
+    console.log('[Game] Initializing with config:', config);
     this.canvas = canvas;
 
     const {
@@ -34,6 +34,13 @@ export class Game {
     } = config;
 
     this.board = new Board({ cols, rows, size, valueRange });
+
+    // Size the canvas to comfortably fit the configured grid.
+    const bounds = this.board.grid.pixelBounds ? this.board.grid.pixelBounds() : null;
+    if (bounds) {
+      canvas.width = Math.ceil(bounds.width);
+      canvas.height = Math.ceil(bounds.height);
+    }
     this.board.grid.layout(canvas.width, canvas.height);
 
     this.rules = new RuleEngine(rule);
@@ -68,7 +75,7 @@ export class Game {
   }
 
   _onStart(coord) {
-     console.log('[Game] Selection start at coord:', coord);
+    console.log('[Game] Selection start at coord:', coord);
     this.selection.clear();
     this.selection.add(coord);
     this._updateIndicator();
@@ -78,13 +85,13 @@ export class Game {
   _onMove(coord) {
     // Allow drag-back to remove the last tile.
     if (this.selection.tryBacktrack(coord)) {
-       console.log('[Game] Backtracked to coord:', coord);
+      console.log('[Game] Backtracked to coord:', coord);
       this._updateIndicator();
       this._draw();
       return;
     }
     if (this.selection.add(coord)) {
-       console.log('[Game] Added coord to selection:', coord, '- length:', this.selection.length);
+      console.log('[Game] Added coord to selection:', coord, '- length:', this.selection.length);
       this._updateIndicator();
       this._draw();
     }
@@ -94,15 +101,14 @@ export class Game {
     const tiles = this._selectionTiles();
     const longEnough = this.selection.hasValidLength();
     const result = longEnough ? this.rules.evaluate(tiles) : { valid: false };
-     console.log(
-       '[Game] Selection end - coords:',
-       this.selection.coords,
-       'longEnough:',
-       longEnough,
-       'valid:',
-       result.valid
-     );
-
+    console.log(
+      '[Game] Selection end - coords:',
+      this.selection.coords,
+      'longEnough:',
+      longEnough,
+      'valid:',
+      result.valid
+    );
 
     if (result.valid) {
       this._resolveClear(this.selection.coords.slice());
@@ -117,14 +123,14 @@ export class Game {
 
   _resolveClear(coords) {
     const gained = this.score.scoreClear(coords.length);
-     console.log(
-       '[Game] Clear resolved - cleared',
-       coords.length,
-       'tiles, gained',
-       gained,
-       'points, total score:',
-       this.score.score
-     );
+    console.log(
+      '[Game] Clear resolved - cleared',
+      coords.length,
+      'tiles, gained',
+      gained,
+      'points, total score:',
+      this.score.score
+    );
     // Milestone 3 behavior: replace cleared tiles in place with new
     // values (gravity & refill arrive in Milestone 4).
     for (const coord of coords) {
@@ -142,7 +148,7 @@ export class Game {
   }
 
   _rejectFeedback() {
-     console.log('[Game] Selection rejected - no match');
+    console.log('[Game] Selection rejected - no match');
     this._showIndicator('No match', 'invalid');
   }
 

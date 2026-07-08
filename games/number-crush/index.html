@@ -90,6 +90,60 @@
       #indicator.invalid {
         color: #ff8080;
       }
+      #config-menu {
+        background: var(--panel);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        width: 340px;
+        max-width: 90vw;
+      }
+      #config-menu h2 {
+        margin: 0 0 16px;
+        font-size: 1.2rem;
+      }
+      .cfg-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 12px;
+      }
+      .cfg-row label {
+        opacity: 0.85;
+        font-size: 0.95rem;
+      }
+      .cfg-row input,
+      .cfg-row select {
+        background: var(--tile);
+        color: var(--text);
+        border: 1px solid #4a516a;
+        border-radius: 6px;
+        padding: 6px 8px;
+        font-size: 0.95rem;
+      }
+      .cfg-row input[type='number'] {
+        width: 72px;
+      }
+      .cfg-row select {
+        max-width: 180px;
+      }
+      button.primary,
+      button.secondary {
+        background: var(--accent);
+        color: #12151d;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 18px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 8px;
+      }
+      button.secondary {
+        background: var(--tile);
+        color: var(--text);
+      }
     </style>
   </head>
   <body>
@@ -97,13 +151,62 @@
       <h1>Number Crush</h1>
       <div id="rule-desc">&nbsp;</div>
     </header>
-    <div id="hud">
-      <div><span class="label">Score</span><span id="score">0</span></div>
+
+    <div id="config-menu">
+      <h2>Game Setup</h2>
+      <form id="config-form">
+        <div class="cfg-row">
+          <label for="cfg-rule">Constraint rule</label>
+          <select id="cfg-rule"></select>
+        </div>
+        <div class="cfg-row" id="cfg-target-field">
+          <label for="cfg-target">Target value</label>
+          <input type="number" id="cfg-target" value="10" />
+        </div>
+        <div class="cfg-row">
+          <label for="cfg-cols">Board columns</label>
+          <input type="number" id="cfg-cols" value="8" min="2" max="16" />
+        </div>
+        <div class="cfg-row">
+          <label for="cfg-rows">Board rows</label>
+          <input type="number" id="cfg-rows" value="9" min="2" max="16" />
+        </div>
+        <div class="cfg-row">
+          <label for="cfg-size">Tile size (px)</label>
+          <input type="number" id="cfg-size" value="28" min="12" max="48" />
+        </div>
+        <div class="cfg-row">
+          <label for="cfg-val-min">Min tile value</label>
+          <input type="number" id="cfg-val-min" value="1" min="0" />
+        </div>
+        <div class="cfg-row">
+          <label for="cfg-val-max">Max tile value</label>
+          <input type="number" id="cfg-val-max" value="9" min="1" />
+        </div>
+        <div class="cfg-row">
+          <label for="cfg-min-sel">Min selection length</label>
+          <input type="number" id="cfg-min-sel" value="2" min="1" />
+        </div>
+        <div class="cfg-row">
+          <label for="cfg-max-sel">Max selection length</label>
+          <input type="number" id="cfg-max-sel" value="4" min="1" />
+        </div>
+        <button type="submit" class="primary">Start Game</button>
+      </form>
     </div>
-    <div id="board-wrap">
-      <canvas id="board" width="560" height="560"></canvas>
+
+    <div id="game-area" style="display: none">
+      <div id="hud">
+        <div><span class="label">Score</span><span id="score">0</span></div>
+      </div>
+      <div id="board-wrap">
+        <canvas id="board" width="560" height="560"></canvas>
+      </div>
+      <div id="indicator">&nbsp;</div>
+      <div style="text-align: center; margin-top: 16px">
+        <button id="restart-btn" class="secondary">Change Settings</button>
+      </div>
     </div>
-    <div id="indicator">&nbsp;</div>
 
     <script type="module" src="./src/main.js"></script>
   </body>
