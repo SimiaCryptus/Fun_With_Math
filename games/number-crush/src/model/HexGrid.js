@@ -37,6 +37,25 @@ export class HexGrid {
   has(coord) {
     return this._cellSet.has(keyOf(coord.q, coord.r));
   }
+  // The "visual column" index of a cell in the offset layout.
+  // Since q = col - floor(row/2), we recover col = q + floor(r/2).
+  columnOf(coord) {
+    return coord.q + Math.floor(coord.r / 2);
+  }
+  // Return all cells grouped by visual column, each sorted top-to-bottom
+  // (ascending row). Columns are keyed by their column index.
+  columns() {
+    const map = new Map();
+    for (const cell of this.cells) {
+      const col = this.columnOf(cell);
+      if (!map.has(col)) map.set(col, []);
+      map.get(col).push(cell);
+    }
+    for (const arr of map.values()) {
+      arr.sort((a, b) => a.r - b.r);
+    }
+    return map;
+  }
 
   // Return only in-bounds neighbors of a coordinate.
   neighbors(coord) {

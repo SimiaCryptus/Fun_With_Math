@@ -41,6 +41,14 @@
       "readme": "games/arithmatic-dynamics/README.md",
       "launchLabel": "Open Arithmetic Dynamics",
       "pitch": "A touch-first puzzle game that teaches the mechanics of arithmetic — not by drilling facts, but by letting kids bend, break, and recombine numbers until a problem collapses into its simplest shape. Every move (split, swap, group, combine, cancel) is guaranteed to preserve value, so children can experiment freely as fluency emerges quietly through play."
+    },
+    {
+      "icon": "NC",
+      "title": "Number Crush",
+      "href": "games/number-crush/index.html",
+      "readme": "games/number-crush/README.md",
+      "launchLabel": "Open Number Crush",
+      "pitch": "A match-and-clear puzzle game that swaps color-matching for arithmetic. Draw connected lines across a hexagonal grid of numbered tiles to satisfy the level's rule — a target sum, a shared factor, a consecutive run, or matching values. Tiles clear and cascade into combos, the board reshuffles rather than deadlocking, and it's colorblind-friendly by design since the information lives in the digits."
     }
   ]
 }
