@@ -5,17 +5,27 @@ import { Tile } from './Tile.js';
 import { keyOf, coordKey } from './coords.js';
 
 export class Board {
-  constructor({ cols, rows, size, valueRange = [1, 9], rng = Math.random }) {
+  constructor({ cols, rows, size, valueRange = [1, 9], rng = Math.random, suppressZero = false }) {
     this.grid = new HexGrid({ cols, rows, size });
     this.valueRange = valueRange;
     this.rng = rng;
+    this.suppressZero = suppressZero;
     this.tiles = new Map(); // key -> Tile
     this._fill();
   }
 
   _randomValue() {
     const [min, max] = this.valueRange;
-    return min + Math.floor(this.rng() * (max - min + 1));
+    let v = min + Math.floor(this.rng() * (max - min + 1));
+    if (this.suppressZero && v === 0) {
+      // Re-roll until nonzero (guard against range being only {0}).
+      if (!(min === 0 && max === 0)) {
+        while (v === 0) {
+          v = min + Math.floor(this.rng() * (max - min + 1));
+        }
+      }
+    }
+    return v;
   }
 
   _fill() {

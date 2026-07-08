@@ -8,9 +8,10 @@
 import { areNeighbors, coordKey } from '../model/coords.js';
 
 export class Selection {
-  constructor({ minLength = 2, maxLength = 4 } = {}) {
+  constructor({ minLength = 2, maxLength = 4, straightLine = false } = {}) {
     this.minLength = minLength;
     this.maxLength = maxLength;
+    this.straightLine = straightLine;
     this.coords = []; // array of {q, r}
     this._set = new Set();
   }
@@ -35,7 +36,27 @@ export class Selection {
     if (this.coords.length >= this.maxLength) return false;
     if (this.contains(coord)) return false;
     if (this.coords.length === 0) return true;
-    return areNeighbors(this.last(), coord);
+    if (!areNeighbors(this.last(), coord)) return false;
+    if (this.straightLine && this.coords.length >= 2) {
+      const dir = this._lineDirection(coord);
+      if (!dir) return false;
+    }
+    return true;
+  }
+  // When enforcing straight lines, every step must follow the same axial
+  // direction established by the first two tiles. Returns the step
+  // direction for `coord` if it is legal, otherwise null.
+  _lineDirection(coord) {
+    const last = this.last();
+    const step = { q: coord.q - last.q, r: coord.r - last.r };
+    // First step defines the line's direction.
+    if (this.coords.length === 1) return step;
+    const base = {
+      q: this.coords[1].q - this.coords[0].q,
+      r: this.coords[1].r - this.coords[0].r,
+    };
+    if (step.q === base.q && step.r === base.r) return step;
+    return null;
   }
 
   // Attempt to add a coordinate. Returns true if added.

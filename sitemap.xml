@@ -319,6 +319,12 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://math.cognotik.com/games/number-crush/src/</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://math.cognotik.com/games/stereo-tac-toe/</loc>
     <lastmod>2026-07-06</lastmod>
     <changefreq>monthly</changefreq>

@@ -9,6 +9,10 @@ import { differenceEquals } from './differenceEquals.js';
 import { multipleOf } from './multipleOf.js';
 import { allSame } from './allSame.js';
 import { ascending } from './ascending.js';
+import { sharedFactor } from './sharedFactor.js';
+import { arithmetic } from './arithmetic.js';
+import { geometric } from './geometric.js';
+import { fibonacci } from './fibonacci.js';
 
 // Metadata drives the config menu. `usesTarget` indicates whether the
 // rule needs a numeric target parameter.
@@ -45,6 +49,26 @@ export const RULE_REGISTRY = {
   ascending: {
     label: 'Values strictly ascending',
     factory: () => ascending(),
+    usesTarget: false,
+  },
+  sharedFactor: {
+    label: 'Tiles share a common factor (> 1)',
+    factory: () => sharedFactor(),
+    usesTarget: false,
+  },
+  arithmetic: {
+    label: 'Values form an arithmetic sequence',
+    factory: () => arithmetic(),
+    usesTarget: false,
+  },
+  geometric: {
+    label: 'Values form a geometric sequence',
+    factory: () => geometric(),
+    usesTarget: false,
+  },
+  fibonacci: {
+    label: 'Values form a Fibonacci sequence',
+    factory: () => fibonacci(),
     usesTarget: false,
   },
 };

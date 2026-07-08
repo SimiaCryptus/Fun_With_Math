@@ -31,9 +31,12 @@ export class Game {
       rule = sumEquals(10),
       minSelection = 2,
       maxSelection = 4,
+      straightLine = false,
+      suppressZero = false,
     } = config;
 
-    this.board = new Board({ cols, rows, size, valueRange });
+    this.suppressZero = suppressZero;
+    this.board = new Board({ cols, rows, size, valueRange, suppressZero });
 
     // Size the canvas to comfortably fit the configured grid.
     const bounds = this.board.grid.pixelBounds ? this.board.grid.pixelBounds() : null;
@@ -47,6 +50,7 @@ export class Game {
     this.selection = new Selection({
       minLength: minSelection,
       maxLength: maxSelection,
+      straightLine,
     });
     this.score = new ScoreManager();
     this.renderer = new Renderer(canvas, this.board);
@@ -318,7 +322,13 @@ export class Game {
 
   _randomValue() {
     const [min, max] = this.board.valueRange;
-    return min + Math.floor(Math.random() * (max - min + 1));
+    let v = min + Math.floor(Math.random() * (max - min + 1));
+    if (this.suppressZero && v === 0 && !(min === 0 && max === 0)) {
+      while (v === 0) {
+        v = min + Math.floor(Math.random() * (max - min + 1));
+      }
+    }
+    return v;
   }
 
   _rejectFeedback() {
