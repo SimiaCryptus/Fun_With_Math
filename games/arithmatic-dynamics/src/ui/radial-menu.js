@@ -11,6 +11,8 @@ const VERB_ICONS = {
   ungroup: { glyph: ')(', label: 'Ungroup' },
   combine: { glyph: '⊕', label: 'Combine' },
   cancel: { glyph: '✦', label: 'Cancel' },
+  distribute: { glyph: '⊗', label: 'Distribute' },
+  extract: { glyph: '⊙', label: 'Extract' },
 };
 
 export class RadialMenu {

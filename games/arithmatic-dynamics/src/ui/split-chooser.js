@@ -16,35 +16,38 @@ export class SplitChooser {
   // mode: 'split' (additive) or 'factor' (multiplicative)
   show(value, mode = 'split') {
     clear(this.root);
-    const options = mode === 'factor' ? factorsFor(value) : presetsFor(value);
 
     const title = mode === 'factor' ? `Factorize ${value}` : `Break apart ${value}`;
     const panel = el('div', { class: 'chooser-panel' }, [
       el('div', { class: 'chooser-title' }, title),
     ]);
 
-    const list = el('div', { class: 'chooser-options' });
-    for (const opt of options) {
-      list.appendChild(
-        el(
-          'button',
-          {
-            class: 'chooser-btn',
-            type: 'button',
-            onClick: () => {
-              this.hide();
-              this.onChoose && this.onChoose(opt.into);
+    if (mode === 'factor') {
+      // Factorization presets + custom a×b picker.
+      const options = factorsFor(value);
+      const list = el('div', { class: 'chooser-options' });
+      for (const opt of options) {
+        list.appendChild(
+          el(
+            'button',
+            {
+              class: 'chooser-btn',
+              type: 'button',
+              onClick: () => {
+                this.hide();
+                this.onChoose && this.onChoose(opt.into);
+              },
             },
-          },
-          opt.label,
-        ),
-      );
+            opt.label,
+          ),
+        );
+      }
+      panel.appendChild(list);
+      panel.appendChild(this._customPicker(value, mode));
+    } else {
+      // Additive split: a simple slider that picks the first part.
+      panel.appendChild(this._sliderSplitter(value));
     }
-    panel.appendChild(list);
-
-    // Custom picker: a op b with live validation.
-    const custom = this._customPicker(value, mode);
-    panel.appendChild(custom);
 
     panel.appendChild(
       el(
@@ -65,6 +68,42 @@ export class SplitChooser {
     this._offDoc = on(document, 'pointerdown', (e) => {
       if (!this.root.contains(e.target)) this.hide();
     });
+  }
+  // Slider-based additive split. The slider chooses the first part `a`
+  // (from 1..value-1) and the second part is the remainder `value - a`.
+  // It initializes to rounding `value` down to the nearest multiple of 5.
+  _sliderSplitter(value) {
+    const wrap = el('div', { class: 'chooser-slider' });
+    // Default: round down to nearest multiple of 5 (clamped into range).
+    let initial = Math.floor(value / 5) * 5;
+    if (initial <= 0) initial = Math.floor(value / 2) || 1;
+    if (initial >= value) initial = value - 1;
+    if (initial < 1) initial = 1;
+    const preview = el('div', { class: 'chooser-slider-preview' }, '');
+    const slider = el('input', {
+      type: 'range',
+      class: 'chooser-range',
+      min: '1',
+      max: String(value - 1),
+      step: '1',
+      value: String(initial),
+    });
+    const go = el('button', { class: 'chooser-btn', type: 'button' }, 'Use');
+    const update = () => {
+      const a = Number(slider.value);
+      const b = value - a;
+      preview.textContent = `${a} + ${b}`;
+    };
+    slider.addEventListener('input', update);
+    go.addEventListener('click', () => {
+      const a = Number(slider.value);
+      const b = value - a;
+      this.hide();
+      this.onChoose && this.onChoose(`${a} + ${b}`);
+    });
+    update();
+    wrap.append(preview, slider, go);
+    return wrap;
   }
 
   _customPicker(value, mode = 'split') {
@@ -119,6 +158,55 @@ export class SplitChooser {
       this._offDoc();
       this._offDoc = null;
     }
+  }
+  // Prompt the player to type the answer to a combination. Calls
+  // onConfirm(value) with the entered number when submitted.
+  askAnswer(question, onConfirm) {
+    clear(this.root);
+    const panel = el('div', { class: 'chooser-panel' }, [
+      el('div', { class: 'chooser-title' }, question),
+    ]);
+    const input = el('input', {
+      type: 'number',
+      class: 'chooser-input',
+      value: '',
+    });
+    const feedback = el('span', { class: 'chooser-feedback' }, '');
+    const go = el('button', { class: 'chooser-btn', type: 'button' }, 'Check');
+    const submit = () => {
+      const v = Number(input.value);
+      if (!Number.isFinite(v) || input.value === '') {
+        feedback.textContent = '✗ enter a number';
+        feedback.className = 'chooser-feedback bad';
+        return;
+      }
+      this.hide();
+      onConfirm && onConfirm(v);
+    };
+    go.addEventListener('click', submit);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') submit();
+    });
+    const row = el('div', { class: 'chooser-custom' }, [input, feedback, go]);
+    panel.appendChild(row);
+    panel.appendChild(
+      el(
+        'button',
+        {
+          class: 'chooser-cancel',
+          type: 'button',
+          onClick: () => this.hide(),
+        },
+        'Cancel',
+      ),
+    );
+    this.root.appendChild(panel);
+    this.root.classList.add('visible');
+    input.focus();
+    if (this._offDoc) this._offDoc();
+    this._offDoc = on(document, 'pointerdown', (e) => {
+      if (!this.root.contains(e.target)) this.hide();
+    });
   }
 }
 

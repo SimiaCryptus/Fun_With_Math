@@ -12,7 +12,6 @@ export class LatticeView {
     this.selectedIdx = null;
     this.lattice = null;
     this.ca = null;
-    this.path = null; // result object from computePath()
     this.options = {
       colorMode: 'sheet',
       palette: 'hsl',
@@ -78,10 +77,6 @@ export class LatticeView {
     this.ca = ca;
     this.draw();
   }
-  setPath(path) {
-    this.path = path;
-    this.draw();
-  }
 
   setOption(name, val) {
     this.options[name] = val;
@@ -134,52 +129,14 @@ export class LatticeView {
     const [wx, wy] = this.screenToWorld(sx, sy);
     const sel = this.selectedIdx !== null ? this.lattice.tiles[this.selectedIdx] : null;
     const selSheet = sel ? sel.sheet : 0;
-    // Gather ALL tiles whose polygon contains the point. Among them,
-    const hits = [];
+    let fallback = null;
     for (const t of this.lattice.tiles) {
-      if (pointInPoly(wx, wy, t.vertsF)) hits.push(t);
-    }
-    if (hits.length === 0) {
-      // Fallback: nearest centroid via kd-tree (forgiving clicks near edges).
-      if (this.lattice._kdtree) {
-        return this.lattice._kdtree.nearest(wx, wy);
-      }
-      return null;
-    }
-    const dist2 = (t) => (t.centroidF[0] - wx) ** 2 + (t.centroidF[1] - wy) ** 2;
-    // Find the geometrically nearest candidate (by centroid distance).
-    // This guarantees that tiles centred on the click — e.g. the origin
-    // tile at (0,0) — are always selectable even when tiles from other
-    // sheets overlap them.
-    let nearest = hits[0];
-    let nearestD = dist2(nearest);
-    for (let i = 1; i < hits.length; i++) {
-      const d = dist2(hits[i]);
-      if (d < nearestD) {
-        nearestD = d;
-        nearest = hits[i];
+      if (pointInPoly(wx, wy, t.vertsF)) {
+        if (t.sheet === selSheet) return t.index;
+        if (fallback === null) fallback = t.index;
       }
     }
-    // If several candidates are essentially tied for "nearest" (overlapping
-    // sheets at the same spot), prefer the one on the currently selected
-    // sheet to keep walking/inspection stable. Otherwise, the strictly
-    // nearest centroid wins so the centre tile can never be obscured.
-    const TIE = nearestD * 1.0001 + 1e-9;
-    const tied = hits.filter((t) => dist2(t) <= TIE);
-    if (tied.length > 1) {
-      tied.sort((a, b) => {
-        // Deterministic, selection-independent ordering so that picking the
-        // same spot always yields the same tile regardless of what was
-        // previously selected. (Previously this depended on selSheet, which
-        // made picks—and therefore pathfinding—order-dependent/stateful.)
-        const dd = dist2(a) - dist2(b);
-        if (Math.abs(dd) > 1e-12) return dd;
-        if (a.sheet !== b.sheet) return a.sheet - b.sheet;
-        return a.index - b.index;
-      });
-      return tied[0].index;
-    }
-    return nearest.index;
+    return fallback;
   }
 
   select(idx) {
@@ -233,8 +190,6 @@ export class LatticeView {
       for (const t of sorted) {
         this._drawTile(t, this.options.alphaSelected, true);
       }
-      if (this.path) this._drawPath();
-      this._drawAnts();
       if (sel && this.options.showSelGlow) this._drawSelection(sel);
       return;
     }
@@ -254,18 +209,8 @@ export class LatticeView {
       const isSel = sh === selSheet;
       if (this.options.onlySelSheet && !isSel) continue;
       const alpha = isSel ? this.options.alphaSelected : this.options.alphaOther;
-      for (const t of bySheet.get(sh)) this._drawTile(t, alpha, isSel, /*fillOnly=*/ true);
+      for (const t of bySheet.get(sh)) this._drawTile(t, alpha, isSel);
     }
-    // Second pass: strokes + labels on top, so a neighbor's fill never
-    // covers a shared edge that was already stroked.
-    for (const sh of sheets) {
-      const isSel = sh === selSheet;
-      if (this.options.onlySelSheet && !isSel) continue;
-      const alpha = isSel ? this.options.alphaSelected : this.options.alphaOther;
-      for (const t of bySheet.get(sh))
-        this._drawTile(t, alpha, isSel, /*fillOnly=*/ false, /*strokeOnly=*/ true);
-    }
-    if (this.path) this._drawPath();
 
     if (sel && this.options.showSelGlow) this._drawSelection(sel);
   }
@@ -284,122 +229,8 @@ export class LatticeView {
     ctx.stroke();
     ctx.restore();
   }
-  _drawPath() {
-    const ctx = this.ctx;
-    const p = this.path;
-    if (!p || !p.reachable) return;
-    const tiles = this.lattice.tiles;
-    ctx.save();
-    // Tint all tiles that lie on some shortest path.
-    if (p.onPath) {
-      for (const idx of p.onPath) {
-        const t = tiles[idx];
-        ctx.beginPath();
-        for (let i = 0; i < t.vertsF.length; i++) {
-          const [sx, sy] = this.worldToScreen(...t.vertsF[i]);
-          if (i === 0) ctx.moveTo(sx, sy);
-          else ctx.lineTo(sx, sy);
-        }
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(95, 179, 255, 0.30)';
-        ctx.fill();
-      }
-    }
-    // Draw path edges (centroid-to-centroid) for the sampled paths.
-    const paths = this.options.pathShowAll ? p.samplePaths : p.samplePaths.slice(0, 1);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    for (const path of paths) {
-      ctx.beginPath();
-      for (let i = 0; i < path.length; i++) {
-        const [sx, sy] = this.worldToScreen(...tiles[path[i]].centroidF);
-        if (i === 0) ctx.moveTo(sx, sy);
-        else ctx.lineTo(sx, sy);
-      }
-      ctx.strokeStyle = 'rgba(95, 179, 255, 0.55)';
-      ctx.lineWidth = 2.4;
-      ctx.stroke();
-    }
-    // Mark start (green) and end (red) tiles.
-    const mark = (idx, color, label) => {
-      const t = tiles[idx];
-      const [cx, cy] = this.worldToScreen(...t.centroidF);
-      ctx.beginPath();
-      ctx.arc(cx, cy, 7, 0, Math.PI * 2);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-      ctx.stroke();
-      ctx.fillStyle = '#0b0d12';
-      ctx.font = `700 9px ui-monospace, 'JetBrains Mono', monospace`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(label, cx, cy);
-    };
-    mark(p.start, '#7ee787', 'A');
-    if (p.end !== p.start) mark(p.end, '#ff7b72', 'B');
-    ctx.restore();
-  }
-  // Draw Langton's Ant agents (if the CA is running the 'langton' family).
-  _drawAnts() {
-    const ca = this.ca;
-    if (!ca || ca.family !== 'langton' || !ca.ants || ca.ants.length === 0) return;
-    if (!this.options.caOverlay) return;
-    const ctx = this.ctx;
-    const tiles = this.lattice.tiles;
-    ctx.save();
-    for (const ant of ca.ants) {
-      const t = tiles[ant.tile];
-      if (!t) continue;
-      const [cx, cy] = this.worldToScreen(...t.centroidF);
-      const bodyColor = ant.color || '#ff4d6d';
-      // Body.
-      ctx.beginPath();
-      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-      ctx.fillStyle = bodyColor;
-      ctx.fill();
-      ctx.lineWidth = 1.6;
-      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-      ctx.stroke();
-      // Subtle glow scaled by how long this ant has been running.
-      ctx.save();
-      ctx.shadowColor = bodyColor;
-      ctx.shadowBlur = 8;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-      ctx.strokeStyle = bodyColor;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.restore();
-      // Heading indicator: a short line toward the faced edge's neighbour
-      // centroid (or edge midpoint if the neighbour is missing).
-      const nb = t.neighbors;
-      let tx, ty;
-      const dest = nb[ant.edge];
-      if (dest !== null && dest !== undefined && tiles[dest]) {
-        [tx, ty] = this.worldToScreen(...tiles[dest].centroidF);
-      } else {
-        const v0 = t.vertsF[ant.edge % t.vertsF.length];
-        const v1 = t.vertsF[(ant.edge + 1) % t.vertsF.length];
-        [tx, ty] = this.worldToScreen((v0[0] + v1[0]) / 2, (v0[1] + v1[1]) / 2);
-      }
-      const dx = tx - cx;
-      const dy = ty - cy;
-      const len = Math.hypot(dx, dy) || 1;
-      const ux = dx / len;
-      const uy = dy / len;
-      ctx.beginPath();
-      ctx.moveTo(cx, cy);
-      ctx.lineTo(cx + ux * 12, cy + uy * 12);
-      ctx.strokeStyle = '#ffd24d';
-      ctx.lineWidth = 2.2;
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
 
-  _drawTile(t, alpha, isSelSheet, fillOnly = false, strokeOnly = false) {
+  _drawTile(t, alpha, isSelSheet) {
     const ctx = this.ctx;
     const opts = this.options;
     ctx.save();
@@ -415,10 +246,7 @@ export class LatticeView {
         useAlpha = isSelSheet ? Math.max(alpha, 0.95) : Math.max(alpha, 0.6);
       }
     }
-    // For the stroke-only pass, draw borders at (near) full opacity so they
-    // are never washed out by low fill / dead-cell alphas. Otherwise use the
-    // computed fill alpha.
-    ctx.globalAlpha = strokeOnly ? 1 : useAlpha;
+    ctx.globalAlpha = useAlpha;
 
     ctx.beginPath();
     for (let i = 0; i < t.vertsF.length; i++) {
@@ -428,11 +256,11 @@ export class LatticeView {
     }
     ctx.closePath();
 
-    if (opts.fillTiles && !strokeOnly) {
+    if (opts.fillTiles) {
       ctx.fillStyle = this._tileColor(t, isSelSheet);
       ctx.fill();
     }
-    if (opts.strokeTiles && !fillOnly) {
+    if (opts.strokeTiles) {
       // If this tile has an activeEdges restriction (pinwheel), draw
       // active edges solid and inactive edges with a dashed, dim style.
       if (t.activeEdges) {
@@ -444,13 +272,13 @@ export class LatticeView {
           ctx.moveTo(sx0, sy0);
           ctx.lineTo(sx1, sy1);
           if (t.activeEdges[k]) {
-            ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
+            ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.14)';
             ctx.lineWidth = isSelSheet
               ? opts.borderWidth * 1.3
               : Math.max(0.4, opts.borderWidth * 0.7);
             ctx.setLineDash([]);
           } else {
-            ctx.strokeStyle = isSelSheet ? 'rgba(255, 90, 90, 0.9)' : 'rgba(255, 90, 90, 0.5)';
+            ctx.strokeStyle = isSelSheet ? 'rgba(255, 90, 90, 0.55)' : 'rgba(255, 90, 90, 0.28)';
             ctx.lineWidth = isSelSheet ? opts.borderWidth : Math.max(0.4, opts.borderWidth * 0.5);
             ctx.setLineDash([4, 3]);
           }
@@ -458,14 +286,14 @@ export class LatticeView {
         }
         ctx.setLineDash([]);
       } else {
-        ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)';
-        ctx.lineWidth = isSelSheet ? opts.borderWidth : Math.max(0.5, opts.borderWidth * 0.7);
+        ctx.strokeStyle = isSelSheet ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)';
+        ctx.lineWidth = isSelSheet ? opts.borderWidth : Math.max(0.4, opts.borderWidth * 0.6);
         ctx.stroke();
       }
     }
 
     const drawLabels = isSelSheet || opts.labelsAllSheets;
-    if (drawLabels && !fillOnly && !t.isSierpinski && !t.isPinwheel) {
+    if (drawLabels && !t.isSierpinski && !t.isPinwheel) {
       const [cx, cy] = this.worldToScreen(...t.centroidF);
       const sz = opts.labelSize;
       ctx.font = `600 ${sz}px ui-monospace, 'JetBrains Mono', monospace`;
@@ -503,7 +331,7 @@ export class LatticeView {
     }
 
     // Sierpiński: show depth label if requested.
-    if (t.isSierpinski && opts.depthLabels && !fillOnly) {
+    if (t.isSierpinski && opts.depthLabels) {
       const [cx, cy] = this.worldToScreen(...t.centroidF);
       const sz = Math.max(6, opts.labelSize - 2);
       ctx.font = `600 ${sz}px ui-monospace, 'JetBrains Mono', monospace`;

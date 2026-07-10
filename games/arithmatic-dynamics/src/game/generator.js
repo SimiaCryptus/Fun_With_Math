@@ -54,6 +54,48 @@ export function generateMultiplicative({ minFactor = 2, maxFactor = 9 } = {}) {
     hint: 'Cancel matching factors, then combine.',
   });
 }
+// Mixed additive + multiplicative problem, e.g. "4 + 3 * 5 - 2".
+// Multiplicative sub-terms are kept small so the result stays tidy, and
+// division is only introduced as an exact product-then-divide pair.
+export function generateMixed({
+  terms = 3,
+  minTerm = 1,
+  maxTerm = 12,
+  minFactor = 2,
+  maxFactor = 9,
+} = {}) {
+  const lo = Math.max(2, minFactor);
+  const parts = [makeTerm(0)];
+  for (let i = 1; i < terms; i++) {
+    parts.push(pick(['+', '-']), makeTerm(i));
+  }
+  const start = parts.join(' ');
+  console.log(`[generator] generateMixed`, { terms, start });
+  return defineLevel({
+    id: `rand-mix-${Date.now()}`,
+    start,
+    allowedVerbs: ['split', 'factorize', 'swap', 'group', 'ungroup', 'combine', 'cancel'],
+    allowedOps: ['+', '-', '*', '/'],
+    stars: [Stars.solve()],
+    hint: 'Handle products first, then combine sums.',
+  });
+  // Each term is either a plain number or a small product/quotient.
+  function makeTerm() {
+    const r = Math.random();
+    if (r < 0.45) {
+      const a = randInt(lo, maxFactor);
+      const b = randInt(lo, maxFactor);
+      return `${a} * ${b}`;
+    }
+    if (r < 0.6) {
+      const a = randInt(lo, maxFactor);
+      const b = randInt(lo, maxFactor);
+      // exact product-then-divide
+      return `(${a} * ${b}) / ${b}`;
+    }
+    return String(randInt(minTerm, maxTerm));
+  }
+}
 
 export function generateRandom({
   allowMultiply = true,
@@ -66,7 +108,23 @@ export function generateRandom({
   if (!allowMultiply) {
     return generateAdditive({ terms, minTerm, maxTerm });
   }
-  return Math.random() < 0.6
-    ? generateAdditive({ terms, minTerm, maxTerm })
-    : generateMultiplicative({ minFactor: Math.max(2, minTerm), maxFactor: Math.max(2, maxTerm) });
+  // Three flavours when multiply is enabled: additive, multiplicative, and
+  // mixed (a blend of + / - with * / /). Mixed needs at least two terms.
+  const r = Math.random();
+  if (r < 0.4) {
+    return generateAdditive({ terms, minTerm, maxTerm });
+  }
+  if (r < 0.7 && terms >= 2) {
+    return generateMixed({
+      terms,
+      minTerm,
+      maxTerm: Math.min(maxTerm, 12),
+      minFactor: Math.max(2, minTerm),
+      maxFactor: Math.max(2, Math.min(maxTerm, 9)),
+    });
+  }
+  return generateMultiplicative({
+    minFactor: Math.max(2, minTerm),
+    maxFactor: Math.max(2, maxTerm),
+  });
 }

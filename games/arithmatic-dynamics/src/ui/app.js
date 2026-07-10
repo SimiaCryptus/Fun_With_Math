@@ -4,9 +4,9 @@ import { GameSession } from '../game/session.js';
 import { evaluateStars } from '../game/stars.js';
 import { allLevels, findLevel } from '../game/levels/index.js';
 import { generateRandom } from '../game/generator.js';
-import { legalVerbs } from '../core/legality.js';
+import { legalVerbs, combineNeedsInput } from '../core/legality.js';
 import { findNode, isNum, isSum, isProduct, isGroup, membersOf } from '../core/expression.js';
-import { serialize } from '../core/serialize.js';
+import { serialize, parse } from '../core/serialize.js';
 import { el, clear } from '../util/dom.js';
 import { Stage } from './stage.js';
 import { History } from './history.js';
@@ -93,7 +93,29 @@ export function boot(mount) {
       },
       '🎲 Random',
     );
-    levelBarEl.append(sel, randBtn, settingsEl);
+    const customInput = el('input', {
+      type: 'text',
+      class: 'level-custom-input',
+      placeholder: 'e.g. 4 + 19 * 2',
+    });
+    const loadCustom = () => {
+      const text = customInput.value.trim();
+      if (!text) return;
+      loadFromText(text);
+    };
+    customInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') loadCustom();
+    });
+    const customBtn = el(
+      'button',
+      {
+        class: 'tool-btn',
+        type: 'button',
+        onClick: loadCustom,
+      },
+      '⌨ Load',
+    );
+    levelBarEl.append(sel, randBtn, customInput, customBtn, settingsEl);
   }
 
   function buildToolbar() {
@@ -166,6 +188,34 @@ export function boot(mount) {
     });
     startLevel(level, null);
   }
+  // Build a level from a free-text expression the player typed in.
+  function loadFromText(text) {
+    try {
+      parse(text); // validate before committing
+    } catch (err) {
+      flashError(`Could not parse "${text}": ${err.message}`);
+      return;
+    }
+    const level = {
+      id: null,
+      start: text,
+      allowedVerbs: [
+        'split',
+        'factorize',
+        'swap',
+        'group',
+        'ungroup',
+        'combine',
+        'cancel',
+        'distribute',
+        'extract',
+      ],
+      allowedOps: ['+', '-', '*', '/'],
+      stars: [{ id: 'solve', label: 'Solve it', test: (s) => s.isSolved() }],
+      hint: null,
+    };
+    startLevel(level, null);
+  }
 
   function startLevel(level, id) {
     console.log(`[app] startLevel`, { id, start: level.start, allowedVerbs: level.allowedVerbs });
@@ -206,17 +256,16 @@ export function boot(mount) {
   function handleSelect(id, elm) {
     if (selection.includes(id)) {
       selection = selection.filter((x) => x !== id);
-    } else if (selection.length === 0) {
-      selection = [id];
-    } else if (selection.length === 1) {
-      // Only extend to a second id if it is an adjacent sibling.
-      if (areAdjacentSiblings(selection[0], id)) {
-        selection = [selection[0], id];
+    } else {
+      // Extend the selection when the new id is a sibling of the current
+      // selection (members of the same commutative container). This allows
+      // collecting a common factor across 2+ terms of a sum. Otherwise the
+      // selection resets to just the new id.
+      if (selection.length >= 1 && areAdjacentSiblings(selection[0], id)) {
+        selection = [...selection, id];
       } else {
         selection = [id];
       }
-    } else {
-      selection = [id];
     }
     stage.setSelection(selection.length ? selection : null);
     stage.render(state.session.expr);
@@ -271,7 +320,7 @@ export function boot(mount) {
     if (verb === 'factorize') {
       const id = selection[0];
       const found = findNode(state.session.expr, id);
-      if (found && isNum(found.node)) openSplit(id, found.node.value, 'factor');
+      if (found && isNum(found.node)) doFactorize(id, found.node.value);
       return;
     }
     if (verb === 'ungroup') {
@@ -280,6 +329,18 @@ export function boot(mount) {
     }
     if (verb === 'group') {
       commit('group', selection.slice());
+      return;
+    }
+    if (verb === 'distribute' && selection.length === 2) {
+      commitDistribute(selection[0], selection[1]);
+      return;
+    }
+    if (verb === 'extract' && selection.length >= 2) {
+      commit('extract', selection.slice());
+      return;
+    }
+    if (verb === 'combine' && selection.length === 2) {
+      tryCombine(selection[0], selection[1]);
       return;
     }
     // combine / swap / cancel need two ids.
@@ -292,6 +353,49 @@ export function boot(mount) {
     splitTargetId = id;
     splitMode = mode;
     chooser.show(value, mode);
+  }
+  // Completely factorize a number into its prime factorization and apply
+  // it directly (no chooser popup). If the number is prime or |value| < 2,
+  // there is nothing to do.
+  function doFactorize(id, value) {
+    const into = primeFactorString(value);
+    if (!into) {
+      flashError(`${value} cannot be factorized further`);
+      selection = [];
+      return;
+    }
+    const before = serialize(state.session.expr);
+    try {
+      state.session.apply('factorize', id, { into });
+      history.push(before, 'factorize');
+      maybeAutoUngroupFactor();
+    } catch (err) {
+      flashError(err.message);
+    }
+    selection = [];
+  }
+  // Build a "p * q * r" string of the prime factorization of |value|.
+  // Returns null when there is no non-trivial factorization (prime or
+  // magnitude < 2). The sign is carried by the split machinery via the
+  // target's neg flag, so we factor the magnitude only.
+  function primeFactorString(value) {
+    let v = Math.abs(value);
+    if (v < 4) return null;
+    const factors = [];
+    for (let f = 2; f * f <= v; f++) {
+      while (v % f === 0) {
+        factors.push(f);
+        v /= f;
+      }
+    }
+    if (v > 1) factors.push(v);
+    if (factors.length < 2) return null;
+    return factors.join(' * ');
+  }
+  // After a factorize, the replacement product is wrapped in a group. If
+  // it sits directly inside a product it can be spliced inline.
+  function maybeAutoUngroupFactor() {
+    autoUngroupPass();
   }
 
   function onSplitChoose(into) {
@@ -318,15 +422,25 @@ export function boot(mount) {
     // matching container. Simpler: attempt ungroup on every plain group
     // that is a direct member of a sum/product and collapses cleanly.
     void found;
-    const gid = findPlainSplicableGroup(state.session.expr);
-    if (!gid) return;
-    try {
-      const before = serialize(state.session.expr);
-      state.session.apply('ungroup', gid);
-      history.push(before, 'ungroup');
-    } catch {
-      // If ungrouping would change value or is otherwise illegal, leave
-      // the group in place.
+    autoUngroupPass();
+  }
+  // Repeatedly splice away any plain, splicable, or trivial (<= 1 member)
+  // groups until none remain. Each successful ungroup is recorded so the
+  // history and undo stack stay consistent.
+  function autoUngroupPass() {
+    let guard = 0;
+    while (guard++ < 64) {
+      const gid = findPlainSplicableGroup(state.session.expr);
+      if (!gid) break;
+      try {
+        const before = serialize(state.session.expr);
+        state.session.apply('ungroup', gid);
+        history.push(before, 'ungroup');
+      } catch {
+        // Leave the group in place if ungroup is illegal, and stop to
+        // avoid an infinite loop over an un-splicable group.
+        break;
+      }
     }
   }
   // Find a group that is a direct member of a matching container
@@ -339,7 +453,14 @@ export function boot(mount) {
         !root.neg &&
         !root.recip &&
         ((isSum(parent) && isSum(root.child)) || (isProduct(parent) && isProduct(root.child)));
-      if (inline) return root.id;
+      // A group of one-or-fewer elements is always safe to unwrap: a
+      // single atom child, or a container child with <= 1 member.
+      const child = root.child;
+      const childMembers = isSum(child) || isProduct(child) ? membersOf(child).length : null;
+      // Trivial groups (single atom child, or container with <= 1 member)
+      // can always be unwrapped — including at the top level (no parent).
+      const trivial = !root.neg && !root.recip && (childMembers === null || childMembers <= 1);
+      if (inline || trivial) return root.id;
       return findPlainSplicableGroup(root.child, root);
     }
     if (isSum(root) || isProduct(root)) {
@@ -359,10 +480,72 @@ export function boot(mount) {
       selection = [];
       stage.setSelection(null);
       radial.hide();
+      autoUngroupPass();
     } catch (err) {
       console.warn(`[app] commit "${verb}" failed`, err);
       flashError(err.message);
     }
+  }
+  // Distribute a factor across a grouped sum. Determines which selected id
+  // is the group and which is the plain factor, applies `distribute`, then
+  // runs an auto-ungroup pass to tidy the result.
+  function commitDistribute(idA, idB) {
+    const fa = findNode(state.session.expr, idA);
+    const fb = findNode(state.session.expr, idB);
+    if (!fa || !fb) return;
+    let factorId;
+    let groupId;
+    if (isGroup(fa.node) && !isGroup(fb.node)) {
+      groupId = idA;
+      factorId = idB;
+    } else if (isGroup(fb.node) && !isGroup(fa.node)) {
+      groupId = idB;
+      factorId = idA;
+    } else {
+      flashError('Distribute needs one factor and one group');
+      return;
+    }
+    const before = serialize(state.session.expr);
+    try {
+      state.session.apply('distribute', factorId, groupId);
+      history.push(before, 'distribute');
+      selection = [];
+      stage.setSelection(null);
+      radial.hide();
+      autoUngroupPass();
+    } catch (err) {
+      console.warn('[app] distribute failed', err);
+      flashError(err.message);
+    }
+  }
+  // Combine two numbers. If the difficulty gate does not permit an
+  // automatic fold, prompt the player to enter the answer; otherwise
+  // combine immediately.
+  function tryCombine(aId, bId) {
+    const fa = findNode(state.session.expr, aId);
+    const fb = findNode(state.session.expr, bId);
+    if (!fa || !fb || !isNum(fa.node) || !isNum(fb.node)) return;
+    if (!fa.parent || fa.parent !== fb.parent) return;
+    const container = fa.parent;
+    if (!(isSum(container) || isProduct(container))) return;
+    const needsInput = combineNeedsInput(container, fa.node, fb.node, resolveDifficulty());
+    if (!needsInput) {
+      commit('combine', aId, bId);
+      return;
+    }
+    const opGlyph = isSum(container) ? '+' : '×';
+    chooser.askAnswer(`${serialize(fa.node)} ${opGlyph} ${serialize(fb.node)} = ?`, (answer) => {
+      const before = serialize(state.session.expr);
+      try {
+        state.session.apply('combine', aId, bId, Number(answer));
+        history.push(before, 'combine');
+        selection = [];
+        stage.setSelection(null);
+        radial.hide();
+      } catch (err) {
+        flashError(err.message);
+      }
+    });
   }
 
   // Drag-driven pairing: attempt the given verb on two dragged atoms if
@@ -377,7 +560,11 @@ export function boot(mount) {
       verb = 'cancel';
     }
     if (!verbs.includes(verb)) return;
-    commit(verb, fromId, toId);
+    if (verb === 'combine') {
+      tryCombine(fromId, toId);
+    } else {
+      commit(verb, fromId, toId);
+    }
   }
 
   function syncHistoryToSession() {

@@ -25,6 +25,8 @@ export class GameSession extends Emitter {
       'ungroup',
       'combine',
       'cancel',
+      'distribute',
+      'extract',
     ];
     this._undo = [];
     this._redo = [];

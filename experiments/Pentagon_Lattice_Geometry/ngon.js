@@ -2,10 +2,6 @@
 // Generalized n-gon geometry using floating-point arithmetic.
 // For n=5 this reproduces the pentagon lattice (approximately).
 // Also supports the Sierpiński triangle IFS mode.
-import { edgeToCompass, compassSheetDelta } from './affine.js';
-import { buildCentroidIndex } from './kdtree.js';
-import { V, vAdd, vAlg, vFloat, pentVertices, neighborOf } from './geometry.js';
-import { K, ZERO, toFloat } from './field.js';
 //
 // A "tile" in the generalized sense is:
 //   { centroid: [x,y], orient: int (0..n-1), sigma: int (0/1),
@@ -251,6 +247,17 @@ export function buildSierpinski(depth) {
 // ── Lattice builder for regular n-gons ───────────────────────────────────────
 
 export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
+  // sheet_fix.md (NORMATIVE):
+  //   The fiber is determined by pentagon ORIENTATION only. It is Z₂.
+  //   Adjacent tiles carry the flipped orientation, so the sheet of a tile
+  //   is simply its orientation bit (sigma) for odd n-gons. There is NO
+  //   Z5/Z10 "sheet shift", no `signed3` rule, and the vertex loop (even
+  //   length) has trivial holonomy. `groupOrder` is forced to 2 here.
+  //
+  //   For even n, adjacent tiles keep sigma (a pure π-rotation suffices),
+  //   so the cover is trivial (single sheet, groupOrder 1).
+  const isOdd = n % 2 === 1;
+  const effectiveGroupOrder = isOdd ? 2 : 1;
   const tiles = [];
   const byId = new Map();
 
@@ -280,6 +287,7 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
     return idx;
   }
 
+  // Origin sheet = origin orientation (sigma = 0 → sheet 0).
   const originIdx = addTile(0, 0, 0, 0, 0, 0);
   const queue = [originIdx];
 
@@ -291,17 +299,13 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
       if (t.neighbors[k] !== null) continue;
 
       const nb = ngonNeighbour(t.centroid[0], t.centroid[1], n, t.orient, t.sigma, k);
-      // Normalize the move to a compass slot (North, then clockwise) so the
-      // sheet shift depends on the absolute world direction, not on the
-      // tile's local edge numbering. This fixes inconsistent holonomy.
-      const slot = edgeToCompass(k, t.orient, n);
-      const delta = compassSheetDelta(slot, groupOrder);
-      const newSheet = mod(t.sheet + delta, groupOrder);
+      // Z₂ orientation cover: the sheet IS the orientation bit. The per-edge
+      // "delta" is the non-trivial Z₂ element (a flip) whenever the
+      // neighbour's orientation differs, else the identity (0).
+      const newSheet = mod(nb.sigma, effectiveGroupOrder);
+      const delta = mod(newSheet - t.sheet, effectiveGroupOrder);
       const [ncx, ncy] = nb.centroid;
-      // NOTE: sheet is intentionally NOT part of the identity key here, so a
-      // given geometric tile is created once. Its sheet is whatever the first
-      // (BFS-shortest) path assigns, giving a deterministic single-sheet lattice.
-      const id = tileKey(ncx, ncy, nb.orient, nb.sigma);
+      const id = tileKey(ncx, ncy, nb.orient, nb.sigma) + `|sh${newSheet}`;
 
       let nIdx;
       if (byId.has(id)) {
@@ -315,87 +319,24 @@ export function buildNgonLattice({ n = 5, radius = 3, groupOrder = 5 } = {}) {
 
       t.neighbors[k] = nIdx;
       t.neighborSheetDeltas[k] = delta;
-      t.neighborCompass = t.neighborCompass || new Array(n).fill(null);
-      t.neighborCompass[k] = slot;
 
-      // Back-link: find the matching edge on the neighbour. We must make the
-      // adjacency SYMMETRIC by construction, otherwise BFS in pathfind.js
-      // sees a→b but not b→a and reports wrong hop counts.
-      //
-      // `nb.matchEdge` (a geometry-derived guess) can collide with a slot
-      // already (incorrectly) claimed by another forward edge, in which case
-      // the old code silently dropped the back-link. Instead, recompute the
-      // neighbour edge whose midpoint coincides with our edge k's midpoint,
-      // and set it unconditionally.
+      // Back-link: find the matching edge on the neighbour.
       const nt = tiles[nIdx];
-      const [smx, smy] = edgeMidpoint(t.centroid[0], t.centroid[1], n, t.orient, t.sigma, k);
-      let backEdge = nb.matchEdge;
-      let backDist = Infinity;
-      for (let kk = 0; kk < n; kk++) {
-        const [bmx, bmy] = edgeMidpoint(nt.centroid[0], nt.centroid[1], n, nt.orient, nt.sigma, kk);
-        const d = (bmx - smx) ** 2 + (bmy - smy) ** 2;
-        if (d < backDist) {
-          backDist = d;
-          backEdge = kk;
-        }
-      }
-      // Set the back-link so a↔b is symmetric, but DON'T clobber a slot that
-      // already (validly) points at a *different* tile — doing so destroys a
-      // real adjacency and leaves the graph asymmetric. Priority:
-      //   1. If some slot already points at tIdx, we're already linked.
-      //   2. If the computed backEdge slot is free or already points at us, use it.
-      //   3. Otherwise fall back to the first free slot.
-      let alreadyLinked = false;
-      for (let kk = 0; kk < n; kk++) {
-        if (nt.neighbors[kk] === tIdx) {
-          alreadyLinked = true;
-          backEdge = kk;
-          break;
-        }
-      }
-      if (!alreadyLinked) {
-        if (nt.neighbors[backEdge] !== null && nt.neighbors[backEdge] !== tIdx) {
-          // Computed slot is occupied by a different tile; find a free slot.
-          let freeSlot = -1;
-          for (let kk = 0; kk < n; kk++) {
-            if (nt.neighbors[kk] === null) {
-              freeSlot = kk;
-              break;
-            }
-          }
-          if (freeSlot !== -1) {
-            backEdge = freeSlot;
-          } else {
-            // No free slot. Rather than leave the graph ASYMMETRIC (which
-            // breaks BFS hop counts), evict the conflicting neighbor that
-            // currently sits in `backEdge`. We also remove the reciprocal
-            // link from that evicted tile so it doesn't dangle.
-            const evicted = nt.neighbors[backEdge];
-            if (evicted !== null && evicted !== tIdx) {
-              const et = tiles[evicted];
-              for (let kk = 0; kk < et.neighbors.length; kk++) {
-                if (et.neighbors[kk] === nIdx) {
-                  et.neighbors[kk] = null;
-                  et.neighborSheetDeltas[kk] = 0;
-                  if (et.neighborCompass) et.neighborCompass[kk] = null;
-                }
-              }
-            }
-          }
-        }
-        nt.neighbors[backEdge] = tIdx;
-        nt.neighborSheetDeltas[backEdge] = mod(-delta, groupOrder);
-        nt.neighborCompass = nt.neighborCompass || new Array(n).fill(null);
-        nt.neighborCompass[backEdge] = edgeToCompass(backEdge, nt.orient, n);
+      if (nt.neighbors[nb.matchEdge] === null) {
+        nt.neighbors[nb.matchEdge] = tIdx;
+        nt.neighborSheetDeltas[nb.matchEdge] = mod(-delta, effectiveGroupOrder);
       }
     }
   }
 
-  const lattice = { tiles, byId, groupOrder, radius, n, isSierpinski: false };
-  // Cache algebraic coords + spatial index for fast/exact lookups.
-  attachAlgebraicCoords(lattice);
-  buildCentroidIndex(lattice);
-  return lattice;
+  return {
+    tiles,
+    byId,
+    groupOrder: effectiveGroupOrder, // Z₂ (odd n) or trivial (even n)
+    radius,
+    n,
+    isSierpinski: false,
+  };
 }
 
 // ── Field info strings ────────────────────────────────────────────────────────
@@ -421,81 +362,6 @@ export function fieldInfoForN(n) {
   );
 }
 
-// ── Algebraic-coordinate cache ───────────────────────────────────────────────
-// For each tile we attach `centroidAlg` and `vertsAlg` as human-readable
-// strings. Pentagons (n=5) get EXACT Q(√5, S) values via geometry.js, by
-// replaying the lattice's adjacency in the exact field. Other polygons fall
-// back to high-precision decimal strings (their algebraic field generator
-// can be expanded per-n later).
-function attachAlgebraicCoords(lattice) {
-  if (lattice.n === 5 && !lattice.isSierpinski && !lattice.isPinwheel) {
-    attachExactPentagonCoords(lattice);
-    return;
-  }
-  const fmt = (v) => {
-    // Snap near-integers / simple rationals for readability.
-    const r = Math.round(v * 1e9) / 1e9;
-    return Number.isFinite(r) ? r.toString() : String(v);
-  };
-  for (const t of lattice.tiles) {
-    t.centroidAlg = `( ${fmt(t.centroidF[0])} , ${fmt(t.centroidF[1])} )`;
-    t.vertsAlg = t.vertsF.map(([x, y]) => `( ${fmt(x)} , ${fmt(y)} )`);
-  }
-}
-
-// Replay the lattice graph in exact Q(√5, S) arithmetic. We BFS from the
-// origin tile (index 0), carrying an exact field-valued centroid for each
-// tile, and use geometry.js's exact `neighborOf` to derive neighbor centroids
-// and exact vertices. Float coords are used only to match each exact tile
-// back to its lattice index (via the existing kd-tree / centroid compare).
-function attachExactPentagonCoords(lattice) {
-  const tiles = lattice.tiles;
-  const exact = new Array(tiles.length).fill(null); // { centroid, orient, sigma }
-
-  // Find the origin tile (centroid nearest (0,0)).
-  let originIdx = 0;
-  let bestD = Infinity;
-  for (const t of tiles) {
-    const d = t.centroidF[0] ** 2 + t.centroidF[1] ** 2;
-    if (d < bestD) {
-      bestD = d;
-      originIdx = t.index;
-    }
-  }
-
-  exact[originIdx] = { centroid: V(ZERO, ZERO), orient: 0, sigma: 0 };
-  const queue = [originIdx];
-
-  while (queue.length > 0) {
-    const i = queue.shift();
-    const t = tiles[i];
-    const e = exact[i];
-    const n = t.n || t.neighbors.length;
-    for (let k = 0; k < n; k++) {
-      const nIdx = t.neighbors[k];
-      if (nIdx === null || exact[nIdx] !== null) continue;
-      const nb = neighborOf(e.centroid, e.orient, e.sigma, k);
-      exact[nIdx] = { centroid: nb.centroid, orient: nb.orient, sigma: nb.sigma };
-      queue.push(nIdx);
-    }
-  }
-
-  for (let i = 0; i < tiles.length; i++) {
-    const t = tiles[i];
-    const e = exact[i];
-    if (!e) {
-      // Unreachable via exact walk (shouldn't happen); fall back to float.
-      const fmt = (v) => (Math.round(v * 1e9) / 1e9).toString();
-      t.centroidAlg = `( ${fmt(t.centroidF[0])} , ${fmt(t.centroidF[1])} )`;
-      t.vertsAlg = t.vertsF.map(([x, y]) => `( ${fmt(x)} , ${fmt(y)} )`);
-      continue;
-    }
-    t.centroidAlg = vAlg(e.centroid);
-    const verts = pentVertices(e.centroid, e.orient, e.sigma);
-    t.vertsAlg = verts.map((p) => vAlg(p));
-  }
-}
-
 export const POLY_PRESETS = {
   triangle: { n: 3, label: 'Equilateral Triangle' },
   square: { n: 4, label: 'Square' },
@@ -506,113 +372,6 @@ export const POLY_PRESETS = {
   decagon: { n: 10, label: 'Regular Decagon' },
   dodecagon: { n: 12, label: 'Regular Dodecagon' },
 };
-// ── Vicsek (cross/plus) fractal IFS ──────────────────────────────────────────
-// 5 maps with ratio 1/3: centre + 4 axis-aligned corners. Squares tile
-// edge-to-edge at the deepest level, so we reuse a generic square-edge
-// adjacency linker. Returned in the same flat tile format as Sierpiński.
-export function buildVicsek(depth) {
-  const tiles = [];
-  const byId = new Map();
-  const snap = (v) => Math.round(v * 1e8) / 1e8;
-  const sqKey = (cx, cy, s) => `${snap(cx)},${snap(cy)},${snap(s)}`;
-  function squareVerts(cx, cy, s) {
-    const h = s / 2;
-    return [
-      [cx - h, cy - h],
-      [cx + h, cy - h],
-      [cx + h, cy + h],
-      [cx - h, cy + h],
-    ];
-  }
-  function addSquare(cx, cy, s, d) {
-    const id = sqKey(cx, cy, s);
-    if (byId.has(id)) return byId.get(id);
-    const idx = tiles.length;
-    const verts = squareVerts(cx, cy, s);
-    tiles.push({
-      index: idx,
-      id,
-      centroid: [cx, cy],
-      centroidF: [cx, cy],
-      orient: 0,
-      sigma: 0,
-      sheet: d % 5,
-      depth: d,
-      verts,
-      vertsF: verts,
-      neighbors: [null, null, null, null],
-      neighborSheetDeltas: [0, 0, 0, 0],
-      isSierpinski: true, // reuse fractal rendering/labelling path
-      isVicsek: true,
-      n: 4,
-    });
-    byId.set(id, idx);
-    return idx;
-  }
-  function build(cx, cy, s, d) {
-    const idx = addSquare(cx, cy, s, d);
-    if (d >= depth) return idx;
-    const ns = s / 3;
-    const offs = [
-      [0, 0],
-      [ns, 0],
-      [-ns, 0],
-      [0, ns],
-      [0, -ns],
-    ];
-    for (let k = 0; k < offs.length; k++) {
-      const c = build(cx + offs[k][0], cy + offs[k][1], ns, d + 1);
-      if (idx !== c && k < tiles[idx].neighbors.length) {
-        tiles[idx].neighbors[Math.min(k, 3)] = c;
-      }
-    }
-    return idx;
-  }
-  build(0, 0, 1.0, 0);
-  // Edge-to-edge adjacency at the deepest level (squares share full edges).
-  linkSquareAdjacency(tiles);
-  return { tiles, byId, groupOrder: 5, radius: depth, isSierpinski: true, n: 4 };
-}
-// Generic shared-edge linker for axis-aligned square fractal cells.
-function linkSquareAdjacency(tiles) {
-  // Place `nbIdx` into the first free neighbor slot of `tile` (idempotent).
-  function placeNeighbor(tile, nbIdx) {
-    for (let k = 0; k < tile.neighbors.length; k++) {
-      if (tile.neighbors[k] === nbIdx) return; // already linked
-    }
-    for (let k = 0; k < tile.neighbors.length; k++) {
-      if (tile.neighbors[k] === null) {
-        tile.neighbors[k] = nbIdx;
-        return;
-      }
-    }
-  }
-  const snap = (v) => Math.round(v * 1e7) / 1e7;
-  const edgeKey = (x0, y0, x1, y1) => {
-    const a = `${snap(x0)},${snap(y0)}`;
-    const b = `${snap(x1)},${snap(y1)}`;
-    return a < b ? `${a}|${b}` : `${b}|${a}`;
-  };
-  let maxDepth = 0;
-  for (const t of tiles) if (t.depth > maxDepth) maxDepth = t.depth;
-  const edgeMap = new Map();
-  for (const t of tiles) {
-    if (t.depth !== maxDepth) continue;
-    const v = t.vertsF;
-    for (let k = 0; k < v.length; k++) {
-      const v0 = v[k];
-      const v1 = v[(k + 1) % v.length];
-      const key = edgeKey(v0[0], v0[1], v1[0], v1[1]);
-      if (!edgeMap.has(key)) edgeMap.set(key, []);
-      edgeMap.get(key).push(t.index);
-    }
-  }
-  for (const entries of edgeMap.values()) {
-    if (entries.length !== 2) continue;
-    placeNeighbor(tiles[entries[0]], entries[1]);
-    placeNeighbor(tiles[entries[1]], entries[0]);
-  }
-}
 // ── Pinwheel tile (rectangle + corner right-triangle) ────────────────────────
 //
 // The base tile (one "blade") is a single 5-sided polygon formed by gluing:

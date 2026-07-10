@@ -80,6 +80,15 @@ body {
   color: var(--ink);
   cursor: pointer;
 }
+.level-custom-input {
+  font-size: 1rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  border: 2px solid var(--accent3);
+  background: var(--panel-solid);
+  color: var(--ink);
+  min-width: 12rem;
+}
 
 .main {
   flex: 1;

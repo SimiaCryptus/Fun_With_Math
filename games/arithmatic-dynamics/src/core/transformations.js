@@ -206,19 +206,47 @@ export function group(expr, ids) {
   const members = membersOf(container);
   const indices = idList.map((id) => findMemberIndex(container, id)).sort((x, y) => x - y);
   if (indices.some((i) => i < 0)) throw new Error('group: ids not all siblings');
-  // must be contiguous
-  for (let i = 1; i < indices.length; i++) {
-    if (indices[i] !== indices[i - 1] + 1) throw new Error('group: selection not contiguous');
+  // Members of a commutative container may be grouped even when they are
+  // not physically adjacent. Gather the selected members (in index order)
+  // and splice a single group in at the position of the first selection.
+  let run = indices.map((i) => members[i]);
+
+  // Sign/reciprocal extraction: when grouping several members that all
+  // carry the same inverse flag, factor that inverse out onto the group
+  // and strip it from each inner member. For example, in a sum:
+  //   a - b - c   =>   a - (b + c)
+  // and in a product:
+  //   a / b / c   =>   a / (b * c)
+  let groupNeg = false;
+  let groupRecip = false;
+  if (isSum(container)) {
+    const allNeg = run.length >= 2 && run.every((m) => (isNum(m) || isGroup(m)) && m.neg);
+    if (allNeg) {
+      groupNeg = true;
+      run = run.map((m) => negate(m));
+    }
+  } else if (isProduct(container)) {
+    const allRecip = run.length >= 2 && run.every((m) => (isNum(m) || isGroup(m)) && m.recip);
+    if (allRecip) {
+      groupRecip = true;
+      run = run.map((m) => reciprocate(m));
+    }
   }
-  const run = indices.map((i) => members[i]);
+
   const inner = isSum(container) ? sum(run) : product(run);
-  const wrapped = mkGroup(inner);
-  const next = [
-    ...members.slice(0, indices[0]),
-    wrapped,
-    ...members.slice(indices[indices.length - 1] + 1),
-  ];
-  return replaceNode(expr, container.id, withMembers(container, next));
+  const wrapped = mkGroup(inner, { neg: groupNeg, recip: groupRecip });
+  const selected = new Set(indices);
+  const next = [];
+  for (let i = 0; i < members.length; i++) {
+    if (i === indices[0]) next.push(wrapped);
+    if (selected.has(i)) continue;
+    next.push(members[i]);
+  }
+  const result = replaceNode(expr, container.id, withMembers(container, next));
+  if (evaluate(result) !== evaluate(expr)) {
+    throw new Error('group: would change value');
+  }
+  return result;
 }
 
 export function ungroup(expr, groupId) {
@@ -275,10 +303,163 @@ export function ungroup(expr, groupId) {
   }
   return candidate;
 }
+// --- distribute ---------------------------------------------------------
+// Multiplicative distribution: given a factor and a group (both members of
+// the same product), multiply each member of the group's child by the
+// factor, e.g.  2 * (3 + 4)  =>  (2 * 3 + 2 * 4).
+// Only well-defined when the group wraps a sum. The factor is removed from
+// the product and folded into each term of the group's sum.
+export function distribute(expr, factorId, groupId) {
+  const a = locateInContainer(expr, factorId);
+  const b = locateInContainer(expr, groupId);
+  if (!a || !b || a.container !== b.container) {
+    throw new Error('distribute: targets are not siblings');
+  }
+  const container = a.container;
+  if (!isProduct(container)) {
+    throw new Error('distribute: container is not a product');
+  }
+  const groupNode = isGroup(b.node) ? b.node : null;
+  const factorNode = a.node;
+  if (!groupNode) throw new Error('distribute: target is not a group');
+  if (isGroup(factorNode)) {
+    // Only allow a plain (non-grouped) factor for simplicity.
+  }
+  // The group must wrap a sum (with no inverse flags) to distribute over.
+  if (groupNode.neg || groupNode.recip) {
+    throw new Error('distribute: cannot distribute into an inverted group');
+  }
+  if ((isNum(factorNode) || isGroup(factorNode)) && factorNode.recip) {
+    throw new Error('distribute: cannot distribute a reciprocal factor');
+  }
+  const child = groupNode.child;
+  if (!isSum(child)) {
+    throw new Error('distribute: group does not wrap a sum');
+  }
+  // Multiply each term of the sum by a fresh copy of the factor.
+  const newTerms = membersOf(child).map((term) => {
+    const f = cloneWithFreshIds(factorNode);
+    // A negated term keeps its sign by wrapping the product in a negated
+    // group; otherwise pair the factor with the (sign-stripped) term.
+    const termNeg = (isNum(term) || isGroup(term)) && term.neg;
+    const bareTerm = termNeg
+      ? isNum(term)
+        ? { ...term, neg: false }
+        : { ...term, neg: false }
+      : term;
+    const prod = product([f, cloneWithFreshIds(bareTerm)]);
+    return termNeg ? mkGroup(prod, { neg: true }) : mkGroup(prod);
+  });
+  const newSum = sum(newTerms);
+  const newGroup = mkGroup(newSum);
+  // Remove the factor and replace the group with the distributed sum.
+  const members = membersOf(container).slice();
+  const fi = a.index;
+  const gi = b.index;
+  const hi = Math.max(fi, gi);
+  const lo = Math.min(fi, gi);
+  members.splice(hi, 1);
+  members.splice(lo, 1, gi > fi ? newGroup : newGroup);
+  let next = withMembers(container, members);
+  if (membersOf(next).length === 1) {
+    next = membersOf(next)[0];
+  }
+  const candidate = replaceNode(expr, container.id, next);
+  if (evaluate(candidate) !== evaluate(expr)) {
+    throw new Error('distribute: would change value');
+  }
+  return candidate;
+}
+// --- extract (collect common factor) -----------------------------------
+// Reverse of distribute: given two or more members of the same sum, each
+// of which is a product (or group wrapping a product) that shares a common
+// factor, pull that factor out:
+//    2 * 3 + 2 * 5   =>   2 * (3 + 5)
+// `ids` selects the sum members to collect. The common factor is inferred
+// as a member that appears (by structural value/shape) in every selected
+// term.
+export function extract(expr, ids) {
+  const idList = Array.isArray(ids) ? ids : [ids];
+  if (idList.length < 2) throw new Error('extract: need at least two terms');
+  const first = locateInContainer(expr, idList[0]);
+  if (!first) throw new Error('extract: target not inside a container');
+  const container = first.container;
+  if (!isSum(container)) throw new Error('extract: container is not a sum');
+  const members = membersOf(container);
+  const indices = idList.map((id) => findMemberIndex(container, id)).sort((x, y) => x - y);
+  if (indices.some((i) => i < 0)) throw new Error('extract: ids not all siblings');
+  // Each selected term must be a product (possibly wrapped in a plain group).
+  const selected = indices.map((i) => members[i]);
+  const productsOf = (node) => {
+    if (isProduct(node)) return node.factors.slice();
+    if (isGroup(node) && !node.neg && !node.recip && isProduct(node.child)) {
+      return node.child.factors.slice();
+    }
+    return null;
+  };
+  const factorLists = selected.map(productsOf);
+  if (factorLists.some((f) => f === null)) {
+    throw new Error('extract: every selected term must be a product');
+  }
+  // Find a common factor by plain-number value present in every term.
+  const commonValue = findCommonFactorValue(factorLists);
+  if (commonValue === null) {
+    throw new Error('extract: no common factor across selected terms');
+  }
+  // Remove one instance of the common factor from each term; the residue
+  // becomes a term of the inner sum.
+  const innerTerms = factorLists.map((factors) => {
+    const idx = factors.findIndex((f) => isNum(f) && !f.recip && f.value === commonValue);
+    factors.splice(idx, 1);
+    let residue;
+    if (factors.length === 0) {
+      residue = num(1);
+    } else if (factors.length === 1) {
+      residue = cloneWithFreshIds(factors[0]);
+    } else {
+      residue = product(factors.map(cloneWithFreshIds));
+    }
+    return residue;
+  });
+  const innerSum = sum(innerTerms);
+  const collected = product([num(commonValue), mkGroup(innerSum)]);
+  // Rebuild the sum: replace the first selected slot with the collected
+  // product and drop the rest.
+  const selectedSet = new Set(indices);
+  const next = [];
+  for (let i = 0; i < members.length; i++) {
+    if (i === indices[0]) next.push(collected);
+    if (selectedSet.has(i)) continue;
+    next.push(members[i]);
+  }
+  let result = withMembers(container, next);
+  if (membersOf(result).length === 1) {
+    result = membersOf(result)[0];
+  }
+  const candidate = replaceNode(expr, container.id, result);
+  if (evaluate(candidate) !== evaluate(expr)) {
+    throw new Error('extract: would change value');
+  }
+  return candidate;
+}
+// Given per-term factor lists, return a plain-number factor value present
+// (as a non-reciprocal Num) in every list, or null if none.
+function findCommonFactorValue(factorLists) {
+  const [firstList, ...rest] = factorLists;
+  for (const f of firstList) {
+    if (!isNum(f) || f.recip) continue;
+    const value = f.value;
+    const inAll = rest.every((list) => list.some((g) => isNum(g) && !g.recip && g.value === value));
+    if (inAll) return value;
+  }
+  return null;
+}
 
 // --- combine ------------------------------------------------------------
 // Fold two adjacent Num atoms in a sum/product into a single Num.
-export function combine(expr, aId, bId) {
+// When `expected` is provided (from manual entry), it must equal the true
+// arithmetic result, guarding against wrong answers.
+export function combine(expr, aId, bId, expected) {
   const a = locateInContainer(expr, aId);
   const b = locateInContainer(expr, bId);
   if (!a || !b || a.container !== b.container) {
@@ -296,6 +477,9 @@ export function combine(expr, aId, bId) {
     const prod = atomValue(a.node) * atomValue(b.node);
     if (!Number.isInteger(prod)) throw new Error('combine: non-exact division');
     value = prod;
+  }
+  if (expected !== undefined && expected !== null && Number(expected) !== value) {
+    throw new Error(`combine: entered answer ${expected} is not correct (expected ${value})`);
   }
   const members = membersOf(container).slice();
   const lo = Math.min(a.index, b.index);
@@ -352,4 +536,14 @@ export function cancel(expr, aId, bId) {
 }
 
 // Registry so the session layer can dispatch by name.
-export const VERBS = { split, factorize, swap, group, ungroup, combine, cancel };
+export const VERBS = {
+  split,
+  factorize,
+  swap,
+  group,
+  ungroup,
+  combine,
+  cancel,
+  distribute,
+  extract,
+};

@@ -2,51 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
-    <!-- Favicons / site icon -->
-    <link rel="icon" type="image/png" href="../../icon.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="../../icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="../../icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="../../icon.png" />
-    <link rel="shortcut icon" href="../../icon.png" />
     <title>Pentagon Lattice Lab</title>
     <link href="style.css" rel="stylesheet" />
-    <style>
-      .home-link {
-        position: fixed;
-        top: 12px;
-        right: 12px;
-        z-index: 9999;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 8px 14px;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        color: #e6edf3;
-        background: rgba(22, 27, 34, 0.92);
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        text-decoration: none;
-        backdrop-filter: blur(8px);
-        transition: all 0.15s ease;
-      }
-      .home-link:hover {
-        background: rgba(48, 54, 61, 0.95);
-        border-color: #58a6ff;
-        color: #58a6ff;
-      }
-    </style>
   </head>
   <body>
-    <a class="home-link" href="../../index.html" title="Back to home">← Home</a>
     <div id="app">
       <header>
-        <h1>Multi-Sheeted Pentagon Lattice Lab</h1>
+        <h1>Pentagon Lattice Lab — Z₂ Orientation Cover</h1>
         <p class="subtitle" id="subtitle-text">
           Click a tile to inspect. Press edge keys to walk. Press <kbd>space</kbd> to play/pause CA,
           <kbd>n</kbd> to step.
@@ -74,7 +36,6 @@
                   <option value="dodecagon">Regular Dodecagon (n=12)</option>
                   <option value="custom">Custom n-gon…</option>
                   <option value="sierpinski">Sierpiński Triangle</option>
-                  <option value="vicsek">Vicsek (Cross) Fractal</option>
                 </select>
               </label>
               <label id="customNLabel" style="display: none">
@@ -93,9 +54,7 @@
               <label>
                 Sheet group:
                 <select id="group">
-                  <option value="Z2">Z₂ (spinor)</option>
-                  <option selected value="Z5">Z₅ (anyonic)</option>
-                  <option value="Z10">Z₁₀</option>
+                  <option selected value="Z2">Z₂ (orientation cover)</option>
                 </select>
               </label>
               <button id="rebuild">Rebuild Lattice</button>
@@ -222,34 +181,6 @@
             </div>
           </details>
           <details class="section-group" open>
-            <summary>Path / Distance Tool</summary>
-            <div class="section-body">
-              <label>
-                <input id="pathMode" type="checkbox" />
-                Path-pick mode (click sets start, then end)
-              </label>
-              <div style="margin-top: 6px">
-                <button id="pathSetStart">Set start = selected</button>
-                <button id="pathSetEnd">Set end = selected</button>
-              </div>
-              <div style="margin-top: 6px">
-                <button id="pathClear">Clear path</button>
-              </div>
-              <label>
-                <input checked id="pathShowAll" type="checkbox" />
-                Highlight all shortest paths (not just one)
-              </label>
-              <div class="alg-block" id="pathStats" style="margin-top: 8px">
-                <div>start: <span id="pathStart">—</span></div>
-                <div>end: <span id="pathEnd">—</span></div>
-                <div>hop distance: <span id="pathHops">—</span></div>
-                <div># shortest paths: <span id="pathCount">—</span></div>
-                <div>net sheet shift: <span id="pathSheet">—</span></div>
-                <div>Euclidean dist: <span id="pathEuclid">—</span></div>
-              </div>
-            </div>
-          </details>
-          <details class="section-group" open>
             <summary>Cellular Automaton</summary>
             <div class="section-body">
               <label>
@@ -267,7 +198,6 @@
                   <option value="diffusion">Diffusion average</option>
                   <option value="sheetflow">Sheet-flow (anyonic)</option>
                   <option value="xor">XOR neighbors</option>
-                  <option value="langton">Langton's Ant</option>
                 </select>
               </label>
               <label id="caLifeRuleLabel">
@@ -307,52 +237,6 @@
                 <input id="caThreshold" max="5" min="1" type="range" value="1" />
                 <span class="rangeval" id="caThresholdVal">1</span>
               </label>
-              <div id="caLangtonBlock" style="display: none">
-                <label>
-                  Turn ruleset:
-                  <input id="caTurnString" style="width: 120px" type="text" value="RL" />
-                </label>
-                <label>
-                  Preset turmite:
-                  <select id="caTurmitePreset">
-                    <option value="">— custom —</option>
-                    <option selected value="RL">RL (classic Langton)</option>
-                    <option value="LR">LR (mirror Langton)</option>
-                    <option value="RLR">RLR (chaotic)</option>
-                    <option value="LLRR">LLRR (symmetric growth)</option>
-                    <option value="RRLL">RRLL</option>
-                    <option value="LRRL">LRRL</option>
-                    <option value="RLLR">RLLR</option>
-                    <option value="RRLR">RRLR</option>
-                    <option value="LLRRL">LLRRL</option>
-                    <option value="RRLLR">RRLLR</option>
-                    <option value="LRRRRRLLR">LRRRRRLLR (highway)</option>
-                    <option value="RNL">RNL (with straight)</option>
-                    <option value="RUL">RUL (with reverse)</option>
-                    <option value="RSL">RSL (with stay)</option>
-                    <option value="RLLRLLRRRL">RLLRLLRRRL (snowflake)</option>
-                  </select>
-                </label>
-                <label style="display: flex; align-items: center; gap: 6px">
-                  <input id="caAntMirror" type="checkbox" />
-                  Mirror turns (chirality flip)
-                </label>
-                <div style="margin-top: 6px">
-                  <button id="caAntSwarm">Seed ant swarm</button>
-                  <input
-                    id="caAntCount"
-                    max="8"
-                    min="1"
-                    style="width: 50px"
-                    title="Number of ants in swarm"
-                    type="number"
-                    value="4"
-                  />
-                </div>
-                <div class="alg-block" id="caAntStats" style="margin-top: 6px; font-size: 11px">
-                  ants: <span id="caAntInfo">—</span>
-                </div>
-              </div>
               <div style="margin-top: 8px">
                 <button id="caPlay">▶ Play</button>
                 <button id="caStep">Step</button>

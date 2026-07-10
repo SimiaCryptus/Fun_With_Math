@@ -83,8 +83,8 @@ export class SettingsMenu {
       },
       [
         el('option', { value: 'easy' }, 'Easy — any combination'),
-        el('option', { value: 'medium' }, 'Medium — each < 10 or 2·5 factorable'),
-        el('option', { value: 'hard' }, 'Hard — each < 5 or 2·5 factorable'),
+        el('option', { value: 'medium' }, 'Medium — each < 5 or 2·5 factorable'),
+        el('option', { value: 'hard' }, 'Hard — type every answer'),
         el('option', { value: 'custom' }, 'Custom — each < X or factorable'),
       ],
     );

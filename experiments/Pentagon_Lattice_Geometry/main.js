@@ -5,7 +5,6 @@
 import {
   buildNgonLattice,
   buildSierpinski,
-  buildVicsek,
   buildPinwheel,
   fieldInfoForN,
   POLY_PRESETS,
@@ -14,7 +13,6 @@ import { LatticeView } from './render.js';
 import { renderTileInfo, appendWalkStep, clearWalk } from './ui.js';
 import { initDocs } from './ui.js';
 import { CA } from './ca.js';
-import { computePath, auditAdjacency } from './pathfind.js';
 
 const canvas = document.getElementById('lattice');
 const view = new LatticeView(canvas);
@@ -108,13 +106,6 @@ const els = {
   caThreshold: $('caThreshold'),
   caThresholdLabel: $('caThresholdLabel'),
   caThresholdVal: $('caThresholdVal'),
-  caLangtonBlock: $('caLangtonBlock'),
-  caTurnString: $('caTurnString'),
-  caTurmitePreset: $('caTurmitePreset'),
-  caAntMirror: $('caAntMirror'),
-  caAntSwarm: $('caAntSwarm'),
-  caAntCount: $('caAntCount'),
-  caAntInfo: $('caAntInfo'),
   caPlay: $('caPlay'),
   caStep: $('caStep'),
   caReset: $('caReset'),
@@ -131,18 +122,6 @@ const els = {
   caGen: $('caGen'),
   caPop: $('caPop'),
   caBySheet: $('caBySheet'),
-  // Path tool
-  pathMode: $('pathMode'),
-  pathSetStart: $('pathSetStart'),
-  pathSetEnd: $('pathSetEnd'),
-  pathClear: $('pathClear'),
-  pathShowAll: $('pathShowAll'),
-  pathStart: $('pathStart'),
-  pathEnd: $('pathEnd'),
-  pathHops: $('pathHops'),
-  pathCount: $('pathCount'),
-  pathSheet: $('pathSheet'),
-  pathEuclid: $('pathEuclid'),
   // value displays
   alphaSelVal: $('alphaSelVal'),
   alphaOtherVal: $('alphaOtherVal'),
@@ -160,10 +139,6 @@ let caPlaying = false;
 let caStepsPerSec = 8;
 let caLastStepTime = 0;
 let caRAF = null;
-// Path tool state
-let pathStartIdx = null;
-let pathEndIdx = null;
-let pathPickNext = 'start'; // alternates 'start' → 'end'
 
 // ── Polygon type helpers ──────────────────────────────────────────────────────
 
@@ -171,9 +146,6 @@ function getPolyConfig() {
   const type = els.polyType.value;
   if (type === 'sierpinski') {
     return { mode: 'sierpinski', depth: parseInt(els.sierpinskiDepth.value, 10) || 4 };
-  }
-  if (type === 'vicsek') {
-    return { mode: 'vicsek', depth: parseInt(els.sierpinskiDepth.value, 10) || 4 };
   }
   if (type === 'pinwheel') {
     const a = parseFloat(els.pinwheelA && els.pinwheelA.value) || 2;
@@ -198,15 +170,14 @@ function getPolyConfig() {
 function updatePolyTypeUI() {
   const type = els.polyType.value;
   els.customNLabel.style.display = type === 'custom' ? '' : 'none';
-  els.sierpinskiDepthLabel.style.display = type === 'sierpinski' || type === 'vicsek' ? '' : 'none';
+  els.sierpinskiDepthLabel.style.display = type === 'sierpinski' ? '' : 'none';
   if (els.pinwheelOptionsLabel) {
     els.pinwheelOptionsLabel.style.display = type === 'pinwheel' ? '' : 'none';
   }
 
   // Show/hide BFS radius (not meaningful for Sierpiński; meaningful for pinwheel).
   const radiusLabel = els.radius.closest('label');
-  if (radiusLabel)
-    radiusLabel.style.display = type === 'sierpinski' || type === 'vicsek' ? 'none' : '';
+  if (radiusLabel) radiusLabel.style.display = type === 'sierpinski' ? 'none' : '';
 
   // Update field info box.
   if (type === 'sierpinski') {
@@ -233,10 +204,15 @@ function updatePolyTypeUI() {
   } else {
     const n = getPolyConfig().n;
     const info = fieldInfoForN(n);
+    const isOdd = n % 2 === 1;
+    const fiber = isOdd ? 'Z₂ (orientation cover, 2 sheets)' : 'trivial (single sheet)';
     els.fieldInfo.innerHTML =
       `<b>${n}-gon</b><br>` +
-      `Field: ${info.field} &nbsp;|&nbsp; Γ: ${info.group}<br>` +
-      `${info.result}`;
+      `Base field: ${info.field}<br>` +
+      `Fiber / structure group: ${fiber}<br>` +
+      `<span style="color:var(--muted);font-size:11px">` +
+      `Adjacent tiles flip orientation; vertex-loop holonomy is trivial ` +
+      `(even-length cycle). ${info.result}</span>`;
   }
 
   // Update subtitle.
@@ -258,19 +234,20 @@ function updatePolyTypeUI() {
       const edgeKeys =
         cfg.n <= 9 ? `<kbd>1</kbd>–<kbd>${cfg.n}</kbd>` : `<kbd>1</kbd>–<kbd>9</kbd>`;
       sub.innerHTML =
-        `Regular ${cfg.n}-gon lattice. Click a tile to inspect. ` +
-        `Press ${edgeKeys} to walk. ` +
+        `Regular ${cfg.n}-gon lattice (Z₂ orientation cover; ` +
+        `each edge flips orientation, vertex-loop holonomy trivial). ` +
+        `Click a tile to inspect. Press ${edgeKeys} to walk. ` +
         `Press <kbd>space</kbd> to play/pause CA, <kbd>n</kbd> to step.`;
     }
   }
 }
 
 function groupOrderFromSel() {
-  const v = els.group.value;
-  if (v === 'Z2') return 2;
-  if (v === 'Z5') return 5;
-  if (v === 'Z10') return 10;
-  return 5;
+  // sheet_fix.md (NORMATIVE): the cover is Z₂ (orientation only). The old
+  // Z₅ / Z₁₀ options were based on the corrected error and no longer exist.
+  // buildNgonLattice further forces groupOrder to 2 (odd n) or 1 (even n),
+  // so this value is only an upper bound / display hint.
+  return 2;
 }
 
 function rebuild() {
@@ -278,8 +255,6 @@ function rebuild() {
 
   if (cfg.mode === 'sierpinski') {
     lattice = buildSierpinski(cfg.depth);
-  } else if (cfg.mode === 'vicsek') {
-    lattice = buildVicsek(cfg.depth);
   } else if (cfg.mode === 'pinwheel') {
     const radius = Math.max(0, Math.min(8, parseInt(els.radius.value, 10) || 3));
     lattice = buildPinwheel({
@@ -298,33 +273,11 @@ function rebuild() {
   view.setLattice(lattice);
   currentTileIdx = 0;
   view.select(currentTileIdx);
-  // Diagnostics: audit the freshly-built adjacency graph. Asymmetric or
-  // out-of-range neighbor entries are the usual cause of wrong hop counts
-  // between supposedly-adjacent tiles.
-  try {
-    const report = auditAdjacency(lattice);
-    if (!report.ok) {
-      console.warn(`[main] adjacency audit found problems after rebuild:`, {
-        asymmetric: report.asymmetric.length,
-        outOfRange: report.outOfRange.length,
-        selfLoops: report.selfLoops.length,
-        duplicates: report.duplicates.length,
-      });
-    }
-    // Expose for interactive debugging from the browser console.
-    window.__lattice = lattice;
-    window.__auditAdjacency = () => auditAdjacency(lattice);
-    window.__computePath = (a, b) => computePath(lattice, a, b);
-  } catch (err) {
-    console.error('[main] adjacency audit threw', err);
-  }
-
   renderTileInfo(els.tileInfo, lattice.tiles[currentTileIdx], lattice);
   clearWalk(els.walk);
   appendWalkStep(els.walk, lattice.tiles[currentTileIdx], null, 'origin');
   initCA();
   updatePolyTypeUI();
-  clearPath();
 }
 
 function initCA() {
@@ -333,10 +286,8 @@ function initCA() {
     numStates,
     family: els.caFamily.value,
     cyclicThreshold: parseInt(els.caThreshold.value, 10) || 1,
-    turnString: els.caTurnString ? els.caTurnString.value : 'RL',
   });
   ca.setLifeRule(els.caLifeRule.value);
-  if (els.caAntMirror) ca.setAntMirror(els.caAntMirror.checked);
   ca.seedPoint(0, 1);
   view.setCA(ca);
   updateCAStats();
@@ -353,55 +304,6 @@ function updateCAStats() {
     const parts = [...by.entries()].sort((a, b) => a[0] - b[0]).map(([s, n]) => `s${s}:${n}`);
     els.caBySheet.textContent = parts.join('  ');
   }
-  if (els.caAntInfo) {
-    if (ca.family === 'langton' && ca.ants.length) {
-      els.caAntInfo.textContent = ca.ants
-        .map((a, i) => `#${i}@${a.tile}(${a.steps || 0})`)
-        .join('  ');
-    } else {
-      els.caAntInfo.textContent = '—';
-    }
-  }
-}
-function recomputePath() {
-  if (pathStartIdx === null || pathEndIdx === null) {
-    view.setPath(null);
-    updatePathStats(null);
-    return;
-  }
-  const result = computePath(lattice, pathStartIdx, pathEndIdx);
-  view.setPath(result);
-  updatePathStats(result);
-}
-function updatePathStats(result) {
-  els.pathStart.textContent = pathStartIdx === null ? '—' : `#${pathStartIdx}`;
-  els.pathEnd.textContent = pathEndIdx === null ? '—' : `#${pathEndIdx}`;
-  if (!result) {
-    els.pathHops.textContent = '—';
-    els.pathCount.textContent = '—';
-    els.pathSheet.textContent = '—';
-    els.pathEuclid.textContent = '—';
-    return;
-  }
-  if (!result.reachable) {
-    els.pathHops.textContent = '∞ (unreachable)';
-    els.pathCount.textContent = '0';
-    els.pathSheet.textContent = '—';
-    els.pathEuclid.textContent = result.euclid != null ? result.euclid.toFixed(4) : '—';
-    return;
-  }
-  els.pathHops.textContent = String(result.hops);
-  els.pathCount.textContent =
-    result.numPaths > 64 ? `${result.numPaths} (showing 64)` : String(result.numPaths);
-  els.pathSheet.textContent = `+${result.sheetShift} (mod ${lattice.groupOrder})`;
-  els.pathEuclid.textContent = result.euclid.toFixed(4);
-}
-function clearPath() {
-  pathStartIdx = null;
-  pathEndIdx = null;
-  pathPickNext = 'start';
-  view.setPath(null);
-  updatePathStats(null);
 }
 
 function caTick(now) {
@@ -437,7 +339,6 @@ function updateFamilyVisibility() {
   els.caLifeRuleLabel.style.display = fam === 'life' ? '' : 'none';
   els.caLifePresetLabel.style.display = fam === 'life' ? '' : 'none';
   els.caThresholdLabel.style.display = fam === 'cyclic' ? '' : 'none';
-  if (els.caLangtonBlock) els.caLangtonBlock.style.display = fam === 'langton' ? '' : 'none';
 }
 
 // ── Event wiring ─────────────────────────────────────────────────────────────
@@ -460,7 +361,7 @@ els.customN.addEventListener('change', () => {
   }
 });
 els.sierpinskiDepth.addEventListener('change', () => {
-  if (els.polyType.value === 'sierpinski' || els.polyType.value === 'vicsek') rebuild();
+  if (els.polyType.value === 'sierpinski') rebuild();
 });
 if (els.pinwheelHypSheets) {
   els.pinwheelHypSheets.addEventListener('change', () => {
@@ -600,51 +501,6 @@ els.caThreshold.addEventListener('input', () => {
   els.caThresholdVal.textContent = String(t);
   if (ca) ca.setCyclicThreshold(t);
 });
-if (els.caTurnString) {
-  els.caTurnString.addEventListener('change', () => {
-    if (ca) ca.setTurnString(els.caTurnString.value);
-    // Sync numStates display in case the ruleset grew it.
-    if (ca) els.caNumStates.value = String(ca.numStates);
-    // Clear preset selection if it no longer matches.
-    if (els.caTurmitePreset && els.caTurmitePreset.value !== els.caTurnString.value) {
-      els.caTurmitePreset.value = '';
-    }
-    view.draw();
-  });
-}
-if (els.caTurmitePreset) {
-  els.caTurmitePreset.addEventListener('change', () => {
-    const v = els.caTurmitePreset.value;
-    if (!v) return;
-    els.caTurnString.value = v;
-    if (ca) {
-      ca.setTurnString(v);
-      els.caNumStates.value = String(ca.numStates);
-    }
-    view.draw();
-  });
-}
-if (els.caAntMirror) {
-  els.caAntMirror.addEventListener('change', () => {
-    if (ca) ca.setAntMirror(els.caAntMirror.checked);
-    view.draw();
-  });
-}
-if (els.caAntSwarm) {
-  els.caAntSwarm.addEventListener('click', () => {
-    if (!ca) return;
-    if (ca.family !== 'langton') {
-      els.caFamily.value = 'langton';
-      ca.setFamily('langton');
-      updateFamilyVisibility();
-    }
-    const count = Math.max(1, Math.min(8, parseInt(els.caAntCount.value, 10) || 4));
-    ca.placeAntSwarm(currentTileIdx, count);
-    ensureCAOverlayOn();
-    view.draw();
-    updateCAStats();
-  });
-}
 els.caDensity.addEventListener('input', () => {
   const d = (parseInt(els.caDensity.value, 10) || 0) / 100;
   els.caDensityVal.textContent = d.toFixed(2);
@@ -688,9 +544,6 @@ els.caSeedShapeApply.addEventListener('click', () => {
   if (!ca) return;
   const shape = els.caSeedShape.value;
   ca.seedShape(shape, currentTileIdx);
-  // In Langton mode, a "shape" seed leaves the colours but no ant; drop an
-  // ant at the selected tile so stepping does something visible.
-  if (ca.family === 'langton') ca.placeAnt(currentTileIdx, 0);
   ensureCAOverlayOn();
   view.draw();
   updateCAStats();
@@ -701,24 +554,6 @@ els.caClear.addEventListener('click', () => {
   view.draw();
   updateCAStats();
 });
-// ---- Path tool wiring ----
-els.pathSetStart.addEventListener('click', () => {
-  pathStartIdx = currentTileIdx;
-  // After explicitly setting a start, keep the picker on 'end' so further
-  // clicks (in path-pick mode) choose alternative endpoints.
-  pathPickNext = 'end';
-  recomputePath();
-});
-els.pathSetEnd.addEventListener('click', () => {
-  pathEndIdx = currentTileIdx;
-  recomputePath();
-});
-els.pathClear.addEventListener('click', clearPath);
-els.pathShowAll.addEventListener('change', (e) => {
-  view.setOption('pathShowAll', e.target.checked);
-});
-// Initialize the render option to match the checkbox.
-view.setOption('pathShowAll', els.pathShowAll.checked);
 
 function ensureCAOverlayOn() {
   if (!els.caOverlay.checked) {
@@ -764,30 +599,8 @@ window.addEventListener('mouseup', (e) => {
     const [sx, sy] = view.eventToCanvas(e);
     const idx = view.pickTile(sx, sy);
     if (idx !== null) {
-      if (els.pathMode.checked) {
-        // Path-pick mode: first click sets the start, subsequent clicks
-        // keep updating the end so alternative endpoints can be explored
-        // without re-picking the start each time.
-        if (pathPickNext === 'start') {
-          pathStartIdx = idx;
-          pathEndIdx = null;
-          pathPickNext = 'end';
-        } else {
-          pathEndIdx = idx;
-          // Stay in 'end' mode: the next click re-selects the endpoint.
-          pathPickNext = 'end';
-        }
-        currentTileIdx = idx;
-        view.select(idx);
-        renderTileInfo(els.tileInfo, lattice.tiles[idx], lattice);
-        recomputePath();
-      } else if (els.caPaintMode.checked && ca) {
-        if (ca.family === 'langton') {
-          // Place the ant at the clicked tile (facing first valid edge).
-          ca.placeAnt(idx, 0);
-        } else {
-          ca.toggleCell(idx);
-        }
+      if (els.caPaintMode.checked && ca) {
+        ca.toggleCell(idx);
         ensureCAOverlayOn();
         view.draw();
         updateCAStats();
@@ -837,23 +650,19 @@ window.addEventListener('keydown', (e) => {
   if (k < 0) return;
   const t = lattice.tiles[currentTileIdx];
   if (k >= t.neighbors.length) return;
-  // Map the pressed key to a compass slot (North, then clockwise), then
-  // resolve to this tile's raw edge index so walking stays direction-stable.
-  const n = t.n || t.neighbors.length;
-  const edge = t.isSierpinski || t.isPinwheel ? k : (((k + t.orient) % n) + n) % n;
-  if (t.activeEdges && !t.activeEdges[edge]) {
-    appendWalkStep(els.walk, t, edge, 'inactive edge (pinwheel)');
+  if (t.activeEdges && !t.activeEdges[k]) {
+    appendWalkStep(els.walk, t, k, 'inactive edge (pinwheel)');
     return;
   }
-  const nIdx = t.neighbors[edge];
+  const nIdx = t.neighbors[k];
   if (nIdx === null) {
-    appendWalkStep(els.walk, t, edge, 'no neighbor in lattice');
+    appendWalkStep(els.walk, t, k, 'no neighbor in lattice');
     return;
   }
   currentTileIdx = nIdx;
   view.select(nIdx);
   renderTileInfo(els.tileInfo, lattice.tiles[nIdx], lattice);
-  appendWalkStep(els.walk, lattice.tiles[nIdx], edge);
+  appendWalkStep(els.walk, lattice.tiles[nIdx], k);
 });
 
 // initial build

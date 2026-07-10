@@ -415,7 +415,7 @@ export function renderTileInfo(el, tile, lattice) {
     kv(
       'Sheet',
       `<span class="pill sheet">s${tile.sheet}</span>
-       <span style="color:var(--muted);font-size:11px">mod ${lattice.groupOrder}</span>`
+       <span style="color:var(--muted);font-size:11px">Z₂ orientation cover · mod ${lattice.groupOrder}</span>`
     )
   );
   const n = tile.n || (tile.vertsF ? tile.vertsF.length : 5);
@@ -446,7 +446,7 @@ export function renderTileInfo(el, tile, lattice) {
         kv(
           'Orientation σ',
           `<span class="pill">${tile.sigma === 0 ? '↑' : '↓'}</span>
-           <span style="color:var(--muted);font-size:11px">Z₂ bipartition (odd n-gon)</span>`
+           <span style="color:var(--muted);font-size:11px">Z₂ fiber (orientation flips each edge; holonomy trivial)</span>`
         )
       );
     }
@@ -462,16 +462,15 @@ export function renderTileInfo(el, tile, lattice) {
 
   // --- Centroid ---
   html.push(`<div class="section">Centroid</div>`);
-  html.push(floatBlock(cxF, cyF, tile.centroidAlg));
+  html.push(floatBlock(cxF, cyF));
 
   // --- Vertices ---
   html.push(`<div class="section">Vertices</div>`);
   for (let i = 0; i < tile.verts.length; i++) {
     const [fx, fy] = tile.vertsF[i];
-    const alg = tile.vertsAlg ? tile.vertsAlg[i] : null;
     html.push(`<div class="vertex-row">
         <span class="pill">v${i}</span>
-          ${floatBlock(fx, fy, alg)}
+       ${floatBlock(fx, fy)}
       </div>`);
   }
 
@@ -492,12 +491,8 @@ export function renderTileInfo(el, tile, lattice) {
       continue;
     }
     const nb = lattice.tiles[nIdx];
-    const compass =
-      tile.neighborCompass && tile.neighborCompass[k] != null
-        ? ` <span style="color:var(--muted);font-size:10px">slot${tile.neighborCompass[k]}</span>`
-        : '';
     html.push(`<div class="neighbor-row">
-          <span class="pill edge">${edgeLabel}${compass}</span>
+         <span class="pill edge">${edgeLabel}</span>
       <span>→ #${nb.index} · <span style="color:var(--accent3)">s${nb.sheet}</span> · <span style="color:var(--accent2)">o${nb.orient}</span></span>
         <span class="delta">Δs = +${tile.neighborSheetDeltas[k]}</span>
       </div>`);
@@ -513,15 +508,11 @@ function kv(label, content) {
     </div>`;
 }
 
-function floatBlock(fx, fy, alg) {
-  const algLine = alg
-    ? `<div class="float" style="color:var(--accent3)">alg = ${escapeHtml(alg)}</div>`
-    : '';
+function floatBlock(fx, fy) {
   return `<div class="alg-block">
-      <div><span class="axis">x</span>= ${fx.toFixed(8)}</div>
-      <div><span class="axis">y</span>= ${fy.toFixed(8)}</div>
-      ${algLine}
-    </div>`;
+     <div><span class="axis">x</span>= ${fx.toFixed(8)}</div>
+     <div><span class="axis">y</span>= ${fy.toFixed(8)}</div>
+   </div>`;
 }
 
 function escapeHtml(s) {

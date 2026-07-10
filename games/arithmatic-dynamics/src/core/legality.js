@@ -26,7 +26,6 @@ export function legalVerbs(expr, selection, allowed = null, opts = {}) {
   const difficulty = opts.difficulty || 'easy';
   const ids = Array.isArray(selection) ? selection : [selection];
   const verbs = new Set();
-
   if (ids.length === 1) {
     const loc = locate(expr, ids[0]);
     if (loc) {
@@ -61,9 +60,38 @@ export function legalVerbs(expr, selection, allowed = null, opts = {}) {
         verbs.add('swap');
         verbs.add('group');
         if (isNum(a.node) && isNum(b.node)) {
-          if (combineOk(container, a.node, b.node, difficulty)) verbs.add('combine');
+          // Combine is always available on two numbers; whether it is
+          // applied automatically or requires manual entry is decided at
+          // apply time (see combineNeedsInput / difficultyAllows).
+          verbs.add('combine');
           if (cancelOk(container, a.node, b.node)) verbs.add('cancel');
         }
+        // Distribute: in a product, a plain (non-inverse) factor may be
+        // distributed across a grouped sum. Offer it when exactly one of
+        // the pair is a group wrapping a sum and the other is a plain
+        // factor, with no reciprocal/negation flags in play.
+        if (isProduct(container) && distributeOk(a.node, b.node)) {
+          verbs.add('distribute');
+        }
+        // Extract: two members of a sum that are products sharing a
+        // common numeric factor may have that factor collected out.
+        if (isSum(container) && extractOk([a.node, b.node])) {
+          verbs.add('extract');
+        }
+      }
+    }
+  } else if (ids.length > 2) {
+    // Extract may collect a common factor across more than two terms of
+    // the same sum.
+    const locs = ids.map((id) => locate(expr, id));
+    if (
+      locs.every(
+        (l) => l && l.inContainer && l.inContainer.container === locs[0].inContainer.container,
+      )
+    ) {
+      const container = locs[0].inContainer.container;
+      if (isSum(container) && extractOk(locs.map((l) => l.node))) {
+        verbs.add('extract');
       }
     }
   }
@@ -73,7 +101,7 @@ export function legalVerbs(expr, selection, allowed = null, opts = {}) {
   return result;
 }
 
-function combineOk(container, a, b, difficulty = 'easy') {
+export function combineOk(container, a, b, difficulty = 'easy') {
   const va = evaluate(a);
   const vb = evaluate(b);
   let result;
@@ -85,6 +113,19 @@ function combineOk(container, a, b, difficulty = 'easy') {
     if (!Number.isInteger(result)) return false;
   }
   return difficultyAllows(difficulty, [va, vb], result);
+}
+// Does combining these two numbers require the player to enter the
+// answer themselves? True when the difficulty gate does not permit the
+// combination to be folded automatically. Products with a non-integer
+// result can never be combined (return false — no manual entry helps).
+export function combineNeedsInput(container, a, b, difficulty = 'easy') {
+  const va = evaluate(a);
+  const vb = evaluate(b);
+  if (isProduct(container)) {
+    const result = va * vb;
+    if (!Number.isInteger(result)) return false;
+  }
+  return !combineOk(container, a, b, difficulty);
 }
 
 // Is a number's absolute value factorizable using only the given factors?
@@ -103,16 +144,18 @@ function factorizableBy(n, factors) {
 
 // Difficulty gate for a candidate combination.
 //   easy   - anything
-//   medium - each operand and the result is either magnitude < 10 or
+//   medium - each operand and the result is either magnitude < 5 or
 //            factorizable using only 2 and 5
-//   hard   - each operand and the result is either magnitude < 5 or
-//            factorizable using only 2 and 5
+//   hard   - never auto-combines; every combination requires the player
+//            to enter the answer manually
 //   custom - each operand and the result is either magnitude < threshold
 //            or factorizable using the allowed factors. Parameterized via
 //            opts: { threshold, factors }.
 export function difficultyAllows(difficulty, operands, result) {
   const vals = [...operands, result];
   if (difficulty === 'easy') return true;
+  // Hard mode: nothing auto-combines — the player always types the answer.
+  if (difficulty === 'hard') return false;
   // Resolve threshold + factors for the named/custom difficulty.
   let threshold;
   let factors;
@@ -121,9 +164,6 @@ export function difficultyAllows(difficulty, operands, result) {
     threshold = difficulty.threshold;
     factors = difficulty.factors || [2, 5];
   } else if (difficulty === 'medium') {
-    threshold = 10;
-    factors = [2, 5];
-  } else if (difficulty === 'hard') {
     threshold = 5;
     factors = [2, 5];
   } else {
@@ -142,4 +182,41 @@ export function difficultyAllows(difficulty, operands, result) {
 function cancelOk(container, a, b) {
   if (isSum(container)) return evaluate(a) + evaluate(b) === 0;
   return evaluate(a) * evaluate(b) === 1;
+}
+// Distribution is legal when exactly one of the pair is a plain group
+// (no neg/recip) wrapping a sum, and the other is a plain, non-reciprocal
+// factor.
+function distributeOk(a, b) {
+  const groupNode =
+    isGroup(a) && !a.neg && !a.recip ? a : isGroup(b) && !b.neg && !b.recip ? b : null;
+  const factorNode = groupNode === a ? b : groupNode === b ? a : null;
+  if (!groupNode || !factorNode) return false;
+  if (!isSum(groupNode.child)) return false;
+  if (isGroup(factorNode) && (factorNode.neg || factorNode.recip)) return false;
+  if (isNum(factorNode) && factorNode.recip) return false;
+  return true;
+}
+// Extraction is legal when every selected term is a product (or plain
+// group wrapping a product) and they share a common non-reciprocal
+// numeric factor.
+function extractOk(nodes) {
+  if (!nodes || nodes.length < 2) return false;
+  const factorsOf = (node) => {
+    if (isProduct(node)) return node.factors;
+    if (isGroup(node) && !node.neg && !node.recip && isProduct(node.child)) {
+      return node.child.factors;
+    }
+    return null;
+  };
+  const lists = nodes.map(factorsOf);
+  if (lists.some((l) => l === null)) return false;
+  const [first, ...rest] = lists;
+  for (const f of first) {
+    if (!isNum(f) || f.recip) continue;
+    const value = f.value;
+    if (rest.every((list) => list.some((g) => isNum(g) && !g.recip && g.value === value))) {
+      return true;
+    }
+  }
+  return false;
 }

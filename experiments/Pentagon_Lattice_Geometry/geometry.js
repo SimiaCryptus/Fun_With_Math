@@ -134,6 +134,14 @@ export function pentEdge(centroid, orient, k, sigma = 0) {
 // Then matchEdge = (k + 2) mod 5.
 //
 // We still verify matchEdge constructively below from shared vertices.
+//
+// sheet_fix.md (NORMATIVE): The FIBER of the covering space is Z₂ and is
+// carried ENTIRELY by the orientation bit `sigma`. Crossing any edge flips
+// orientation exactly once (the single non-trivial element of Z₂). There is
+// no Z5 / Z10 fiber and no `signed3` sheet-shift rule. The `orient` value is
+// a base-graph (vertex-labeling) quantity, NOT a fiber coordinate. Because
+// the vertex loop has even length (10), the product of edge flips around it
+// is identity, so the holonomy around a pentagon vertex is TRIVIAL (0).
 
 export function neighborOf(centroid, orient, sigma, k) {
   // edge midpoint
@@ -153,5 +161,8 @@ export function neighborOf(centroid, orient, sigma, k) {
       break;
     }
   }
-  return { centroid: newC, orient: newO, sigma: newSigma, matchEdge };
+  // The Z₂ fiber element for crossing this edge is the orientation flip.
+  // sheetDelta ∈ {0,1}; here it is always 1 (every edge flips orientation).
+  const sheetDelta = (newSigma - (sigma & 1)) & 1;
+  return { centroid: newC, orient: newO, sigma: newSigma, matchEdge, sheetDelta };
 }
