@@ -96,6 +96,13 @@
       "href": "experiments/fractal_learning/index.html",
       "readme": "experiments/fractal_learning/idea.md",
       "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
+    },
+    {
+      "icon": "🔒",
+      "title": "Static Secrets",
+      "href": "experiments/static-secrets/index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
+      "readme": "experiments/static-secrets/README.md",
+      "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key."
     }
   ],
   "essays": [],
