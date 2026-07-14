@@ -17,6 +17,33 @@ function renderMarkdownToHtml(text) {
 function clear(container) {
   while (container.firstChild) container.removeChild(container.firstChild);
 }
+// Source file extensions that map to encrypted `.ssec` blobs.
+const REWRITABLE_EXTENSIONS = ['.md', '.markdown', '.html', '.htm', '.txt'];
+// A link is "path-relative" if it doesn't specify a scheme/host and
+// isn't a root-absolute or protocol-relative URL. These are the links
+// pointing at sibling files within the same encrypted demo site.
+function isPathRelative(raw) {
+   if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) return false; // has scheme
+   if (raw.startsWith('//')) return false; // protocol-relative
+   if (raw.startsWith('#')) return false; // fragment only
+   return true;
+}
+// Swap a known source extension to `.ssec`, preserving query/hash.
+function swapToSsecExtension(absUrl) {
+   try {
+     const u = new URL(absUrl);
+     const lowerPath = u.pathname.toLowerCase();
+     for (const ext of REWRITABLE_EXTENSIONS) {
+       if (lowerPath.endsWith(ext)) {
+         u.pathname = u.pathname.slice(0, u.pathname.length - ext.length) + '.ssec';
+         return u.href;
+       }
+     }
+     return absUrl;
+   } catch {
+     return absUrl;
+   }
+}
 
 function renderHtmlDocument(container, htmlString, onLinkClick) {
   clear(container);
@@ -24,7 +51,13 @@ function renderHtmlDocument(container, htmlString, onLinkClick) {
   iframe.className = 'ss-content-frame';
   // Restrict capabilities; allow scripts but keep it cross-origin (no
   // allow-same-origin) so it can't touch our localStorage / keychain.
-  iframe.setAttribute('sandbox', 'allow-scripts allow-popups allow-forms');
+  // allow-top-navigation-by-user-activation lets rewritten links (which
+  // use target="_top") navigate the app on user click without granting
+  // same-origin access to the keystore.
+  iframe.setAttribute(
+    'sandbox',
+    'allow-scripts allow-popups allow-forms allow-top-navigation-by-user-activation'
+  );
   iframe.srcdoc = htmlString;
   container.appendChild(iframe);
   // Link interception for in-content navigation is handled by the
@@ -59,15 +92,21 @@ function renderBinary(container, inner) {
 // Rewrite relative links so they route back through the proxy.
 // baseUrl: the URL the content was fetched from.
 // proxyBase: function(targetUrl) => href for our app.
-function rewriteHtmlLinks(htmlString, baseUrl, proxyBase) {
+// rewriteExtension: if true, path-relative links to source files
+//   (e.g. `recipe.md`) have their extension swapped to `.ssec` before
+//   being wrapped, so clicking them re-invokes the decryption proxy.
+function rewriteHtmlLinks(htmlString, baseUrl, proxyBase, rewriteExtension = false) {
   try {
     const doc = new DOMParser().parseFromString(htmlString, 'text/html');
     doc.querySelectorAll('a[href]').forEach((a) => {
       const raw = a.getAttribute('href');
       if (!raw || raw.startsWith('#') || raw.startsWith('javascript:')) return;
       try {
-        const abs = new URL(raw, baseUrl).href;
-        a.setAttribute('href', proxyBase(abs));
+         let abs = new URL(raw, baseUrl).href;
+         if (rewriteExtension && isPathRelative(raw)) {
+           abs = swapToSsecExtension(abs);
+         }
+         a.setAttribute('href', proxyBase(abs));
         a.setAttribute('target', '_top');
       } catch {
         /* leave as-is */
@@ -94,7 +133,7 @@ export function render(container, inner, { baseUrl, proxyBase } = {}) {
       const md = decoder.decode(inner.content);
       let html = renderMarkdownToHtml(md);
       if (baseUrl && proxyBase) {
-        html = rewriteHtmlLinks(html, baseUrl, proxyBase);
+         html = rewriteHtmlLinks(html, baseUrl, proxyBase, true);
       }
       renderHtmlDocument(
         container,

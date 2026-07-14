@@ -13,12 +13,12 @@ This site is a **multi-recipient encryption demo**. A single blob can be
 unlocked by _any_ of several passwords ("recipients"). Below are the
 classified files and the passwords that open them. Try them out!
 
-| File          | Passwords that work    | What's inside                           |
-| ------------- | ---------------------- | --------------------------------------- |
-| `index.ssec`  | `secret`, `sprinkles`  | This very page (you're reading it)      |
-| `recipe.ssec` | `sprinkles`, `custard` | The Forbidden Filling Recipe™           |
-| `roster.ssec` | `admin`, `secret`      | The membership roster (admins only-ish) |
-| `vault.ssec`  | `sprinkles`            | Vault access. Bakers only.              |
+| File                     | Passwords that work    | What's inside                           |
+|--------------------------|------------------------|-----------------------------------------|
+| [`index.md`](index.md)   | `secret`, `sprinkles`  | This very page (you're reading it)      |
+| [`recipe.md`](recipe.md) | `sprinkles`, `custard` | The Forbidden Filling Recipe™           |
+| [`roster.md`](roster.md) | `admin`, `secret`      | The membership roster (admins only-ish) |
+| [`vault.md`](vault.md)   | `sprinkles`            | Vault access. Bakers only.              |
 
 ## Cast of Characters
 
