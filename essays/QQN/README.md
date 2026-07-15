@@ -4,6 +4,13 @@
 analysis, for those who want the full derivation.
 
 http://dx.doi.org/10.13140/RG.2.2.15200.19206
+---
+## 🚀 Implementations
+QQN is available in three languages/frameworks — pick whichever fits your stack:
+- 🦀 **[qqn-optimizer](https://github.com/SimiaCryptus/qqn-optimizer)** — the original Rust
+   implementation and reference for the paper.
+- 🐍 **[qqn-jax](https://github.com/SimiaCryptus/qqn-jax)** — JAX / Optax (Python) port.
+- 🔥 **[qqn-torch](https://github.com/SimiaCryptus/qqn-torch)** — PyTorch port.
 
 ---
 
@@ -170,6 +177,11 @@ see the accompanying paper:
 
 **"Quadratic-Quasi-Newton Optimization: Combining Gradient and Quasi-Newton Directions Through
 Quadratic Interpolation"**
+### Source Code & Ports
+- 🦀 **[qqn-optimizer](https://github.com/SimiaCryptus/qqn-optimizer)** — original Rust paper &
+   reference implementation
+- 🐍 **[qqn-jax](https://github.com/SimiaCryptus/qqn-jax)** — JAX / Optax (Python) port
+- 🔥 **[qqn-torch](https://github.com/SimiaCryptus/qqn-torch)** — PyTorch port
 
 ---
 
