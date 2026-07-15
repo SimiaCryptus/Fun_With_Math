@@ -10,6 +10,7 @@ export class AppState {
             latticeOn: false,
             vizMode: 'heatmap',
             colorScheme: 'viridis',
+             valueScaling: 'linear',
             autofollow: true,
             showGrad: true,
             speed: 10,
@@ -19,6 +20,8 @@ export class AppState {
             // objective params
             bowl: {kx: 0.02, ky: 0.02, cx: 0, cy: 0},
             linear: {a: 0.5, b: 0.3},
+             // scaling amplitude for closed-form analytic landscapes
+             analytic: {scale: 1},
             noise: {amp: 4, fx: 0.15, fy: 0.15, seed: 1337},
               lattice: {L: 6, f: 0.5, cgx: 1.2, cgy: -0.8, offset: 1, seed: 4242},
             start: {x: -18, y: 14},
@@ -27,7 +30,13 @@ export class AppState {
                  gd: {},
                  adam: {b1: 0.9, b2: 0.999, eps: 1e-8},
                  lbfgs: {m: 8},
-                 qqn: {m: 8},
+                 qqn: {
+                     m: 8,
+                     oracle: 'lbfgs',
+                     momentumBeta: 0.9,
+                     lineSearch: 'golden',
+                     maxLineSearch: 30,
+                 },
              },
         };
         this.dirty = {loss: true, overlay: true, path: true, stats: true, ui: true};

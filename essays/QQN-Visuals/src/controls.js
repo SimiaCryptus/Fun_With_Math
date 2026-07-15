@@ -33,12 +33,23 @@ export class GlobalControls extends EventTarget {
             c.dataset.key = key;
             if (key === this.landscapeKey) c.classList.add('selected');
             thumbs.appendChild(c);
-            // draw thumbnail
-            requestAnimationFrame(() => {
-                const sc = new Scene2D(c, LANDSCAPES[key].domain);
-                sc.clear();
-                sc.drawContours(LANDSCAPES[key], {levels: 8});
-            });
+            // draw thumbnail once the element has been laid out and has a size.
+            const drawThumb = (attempt = 0) => {
+                const rect = c.getBoundingClientRect();
+                if ((rect.width < 2 || rect.height < 2) && attempt < 10) {
+                    // Not laid out yet; retry on the next frame.
+                    requestAnimationFrame(() => drawThumb(attempt + 1));
+                    return;
+                }
+                try {
+                    const sc = new Scene2D(c, LANDSCAPES[key].domain);
+                    sc.clear();
+                    sc.drawContours(LANDSCAPES[key], {levels: 8});
+                } catch (err) {
+                    console.error('Thumbnail draw failed for', key, err);
+                }
+            };
+            requestAnimationFrame(() => drawThumb());
             c.addEventListener('click', () => {
                 [...thumbs.children].forEach((ch) => ch.classList.remove('selected'));
                 c.classList.add('selected');

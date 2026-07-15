@@ -107,6 +107,9 @@ This formulation ensures:
 - Adaptive behavior based on problem characteristics, discovered by the search
   rather than hand-tuned.
 
+
+
+
 ### Searching the Path Directly
 
 The points along `d(t)` are **states**, not directions to be second-guessed by
@@ -137,15 +140,15 @@ are realized in practice.
 The line search traverses the quadratic path `d(t)` over `t ∈ [0, 1]` and must:
 
 - **Select the path parameter `t`**: Walk the curve to satisfy sufficient
-  decrease conditions (e.g., Armijo/Wolfe conditions). Each probe `x + d(t)` is
-  a *state* on the path, not a direction to be re-scaled.
+   decrease conditions (e.g., Armijo/Wolfe conditions). Each probe `x + d(t)` is
+   a *state* on the path, not a direction to be re-scaled.
 - **Enforce descent**: Guarantee that `f(x + d(t)) < f(x)` (or report
   failure), which is the foundation of global convergence.
 - **Exploit curvature**: A strong Wolfe condition on the line search ensures the
   curvature information `(s, y)` fed back into the L-BFGS oracle remains accurate
   and well-conditioned.
 - **Navigate the feasible path**: When a region is configured, evaluate the
-  *projected* candidate `project_R(x, x + d(t))` so the search respects
+   *projected* candidate `project_R(x, x + d(t))` so the search respects
   constraints.
 
 Walking `t` directly is what lets QQN **automatically discover the right blend**
@@ -164,12 +167,12 @@ quasi-Newton steps, losing the benefits of both.
 The solver registers several interchangeable strategies (all sharing a common
 `LineSearchResult` return type and region-aware interface):
 
-| Name                      | Method                       | Conditions                 | Notes                                                                                                                                              |
-|---------------------------|------------------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| `strong_wolfe`            | Optax zoom line search       | Armijo + strong curvature  | Keeps L-BFGS updates well-conditioned, but **over-restricts** the quadratic-path step on the MNIST benchmark (fails to converge); not the default. |
-| `backtracking` / `armijo` | Self-contained backtracking  | Armijo sufficient decrease | `lax.while_loop`; robust fallback.                                                                                                                 |
-| `hager_zhang`             | Optax backtracking transform | Approximate Wolfe          | Robust approximate-Wolfe scheme.                                                                                                                   |
-| `fixed`                   | Constant step                | None                       | Debugging / benchmarking baseline.                                                                                                                 |
+| Name | Method | Conditions | Notes |
+| --- | --- | --- | --- |
+| `strong_wolfe` | Optax zoom line search | Armijo + strong curvature | Keeps L-BFGS updates well-conditioned, but **over-restricts** the quadratic-path step on the MNIST benchmark (fails to converge); not the default. |
+| `backtracking` / `armijo` | Self-contained backtracking | Armijo sufficient decrease | `lax.while_loop`; robust fallback. |
+| `hager_zhang` | Optax backtracking transform | Approximate Wolfe | Robust approximate-Wolfe scheme. |
+| `fixed` | Constant step | None | Debugging / benchmarking baseline. |
 
 The **spline** refinement is *not* a line-search strategy but an orthogonal,
 boolean enhancement (`spline=True`). Because the path `d(t_i)` is consistent
@@ -325,15 +328,15 @@ QQNState(
    for the `t = 1` endpoint `-H∇f`.
 2. **Gradient**: form `grad_dir = -∇f`.
 3. **Path + Search**: run a single configured line search that traverses the
-   quadratic path `d(t) = t(1-t)·grad_dir + t²·qn_dir` over `t ∈ [0, 1]`,
-   evaluating candidate states `x + d(t)` (each respecting the region via the
-   projected path) and selecting the step `t`.
+    quadratic path `d(t) = t(1-t)·grad_dir + t²·qn_dir` over `t ∈ [0, 1]`,
+    evaluating candidate states `x + d(t)` (each respecting the region via the
+    projected path) and selecting the step `t`.
 4. **Selection**: extract the accepted `new_params`, `new_value`, `new_grad`,
-   and `step_size` (the chosen `t`).
+    and `step_size` (the chosen `t`).
 5. **Oracle update**: assemble an `OracleInfo` (`params`, `new_params`, `grad`,
-   `new_grad`, `t`, `α`) and call `oracle.update(...)` — e.g. push the new L-BFGS
-   curvature pair `(s, y) = (x_new − x, ∇f_new − ∇f)`, admitted only if
-   `⟨y, s⟩ > ε` (the curvature safeguard).
+    `new_grad`, `t`, `α`) and call `oracle.update(...)` — e.g. push the new L-BFGS
+    curvature pair `(s, y) = (x_new − x, ∇f_new − ∇f)`, admitted only if
+    `⟨y, s⟩ > ε` (the curvature safeguard).
 6. **Region update**: assemble a `RegionInfo` (with predicted/actual reduction,
    `t`, `α`) and call `region.update(...)` — e.g. grow/shrink the trust radius.
 7. **Convergence**: recompute `error = ‖∇f_new‖` and `done = error ≤ tol`;
@@ -373,8 +376,8 @@ or `Region` instances override them for full control. With the defaults
 ## Advantages
 
 1. **Adaptive Behavior**: Automatically balances between conservative and
-   aggressive steps via the line search walking the path, with no manual blend
-   tuning.
+    aggressive steps via the line search walking the path, with no manual blend
+    tuning.
 2. **Robustness**: The path's `d'(0) = -∇f` property plus multiple line-search
    fallbacks ensure progress even when the oracle is poor.
 3. **Efficiency**: L-BFGS (or other oracle) acceleration when appropriate;
@@ -393,9 +396,9 @@ or `Region` instances override them for full control. With the defaults
    size, `n` is parameter dimension); other oracles (e.g. Shampoo) may store
    larger preconditioner statistics.
 2. **Computational Overhead**: Evaluating the quadratic path and walking it with
-   the line search adds modest per-iteration cost.
+    the line search adds modest per-iteration cost.
 3. **Parameter Tuning**: Performance is sensitive to configuration (history size,
-   line-search constants, region radii).
+    line-search constants, region radii).
 4. **Line Search Sensitivity**: The algorithm's effectiveness is highly sensitive
    to the line search implementation. An inexact or poorly tuned line search
    undermines both convergence speed and the quality of L-BFGS curvature updates.
@@ -437,4 +440,4 @@ The QQN algorithm combines ideas from:
 - Cubic Hermite interpolation (the information-reusing spline search).
 - OWL-QN (the Orthant region for sparsity).
 - [`notation.md`](notation.md) — symbol reference and disambiguation of
-  overloaded notation.
+   overloaded notation.

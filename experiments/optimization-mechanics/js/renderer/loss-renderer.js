@@ -53,20 +53,60 @@ export class LossRenderer {
         const r = cam.gridRect();
         const step = this.step;
 
-        // First pass: find min/max over grid area
-        let vmin = Infinity, vmax = -Infinity;
         const cols = Math.ceil(r.w / step), rows = Math.ceil(r.h / step);
+         if (cols <= 0 || rows <= 0) {
+             console.warn('[LossRenderer] non-positive grid size', {cols, rows, r});
+             return;
+         }
         const vals = new Float32Array(cols * rows);
+         // First pass: sample values over grid area
+         let vmin = Infinity, vmax = -Infinity;
+         let nonFinite = 0;
         for (let j = 0; j < rows; j++) {
             for (let i = 0; i < cols; i++) {
                 const sx = r.x + i * step, sy = r.y + j * step;
                 const [wx, wy] = cam.screenToWorld(sx, sy);
-                const v = objective.value(wx, wy);
+                 let v = objective.value(wx, wy);
+                 if (!Number.isFinite(v)) {
+                     nonFinite++;
+                     v = NaN;
+                 }
                 vals[j * cols + i] = v;
-                if (v < vmin) vmin = v;
-                if (v > vmax) vmax = v;
             }
         }
+         if (nonFinite > 0) {
+             console.warn(`[LossRenderer] ${nonFinite}/${cols * rows} samples were non-finite`);
+         }
+         // Robust normalization: optionally apply log scaling, then clamp to
+         // percentiles so a huge dynamic range (e.g. Rosenbrock) stays readable.
+         const useLog = config.valueScaling === 'log';
+         // Build a transformed copy of the finite values for normalization.
+         const finite = [];
+         for (let k = 0; k < vals.length; k++) {
+             const v = vals[k];
+             if (Number.isFinite(v)) finite.push(v);
+         }
+         if (finite.length === 0) {
+             console.warn('[LossRenderer] no finite samples; skipping render');
+             return;
+         }
+         // For log scaling we shift so the minimum maps to a small positive value.
+         let rawMin = Infinity;
+         for (const v of finite) if (v < rawMin) rawMin = v;
+         const logShift = useLog ? (rawMin < 1 ? 1 - rawMin : 0) : 0;
+         const tx = (v) => useLog ? Math.log(v + logShift + 1e-9) : v;
+         // Compute percentile bounds (2%..98%) on the transformed values for
+         // robustness against extreme outliers.
+         const sorted = finite.map(tx).filter(Number.isFinite).sort((a, b) => a - b);
+         const pick = (p) => sorted[Math.min(sorted.length - 1,
+             Math.max(0, Math.floor(p * (sorted.length - 1))))];
+         vmin = pick(0.02);
+         vmax = pick(0.98);
+         if (!(vmax > vmin)) {
+             // Degenerate range: fall back to full min/max.
+             vmin = sorted[0];
+             vmax = sorted[sorted.length - 1];
+         }
         const range = (vmax - vmin) || 1;
         this.vmin = vmin;
         this.vmax = vmax;
@@ -76,8 +116,14 @@ export class LossRenderer {
             // draw per cell block
             for (let j = 0; j < rows; j++) {
                 for (let i = 0; i < cols; i++) {
-                    const t = (vals[j * cols + i] - vmin) / range;
-                    const [cr, cg, cb] = sampleColorMap(t, config.colorScheme);
+                     const raw = vals[j * cols + i];
+                     let cr, cg, cb;
+                     if (!Number.isFinite(raw)) {
+                         cr = cg = cb = 40; // dark gray for undefined regions
+                     } else {
+                         const t = (tx(raw) - vmin) / range;
+                         [cr, cg, cb] = sampleColorMap(t, config.colorScheme);
+                     }
                     for (let dy = 0; dy < step; dy++) {
                         for (let dx = 0; dx < step; dx++) {
                             const px = i * step + dx, py = j * step + dy;
@@ -92,11 +138,11 @@ export class LossRenderer {
             }
             ctx.putImageData(img, r.x, r.y);
         } else if (config.vizMode === 'contour') {
-            this.renderContours(vals, cols, rows, step, r, vmin, range, config);
+             this.renderContours(vals, cols, rows, step, r, vmin, range, config, tx);
         }
     }
 
-    renderContours(vals, cols, rows, step, r, vmin, range, config) {
+     renderContours(vals, cols, rows, step, r, vmin, range, config, tx) {
         const ctx = this.ctx;
         ctx.fillStyle = '#111';
         ctx.fillRect(r.x, r.y, r.w, r.h);
@@ -110,10 +156,12 @@ export class LossRenderer {
             // marching squares
             for (let j = 0; j < rows - 1; j++) {
                 for (let i = 0; i < cols - 1; i++) {
-                    const v0 = vals[j * cols + i];
-                    const v1 = vals[j * cols + i + 1];
-                    const v2 = vals[(j + 1) * cols + i + 1];
-                    const v3 = vals[(j + 1) * cols + i];
+                     const v0 = tx(vals[j * cols + i]);
+                     const v1 = tx(vals[j * cols + i + 1]);
+                     const v2 = tx(vals[(j + 1) * cols + i + 1]);
+                     const v3 = tx(vals[(j + 1) * cols + i]);
+                     if (!Number.isFinite(v0) || !Number.isFinite(v1) ||
+                         !Number.isFinite(v2) || !Number.isFinite(v3)) continue;
                     const x0 = r.x + i * step, y0 = r.y + j * step;
                     const x1 = x0 + step, y1 = y0 + step;
                     const pts = [];

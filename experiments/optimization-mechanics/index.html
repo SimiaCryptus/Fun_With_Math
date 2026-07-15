@@ -29,9 +29,19 @@
                 <option value="diverging">Diverging</option>
             </select>
         </label>
+         <label>Scaling
+             <select id="value-scaling">
+                 <option value="linear" selected>Linear</option>
+                 <option value="log">Log</option>
+             </select>
+         </label>
         <label><input type="checkbox" id="autofollow" checked> Follow</label>
         <label><input type="checkbox" id="show-grad" checked> Gradients</label>
     </div>
+   <div class="tb-group">
+       <button id="btn-copy-config" title="Copy full configuration as JSON">Copy Config</button>
+       <button id="btn-paste-config" title="Paste configuration from JSON">Paste Config</button>
+   </div>
     <div class="tb-group">
         <span id="readout" class="readout"></span>
     </div>

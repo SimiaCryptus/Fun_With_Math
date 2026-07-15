@@ -37,10 +37,14 @@ export class Story {
     _mount(sec) {
         if (this.mounted.has(sec.id)) return;
         const canvas = sec._el.querySelector('.viz canvas');
+        if (!canvas) {
+            console.warn('Story._mount: no canvas found for section', sec.id);
+        }
         const ctx = {container: sec._el, canvas, global: this.global};
         try {
             const handle = sec.build(ctx) || {};
             this.mounted.set(sec.id, handle);
+            console.debug('Story: mounted section', sec.id);
         } catch (err) {
             console.error('Section build failed:', sec.id, err);
         }
@@ -48,7 +52,13 @@ export class Story {
 
     _unmount(sec) {
         const h = this.mounted.get(sec.id);
-        if (h && h.teardown) h.teardown();
+        if (h && typeof h.teardown === 'function') {
+            try {
+                h.teardown();
+            } catch (err) {
+                console.error('Section teardown failed:', sec.id, err);
+            }
+        }
         this.mounted.delete(sec.id);
     }
 }

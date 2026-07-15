@@ -55,6 +55,7 @@ function resize() {
 function rebuildOptimizer() {
      const name = state.config.optimizer;
      const extra = (state.config.optParams && state.config.optParams[name]) || {};
+      console.debug('[main] rebuilding optimizer', name, extra);
      optimizer = createOptimizer(name, {
          lr: state.config.lr,
          ...extra,
@@ -74,7 +75,23 @@ function reset() {
 }
 
 function doStep() {
-    const res = optimizer.step(objective);
+      if (!optimizer) {
+          console.warn('[main] doStep called before optimizer initialized');
+          return;
+      }
+      let res;
+      try {
+        res = optimizer.step(objective);
+     } catch (err) {
+         console.error('[main] optimizer.step threw; pausing playback', err);
+         playing = false;
+         return;
+     }
+     if (!res || !res.to || !Number.isFinite(res.to[0]) || !Number.isFinite(res.to[1])) {
+         console.warn('[main] optimizer produced invalid step; pausing', res);
+         playing = false;
+         return;
+     }
     lastResult = res;
     stats.update(res.grad);
     pathHistory.push(res.to.slice());

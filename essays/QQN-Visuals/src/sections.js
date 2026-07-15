@@ -19,6 +19,12 @@ function legend(items) {
     return `<div class="legend">${items.map(([c, t]) =>
         `<span><span class="swatch" style="background:${c}"></span>${t}</span>`).join('')}</div>`;
 }
+// Remove any stale per-section control panels from a viz wrapper before a
+// section (re)mounts. Sections are unmounted/remounted as they scroll in and
+// out of view; without this, appended `.panel-controls` accumulate.
+function clearPanelControls(container) {
+    container.querySelectorAll('.viz .panel-controls').forEach((el) => el.remove());
+}
 
 // Helper to run a full QQN trajectory on a landscape.
 function runQQN(land, start, n = 40) {
@@ -52,11 +58,13 @@ export function buildSections(global) {
           the run re-solves and re-draws.</p>`,
         build(ctx) {
             const cv = ctx.canvas;
-            const land = LANDSCAPES.rosenbrock;
+            let land = LANDSCAPES[ctx.global.landscapeKey] || LANDSCAPES.rosenbrock;
             const sc = new Scene2D(cv, land.domain);
-            let start = land.start.slice();
+            let start = ctx.global.start.slice();
             let anim = 0, raf = null;
             const draw = () => {
+                land = LANDSCAPES[ctx.global.landscapeKey] || LANDSCAPES.rosenbrock;
+                sc.setDomain(land.domain);
                 sc.clear();
                 sc.drawContours(land);
                 const {pts, paths} = runQQN(land, start, 40);
@@ -77,10 +85,23 @@ export function buildSections(global) {
                 start = sc.toWorld(e.clientX - r.left, e.clientY - r.top);
                 anim = 0;
             });
+            const onLand = () => {
+                land = LANDSCAPES[ctx.global.landscapeKey] || LANDSCAPES.rosenbrock;
+                start = ctx.global.start.slice();
+                anim = 0;
+            };
+            const onStart = () => {
+                start = ctx.global.start.slice();
+                anim = 0;
+            };
+            ctx.global.addEventListener('landscape', onLand);
+            ctx.global.addEventListener('start', onStart);
             draw();
             return {
                 teardown() {
                     cancelAnimationFrame(raf);
+                    ctx.global.removeEventListener('landscape', onLand);
+                    ctx.global.removeEventListener('start', onStart);
                 }
             };
         },
@@ -202,15 +223,17 @@ export function buildSections(global) {
           zig-zags and diverges — especially on the ill-conditioned valley.</p>
           <p><em>Robust but slow.</em> (See <code>background.md</code>.)</p>`,
         build(ctx) {
-            ctx.container.querySelector('.viz .panel-controls')?.remove();
+            clearPanelControls(ctx.container);
             const pc = document.createElement('div');
             pc.className = 'panel-controls';
             pc.innerHTML = `<label>learning rate η = <span id="eta-v">0.01</span></label>
             <input type="range" id="eta" min="-4" max="0" step="0.05" value="-2" />
+            <label>iterations = <span id="iter-v">60</span></label>
+            <input type="range" id="iters" min="1" max="200" step="1" value="60" />
             ${legend([[C.gradient, '−∇f'], [C.iterate, 'trajectory']])}`;
             ctx.container.querySelector('.viz').appendChild(pc);
             const sc = new Scene2D(ctx.canvas, LANDSCAPES.illcond.domain);
-            let eta = 0.01;
+            let eta = 0.01, iters = 60;
             const draw = () => {
                 const L = LANDSCAPES[global.landscapeKey];
                 sc.setDomain(L.domain);
@@ -218,7 +241,7 @@ export function buildSections(global) {
                 sc.drawContours(L);
                 let x = global.start.slice();
                 const pts = [x.slice()];
-                for (let i = 0; i < 60; i++) {
+                for (let i = 0; i < iters; i++) {
                     x = gdStep(L, x, {eta, seed: global.seed});
                     if (Math.abs(x[0]) > 1e4) break;
                     pts.push(x.slice());
@@ -226,11 +249,16 @@ export function buildSections(global) {
                 sc.drawPolyline(pts, C.iterate, 2);
                 const g = L.grad(global.start[0], global.start[1]);
                 sc.drawArrow(global.start, add(global.start, scale(neg(g), 0.05)), C.gradient, 2);
-                pts.slice(0, 30).forEach((p) => sc.drawDot(p, C.iterate, 2));
+                pts.slice(0, Math.min(pts.length, 30)).forEach((p) => sc.drawDot(p, C.iterate, 2));
             };
             pc.querySelector('#eta').addEventListener('input', (e) => {
                 eta = Math.pow(10, parseFloat(e.target.value));
                 pc.querySelector('#eta-v').textContent = eta.toFixed(4);
+                draw();
+            });
+            pc.querySelector('#iters').addEventListener('input', (e) => {
+                iters = parseInt(e.target.value, 10);
+                pc.querySelector('#iter-v').textContent = iters;
                 draw();
             });
             const onL = () => draw();
@@ -256,6 +284,7 @@ export function buildSections(global) {
           isn't a rival optimizer — it's an <em>oracle</em>, a direction supplier
           we'll plug in at Section 11.</div>`,
         build(ctx) {
+            clearPanelControls(ctx.container);
             const pc = document.createElement('div');
             pc.className = 'panel-controls';
             pc.innerHTML = `
@@ -328,6 +357,7 @@ export function buildSections(global) {
           can point <em>uphill</em>. Hit "break it" to expose the ascent-direction
           failure — the seed of why QQN needs a fallback.</p>`,
         build(ctx) {
+            clearPanelControls(ctx.container);
             const pc = document.createElement('div');
             pc.className = 'panel-controls';
             pc.innerHTML = `<label>history size <span id="hs-v">5</span></label>
@@ -389,6 +419,7 @@ export function buildSections(global) {
           landscape and it stumbles.</p>
           <p><strong>This tension is the whole motivation for QQN.</strong></p>`,
         build(ctx) {
+            clearPanelControls(ctx.container);
             const pc = document.createElement('div');
             pc.className = 'panel-controls';
             pc.innerHTML = `<button class="btn" id="race">run race</button>
@@ -455,6 +486,7 @@ export function buildSections(global) {
           <p><strong>Drag the orange dot</strong> to reshape d(1); <strong>scrub
           t</strong> to ride the curve.</p>`,
         build(ctx) {
+            clearPanelControls(ctx.container);
             const pc = document.createElement('div');
             pc.className = 'panel-controls';
             pc.innerHTML = `<label>t = <span id="t-v">0.50</span></label>
@@ -531,6 +563,7 @@ export function buildSections(global) {
           <p>Toggle "verify tangent": −∇f overlays d'(0) exactly, regardless of the
           oracle endpoint.</p>`,
         build(ctx) {
+            clearPanelControls(ctx.container);
             const pc = document.createElement('div');
             pc.className = 'panel-controls';
             pc.innerHTML = `<label class="chk"><input type="checkbox" id="vt" checked> verify tangent</label>
@@ -738,6 +771,7 @@ export function buildSections(global) {
           Oracle slot</strong> to pay off Section 4: Adam becomes the t=1 endpoint
           of the path.</p>`,
         build(ctx) {
+            clearPanelControls(ctx.container);
             const pc = document.createElement('div');
             pc.className = 'panel-controls';
             pc.innerHTML = `
@@ -826,6 +860,7 @@ export function buildSections(global) {
           <p>Click a preset — the trajectory morphs from the previous method to the
           new one, literally showing GD "become" L-BFGS by moving t from 0 → 1.</p>`,
         build(ctx) {
+            clearPanelControls(ctx.container);
             const presets = {
                 'Gradient Descent': {oracle: 'grad', tmax: 0.02},
                 'L-BFGS': {oracle: 'lbfgs', tmax: 1},

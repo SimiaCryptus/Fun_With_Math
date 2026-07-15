@@ -1,4 +1,6 @@
 // Build & bind DOM controls to app-state.
+   import {BASE_FIELDS} from '../objective.js';
+
 
     export function bindControls(state, actions) {
         const $ = id => document.getElementById(id);
@@ -13,6 +15,11 @@
             state.set('colorScheme', e.target.value);
             state.markDirty('loss');
         });
+         const vs = $('value-scaling');
+         if (vs) vs.addEventListener('change', e => {
+             state.set('valueScaling', e.target.value);
+             state.markDirty('loss');
+         });
         $('autofollow').addEventListener('change', e => {
             state.set('autofollow', e.target.checked);
         });
@@ -27,6 +34,12 @@
         $('btn-step').addEventListener('click', () => actions.step());
         $('btn-play').addEventListener('click', () => actions.togglePlay());
         $('btn-reset').addEventListener('click', () => actions.reset());
+       // config clipboard (copy/paste JSON)
+       const copyBtn = $('btn-copy-config');
+       if (copyBtn) copyBtn.addEventListener('click', () => copyConfig(state));
+       const pasteBtn = $('btn-paste-config');
+       if (pasteBtn) pasteBtn.addEventListener('click', () => pasteConfig(state, actions));
+
 
         // side panel tabs
         state._activeTab = state._activeTab || 'base';
@@ -71,10 +84,9 @@
             <div class="field-label"><span>Type</span></div>
         `;
         const dd = document.createElement('select');
-        dd.innerHTML = `
-            <option value="bowl">Quadratic Bowl</option>
-            <option value="linear">Linear Flow</option>
-        `;
+       dd.innerHTML = Object.entries(BASE_FIELDS)
+           .map(([key, def]) => `<option value="${key}">${def.label}</option>`)
+           .join('');
         dd.value = c.base;
         dd.addEventListener('change', e => {
             state.set('base', e.target.value);
@@ -89,9 +101,12 @@
             slider(sec, state, actions, 'bowl.ky', 'Curvature Y (ky)', 0, 0.2, 0.001, ['loss', 'overlay']);
             slider(sec, state, actions, 'bowl.cx', 'Center X (cx)', -50, 50, 0.5, ['loss', 'overlay']);
             slider(sec, state, actions, 'bowl.cy', 'Center Y (cy)', -50, 50, 0.5, ['loss', 'overlay']);
-        } else {
+       } else if (c.base === 'linear') {
             slider(sec, state, actions, 'linear.a', 'Gradient A (x)', -5, 5, 0.05, ['loss', 'overlay']);
             slider(sec, state, actions, 'linear.b', 'Gradient B (y)', -5, 5, 0.05, ['loss', 'overlay']);
+       } else {
+           // closed-form analytic landscape: expose amplitude scale
+           slider(sec, state, actions, 'analytic.scale', 'Amplitude Scale', 0.01, 5, 0.01, ['loss', 'overlay']);
         }
 
         const startSec = section(body, 'Start Point');
@@ -167,6 +182,21 @@
          } else if (name === 'qqn') {
              slider(psec, state, actions, 'optParams.qqn.m', 'History (m)', 1, 20, 1, [],
                  () => actions.rebuildOptimizer());
+             dropdown(psec, state, actions, 'optParams.qqn.oracle', 'Oracle', [
+                 ['lbfgs', 'L-BFGS'],
+                 ['momentum', 'Momentum'],
+                 ['gradient', 'Gradient (degenerate)'],
+             ], () => actions.rebuildOptimizer());
+             if (state.config.optParams.qqn.oracle === 'momentum') {
+                 slider(psec, state, actions, 'optParams.qqn.momentumBeta', 'Momentum β',
+                     0, 0.999, 0.001, [], () => actions.rebuildOptimizer());
+             }
+             dropdown(psec, state, actions, 'optParams.qqn.lineSearch', 'Line Search', [
+                 ['golden', 'Golden Section'],
+                 ['backtracking', 'Backtracking'],
+             ], () => actions.rebuildOptimizer());
+             slider(psec, state, actions, 'optParams.qqn.maxLineSearch', 'Max LS Iters',
+                 1, 100, 1, [], () => actions.rebuildOptimizer());
          } else {
              const note = document.createElement('div');
              note.className = 'field';
@@ -256,6 +286,30 @@
         row.appendChild(span);
         parent.appendChild(row);
     }
+     // Generic dotted-path dropdown. `options` is an array of [value, label].
+     function dropdown(parent, state, actions, path, label, options, onChange) {
+         const val = getPath(state.config, path);
+         const field = document.createElement('div');
+         field.className = 'field';
+         const lab = document.createElement('div');
+         lab.className = 'field-label';
+         lab.innerHTML = `<span>${label}</span>`;
+         field.appendChild(lab);
+         const dd = document.createElement('select');
+         dd.innerHTML = options
+             .map(([v, l]) => `<option value="${v}">${l}</option>`)
+             .join('');
+         dd.value = val;
+         dd.addEventListener('change', e => {
+             setPath(state.config, path, e.target.value);
+             state.emit({type: 'config', key: path, value: e.target.value});
+             if (onChange) onChange();
+             buildPanel(state, actions);
+         });
+         field.appendChild(dd);
+         parent.appendChild(field);
+     }
+
 
     function seedField(parent, state, actions, path, label, dirty) {
         const val = getPath(state.config, path);
@@ -309,3 +363,74 @@
     export function updateReadout(text) {
         document.getElementById('readout').textContent = text;
     }
+   // -- Config clipboard (copy/paste JSON) -----------------------------------
+   // Keys of config that represent persistable state (skip transient/internal).
+   function serializeConfig(state) {
+       const c = state.config;
+       // shallow clone; config only holds plain data so JSON round-trips safely
+       return JSON.stringify(c, null, 2);
+   }
+   async function copyConfig(state) {
+       const json = serializeConfig(state);
+       try {
+           await navigator.clipboard.writeText(json);
+           updateReadout('Configuration copied to clipboard');
+       } catch (err) {
+           // Fallback: show a prompt the user can copy from manually.
+           window.prompt('Copy configuration JSON:', json);
+       }
+   }
+   // Deep-merge parsed config into existing config so missing keys keep defaults.
+   function mergeConfig(target, source) {
+       for (const key of Object.keys(source)) {
+           const sv = source[key];
+           if (sv && typeof sv === 'object' && !Array.isArray(sv) &&
+               target[key] && typeof target[key] === 'object' && !Array.isArray(target[key])) {
+               mergeConfig(target[key], sv);
+           } else {
+               target[key] = sv;
+           }
+       }
+   }
+   function applyConfig(state, actions, json) {
+       let parsed;
+       try {
+           parsed = JSON.parse(json);
+       } catch (err) {
+           updateReadout('Paste failed: invalid JSON');
+           return;
+       }
+       if (!parsed || typeof parsed !== 'object') {
+           updateReadout('Paste failed: not a config object');
+           return;
+       }
+       mergeConfig(state.config, parsed);
+       // Sync toolbar controls that mirror config state.
+       const $ = id => document.getElementById(id);
+       if ($('viz-mode')) $('viz-mode').value = state.config.vizMode;
+       if ($('color-scheme')) $('color-scheme').value = state.config.colorScheme;
+       if ($('value-scaling') && state.config.valueScaling)
+           $('value-scaling').value = state.config.valueScaling;
+       if ($('autofollow')) $('autofollow').checked = state.config.autofollow;
+       if ($('show-grad')) $('show-grad').checked = state.config.showGrad;
+       if ($('speed')) $('speed').value = state.config.speed;
+       state.emit({type: 'config', key: '*', value: null});
+       actions.rebuildOptimizer();
+       buildPanel(state, actions);
+       state.markAllDirty();
+       updateReadout('Configuration applied from clipboard');
+   }
+   async function pasteConfig(state, actions) {
+       let json = null;
+       try {
+           json = await navigator.clipboard.readText();
+       } catch (err) {
+           json = null;
+       }
+       if (!json) {
+           // Fallback: ask the user to paste manually.
+           json = window.prompt('Paste configuration JSON:');
+           if (!json) return;
+       }
+       applyConfig(state, actions, json);
+   }
