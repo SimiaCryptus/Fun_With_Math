@@ -103,6 +103,14 @@
       "href": "experiments/static-secrets/index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
       "readme": "experiments/static-secrets/README.md",
       "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key."
+   },
+   {
+     "icon": "OM",
+     "title": "Optimization Mechanics Visualizer",
+     "href": "experiments/optimization-mechanics/index.html",
+     "readme": "experiments/optimization-mechanics/README.md",
+     "launchLabel": "Open the Optimization Mechanics Visualizer lab",
+     "pitch": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations."
     }
   ],
   "essays": [],

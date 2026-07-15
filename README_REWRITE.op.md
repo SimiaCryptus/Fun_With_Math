@@ -1,6 +1,7 @@
 ---
 transforms:
   - (.*)/([^\.\/]+)\.md -> $1/README_REWRITE.md
+  - (.*)/([^\.\/]+)\.html -> $1/README_REWRITE.md
 related:
   - writing_style.md
 ---
