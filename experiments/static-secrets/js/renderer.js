@@ -23,26 +23,26 @@ const REWRITABLE_EXTENSIONS = ['.md', '.markdown', '.html', '.htm', '.txt'];
 // isn't a root-absolute or protocol-relative URL. These are the links
 // pointing at sibling files within the same encrypted demo site.
 function isPathRelative(raw) {
-   if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) return false; // has scheme
-   if (raw.startsWith('//')) return false; // protocol-relative
-   if (raw.startsWith('#')) return false; // fragment only
-   return true;
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) return false; // has scheme
+  if (raw.startsWith('//')) return false; // protocol-relative
+  if (raw.startsWith('#')) return false; // fragment only
+  return true;
 }
 // Swap a known source extension to `.ssec`, preserving query/hash.
 function swapToSsecExtension(absUrl) {
-   try {
-     const u = new URL(absUrl);
-     const lowerPath = u.pathname.toLowerCase();
-     for (const ext of REWRITABLE_EXTENSIONS) {
-       if (lowerPath.endsWith(ext)) {
-         u.pathname = u.pathname.slice(0, u.pathname.length - ext.length) + '.ssec';
-         return u.href;
-       }
-     }
-     return absUrl;
-   } catch {
-     return absUrl;
-   }
+  try {
+    const u = new URL(absUrl);
+    const lowerPath = u.pathname.toLowerCase();
+    for (const ext of REWRITABLE_EXTENSIONS) {
+      if (lowerPath.endsWith(ext)) {
+        u.pathname = u.pathname.slice(0, u.pathname.length - ext.length) + '.ssec';
+        return u.href;
+      }
+    }
+    return absUrl;
+  } catch {
+    return absUrl;
+  }
 }
 
 function renderHtmlDocument(container, htmlString, onLinkClick) {
@@ -102,11 +102,11 @@ function rewriteHtmlLinks(htmlString, baseUrl, proxyBase, rewriteExtension = fal
       const raw = a.getAttribute('href');
       if (!raw || raw.startsWith('#') || raw.startsWith('javascript:')) return;
       try {
-         let abs = new URL(raw, baseUrl).href;
-         if (rewriteExtension && isPathRelative(raw)) {
-           abs = swapToSsecExtension(abs);
-         }
-         a.setAttribute('href', proxyBase(abs));
+        let abs = new URL(raw, baseUrl).href;
+        if (rewriteExtension && isPathRelative(raw)) {
+          abs = swapToSsecExtension(abs);
+        }
+        a.setAttribute('href', proxyBase(abs));
         a.setAttribute('target', '_top');
       } catch {
         /* leave as-is */
@@ -133,7 +133,7 @@ export function render(container, inner, { baseUrl, proxyBase } = {}) {
       const md = decoder.decode(inner.content);
       let html = renderMarkdownToHtml(md);
       if (baseUrl && proxyBase) {
-         html = rewriteHtmlLinks(html, baseUrl, proxyBase, true);
+        html = rewriteHtmlLinks(html, baseUrl, proxyBase, true);
       }
       renderHtmlDocument(
         container,

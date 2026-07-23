@@ -64,7 +64,7 @@ Covers:
 ## Module map
 
 | Module                | Responsibility                                        |
-|-----------------------|-------------------------------------------------------|
+| --------------------- | ----------------------------------------------------- |
 | `model/lattice.js`    | magnet set, grid ↔ world mapping                      |
 | `model/physics.js`    | energy, gradient/torque, Hessian (analytic + FD)      |
 | `model/integrator.js` | Verlet + variational (Newton) steppers                |

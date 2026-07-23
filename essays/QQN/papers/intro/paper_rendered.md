@@ -104,7 +104,7 @@ This paper makes three primary contributions:
                                                       2
 
 3. Benchmarking Framework: A reusable Rust application for optimization algorithm evaluation that
-   promotes reproducible research and meaningful comparisons.
+promotes reproducible research and meaningful comparisons.
 
 Optimal configurations remain problem-dependent, but QQN’s adaptive nature minimizes the need for
 extensive hyperparameter tuning. Scaling and convergence properties are theoretically justified, largely
@@ -627,7 +627,7 @@ consistently outperformed other optimizer families across the benchmark suite.
 
                                                       12
 
-3.  Line Search Critical: Among QQN variants, line search strategy dramatically affects performance:
+3. Line Search Critical: Among QQN variants, line search strategy dramatically affects performance:
 
         • Strong Wolfe: Excellent success rate with moderate average evaluations
         • Golden Section: 90-100% success rate on 2D problems with relatively few average evaluations
@@ -635,7 +635,7 @@ consistently outperformed other optimizer families across the benchmark suite.
         • Bisection: Strong performance on various problems with minimal evaluations
         • Cubic-Quadratic Interpolation: 70% success on Rosenbrock 5D, good for ill-conditioned objectives
 
-4.  Problem-Specific Excellence: Algorithms show significant specialization:
+4. Problem-Specific Excellence: Algorithms show significant specialization:
 
     • QQN-GoldenSection: Achieved strong performance on multimodal problems
     • QQN-GoldenSection: Achieved strong performance on multimodal problems
@@ -795,9 +795,9 @@ demonstrates:
 
                                                      15
 
-3.  Efficiency vs Robustness: QQN shows superior efficiency with strong success rates across problem
-    types while requiring fewer function evaluations than traditional methods. 4. Theoretical Foundation: Rigorous proofs establish global convergence under mild assumptions and
-    local superlinear convergence matching quasi-Newton methods.
+3. Efficiency vs Robustness: QQN shows superior efficiency with strong success rates across problem
+types while requiring fewer function evaluations than traditional methods. 4. Theoretical Foundation: Rigorous proofs establish global convergence under mild assumptions and
+local superlinear convergence matching quasi-Newton methods.
 
         5. Practical Impact: The results provide clear guidance for practitioners: use QQN-StrongWolfe for
            general optimization, QQN-Bisection variants for high-dimensional problems, QQN-GoldenSection for

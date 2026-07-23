@@ -157,35 +157,29 @@ Solve generalized eigenproblem `H v = ω² M v`:
 
 ```json
 {
-  "version": 1,
-  "grid": {
-    "pitch": 20,
-    "snap": true
-  },
-  "params": {
-    "k": 1.0,
-    "I": 1.0,
-    "gamma": 0.0,
-    "m": 1.0
-  },
-  "magnets": [
-    {
-      "id": 0,
-      "cell": [
-        0,
-        0
-      ],
-      "theta": 0.0
+    "version": 1,
+    "grid": {
+        "pitch": 20,
+        "snap": true
     },
-    {
-      "id": 1,
-      "cell": [
-        1,
-        0
-      ],
-      "theta": 1.5708
-    }
-  ]
+    "params": {
+        "k": 1.0,
+        "I": 1.0,
+        "gamma": 0.0,
+        "m": 1.0
+    },
+    "magnets": [
+        {
+            "id": 0,
+            "cell": [0, 0],
+            "theta": 0.0
+        },
+        {
+            "id": 1,
+            "cell": [1, 0],
+            "theta": 1.5708
+        }
+    ]
 }
 ```
 

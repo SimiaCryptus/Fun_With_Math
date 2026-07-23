@@ -56,7 +56,10 @@ describe('linalg: jacobiEigen', () => {
 
 describe('analysis: 2-magnet equilibrium & modes', () => {
     it('relax finds aligned ground state on x-axis', () => {
-        const pos = [[0, 0], [48, 0]];
+        const pos = [
+            [0, 0],
+            [48, 0],
+        ];
         const pairs = buildPairs(pos, params);
         const {theta, gradNorm} = relax(new Float64Array([0.5, -0.3]), pairs, 2);
         assert(gradNorm < 1e-7, `gradNorm ${gradNorm}`);
@@ -67,7 +70,10 @@ describe('analysis: 2-magnet equilibrium & modes', () => {
     });
 
     it('normal modes: symmetric & antisymmetric', () => {
-        const pos = [[0, 0], [48, 0]];
+        const pos = [
+            [0, 0],
+            [48, 0],
+        ];
         const pairs = buildPairs(pos, params);
         const {theta} = relax(new Float64Array([0.1, -0.1]), pairs, 2);
         const res = analyze(theta, pairs, 2, params);

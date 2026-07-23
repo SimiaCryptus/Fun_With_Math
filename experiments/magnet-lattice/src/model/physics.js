@@ -42,7 +42,8 @@ export function buildPairs(positions, params) {
 export function energy(theta, pairs) {
     let U = 0;
     for (const p of pairs) {
-        const ti = theta[p.i], tj = theta[p.j];
+        const ti = theta[p.i],
+            tj = theta[p.j];
         const term = Math.cos(ti - tj) - 3 * Math.cos(ti - p.phi) * Math.cos(tj - p.phi);
         U += p.coeff * term;
     }
@@ -57,9 +58,11 @@ export function energy(theta, pairs) {
 export function gradient(theta, pairs, n) {
     const g = new Float64Array(n);
     for (const p of pairs) {
-        const ti = theta[p.i], tj = theta[p.j];
+        const ti = theta[p.i],
+            tj = theta[p.j];
         const dij = ti - tj;
-        const ai = ti - p.phi, aj = tj - p.phi;
+        const ai = ti - p.phi,
+            aj = tj - p.phi;
         const gi = p.coeff * (-Math.sin(dij) + 3 * Math.sin(ai) * Math.cos(aj));
         const gj = p.coeff * (Math.sin(dij) + 3 * Math.cos(ai) * Math.sin(aj));
         g[p.i] += gi;
@@ -86,9 +89,11 @@ export function hessian(theta, pairs, n) {
     const H = new Array(n);
     for (let i = 0; i < n; i++) H[i] = new Float64Array(n);
     for (const p of pairs) {
-        const ti = theta[p.i], tj = theta[p.j];
+        const ti = theta[p.i],
+            tj = theta[p.j];
         const c = Math.cos(ti - tj);
-        const ai = ti - p.phi, aj = tj - p.phi;
+        const ai = ti - p.phi,
+            aj = tj - p.phi;
         const diag = p.coeff * (-c + 3 * Math.cos(ai) * Math.cos(aj));
         const cross = p.coeff * (c + 3 * Math.sin(ai) * Math.sin(aj));
         H[p.i][p.i] += diag;

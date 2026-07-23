@@ -4,7 +4,7 @@ export class SceneRenderer {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.offset = [0, 0];   // world offset to keep lattice centered
+        this.offset = [0, 0]; // world offset to keep lattice centered
         this.dpr = window.devicePixelRatio || 1;
         this.resize();
         window.addEventListener('resize', () => this.resize());
@@ -66,7 +66,8 @@ export class SceneRenderer {
 
             // dipole arrow (N red / S blue halves)
             const th = mg.theta;
-            const ex = Math.cos(th), ey = Math.sin(th);
+            const ex = Math.cos(th),
+                ey = Math.sin(th);
             // north half
             ctx.beginPath();
             ctx.moveTo(sx, sy);
@@ -82,15 +83,20 @@ export class SceneRenderer {
             ctx.lineWidth = 3;
             ctx.stroke();
             // arrowhead
-            const hx = sx + ex * R, hy = sy + ey * R;
+            const hx = sx + ex * R,
+                hy = sy + ey * R;
             const a = 0.5;
             ctx.beginPath();
             ctx.moveTo(hx, hy);
-            ctx.lineTo(hx - (ex * Math.cos(a) - ey * Math.sin(a)) * 8,
-                hy - (ex * Math.sin(a) + ey * Math.cos(a)) * 8);
+            ctx.lineTo(
+                hx - (ex * Math.cos(a) - ey * Math.sin(a)) * 8,
+                hy - (ex * Math.sin(a) + ey * Math.cos(a)) * 8,
+            );
             ctx.moveTo(hx, hy);
-            ctx.lineTo(hx - (ex * Math.cos(-a) - ey * Math.sin(-a)) * 8,
-                hy - (ex * Math.sin(-a) + ey * Math.cos(-a)) * 8);
+            ctx.lineTo(
+                hx - (ex * Math.cos(-a) - ey * Math.sin(-a)) * 8,
+                hy - (ex * Math.sin(-a) + ey * Math.cos(-a)) * 8,
+            );
             ctx.strokeStyle = '#e05555';
             ctx.lineWidth = 2;
             ctx.stroke();

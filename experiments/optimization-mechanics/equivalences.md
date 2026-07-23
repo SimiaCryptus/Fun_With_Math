@@ -5,7 +5,7 @@
 QQN is best understood as a **combiner** of four orthogonal components —
 **gradient**, **oracle**, **search**, and **region** (see
 [`algorithm.md`](algorithm.md)). A powerful consequence of this design is that
-many classical optimization methods arise as *special cases* of QQN under
+many classical optimization methods arise as _special cases_ of QQN under
 particular configurations of these axes. This document catalogs those
 equivalences, from the obvious to the subtle.
 
@@ -25,7 +25,7 @@ a wide range of well-known algorithms.
 ## Summary Table
 
 | Classical Method               | Oracle               | Search                            | Region              | Notes                                  |
-|--------------------------------|----------------------|-----------------------------------|---------------------|----------------------------------------|
+| ------------------------------ | -------------------- | --------------------------------- | ------------------- | -------------------------------------- |
 | Gradient Descent (fixed)       | any                  | `fixed` step, `t→0` regime        | `None`              | tangent is `-∇f`                       |
 | Steepest Descent (line search) | any                  | line search restricted near `t=0` | `None`              | exact line min along `-∇f`             |
 | L-BFGS                         | `lbfgs`              | line search reaching `t=1`        | `None`              | `d(1) = -H∇f`                          |
@@ -46,7 +46,7 @@ These follow directly from the geometry of the path and the choice of search.
 
 ### 1.1 Gradient Descent
 
-Because `d'(0) = -∇f`, the path's initial tangent is *exactly* steepest
+Because `d'(0) = -∇f`, the path's initial tangent is _exactly_ steepest
 descent. Any configuration that keeps the selected `t` small (or uses a
 `fixed` search with a small step) traverses only the gradient-dominated portion
 of the path, where `d(t) ≈ -t·∇f`. With
@@ -64,7 +64,7 @@ rate `η`.
 Restricting the search to the neighborhood of `t = 0` and performing an exact
 line minimization along `-∇f` reproduces classical steepest descent. The Armijo
 / backtracking searches already do this whenever the oracle direction is not
-profitable: the line search retreats toward `t = 0`, where the path *is* the
+profitable: the line search retreats toward `t = 0`, where the path _is_ the
 negative gradient.
 
 ### 1.3 L-BFGS
@@ -81,13 +81,13 @@ QQN(fun, oracle="lbfgs", line_search="strong_wolfe")
 With `region=None`, the L-BFGS history update and direction are byte-for-byte
 equivalent to a standalone L-BFGS implementation at the `t = 1` endpoint
 (numerically equivalent up to floating-point reordering). Note that QQN's
-*curved* path means the overall trajectory generally differs from standalone
+_curved_ path means the overall trajectory generally differs from standalone
 L-BFGS — the path is slightly less optimized per step but more robust. This is
 the baseline the rest of QQN extends.
 
 ### 1.4 Newton's Method
 
-If the oracle returns the *exact* Newton direction `-∇²f⁻¹∇f` (a custom
+If the oracle returns the _exact_ Newton direction `-∇²f⁻¹∇f` (a custom
 `Oracle` whose `direction` solves the Hessian system), then `d(1)` is the
 Newton step. Accepting `t = 1` (e.g. via a Wolfe line search that admits the
 full step near a well-conditioned minimum) reproduces Newton's method, with
@@ -106,7 +106,7 @@ convergence.
 ## 2. Region-Induced Equivalences
 
 Regions are pure projections applied inside the line search. They reshape the
-*feasible* path `d_R(t) = project_R(x, x + d(t)) - x`, and several classical
+_feasible_ path `d_R(t) = project_R(x, x + d(t)) - x`, and several classical
 constrained / structured methods emerge from specific region choices.
 
 ### 2.1 Trust Region Methods
@@ -232,13 +232,13 @@ etc.). QQN approaches CG along two complementary routes:
    pure gradient (so `d(1) = -∇f` and the path degenerates to scaled steepest
    descent), a **bisecting** (exact) line search performs an exact line
    minimization along `-∇f`. On a quadratic, exact line searches along
-   successive negative gradients are *not* conjugate by themselves — true CG
+   successive negative gradients are _not_ conjugate by themselves — true CG
    requires the conjugate `β` correction — so this route reproduces **steepest
    descent with exact line search**, the degenerate `β = 0` case of CG, not
    full CG.
 
 **Caveat**: The faithful CG reproduction is route (1), where conjugacy is
-encoded *in the oracle*. Route (2) only recovers CG's degenerate special case.
+encoded _in the oracle_. Route (2) only recovers CG's degenerate special case.
 A bisecting line search is the natural "exact line minimization" subroutine
 that both CG and steepest descent share; QQN supplies the conjugacy via the
 oracle, not the search.
@@ -251,7 +251,7 @@ The equivalences are not coincidental — they follow from three structural
 facts:
 
 1. **The tangent anchor (`d'(0) = -∇f`)** means every configuration contains
-   gradient descent as the `t → 0` limit. This is why *any* oracle still yields
+   gradient descent as the `t → 0` limit. This is why _any_ oracle still yields
    a globally convergent method.
 2. **The endpoint (`d(1) = -H∇f`)** means whatever direction the oracle
    proposes is reachable exactly at `t = 1`. Pure oracle methods (L-BFGS,
@@ -260,8 +260,8 @@ facts:
    (trust region, OWL-QN, projected gradient) arise by remapping the path
    without altering the gradient/oracle/search machinery.
 
-Equivalently: QQN factors a classical optimizer into *(direction source,
-step selection, feasibility projection)* and lets each be chosen
+Equivalently: QQN factors a classical optimizer into _(direction source,
+step selection, feasibility projection)_ and lets each be chosen
 independently. Classical methods are the points in this configuration space
 where one or two axes are fixed to a canonical choice.
 
@@ -269,21 +269,21 @@ where one or two axes are fixed to a canonical choice.
 
 ## 6. Equivalence Caveats
 
-* **Exactness vs. regime.** Gradient descent and steepest descent are
-  reproduced in the `t → 0` *regime*; with a non-trivial oracle the line search
+- **Exactness vs. regime.** Gradient descent and steepest descent are
+  reproduced in the `t → 0` _regime_; with a non-trivial oracle the line search
   may still select a larger `t` if it yields more decrease. To force pure
   gradient behavior, suppress the oracle (e.g. a no-op oracle) or use a `fixed`
   search.
-* **Line-search fidelity.** Newton, CG, and exact-line-search methods assume an
-  *exact* (or strong-Wolfe) line search. The default `armijo` / `backtracking`
+- **Line-search fidelity.** Newton, CG, and exact-line-search methods assume an
+  _exact_ (or strong-Wolfe) line search. The default `armijo` / `backtracking`
   searches are inexact; for faithful reproduction of methods that depend on
   exact line minimization, use `strong_wolfe` or a bisecting search — while
   noting `strong_wolfe` can over-restrict the path step (see
   [`algorithm.md`](algorithm.md)).
-* **Reparameterization invariance.** Rescaling the gradient or oracle direction
+- **Reparameterization invariance.** Rescaling the gradient or oracle direction
   does not change the geometric path, only the `t`-clock. Equivalences are
   stated up to this reparameterization.
-* **Floating-point reordering.** "Byte-for-byte" claims (e.g. default L-BFGS)
+- **Floating-point reordering.** "Byte-for-byte" claims (e.g. default L-BFGS)
   hold up to floating-point operation reordering.
 
 ---

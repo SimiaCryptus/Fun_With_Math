@@ -35,7 +35,7 @@ on top as an optional projection:
    path `d(t)` and selects a step that guarantees sufficient descent.
 4. **Region** (projective constraint, optional): A pure projection
    `project_R(x, x + d(t))` that remaps each candidate point onto a feasible or
-   preferred set, so the search navigates the *projected* path.
+   preferred set, so the search navigates the _projected_ path.
 
 These components are not merely combined additively — the quadratic path
 construction means the **search strategy is the glue** that makes the gradient and
@@ -79,7 +79,7 @@ d(t) = -t(1-t)·∇f - t²·H∇f
 Its endpoints and tangent at the origin are the key to its behavior:
 
 - **`d(0) = 0`**: the path starts at the current iterate `x`.
-- **`d'(0) = -∇f`**: the *initial tangent* of the path is exactly the steepest
+- **`d'(0) = -∇f`**: the _initial tangent_ of the path is exactly the steepest
   descent direction. This is the crucial property — for small `t`, moving along
   the path is moving along `-∇f`, so the path is guaranteed to begin as a descent
   direction whenever `∇f ≠ 0`.
@@ -88,7 +88,7 @@ Its endpoints and tangent at the origin are the key to its behavior:
 
 Because `d'(0) = -∇f`, the directional derivative of `f` along the path at the
 origin is `⟨∇f, d'(0)⟩ = -‖∇f‖² ≤ 0`. This is what anchors QQN's global
-convergence: regardless of how poor the oracle direction is, the *beginning* of
+convergence: regardless of how poor the oracle direction is, the _beginning_ of
 the path always decreases `f`.
 
 ### Key Properties
@@ -107,14 +107,11 @@ This formulation ensures:
 - Adaptive behavior based on problem characteristics, discovered by the search
   rather than hand-tuned.
 
-
-
-
 ### Searching the Path Directly
 
 The points along `d(t)` are **states**, not directions to be second-guessed by
 a separate inner line search. The line search therefore traverses the path
-parameter `t ∈ [0, 1]` *directly*: at each iteration a single search walks the
+parameter `t ∈ [0, 1]` _directly_: at each iteration a single search walks the
 curve, evaluating candidate states `x + d(t)` and selecting the step `t` (and
 hence the state) that satisfies sufficient decrease. There is no discretized
 "blend grid" and no per-grid-point inner search — the curve itself is the
@@ -140,15 +137,15 @@ are realized in practice.
 The line search traverses the quadratic path `d(t)` over `t ∈ [0, 1]` and must:
 
 - **Select the path parameter `t`**: Walk the curve to satisfy sufficient
-   decrease conditions (e.g., Armijo/Wolfe conditions). Each probe `x + d(t)` is
-   a *state* on the path, not a direction to be re-scaled.
+  decrease conditions (e.g., Armijo/Wolfe conditions). Each probe `x + d(t)` is
+  a _state_ on the path, not a direction to be re-scaled.
 - **Enforce descent**: Guarantee that `f(x + d(t)) < f(x)` (or report
   failure), which is the foundation of global convergence.
 - **Exploit curvature**: A strong Wolfe condition on the line search ensures the
   curvature information `(s, y)` fed back into the L-BFGS oracle remains accurate
   and well-conditioned.
 - **Navigate the feasible path**: When a region is configured, evaluate the
-   *projected* candidate `project_R(x, x + d(t))` so the search respects
+  _projected_ candidate `project_R(x, x + d(t))` so the search respects
   constraints.
 
 Walking `t` directly is what lets QQN **automatically discover the right blend**
@@ -167,18 +164,18 @@ quasi-Newton steps, losing the benefits of both.
 The solver registers several interchangeable strategies (all sharing a common
 `LineSearchResult` return type and region-aware interface):
 
-| Name | Method | Conditions | Notes |
-| --- | --- | --- | --- |
-| `strong_wolfe` | Optax zoom line search | Armijo + strong curvature | Keeps L-BFGS updates well-conditioned, but **over-restricts** the quadratic-path step on the MNIST benchmark (fails to converge); not the default. |
-| `backtracking` / `armijo` | Self-contained backtracking | Armijo sufficient decrease | `lax.while_loop`; robust fallback. |
-| `hager_zhang` | Optax backtracking transform | Approximate Wolfe | Robust approximate-Wolfe scheme. |
-| `fixed` | Constant step | None | Debugging / benchmarking baseline. |
+| Name                      | Method                       | Conditions                 | Notes                                                                                                                                              |
+| ------------------------- | ---------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `strong_wolfe`            | Optax zoom line search       | Armijo + strong curvature  | Keeps L-BFGS updates well-conditioned, but **over-restricts** the quadratic-path step on the MNIST benchmark (fails to converge); not the default. |
+| `backtracking` / `armijo` | Self-contained backtracking  | Armijo sufficient decrease | `lax.while_loop`; robust fallback.                                                                                                                 |
+| `hager_zhang`             | Optax backtracking transform | Approximate Wolfe          | Robust approximate-Wolfe scheme.                                                                                                                   |
+| `fixed`                   | Constant step                | None                       | Debugging / benchmarking baseline.                                                                                                                 |
 
-The **spline** refinement is *not* a line-search strategy but an orthogonal,
+The **spline** refinement is _not_ a line-search strategy but an orthogonal,
 boolean enhancement (`spline=True`). Because the path `d(t_i)` is consistent
 across all measured points, every probe — regardless of the underlying line
 search — can be reused as a control point. The spline is best understood as an
-*expanded definition of the curve* rather than a competing search: it does not
+_expanded definition of the curve_ rather than a competing search: it does not
 replace the chosen line search but **wraps** it (`spline_wrap(inner_search)`),
 first running the inner search and then probing the cubic Hermite spline's
 stationary points to improve on the accepted step. When enabled, the spline
@@ -233,7 +230,7 @@ Concrete oracles (see [`oracles.md`](oracles.md)):
 
 - **L-BFGS** (default): two-loop recursion over the most recent `m` curvature
   pairs `(s, y)`. Supplies the `t = 1` endpoint; note QQN's curved path means
-  the realized trajectory is *not* identical to standalone L-BFGS — it is
+  the realized trajectory is _not_ identical to standalone L-BFGS — it is
   numerically equivalent only at the `t = 1` endpoint, up to floating-point
   reordering.
 - **Momentum**: heavy-ball direction `-(β·v + (1-β)·∇f)`.
@@ -266,7 +263,7 @@ with `lax.scan`, keeping the whole recursion JIT/vmap compatible.
 ### Projective Regions: Searching the Feasible Path
 
 A **projective region** remaps a proposed update onto a feasible (or preferred)
-set *inside* the line search loop. Rather than searching the raw path, the line
+set _inside_ the line search loop. Rather than searching the raw path, the line
 search navigates the **projected path**:
 
 ```
@@ -328,15 +325,15 @@ QQNState(
    for the `t = 1` endpoint `-H∇f`.
 2. **Gradient**: form `grad_dir = -∇f`.
 3. **Path + Search**: run a single configured line search that traverses the
-    quadratic path `d(t) = t(1-t)·grad_dir + t²·qn_dir` over `t ∈ [0, 1]`,
-    evaluating candidate states `x + d(t)` (each respecting the region via the
-    projected path) and selecting the step `t`.
+   quadratic path `d(t) = t(1-t)·grad_dir + t²·qn_dir` over `t ∈ [0, 1]`,
+   evaluating candidate states `x + d(t)` (each respecting the region via the
+   projected path) and selecting the step `t`.
 4. **Selection**: extract the accepted `new_params`, `new_value`, `new_grad`,
-    and `step_size` (the chosen `t`).
+   and `step_size` (the chosen `t`).
 5. **Oracle update**: assemble an `OracleInfo` (`params`, `new_params`, `grad`,
-    `new_grad`, `t`, `α`) and call `oracle.update(...)` — e.g. push the new L-BFGS
-    curvature pair `(s, y) = (x_new − x, ∇f_new − ∇f)`, admitted only if
-    `⟨y, s⟩ > ε` (the curvature safeguard).
+   `new_grad`, `t`, `α`) and call `oracle.update(...)` — e.g. push the new L-BFGS
+   curvature pair `(s, y) = (x_new − x, ∇f_new − ∇f)`, admitted only if
+   `⟨y, s⟩ > ε` (the curvature safeguard).
 6. **Region update**: assemble a `RegionInfo` (with predicted/actual reduction,
    `t`, `α`) and call `region.update(...)` — e.g. grow/shrink the trust radius.
 7. **Convergence**: recompute `error = ‖∇f_new‖` and `done = error ≤ tol`;
@@ -376,8 +373,8 @@ or `Region` instances override them for full control. With the defaults
 ## Advantages
 
 1. **Adaptive Behavior**: Automatically balances between conservative and
-    aggressive steps via the line search walking the path, with no manual blend
-    tuning.
+   aggressive steps via the line search walking the path, with no manual blend
+   tuning.
 2. **Robustness**: The path's `d'(0) = -∇f` property plus multiple line-search
    fallbacks ensure progress even when the oracle is poor.
 3. **Efficiency**: L-BFGS (or other oracle) acceleration when appropriate;
@@ -396,9 +393,9 @@ or `Region` instances override them for full control. With the defaults
    size, `n` is parameter dimension); other oracles (e.g. Shampoo) may store
    larger preconditioner statistics.
 2. **Computational Overhead**: Evaluating the quadratic path and walking it with
-    the line search adds modest per-iteration cost.
+   the line search adds modest per-iteration cost.
 3. **Parameter Tuning**: Performance is sensitive to configuration (history size,
-    line-search constants, region radii).
+   line-search constants, region radii).
 4. **Line Search Sensitivity**: The algorithm's effectiveness is highly sensitive
    to the line search implementation. An inexact or poorly tuned line search
    undermines both convergence speed and the quality of L-BFGS curvature updates.
@@ -423,8 +420,8 @@ Under standard assumptions (smooth objective, bounded gradients):
 > satisfying sufficient decrease conditions. The steepest-descent fallback
 > provides global convergence only if the line search can always find a valid
 > step along the path (which it can, given `d'(0) = -∇f`). The descent property is
-> enforced *by* the line search, not independently of it. When a region is active,
-> these guarantees hold on the *feasible* (projected) path `d_R(t)`.
+> enforced _by_ the line search, not independently of it. When a region is active,
+> these guarantees hold on the _feasible_ (projected) path `d_R(t)`.
 
 ## References
 
@@ -440,4 +437,4 @@ The QQN algorithm combines ideas from:
 - Cubic Hermite interpolation (the information-reusing spline search).
 - OWL-QN (the Orthant region for sparsity).
 - [`notation.md`](notation.md) — symbol reference and disambiguation of
-   overloaded notation.
+  overloaded notation.

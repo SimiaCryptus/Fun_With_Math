@@ -141,18 +141,19 @@ For each position `i` in the test text:
 ### 4.8 Configuration Panel
 
 Exposed, live-editable parameters:
-| Parameter | Type | Default | Notes |
-|----------------------|-----------|-----------|--------------------------------|
-| Tokenizer | select | character | char / whitespace / word+punct |
-| Model order `n` | int 1–8 | 2 | context length |
-| Lowercase corpus | bool | false | |
-| Smoothing `k` | float | 0 | add-k Laplace |
-| Combine strategy | select | average | fwd/bwd/avg/min/max/geo |
-| Backoff enabled | bool | true | |
-| Floor probability | float | 1e-6 | for unseen |
-| Top-N replacements | int 1–20 | 5 | |
-| Color scale | select | log | linear / log |
-| Palette | select | heat | |
+
+| Parameter          | Type     | Default   | Notes                          |
+| ------------------ | -------- | --------- | ------------------------------ |
+| Tokenizer          | select   | character | char / whitespace / word+punct |
+| Model order `n`    | int 1–8  | 2         | context length                 |
+| Lowercase corpus   | bool     | false     |                                |
+| Smoothing `k`      | float    | 0         | add-k Laplace                  |
+| Combine strategy   | select   | average   | fwd/bwd/avg/min/max/geo        |
+| Backoff enabled    | bool     | true      |                                |
+| Floor probability  | float    | 1e-6      | for unseen                     |
+| Top-N replacements | int 1–20 | 5         |                                |
+| Color scale        | select   | log       | linear / log                   |
+| Palette            | select   | heat      |                                |
 
 - Settings persisted to `localStorage`.
 - Changing tokenizer/order/smoothing requires model rebuild (prompt user).

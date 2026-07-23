@@ -58,12 +58,12 @@ layer is toggleable and independently configurable.
 
 2. **Confounding lattice** — a grid of regions (≈ 50% of area) with a
    different, confounding gradient:
-    - Lattice cell size `L`, fill fraction `f` (default 0.5).
-    - Inside "active" cells, add `L_lattice = cgx·x + cgy·y`
-      (a confounding local gradient).
-    - Use a **smoothstep** blend at cell boundaries so the composite
-      function remains differentiable (avoids gradient discontinuities
-      that would break L-BFGS/QQN).
+   - Lattice cell size `L`, fill fraction `f` (default 0.5).
+   - Inside "active" cells, add `L_lattice = cgx·x + cgy·y`
+     (a confounding local gradient).
+   - Use a **smoothstep** blend at cell boundaries so the composite
+     function remains differentiable (avoids gradient discontinuities
+     that would break L-BFGS/QQN).
 
 ### 3.3 Gradient Computation
 
@@ -72,8 +72,8 @@ layer is toggleable and independently configurable.
 - Optionally support **numerical (finite-difference)** gradients as a
   fallback / verification path.
 - The objective must expose:
-    - `value(x, y) -> number`
-    - `grad(x, y) -> [gx, gy]`
+  - `value(x, y) -> number`
+  - `grad(x, y) -> [gx, gy]`
 
 ---
 
@@ -118,10 +118,10 @@ StepResult {
 - **QQN** — quadratic path
   `step(t) = t(1-t)·d_sd + t²·d_lbfgs`, with golden-section line
   search over `t ∈ [0,1]`. StepResult includes:
-    - `oracle` = full L-BFGS point,
-    - `path` = sampled quadratic path,
-    - `probes` = line-search evaluations,
-    - `chosenT`.
+  - `oracle` = full L-BFGS point,
+  - `path` = sampled quadratic path,
+  - `probes` = line-search evaluations,
+  - `chosenT`.
 
 > Note: Existing `optimizer-*.js` files use TensorFlow.js. For this
 > visualizer we will implement lightweight **pure-JS 2D versions**
@@ -222,10 +222,10 @@ Four tracked quantities, projected onto x and y axes:
   speed slider (steps per second).
 - **Reset** — return to `(x0, y0)`, clear history & optimizer state.
 - **Micro-step (QQN)** — optional sub-stepping to reveal:
-    1. show oracle point,
-    2. draw quadratic path,
-    3. animate line-search probes,
-    4. commit chosen step.
+  1. show oracle point,
+  2. draw quadratic path,
+  3. animate line-search probes,
+  4. commit chosen step.
 
 ---
 
@@ -304,14 +304,13 @@ camera changes ──> loss-renderer re-rasterize + all layers redraw
 ## 11. HTML Skeleton (planned)
 
 ```html
-
 <div id="toolbar"><!-- controls --></div>
 <div id="stage">
-    <canvas id="loss-layer"></canvas>
-    <canvas id="overlay-layer"></canvas>
-    <canvas id="path-layer"></canvas>
-    <canvas id="stats-layer"></canvas>
-    <canvas id="ui-layer"></canvas>
+  <canvas id="loss-layer"></canvas>
+  <canvas id="overlay-layer"></canvas>
+  <canvas id="path-layer"></canvas>
+  <canvas id="stats-layer"></canvas>
+  <canvas id="ui-layer"></canvas>
 </div>
 <script type="module" src="js/main.js"></script>
 ```

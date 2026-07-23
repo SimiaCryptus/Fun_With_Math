@@ -1,5 +1,6 @@
 // Minimal zero-dependency test harness (Node ESM or browser).
-let passed = 0, failed = 0;
+let passed = 0,
+    failed = 0;
 const failures = [];
 
 export function describe(name, fn) {

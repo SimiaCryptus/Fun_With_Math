@@ -103,14 +103,22 @@
       "href": "experiments/static-secrets/index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
       "readme": "experiments/static-secrets/README.md",
       "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key."
-   },
-   {
-     "icon": "OM",
-     "title": "Optimization Mechanics Visualizer",
-     "href": "experiments/optimization-mechanics/index.html",
-     "readme": "experiments/optimization-mechanics/README.md",
-     "launchLabel": "Open the Optimization Mechanics Visualizer lab",
-     "pitch": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations."
+    },
+    {
+      "icon": "OM",
+      "title": "Optimization Mechanics Visualizer",
+      "href": "experiments/optimization-mechanics/index.html",
+      "readme": "experiments/optimization-mechanics/README.md",
+      "launchLabel": "Open the Optimization Mechanics Visualizer lab",
+      "pitch": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations."
+    },
+    {
+      "icon": "CH",
+      "title": "Chromatic — OKLab vs Naive HSL",
+      "href": "experiments/chromatic/index.html",
+      "readme": "experiments/chromatic/README.md",
+      "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
+      "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem."
     }
   ],
   "essays": [],

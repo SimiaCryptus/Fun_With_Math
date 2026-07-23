@@ -20,7 +20,7 @@ let running = false;
 let simTime = 0;
 let E0 = null;
 let stepCount = 0;
-let state = null;    // { theta, thetaDot } during simulation
+let state = null; // { theta, thetaDot } during simulation
 let savedAngles = null; // to restore on reset
 
 // mode-animation state
@@ -33,8 +33,9 @@ document.querySelectorAll('.mode-tabs button').forEach((btn) => {
 
 function setMode(m) {
     mode = m;
-    document.querySelectorAll('.mode-tabs button').forEach((b) =>
-        b.classList.toggle('active', b.dataset.mode === m));
+    document
+        .querySelectorAll('.mode-tabs button')
+        .forEach((b) => b.classList.toggle('active', b.dataset.mode === m));
     $('panel-draw').style.display = m === 'draw' ? '' : 'none';
     $('panel-sim').style.display = m === 'sim' ? '' : 'none';
     $('panel-analysis').style.display = m === 'analysis' ? '' : 'none';
@@ -53,32 +54,32 @@ function initSim() {
     savedAngles = lattice.angles();
     simTime = 0;
     E0 = null;
-     stepCount = 0;
-     // ---- diagnostics on sim start ----
-     if (lattice.count === 0) {
-         console.warn('[sim] initSim: no magnets placed — nothing to simulate.');
-         return;
-     }
-     const pairs = buildPairs(lattice.positions(), params);
-     const tau = torque(state.theta, pairs, lattice.count);
-     let maxTau = 0;
-     for (let i = 0; i < tau.length; i++) maxTau = Math.max(maxTau, Math.abs(tau[i]));
-     const U0 = energy(state.theta, pairs);
-     console.log('[sim] initSim:', {
-         magnets: lattice.count,
-         pairs: pairs.length,
-         params: {...params, h: +$('h').value},
-         theta: Array.from(state.theta),
-         U0,
-         maxTorque: maxTau,
-     });
-     if (maxTau < 1e-9) {
-         console.warn(
-             '[sim] All torques ≈ 0 and velocities are zero: the system is at a ' +
-             'stationary equilibrium, so nothing will move. Perturb the angles ' +
-             '(Draw mode: shift-drag a magnet) or change k/positions.',
-         );
-     }
+    stepCount = 0;
+    // ---- diagnostics on sim start ----
+    if (lattice.count === 0) {
+        console.warn('[sim] initSim: no magnets placed — nothing to simulate.');
+        return;
+    }
+    const pairs = buildPairs(lattice.positions(), params);
+    const tau = torque(state.theta, pairs, lattice.count);
+    let maxTau = 0;
+    for (let i = 0; i < tau.length; i++) maxTau = Math.max(maxTau, Math.abs(tau[i]));
+    const U0 = energy(state.theta, pairs);
+    console.log('[sim] initSim:', {
+        magnets: lattice.count,
+        pairs: pairs.length,
+        params: {...params, h: +$('h').value},
+        theta: Array.from(state.theta),
+        U0,
+        maxTorque: maxTau,
+    });
+    if (maxTau < 1e-9) {
+        console.warn(
+            '[sim] All torques ≈ 0 and velocities are zero: the system is at a ' +
+                'stationary equilibrium, so nothing will move. Perturb the angles ' +
+                '(Draw mode: shift-drag a magnet) or change k/positions.',
+        );
+    }
 }
 
 // ---- Draw-mode interaction ----
@@ -173,29 +174,30 @@ function doStep() {
     const pairs = buildPairs(lattice.positions(), params);
     const method = $('integrator').value;
     const h = +$('h').value;
-     const before = Float64Array.from(state.theta);
+    const before = Float64Array.from(state.theta);
     state = step(state, pairs, params, h, method);
     lattice.setAngles(state.theta);
     simTime += h;
-     stepCount++;
-     // throttled diagnostics: every 100 steps report motion so we can see
-     // whether the integrator is actually advancing the state.
-     if (stepCount % 100 === 0) {
-         let maxDTheta = 0, maxThetaDot = 0;
-         for (let i = 0; i < state.theta.length; i++) {
-             maxDTheta = Math.max(maxDTheta, Math.abs(state.theta[i] - before[i]));
-             maxThetaDot = Math.max(maxThetaDot, Math.abs(state.thetaDot[i]));
-         }
-         const tau = torque(state.theta, pairs, state.theta.length);
-         let maxTau = 0;
-         for (let i = 0; i < tau.length; i++) maxTau = Math.max(maxTau, Math.abs(tau[i]));
-         console.log(
-             `[sim] step ${stepCount} t=${simTime.toFixed(3)} ` +
-             `maxΔθ/step=${maxDTheta.toExponential(2)} ` +
-             `max|θ̇|=${maxThetaDot.toExponential(2)} ` +
-             `max|τ|=${maxTau.toExponential(2)} method=${method}`,
-         );
-     }
+    stepCount++;
+    // throttled diagnostics: every 100 steps report motion so we can see
+    // whether the integrator is actually advancing the state.
+    if (stepCount % 100 === 0) {
+        let maxDTheta = 0,
+            maxThetaDot = 0;
+        for (let i = 0; i < state.theta.length; i++) {
+            maxDTheta = Math.max(maxDTheta, Math.abs(state.theta[i] - before[i]));
+            maxThetaDot = Math.max(maxThetaDot, Math.abs(state.thetaDot[i]));
+        }
+        const tau = torque(state.theta, pairs, state.theta.length);
+        let maxTau = 0;
+        for (let i = 0; i < tau.length; i++) maxTau = Math.max(maxTau, Math.abs(tau[i]));
+        console.log(
+            `[sim] step ${stepCount} t=${simTime.toFixed(3)} ` +
+                `maxΔθ/step=${maxDTheta.toExponential(2)} ` +
+                `max|θ̇|=${maxThetaDot.toExponential(2)} ` +
+                `max|τ|=${maxTau.toExponential(2)} method=${method}`,
+        );
+    }
 }
 
 function updateDiagnostics() {
@@ -211,7 +213,7 @@ function updateDiagnostics() {
     $('T-val').textContent = T.toFixed(6);
     $('U-val').textContent = U.toFixed(6);
     $('L-val').textContent = L.toFixed(6);
-    const dE = Math.abs(E0) > 1e-12 ? (E - E0) / Math.abs(E0) : (E - E0);
+    const dE = Math.abs(E0) > 1e-12 ? (E - E0) / Math.abs(E0) : E - E0;
     $('dE-val').textContent = dE.toExponential(3);
 }
 
@@ -236,8 +238,12 @@ $('analyze').addEventListener('click', () => {
     const n = lattice.count;
     $('mode-pick').max = String(n - 1);
     modeAnim = {
-        modes: res.modes, values: res.values, omega: res.omega,
-        base: lattice.angles(), idx: 0, phase: 0,
+        modes: res.modes,
+        values: res.values,
+        omega: res.omega,
+        base: lattice.angles(),
+        idx: 0,
+        phase: 0,
     };
     showMode(0);
     setStatus('Modes computed');
@@ -337,12 +343,12 @@ function loop() {
 
 // ---- Init ----
 function seed() {
-     // a small 2-magnet default so the app isn't empty.
-     // NOTE: (θ=0, θ=π) along the x-axis is exactly the head-to-tail
-     // equilibrium — with zero initial velocity nothing would move in Sim
-     // mode. Seed slightly perturbed angles so the dynamics are visible.
-     lattice.add([-1, 0], 0.6);
-     lattice.add([1, 0], Math.PI - 0.6);
+    // a small 2-magnet default so the app isn't empty.
+    // NOTE: (θ=0, θ=π) along the x-axis is exactly the head-to-tail
+    // equilibrium — with zero initial velocity nothing would move in Sim
+    // mode. Seed slightly perturbed angles so the dynamics are visible.
+    lattice.add([-1, 0], 0.6);
+    lattice.add([1, 0], Math.PI - 0.6);
     updateCount();
     syncUI();
     draw();
@@ -350,12 +356,26 @@ function seed() {
 // Debug handle: inspect state/params/lattice from the console, e.g.
 //   window.__ml.state, window.__ml.params, window.__ml.lattice
 window.__ml = {
-     get state() { return state; },
-     get params() { return params; },
-     get lattice() { return lattice; },
-     get running() { return running; },
-     get mode() { return mode; },
-     step: () => { doStep(); draw(); updateDiagnostics(); },
+    get state() {
+        return state;
+    },
+    get params() {
+        return params;
+    },
+    get lattice() {
+        return lattice;
+    },
+    get running() {
+        return running;
+    },
+    get mode() {
+        return mode;
+    },
+    step: () => {
+        doStep();
+        draw();
+        updateDiagnostics();
+    },
 };
 console.log('[magnet-lattice] booted. Debug handle available as window.__ml');
 

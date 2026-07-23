@@ -10,7 +10,10 @@ function totalEnergy(state, pairs) {
 
 function runEnergyTest(method, steps, tol) {
     // 2-magnet system perturbed from equilibrium
-    const pos = [[0, 0], [48, 0]];
+    const pos = [
+        [0, 0],
+        [48, 0],
+    ];
     const pairs = buildPairs(pos, params);
     let state = {theta: new Float64Array([0.3, -0.2]), thetaDot: new Float64Array([0, 0])};
     const E0 = totalEnergy(state, pairs);
@@ -39,7 +42,10 @@ describe('integrator: symplectic energy conservation', () => {
 describe('integrator: damping dissipates energy', () => {
     it('energy decreases monotonically-ish with gamma>0', () => {
         const dparams = {...params, gamma: 0.5};
-        const pos = [[0, 0], [48, 0]];
+        const pos = [
+            [0, 0],
+            [48, 0],
+        ];
         const pairs = buildPairs(pos, dparams);
         let state = {theta: new Float64Array([1.0, -0.5]), thetaDot: new Float64Array([0, 0])};
         const E0 = kinetic(state.thetaDot, dparams.I) + energy(state.theta, pairs);

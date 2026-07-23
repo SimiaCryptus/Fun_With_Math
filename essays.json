@@ -8,14 +8,14 @@
       "subtitle": "Standalone · optimization",
       "pitch": "A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS."
     },
-   {
-     "icon": "QQN",
-     "title": "Which Direction? → Where on the Curve?",
-     "href": "essays/QQN-Visuals/index.html",
-     "readme": "essays/QQN-Visuals/README.md",
-     "subtitle": "Interactive · optimization",
-     "pitch": "An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from \"which direction should I move?\" into \"where on this curve should I stop?\" — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of classical methods (gradient descent, momentum, L-BFGS, trust regions, OWL-QN) into points in one configuration space. <em>Built to make the geometry something you can feel, not just read.</em>"
-   },
+    {
+      "icon": "QQN",
+      "title": "Which Direction? → Where on the Curve?",
+      "href": "essays/QQN-Visuals/index.html",
+      "readme": "essays/QQN-Visuals/README.md",
+      "subtitle": "Interactive · optimization",
+      "pitch": "An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from \"which direction should I move?\" into \"where on this curve should I stop?\" — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of classical methods (gradient descent, momentum, L-BFGS, trust regions, OWL-QN) into points in one configuration space. <em>Built to make the geometry something you can feel, not just read.</em>"
+    },
     {
       "icon": "RCC",
       "title": "RCC — Rational Certificate Complexity",

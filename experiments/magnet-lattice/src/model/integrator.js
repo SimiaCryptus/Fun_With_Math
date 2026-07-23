@@ -18,7 +18,8 @@ import {luSolve} from '../math/linalg.js';
 export function verletStep(state, pairs, params, h) {
     const {I, gamma} = params;
     const n = state.theta.length;
-    const th = state.theta, thd = state.thetaDot;
+    const th = state.theta,
+        thd = state.thetaDot;
 
     // a_k = (τ - γ θdot) / I
     const tau0 = torque(th, pairs, n);

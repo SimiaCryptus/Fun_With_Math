@@ -432,7 +432,7 @@ For each n, the loop generates symbolic-dynamics objects relevant to substitutio
 - **Thue–Morse sequence** (first 16 terms) — relevant for n = 4 square-lattice substitution.
 - **Rudin–Shapiro sequence** (first 16 terms) — paperfolding/automatic sequence baseline.
 - **Fibonacci substitution matrix** [[1, 1], [1, 0]] with `charpoly = x² − x − 1` (verified) and PF eigenvalue = φ
-  (verified to 1e-8).
+          (verified to 1e-8).
 
 For n = 5 a dedicated block prints the depth-6 Fibonacci word and verifies length = F_8 = 21 — this is the symbolic
 encoding of the **long/short edge sequence on Penrose tiling lines**.

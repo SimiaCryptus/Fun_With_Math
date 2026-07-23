@@ -8,7 +8,10 @@ export function exportJSON(lattice, params) {
         version: VERSION,
         grid: {pitch: lattice.pitch, snap: lattice.snap},
         params: {
-            k: params.k, I: params.I, gamma: params.gamma, m: params.m,
+            k: params.k,
+            I: params.I,
+            gamma: params.gamma,
+            m: params.m,
         },
         magnets: lattice.magnets.map((mg) => ({
             id: mg.id,
@@ -25,9 +28,11 @@ export function exportJSON(lattice, params) {
  */
 export function validate(doc) {
     if (typeof doc !== 'object' || doc === null) throw new Error('Root must be an object');
-    if (doc.version !== VERSION) throw new Error(`Unsupported version: ${doc.version} (expected ${VERSION})`);
+    if (doc.version !== VERSION)
+        throw new Error(`Unsupported version: ${doc.version} (expected ${VERSION})`);
     if (typeof doc.grid !== 'object') throw new Error('Missing "grid"');
-    if (typeof doc.grid.pitch !== 'number' || doc.grid.pitch <= 0) throw new Error('grid.pitch must be a positive number');
+    if (typeof doc.grid.pitch !== 'number' || doc.grid.pitch <= 0)
+        throw new Error('grid.pitch must be a positive number');
     if (typeof doc.grid.snap !== 'boolean') throw new Error('grid.snap must be boolean');
     if (typeof doc.params !== 'object') throw new Error('Missing "params"');
     for (const key of ['k', 'I', 'gamma', 'm']) {
@@ -39,8 +44,12 @@ export function validate(doc) {
         if (typeof mg.id !== 'number') throw new Error(`magnet[${idx}].id must be a number`);
         if (seen.has(mg.id)) throw new Error(`Duplicate magnet id: ${mg.id}`);
         seen.add(mg.id);
-        if (!Array.isArray(mg.cell) || mg.cell.length !== 2 ||
-            !Number.isInteger(mg.cell[0]) || !Number.isInteger(mg.cell[1])) {
+        if (
+            !Array.isArray(mg.cell) ||
+            mg.cell.length !== 2 ||
+            !Number.isInteger(mg.cell[0]) ||
+            !Number.isInteger(mg.cell[1])
+        ) {
             throw new Error(`magnet[${idx}].cell must be [int,int]`);
         }
         if (typeof mg.theta !== 'number') throw new Error(`magnet[${idx}].theta must be a number`);

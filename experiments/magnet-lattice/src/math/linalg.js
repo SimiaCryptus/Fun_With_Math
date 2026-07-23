@@ -34,7 +34,8 @@ export function luSolve(Ain, bin) {
 
     for (let k = 0; k < n; k++) {
         // pivot
-        let p = k, max = Math.abs(A[k][k]);
+        let p = k,
+            max = Math.abs(A[k][k]);
         for (let i = k + 1; i < n; i++) {
             const v = Math.abs(A[i][k]);
             if (v > max) {
@@ -95,8 +96,7 @@ export function jacobiEigen(Ain, maxSweeps = 100, tol = 1e-14) {
 
     const off = () => {
         let s = 0;
-        for (let i = 0; i < n; i++)
-            for (let j = i + 1; j < n; j++) s += A[i][j] * A[i][j];
+        for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) s += A[i][j] * A[i][j];
         return s;
     };
 
@@ -106,22 +106,27 @@ export function jacobiEigen(Ain, maxSweeps = 100, tol = 1e-14) {
             for (let q = p + 1; q < n; q++) {
                 const apq = A[p][q];
                 if (Math.abs(apq) < 1e-300) continue;
-                const app = A[p][p], aqq = A[q][q];
+                const app = A[p][p],
+                    aqq = A[q][q];
                 const phi = 0.5 * Math.atan2(2 * apq, aqq - app);
-                const c = Math.cos(phi), s = Math.sin(phi);
+                const c = Math.cos(phi),
+                    s = Math.sin(phi);
                 // rotate rows/cols p,q
                 for (let i = 0; i < n; i++) {
-                    const aip = A[i][p], aiq = A[i][q];
+                    const aip = A[i][p],
+                        aiq = A[i][q];
                     A[i][p] = c * aip - s * aiq;
                     A[i][q] = s * aip + c * aiq;
                 }
                 for (let i = 0; i < n; i++) {
-                    const api = A[p][i], aqi = A[q][i];
+                    const api = A[p][i],
+                        aqi = A[q][i];
                     A[p][i] = c * api - s * aqi;
                     A[q][i] = s * api + c * aqi;
                 }
                 for (let i = 0; i < n; i++) {
-                    const vip = V[i][p], viq = V[i][q];
+                    const vip = V[i][p],
+                        viq = V[i][q];
                     V[i][p] = c * vip - s * viq;
                     V[i][q] = s * vip + c * viq;
                 }
