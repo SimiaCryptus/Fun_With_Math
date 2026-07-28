@@ -119,6 +119,14 @@
       "readme": "experiments/chromatic/README.md",
       "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
       "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem."
+    },
+    {
+      "icon": "PC",
+      "title": "PID-Regulated Cellular Automaton",
+      "href": "experiments/pid-ca/index.html",
+      "readme": "experiments/pid-ca/README.md",
+      "launchLabel": "Open the PID-Regulated Cellular Automaton lab",
+      "pitch": "A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor count against a target and computes proportional, integral, and derivative terms to decide its next state. The result is a rule family with local memory (integral windup), local anticipation (derivative), and tunable dynamical regimes — under-damped ripples, critically-damped blobs, over-damped glassy creep — all from the same control-theoretic mechanism."
     }
   ],
   "essays": [],
