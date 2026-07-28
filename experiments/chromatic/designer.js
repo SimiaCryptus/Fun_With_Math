@@ -125,7 +125,9 @@ function renderBackdrop() {
       const xu = px / w;
       const xVal = unitToAxis(doc.viewer.planeAxes[0], xu);
       const { rgb, inGamut } = sliceColorAt(doc.viewer, xVal, yVal);
-      let r = rgb.r, g = rgb.g, b = rgb.b;
+      let r = rgb.r,
+        g = rgb.g,
+        b = rgb.b;
       if (!inGamut && els.gamut.checked) {
         // hatched/desaturated marking for out-of-gamut regions
         const dim = 0.35;
@@ -495,9 +497,7 @@ function renderInspector() {
   }
 
   if (selLinks.length >= 1 && selNodes.length === 0) {
-    const links = selLinks
-      .map((id) => doc.links.find((l) => l.id === id))
-      .filter(Boolean);
+    const links = selLinks.map((id) => doc.links.find((l) => l.id === id)).filter(Boolean);
     body.innerHTML = `<div class="inspector-row">${selLinks.length} link${selLinks.length > 1 ? 's' : ''} selected.</div>`;
 
     // length display (single edge) or list (multiple)
@@ -511,7 +511,10 @@ function renderInspector() {
       const lenRow = document.createElement('div');
       lenRow.className = 'inspector-row';
       lenRow.innerHTML = `<span class="lbl">lengths</span> ${links
-        .map((l) => { const v = linkLength(l); return v != null ? v.toFixed(3) : '—'; })
+        .map((l) => {
+          const v = linkLength(l);
+          return v != null ? v.toFixed(3) : '—';
+        })
         .join(', ')}`;
       body.appendChild(lenRow);
     }
@@ -519,8 +522,8 @@ function renderInspector() {
     // min/max length bounds (applied to all selected links)
     const boundsRow = document.createElement('div');
     boundsRow.className = 'anchor-line';
-    const firstMin = links.length ? links[0].minLength ?? '' : '';
-    const firstMax = links.length ? links[0].maxLength ?? '' : '';
+    const firstMin = links.length ? (links[0].minLength ?? '') : '';
+    const firstMax = links.length ? (links[0].maxLength ?? '') : '';
 
     const minLbl = document.createElement('span');
     minLbl.textContent = 'min';
@@ -576,7 +579,7 @@ function renderInspector() {
     }
     // show shared value if all links agree
     const shared = links.every((l) => l.lockAxis === links[0].lockAxis)
-      ? links[0].lockAxis ?? ''
+      ? (links[0].lockAxis ?? '')
       : '';
     axisSel.value = shared;
     axisSel.addEventListener('change', () => {
@@ -594,10 +597,12 @@ function renderInspector() {
       row.className = 'btn-row';
       row.appendChild(makeBtn('Same length', () => makeGroup('length')));
       row.appendChild(makeBtn('Same angle', () => makeGroup('angle')));
-      row.appendChild(makeBtn('Same length & angle', () => {
-        makeGroup('length');
-        makeGroup('angle');
-      }));
+      row.appendChild(
+        makeBtn('Same length & angle', () => {
+          makeGroup('length');
+          makeGroup('angle');
+        })
+      );
       body.appendChild(row);
     }
     return;
@@ -607,17 +612,21 @@ function renderInspector() {
     body.innerHTML = `<div class="inspector-row">${selNodes.length} nodes selected.</div>`;
     const row = document.createElement('div');
     row.className = 'btn-row';
-    row.appendChild(makeBtn('Link chain', () => {
-      for (let i = 0; i < selNodes.length - 1; i++) addLink(doc, selNodes[i], selNodes[i + 1]);
-      invalidateResiduals();
-      refresh();
-    }));
-    if (selNodes.length === 2) {
-      row.appendChild(makeBtn('Link', () => {
-        addLink(doc, selNodes[0], selNodes[1]);
+    row.appendChild(
+      makeBtn('Link chain', () => {
+        for (let i = 0; i < selNodes.length - 1; i++) addLink(doc, selNodes[i], selNodes[i + 1]);
         invalidateResiduals();
         refresh();
-      }));
+      })
+    );
+    if (selNodes.length === 2) {
+      row.appendChild(
+        makeBtn('Link', () => {
+          addLink(doc, selNodes[0], selNodes[1]);
+          invalidateResiduals();
+          refresh();
+        })
+      );
     }
     body.appendChild(row);
 
@@ -631,7 +640,8 @@ function renderInspector() {
     inp.value = '0.6';
     const btn = makeBtn(`Anchor all ${dim}`, () => {
       const v = Number(inp.value);
-      for (const id of selNodes) setAnchor(doc, id, { dimension: dim, target: v, weight: 1, hard: false });
+      for (const id of selNodes)
+        setAnchor(doc, id, { dimension: dim, target: v, weight: 1, hard: false });
       invalidateResiduals();
       refresh();
     });
@@ -715,7 +725,8 @@ function renderConstraints() {
 
   const anchorCount = doc.nodes.reduce((s, n) => s + n.anchors.length, 0);
   const linkConstraintCount = doc.links.reduce(
-    (s, l) => s + (l.minLength != null ? 1 : 0) + (l.maxLength != null ? 1 : 0) + (l.lockAxis ? 1 : 0),
+    (s, l) =>
+      s + (l.minLength != null ? 1 : 0) + (l.maxLength != null ? 1 : 0) + (l.lockAxis ? 1 : 0),
     0
   );
   if (anchorCount === 0 && doc.groups.length === 0 && linkConstraintCount === 0) {
@@ -752,9 +763,7 @@ function renderConstraints() {
       const lo = link.minLength;
       const hi = link.maxLength;
       const within =
-        len != null &&
-        (lo == null || len >= lo - 1e-6) &&
-        (hi == null || len <= hi + 1e-6);
+        len != null && (lo == null || len >= lo - 1e-6) && (hi == null || len <= hi + 1e-6);
       const boundsTxt = `${lo != null ? lo.toFixed(3) : '−∞'} ≤ len ≤ ${hi != null ? hi.toFixed(3) : '∞'}`;
       line.innerHTML = `<span>${escapeHtml(name)} ${boundsTxt}</span>
         <span class="residual ${within ? 'good' : 'bad'}">${len != null ? len.toFixed(4) : ''}</span>`;
@@ -781,8 +790,8 @@ function renderConstraints() {
     }
   });
 
-// groups
-   doc.groups.forEach((g) => {
+  // groups
+  doc.groups.forEach((g) => {
     const line = document.createElement('div');
     line.className = 'group-line';
     const gr = r ? r.groups.find((x) => x.group === g.id) : null;
@@ -831,11 +840,13 @@ function renderConstraints() {
       });
       controls.appendChild(num);
     }
-    controls.appendChild(makeBtn('✕', () => {
-      removeGroup(doc, g.id);
-      invalidateResiduals();
-      refresh();
-    }));
+    controls.appendChild(
+      makeBtn('✕', () => {
+        removeGroup(doc, g.id);
+        invalidateResiduals();
+        refresh();
+      })
+    );
     line.appendChild(controls);
     body.appendChild(line);
   });
@@ -907,7 +918,10 @@ function makeBtn(label, onClick) {
 }
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  return String(s).replace(
+    /[&<>"]/g,
+    (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]
+  );
 }
 
 // --- boot ---------------------------------------------------------------

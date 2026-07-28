@@ -84,33 +84,33 @@ export function anchorError(points, constraint) {
 // Error is w * (violation)^2, summed over whichever bounds are active.
 // `axes` matches linkLength: 2 axes for a plane, omitted for full 3D.
 export function lengthBoundError(points, constraint, axes) {
-   const len = linkLength(points[constraint.a], points[constraint.b], axes);
-   const w = constraint.weight ?? 1;
-   let sum = 0;
-   if (constraint.maxLength != null) {
-     const over = Math.max(0, len - constraint.maxLength);
-     sum += over * over;
-   }
-   if (constraint.minLength != null) {
-     const under = Math.max(0, constraint.minLength - len);
-     sum += under * under;
-   }
-   return w * sum;
+  const len = linkLength(points[constraint.a], points[constraint.b], axes);
+  const w = constraint.weight ?? 1;
+  let sum = 0;
+  if (constraint.maxLength != null) {
+    const over = Math.max(0, len - constraint.maxLength);
+    sum += over * over;
+  }
+  if (constraint.minLength != null) {
+    const under = Math.max(0, constraint.minLength - len);
+    sum += under * under;
+  }
+  return w * sum;
 }
 // Axis lock: a link should lie along a single axis, so every *other* axis
 // delta between its endpoints should be zero. Error is w * sum of squared
 // off-axis deltas. `spaceAxes` is the full list of working-space dimensions.
 export function axisLockError(points, constraint, spaceAxes) {
-   const pa = points[constraint.a];
-   const pb = points[constraint.b];
-   const w = constraint.weight ?? 1;
-   let sum = 0;
-   for (const dim of spaceAxes) {
-     if (dim === constraint.lockAxis) continue;
-     const d = readDimension(pb, dim) - readDimension(pa, dim);
-     sum += d * d;
-   }
-   return w * sum;
+  const pa = points[constraint.a];
+  const pb = points[constraint.b];
+  const w = constraint.weight ?? 1;
+  let sum = 0;
+  for (const dim of spaceAxes) {
+    if (dim === constraint.lockAxis) continue;
+    const d = readDimension(pb, dim) - readDimension(pa, dim);
+    sum += d * d;
+  }
+  return w * sum;
 }
 
 // Length group: members should share a common length. When the group target
