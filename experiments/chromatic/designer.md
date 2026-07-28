@@ -29,12 +29,12 @@ The Designer consumes the **Colorspace Core** and **Geometry Kernel**
 (`idea.md` §3, §5) and the **Solver/Optimizer** primitives, but stays strictly
 _below_ the DSL layer:
 
-| Library layer          | Designer uses it for                                   |
-| ---------------------- | ------------------------------------------------------ |
-| Colorspace Core        | Rendering the spectrum viewer; coloring points; gamut  |
-| Geometry Kernel        | `PaletteColor` / `Palette` point-set representation     |
-| Solver / Optimizer     | Minimizing constraint error over point positions       |
-| DSL                    | **Not used.** The Designer is the manual alternative.   |
+| Library layer      | Designer uses it for                                  |
+| ------------------ | ----------------------------------------------------- |
+| Colorspace Core    | Rendering the spectrum viewer; coloring points; gamut |
+| Geometry Kernel    | `PaletteColor` / `Palette` point-set representation   |
+| Solver / Optimizer | Minimizing constraint error over point positions      |
+| DSL                | **Not used.** The Designer is the manual alternative. |
 
 The Designer's internal state model must be a strict subset of, or trivially
 convertible into, the compiled artifacts the DSL emits: a **constraint list**,
@@ -51,11 +51,11 @@ space. Each node has:
 
 - a stable **id** and a human-facing **name/label**,
 - a **position** in the working colorspace (the full 3D coordinate, even
-though the viewer shows a 2D slice at any given time),
+  though the viewer shows a 2D slice at any given time),
 - an **anchor set** — zero or more color dimensions locked to fixed values
-(see §5.1),
+  (see §5.1),
 - a **display color** — the node's actual color, always rendered accurately
-regardless of the current slice (see §4.2).
+  regardless of the current slice (see §4.2).
 
 Nodes are the optimizer's free variables: any coordinate not anchored is
 something the optimizer may move.
@@ -95,11 +95,11 @@ optimizer's variable set), mirroring the hard/soft split in `idea.md` §7.3.
 The viewer presents a **2D slice** of a chosen 3D colorspace. The user picks:
 
 - the **colorspace** (OKLab or OKLch primarily; Lab/Lch/HSL/HSV available for
-comparison),
+  comparison),
 - which two dimensions form the **plane** (e.g. OKLab `a`/`b`, or OKLch
-hue/chroma),
+  hue/chroma),
 - the **value of the third (depth) dimension** for the slice plane (e.g.
-lightness = 0.6).
+  lightness = 0.6).
 
 The plane is filled with a rendered gradient of the colorspace at that slice,
 giving the user a perceptual backdrop to place points against. Out-of-gamut
@@ -125,15 +125,15 @@ _required_, though one is shown on selection (§7.3).
 #### 4.3 Placement and interaction
 
 - Users **place** a node by clicking an empty spot on the slice; its two
-in-plane coordinates come from the click position, and its depth coordinate
-defaults to the current slice value (so a freshly placed node initially
-matches its backdrop and then drifts as it's edited or optimized).
+  in-plane coordinates come from the click position, and its depth coordinate
+  defaults to the current slice value (so a freshly placed node initially
+  matches its backdrop and then drifts as it's edited or optimized).
 - Users **drag** a node to change its in-plane coordinates.
 - Depth is adjusted either by (a) changing the slice value and re-dragging, or
-(b) a scroll/modifier-drag gesture that moves the node along the depth axis,
-with the node's color updating live to reflect the new depth.
+  (b) a scroll/modifier-drag gesture that moves the node along the depth axis,
+  with the node's color updating live to reflect the new depth.
 - All movement is clamped or flagged against the sRGB gamut per the viewer's
-gamut display.
+  gamut display.
 
 ### 5. Constraints in Detail
 
@@ -149,9 +149,9 @@ A node may anchor any subset of its color dimensions. In OKLch, that is any of
 Semantics:
 
 - A **hard** anchor removes that dimension from the optimizer's free variables
-for that node; the value is held exactly.
+  for that node; the value is held exactly.
 - A **soft** anchor adds an error term `w · (value − target)²` to the
-objective, letting the optimizer trade it off against other constraints.
+  objective, letting the optimizer trade it off against other constraints.
 
 Anchors are how the user says "this node's lightness is 0.6, no matter what"
 or "this node should be roughly this hue." They correspond directly to the
@@ -163,12 +163,12 @@ but here they are set by hand.
 Links express relationships through **shared constraint groups**. Two kinds:
 
 - **length group**: all links in the group should have the _same length_ in
-the working space. (Length = Euclidean distance between the two nodes'
-current coordinates.)
+  the working space. (Length = Euclidean distance between the two nodes'
+  current coordinates.)
 - **angle group**: all links in the group should have the _same angle_ in the
-working plane. (Angle is measured in the current viewing plane; the
-depth-axis contribution is either ignored or included per a group setting —
-default: measured in-plane, since angle is a 2D notion in the viewer.)
+  working plane. (Angle is measured in the current viewing plane; the
+  depth-axis contribution is either ignored or included per a group setting —
+  default: measured in-plane, since angle is a 2D notion in the viewer.)
 
 A single link may belong to a length group, an angle group, both, or neither.
 A group with only one member is inert.
@@ -176,17 +176,17 @@ A group with only one member is inert.
 UI affordances:
 
 - Selecting two or more links and clicking **"same length"** puts them in a
-shared length group.
+  shared length group.
 - Selecting two or more links and clicking **"same angle"** puts them in a
-shared angle group.
+  shared angle group.
 - Clicking **"same length & angle"** puts them in both — the fastest way to
-express "these edges are congruent," which is the building block of the
-symmetry invariants the DSL later declares wholesale (`idea.md` §4.2).
+  express "these edges are congruent," which is the building block of the
+  symmetry invariants the DSL later declares wholesale (`idea.md` §4.2).
 
 Each group's target may be:
 
 - **free** (the optimizer picks the common value that minimizes total error —
-i.e. the group members should agree, but on what, is left open), or
+  i.e. the group members should agree, but on what, is left open), or
 - **fixed** (the user pins the shared length/angle to a specific value).
 
 #### 5.3 Why length + angle, not raw coordinates
@@ -207,10 +207,10 @@ assembled from the manual constraints rather than a compiled DSL program:
 
 - **soft anchors** → `w · (value − target)²` per anchored dimension.
 - **length group** → sum over group members of `(len_i − L*)²`, where `L*` is
-the group's fixed target or, for a free group, the mean length (so the term
-reduces to the variance of member lengths).
+  the group's fixed target or, for a free group, the mean length (so the term
+  reduces to the variance of member lengths).
 - **angle group** → analogous, using angular difference (wrapped to `[−π, π]`)
-against the group's fixed target or circular-mean angle.
+  against the group's fixed target or circular-mean angle.
 
 Hard anchors contribute no term; they are enforced by construction by simply
 not exposing that coordinate to the solver.
@@ -224,16 +224,16 @@ its `chroma` and `hue` as free variables.
 #### 6.3 Solver behavior
 
 - The solver reuses the library's default numerical optimizer (`idea.md` §7.3):
-gradient-based via finite differences, with a simulated-annealing fallback
-available for the non-smooth angle-wrapping terms.
+  gradient-based via finite differences, with a simulated-annealing fallback
+  available for the non-smooth angle-wrapping terms.
 - It runs **interactively**: the user can trigger a solve, and (optionally)
-watch points animate toward a lower-error configuration in real time as the
-solver iterates, with node colors updating live.
+  watch points animate toward a lower-error configuration in real time as the
+  solver iterates, with node colors updating live.
 - It is **interruptible**: the user can stop, grab a node, drag it, and resume
-— treating the solver as an assistant rather than an authority.
+  — treating the solver as an assistant rather than an authority.
 - Every solve is **gamut-aware**: points pushed out of sRGB during a step are
-softly compressed back (or flagged), consistent with the viewer's gamut
-display.
+  softly compressed back (or flagged), consistent with the viewer's gamut
+  display.
 
 #### 6.4 Error readout
 
@@ -242,10 +242,10 @@ error:
 
 - total objective `J`,
 - per-constraint residuals (which anchors / groups are still unsatisfied and
-by how much),
+  by how much),
 - a highlight overlay in the viewer marking the worst-offending nodes and
-links (e.g. a link far from its group's target length drawn in a warning
-color).
+  links (e.g. a link far from its group's target length drawn in a warning
+  color).
 
 This makes over-constrained, unsatisfiable setups legible: the user sees
 _which_ constraints are fighting, rather than getting a silently averaged
@@ -258,21 +258,21 @@ mush — the same design value stated for the DSL's conflict check
 
 - **Viewer** (center): the spectrum slice with nodes and links.
 - **Slice controls** (top): colorspace picker, plane-axis pickers, depth-value
-slider, gamut-overlay toggle.
+  slider, gamut-overlay toggle.
 - **Inspector** (side): properties of the current selection (node or link) —
-name, coordinates, anchors, group memberships.
+  name, coordinates, anchors, group memberships.
 - **Constraint list** (side): all anchors and groups, each toggleable and
-weight-adjustable, with its live residual shown.
+  weight-adjustable, with its live residual shown.
 - **Solver controls** (bottom): run / step / stop, iteration cap, convergence
-threshold, live-animation toggle, and the total-`J` readout.
+  threshold, live-animation toggle, and the total-`J` readout.
 
 #### 7.2 Selection & multi-select
 
 - Click selects a node or link; shift-click adds to selection.
 - Multi-selecting links enables the "same length / angle / both" group
-actions (§5.2).
+  actions (§5.2).
 - Multi-selecting nodes enables batch anchor operations (e.g. "anchor all to
-lightness = 0.6").
+  lightness = 0.6").
 
 #### 7.3 Node inspector detail
 
@@ -288,7 +288,7 @@ The Designer's document is a plain-data structure:
 - `nodes`: id, name, coordinates (in a named working space), anchors.
 - `links`: id, endpoints, group memberships.
 - `groups`: id, kind (length | angle), target mode (free | fixed), target
-value, member link ids.
+  value, member link ids.
 - `viewer`: current colorspace, plane axes, depth value, gamut-overlay flag.
 
 This document is serializable to JSON and is explicitly designed to be the
@@ -312,11 +312,11 @@ Out of scope (deferred to the DSL / later tools, per `idea.md` §6, §10):
 
 - Text/DSL editing and parsing.
 - Automatic semantic-role priors (`accent()`, `neutral()`, …); the Designer's
-equivalent is manual anchoring.
+  equivalent is manual anchoring.
 - Symmetry-group generators (`orbit`, `rotational k`); the Designer's
-equivalent is manually congruent link groups.
+  equivalent is manually congruent link groups.
 - Cross-space projection/distortion optimization (`optimize_for`); the
-Designer optimizes in a single working space only.
+  Designer optimizes in a single working space only.
 - Full export ecosystem (Sass/Tailwind/SVG); minimal JSON/CSS export only.
 
 ### 10. Success Criteria
@@ -325,11 +325,11 @@ The Designer succeeds if a user can, without writing any code or DSL:
 
 1. Place a handful of named colors in OKLab/OKLch,
 2. Declare "these edges are the same length" and "this node's lightness is
- fixed,"
+   fixed,"
 3. Hit **solve** and watch the point-set relax into a configuration that
- honors those relations,
+   honors those relations,
 4. Read off _which_ constraints remain unsatisfied and by how much,
 
- and thereby experience, hands-on, the central claim of Chromatic: that a
- palette is best understood and built as **constrained relational geometry in a
- perceptual space**, not as a list of hand-picked swatches.
+and thereby experience, hands-on, the central claim of Chromatic: that a
+palette is best understood and built as **constrained relational geometry in a
+perceptual space**, not as a list of hand-picked swatches.

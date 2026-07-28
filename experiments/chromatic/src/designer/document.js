@@ -78,7 +78,8 @@ export function addLink(doc, aId, bId) {
   const exists = doc.links.some(
     (l) => (l.a === aId && l.b === bId) || (l.a === bId && l.b === aId)
   );
-  if (exists) return doc.links.find((l) => (l.a === aId && l.b === bId) || (l.a === bId && l.b === aId));
+  if (exists)
+    return doc.links.find((l) => (l.a === aId && l.b === bId) || (l.a === bId && l.b === aId));
   const link = { id: nextId('l'), a: aId, b: bId };
   doc.links.push(link);
   return link;

@@ -71,7 +71,9 @@ test('free length group equalizes link lengths', () => {
 });
 
 test('residual breakdown flags worst node', () => {
-  const doc = createDocument({ viewer: { space: 'OKLch', planeAxes: ['hue', 'chroma'], depthAxis: 'lightness' } });
+  const doc = createDocument({
+    viewer: { space: 'OKLch', planeAxes: ['hue', 'chroma'], depthAxis: 'lightness' },
+  });
   const n = addNode(doc, { name: 'x', oklab: ok(0.5, 0.05, 0) });
   setAnchor(doc, n.id, { dimension: 'lightness', target: 0.9, weight: 1, hard: false });
   const { residuals, varMap } = compileObjective(doc);
@@ -85,7 +87,13 @@ test('fixed-target length group drives links toward the pinned length', () => {
   const c = addNode(doc, { name: 'c', oklab: { L: 0.6, a: 0, b: 0 } });
   const p = addNode(doc, { name: 'p', oklab: { L: 0.6, a: 0.05, b: 0 } });
   const l = addLink(doc, c.id, p.id);
-  const g = addGroup(doc, { kind: 'length', linkIds: [l.id], mode: 'fixed', target: 0.2, weight: 1 });
+  const g = addGroup(doc, {
+    kind: 'length',
+    linkIds: [l.id],
+    mode: 'fixed',
+    target: 0.2,
+    weight: 1,
+  });
   // single-member fixed group is meaningful (unlike a single-member free group)
   solve(doc, { maxIterations: 400, gamut: false });
   const { residuals, varMap } = compileObjective(doc);
