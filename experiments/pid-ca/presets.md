@@ -1,5 +1,3 @@
-
-
 ```json
 {
   "gridWidth": 267,
