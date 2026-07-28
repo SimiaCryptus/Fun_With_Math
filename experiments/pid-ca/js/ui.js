@@ -81,7 +81,28 @@ export class UI {
       this.sim.reset();
     });
 
-    this.toolbar.append(this.playButton, stepBtn, resetBtn, clearBtn, reseedBtn);
+    const fullscreenBtn = el('button', null, 'Fullscreen');
+    fullscreenBtn.addEventListener('click', () => this._toggleFullscreen());
+    document.addEventListener('fullscreenchange', () => {
+      const active = Boolean(document.fullscreenElement);
+      fullscreenBtn.textContent = active ? 'Exit fullscreen' : 'Fullscreen';
+    });
+    this.fullscreenButton = fullscreenBtn;
+
+    this.toolbar.append(this.playButton, stepBtn, resetBtn, clearBtn, reseedBtn, fullscreenBtn);
+  }
+  _toggleFullscreen() {
+    const stage = this.canvas.closest('.stage') || this.canvas.parentElement;
+    if (!stage) return;
+    if (!document.fullscreenElement) {
+      const request =
+        stage.requestFullscreen || stage.webkitRequestFullscreen || stage.msRequestFullscreen;
+      if (request) request.call(stage);
+    } else {
+      const exit =
+        document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+      if (exit) exit.call(document);
+    }
   }
 
   _updatePlayButton() {
@@ -129,18 +150,40 @@ export class UI {
       const keys = Object.keys(SCHEMA).filter((k) => SCHEMA[k].group === group);
       if (!keys.length) continue;
       const section = el('section', 'group');
-      section.appendChild(el('h2', null, group));
-      for (const key of keys) section.appendChild(this._buildControl(key, SCHEMA[key]));
+      const header = el('h2', null, group);
+      const body = el('div', 'group-body');
+      for (const key of keys) body.appendChild(this._buildControl(key, SCHEMA[key]));
+      section.append(header, body);
+      this._makeCollapsible(section, header);
       this.panel.appendChild(section);
     }
 
     this.errorBox = el('p', 'errors');
     this.panel.appendChild(this.errorBox);
   }
+  /** Wire a group header to toggle a `.collapsed` class on its section (§9). */
+  _makeCollapsible(section, header) {
+    header.classList.add('collapsible');
+    header.setAttribute('role', 'button');
+    header.setAttribute('tabindex', '0');
+    header.setAttribute('aria-expanded', 'true');
+    const toggle = () => {
+      const collapsed = section.classList.toggle('collapsed');
+      header.setAttribute('aria-expanded', String(!collapsed));
+    };
+    header.addEventListener('click', toggle);
+    header.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggle();
+      }
+    });
+  }
 
   _buildPresetSection() {
     const section = el('section', 'group');
-    section.appendChild(el('h2', null, 'Presets & sharing'));
+    const header = el('h2', null, 'Presets & sharing');
+    const body = el('div', 'group-body');
 
     const select = el('select');
     this.presets.forEach((preset, index) => {
@@ -149,7 +192,7 @@ export class UI {
       option.textContent = preset.name;
       select.appendChild(option);
     });
-    section.appendChild(select);
+    body.appendChild(select);
 
     const description = el(
       'p',
@@ -160,7 +203,7 @@ export class UI {
       const preset = this.presets[Number(select.value)];
       description.textContent = preset ? preset.description || '' : '';
     });
-    section.appendChild(description);
+    body.appendChild(description);
 
     const row = el('div', 'row');
     const loadBtn = el('button', 'primary', 'Load preset');
@@ -187,13 +230,13 @@ export class UI {
       }, 1400);
     });
     row.append(loadBtn, shareBtn);
-    section.appendChild(row);
+    body.appendChild(row);
 
     const textarea = el('textarea');
     textarea.rows = 7;
     textarea.spellcheck = false;
     textarea.placeholder = 'Configuration JSON (export / import)';
-    section.appendChild(textarea);
+    body.appendChild(textarea);
 
     const ioRow = el('div', 'row');
     const exportBtn = el('button', null, 'Export JSON');
@@ -212,8 +255,10 @@ export class UI {
       }
     });
     ioRow.append(exportBtn, importBtn);
-    section.appendChild(ioRow);
+    body.appendChild(ioRow);
 
+    section.append(header, body);
+    this._makeCollapsible(section, header);
     return section;
   }
 
@@ -348,8 +393,56 @@ export class UI {
   _bindPainting() {
     let painting = false;
     let paintValue = 1;
+    let fillStart = null;
 
     const cellOf = (event) => this.renderer.cellFromEvent(event, this.sim.grid);
+    const paintBrush = (cx, cy, value) => {
+      const cfg = this.config.all();
+      const size = Math.max(1, cfg.brushSize | 0);
+      const half = (size - 1) / 2;
+      const grid = this.sim.grid;
+      const x0 = Math.round(cx - half);
+      const y0 = Math.round(cy - half);
+      for (let dy = 0; dy < size; dy++) {
+        for (let dx = 0; dx < size; dx++) {
+          const x = x0 + dx;
+          const y = y0 + dy;
+          if (x < 0 || y < 0 || x >= grid.width || y >= grid.height) continue;
+          this.sim.paintCell(x, y, value);
+        }
+      }
+    };
+    const applyFill = (a, b, value) => {
+      const cfg = this.config.all();
+      const grid = this.sim.grid;
+      const x0 = Math.max(0, Math.min(a.x, b.x));
+      const x1 = Math.min(grid.width - 1, Math.max(a.x, b.x));
+      const y0 = Math.max(0, Math.min(a.y, b.y));
+      const y1 = Math.min(grid.height - 1, Math.max(a.y, b.y));
+      const density = Math.max(0, Math.min(1, cfg.fillDensity / 100));
+      for (let y = y0; y <= y1; y++) {
+        for (let x = x0; x <= x1; x++) {
+          let paint;
+          switch (cfg.fillPattern) {
+            case 'stripesH':
+              paint = (y - y0) % 2 === 0;
+              break;
+            case 'stripesV':
+              paint = (x - x0) % 2 === 0;
+              break;
+            case 'checker':
+              paint = (x - x0 + (y - y0)) % 2 === 0;
+              break;
+            case 'random':
+            default:
+              paint = Math.random() < density;
+              break;
+          }
+          if (paint) this.sim.paintCell(x, y, value);
+          else if (cfg.fillPattern !== 'random') this.sim.paintCell(x, y, 0);
+        }
+      }
+    };
 
     this.canvas.addEventListener('pointerdown', (event) => {
       const cell = cellOf(event);
@@ -364,18 +457,29 @@ export class UI {
       } catch (err) {
         /* ignore */
       }
-      this.sim.paintCell(cell.x, cell.y, paintValue);
+      if (cfg.paintTool === 'fill') {
+        fillStart = cell;
+      } else {
+        paintBrush(cell.x, cell.y, paintValue);
+      }
       event.preventDefault();
     });
 
     this.canvas.addEventListener('pointermove', (event) => {
       if (!painting) return;
       const cell = cellOf(event);
-      if (cell) this.sim.paintCell(cell.x, cell.y, paintValue);
+      if (!cell) return;
+      const cfg = this.config.all();
+      if (cfg.paintTool !== 'fill') paintBrush(cell.x, cell.y, paintValue);
     });
 
-    const stop = () => {
+    const stop = (event) => {
+      if (painting && this.config.get('paintTool') === 'fill' && fillStart) {
+        const cell = cellOf(event) || fillStart;
+        applyFill(fillStart, cell, paintValue);
+      }
       painting = false;
+      fillStart = null;
     };
     this.canvas.addEventListener('pointerup', stop);
     this.canvas.addEventListener('pointercancel', stop);

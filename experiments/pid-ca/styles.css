@@ -267,3 +267,42 @@ input[type='checkbox'] {
   font-size: 11px;
   margin: 4px 0 0;
 }
+.group h2.collapsible {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+.group h2.collapsible::after {
+  content: '▾';
+  font-size: 10px;
+  color: var(--fg-dim);
+  transition: transform 0.15s ease;
+}
+.group.collapsed h2.collapsible::after {
+  transform: rotate(-90deg);
+}
+.group.collapsed .group-body {
+  display: none;
+}
+.stage:fullscreen {
+  background: var(--bg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+}
+.stage:-webkit-full-screen {
+  background: var(--bg);
+}
+.stage:fullscreen .canvas-wrap {
+  max-height: 90vh;
+  display: flex;
+  justify-content: center;
+}
+.stage:fullscreen canvas {
+  max-height: 90vh;
+  width: auto;
+}

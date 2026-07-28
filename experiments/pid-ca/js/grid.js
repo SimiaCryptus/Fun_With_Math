@@ -20,6 +20,32 @@ export function createRng(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
+/**
+ * Box-Muller transform over a supplied uniform RNG: returns a function that
+ * yields standard-normal (μ=0, σ=1) samples. Used to perturb initial
+ * controller memory for symmetry breaking (§7.2).
+ */
+export function makeGaussianSampler(rng) {
+  let spare = null;
+  return function gaussian() {
+    if (spare !== null) {
+      const v = spare;
+      spare = null;
+      return v;
+    }
+    let u = 0,
+      v = 0,
+      s = 0;
+    do {
+      u = rng() * 2 - 1;
+      v = rng() * 2 - 1;
+      s = u * u + v * v;
+    } while (s === 0 || s >= 1);
+    const mul = Math.sqrt((-2 * Math.log(s)) / s);
+    spare = v * mul;
+    return u * mul;
+  };
+}
 
 function wrapIndex(v, n) {
   return ((v % n) + n) % n;

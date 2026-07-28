@@ -14,6 +14,7 @@ import {
   countActiveNeighbors,
   makeActivePredicate,
   createRng,
+  makeGaussianSampler,
 } from './grid.js';
 import { pidStep } from './controller.js';
 import { expressState } from './stateExpression.js';
@@ -111,6 +112,7 @@ export class Simulation {
     const cfg = this.config.all();
     const g = this.grid;
     const uniform = isTargetSpatiallyUniform(cfg) ? targetAt(cfg, 0, 0, 0) : null;
+    const gaussian = cfg.perturbInit === 'normal' ? makeGaussianSampler(this.rng) : null;
     for (let y = 0; y < g.height; y++) {
       const row = y * g.width;
       for (let x = 0; x < g.width; x++) {
@@ -126,9 +128,15 @@ export class Simulation {
         );
         const T = uniform !== null ? uniform : targetAt(cfg, x, y, 0);
         const e = T - n;
-        g.prevError[idx] = e;
+        let prevError = e;
+        let integral = 0;
+        if (gaussian) {
+          prevError += gaussian() * cfg.perturbSigma;
+          integral += gaussian() * cfg.perturbSigma;
+        }
+        g.prevError[idx] = prevError;
         g.error[idx] = e;
-        g.integral[idx] = 0;
+        g.integral[idx] = integral;
         g.u[idx] = 0;
       }
     }
