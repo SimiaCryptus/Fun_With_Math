@@ -14,13 +14,28 @@ export const EXPRESSIONS = ['threshold', 'quantize', 'semantic', 'probabilistic'
 export const ACTIVE_PREDICATES = ['gt0', 'ge2', 'eqMax'];
 export const INITIAL_CONDITIONS = ['random', 'center', 'singleCell', 'stripes', 'empty'];
 export const TARGET_MODES = ['constant', 'gradientX', 'radial', 'oscillating'];
-export const OVERLAYS = ['none', 'u', 'integral', 'error'];
+export const OVERLAYS = ['none', 'u', 'integral', 'error', 'voltage'];
+
+// ---- bioelectrical membrane domain (bioelectrical.md §5, §6.3) ------------
+export const MODES = ['pid', 'membrane-only', 'pid-homeostat'];
+export const POLARITIES = ['depolarizing', 'hyperpolarizing'];
+export const CLOSE_MODES = ['hysteresis', 'timed'];
+export const MEMBRANE_INITS = [
+  'uniform-rest',
+  'noisy-rest',
+  'seeded-spike',
+  'pacemaker',
+  'painted',
+];
+export const STIMULUS_MODES = ['pulse', 'hold'];
 
 export const GROUPS = [
+  'Model',
   'Grid & topology',
   'Target',
   'PID gains',
   'State expression',
+  'Membrane (bioelectrical)',
   'Initialisation',
   'Painting',
   'Playback',
@@ -31,9 +46,33 @@ const isExpr =
   (...names) =>
   (cfg) =>
     names.includes(cfg.expression);
+/** Visibility helpers for the two coexisting domains. */
+const isPid = (cfg) => cfg.mode === 'pid';
+const isMembrane = (cfg) => cfg.mode !== 'pid';
+/** Maximum neighbour count for the configured neighbourhood (diffusion stability). */
+export function maxNeighborCount(cfg) {
+  const r = Math.max(1, cfg.radius | 0);
+  return cfg.neighborhood === 'vonNeumann' ? 2 * r * (r + 1) : (2 * r + 1) * (2 * r + 1) - 1;
+}
 
 /** Full parameter schema. `structural: true` means a change forces reallocation + reset. */
 export const SCHEMA = {
+  // ------------------------------------------------------------------- model
+  mode: {
+    group: 'Model',
+    label: 'Domain / mechanism',
+    type: 'enum',
+    options: MODES,
+    default: 'pid',
+    structural: true,
+    optionLabels: {
+      pid: 'PID controller (base model)',
+      'membrane-only': 'Bioelectrical membrane',
+      'pid-homeostat': 'Membrane + PID homeostat',
+    },
+    hint: 'Membrane modes replace the neighbour-count controller with the excitable-membrane rule.',
+  },
+
   // ---------------------------------------------------------------- topology
   gridWidth: {
     group: 'Grid & topology',
@@ -92,6 +131,7 @@ export const SCHEMA = {
     default: 'gt0',
     optionLabels: { gt0: 'state > 0', ge2: 'state >= 2', eqMax: 'state = max' },
     hint: 'Definition of "active" used when counting N_t(c).',
+    visible: isPid,
   },
 
   // ------------------------------------------------------------------ target
@@ -271,6 +311,7 @@ export const SCHEMA = {
       stripes: 'Vertical stripes',
       empty: 'Empty grid',
     },
+    visible: isPid,
   },
   initialDensity: {
     group: 'Initialisation',
@@ -280,7 +321,8 @@ export const SCHEMA = {
     max: 1,
     step: 0.01,
     default: 0.35,
-    visible: (cfg) => cfg.initialCondition === 'random' || cfg.initialCondition === 'center',
+    visible: (cfg) =>
+      isPid(cfg) && (cfg.initialCondition === 'random' || cfg.initialCondition === 'center'),
   },
   seed: {
     group: 'Initialisation',
@@ -300,6 +342,7 @@ export const SCHEMA = {
     default: 'none',
     optionLabels: { none: 'Disabled', normal: 'Normal noise' },
     hint: 'Adds noise to initial controller memory (e_(t-1), I_0) to break symmetry.',
+    visible: isPid,
   },
   perturbSigma: {
     group: 'Initialisation',
@@ -309,8 +352,194 @@ export const SCHEMA = {
     max: 5,
     step: 0.01,
     default: 0.1,
-    visible: (cfg) => cfg.perturbInit !== 'none',
+    visible: (cfg) => isPid(cfg) && cfg.perturbInit !== 'none',
   },
+  // ------------------------------------------------- membrane (§3.4–§3.6, §5)
+  vRest: {
+    group: 'Membrane (bioelectrical)',
+    label: 'V_rest (resting / leak target)',
+    type: 'float',
+    min: -100,
+    max: 20,
+    step: 0.5,
+    default: -70,
+    visible: isMembrane,
+  },
+  vThreshold: {
+    group: 'Membrane (bioelectrical)',
+    label: 'V_threshold (gate trigger)',
+    type: 'float',
+    min: -100,
+    max: 40,
+    step: 0.5,
+    default: -55,
+    visible: isMembrane,
+  },
+  vClose: {
+    group: 'Membrane (bioelectrical)',
+    label: 'V_close (hysteresis edge)',
+    type: 'float',
+    min: -120,
+    max: 40,
+    step: 0.5,
+    default: -60,
+    visible: (cfg) => isMembrane(cfg) && cfg.closeMode === 'hysteresis',
+    hint: 'Depolarizing polarity requires V_release < V_close < V_threshold.',
+  },
+  vRelease: {
+    group: 'Membrane (bioelectrical)',
+    label: 'V_release (open-gate target)',
+    type: 'float',
+    min: -150,
+    max: 40,
+    step: 0.5,
+    default: -90,
+    visible: isMembrane,
+  },
+  vMin: {
+    group: 'Membrane (bioelectrical)',
+    label: 'V_min (clamp)',
+    type: 'float',
+    min: -200,
+    max: 0,
+    step: 1,
+    default: -100,
+    visible: isMembrane,
+  },
+  vMax: {
+    group: 'Membrane (bioelectrical)',
+    label: 'V_max (clamp)',
+    type: 'float',
+    min: -40,
+    max: 120,
+    step: 1,
+    default: 40,
+    visible: isMembrane,
+  },
+  kLeak: {
+    group: 'Membrane (bioelectrical)',
+    label: 'k_leak (relaxation to rest)',
+    type: 'float',
+    min: 0,
+    max: 1,
+    step: 0.005,
+    default: 0.05,
+    visible: (cfg) => cfg.mode === 'membrane-only',
+    hint: 'In pid-homeostat mode this term is replaced by the PID output u_t.',
+  },
+  kCoupling: {
+    group: 'Membrane (bioelectrical)',
+    label: 'k_coupling (gap junction)',
+    type: 'float',
+    min: 0,
+    max: 1,
+    step: 0.005,
+    default: 0.08,
+    visible: isMembrane,
+    hint: 'Wave speed. Stability requires k_coupling · maxNeighbours ≤ 1.',
+  },
+  kRelease: {
+    group: 'Membrane (bioelectrical)',
+    label: 'k_release (open-gate rate)',
+    type: 'float',
+    min: 0,
+    max: 1,
+    step: 0.01,
+    default: 0.6,
+    visible: isMembrane,
+    hint: 'Should dominate k_leak by ~an order of magnitude or no spike forms.',
+  },
+  polarity: {
+    group: 'Membrane (bioelectrical)',
+    label: 'Comparator polarity',
+    type: 'enum',
+    options: POLARITIES,
+    default: 'depolarizing',
+    optionLabels: {
+      depolarizing: 'Depolarizing (V ≥ V_threshold)',
+      hyperpolarizing: 'Hyperpolarizing (V ≤ V_threshold)',
+    },
+    visible: isMembrane,
+  },
+  closeMode: {
+    group: 'Membrane (bioelectrical)',
+    label: 'Close condition',
+    type: 'enum',
+    options: CLOSE_MODES,
+    default: 'hysteresis',
+    optionLabels: { hysteresis: 'Hysteresis + min open time', timed: 'Timed (pulse generator)' },
+    visible: isMembrane,
+  },
+  minOpenTicks: {
+    group: 'Membrane (bioelectrical)',
+    label: 'minOpenTicks (pulse width)',
+    type: 'int',
+    min: 0,
+    max: 60,
+    step: 1,
+    default: 1,
+    visible: isMembrane,
+  },
+  resetPeriod: {
+    group: 'Membrane (bioelectrical)',
+    label: 'resetPeriod (refractory ticks)',
+    type: 'int',
+    min: 0,
+    max: 200,
+    step: 1,
+    default: 6,
+    visible: isMembrane,
+    hint: '0 disables refractoriness (waves back-propagate).',
+  },
+  vTarget: {
+    group: 'Membrane (bioelectrical)',
+    label: 'V_target (homeostat setpoint)',
+    type: 'float',
+    min: -120,
+    max: 40,
+    step: 0.5,
+    default: -70,
+    visible: (cfg) => cfg.mode === 'pid-homeostat',
+    hint: 'e_t = V_target − V_t; u_t replaces the leak term (§6.3).',
+  },
+  noiseAmplitude: {
+    group: 'Membrane (bioelectrical)',
+    label: 'Noise amplitude (per-tick dV)',
+    type: 'float',
+    min: 0,
+    max: 5,
+    step: 0.01,
+    default: 0,
+    visible: isMembrane,
+    hint: 'Non-zero breaks the bit-identical determinism guarantee (§9).',
+  },
+  membraneInit: {
+    group: 'Membrane (bioelectrical)',
+    label: 'Initial condition',
+    type: 'enum',
+    options: MEMBRANE_INITS,
+    default: 'uniform-rest',
+    optionLabels: {
+      'uniform-rest': 'Uniform rest',
+      'noisy-rest': 'Noisy rest',
+      'seeded-spike': 'Seeded spike (centre)',
+      pacemaker: 'Clamped pacemaker (centre)',
+      painted: 'Painted (rest, paint to excite)',
+    },
+    visible: isMembrane,
+    structural: true,
+  },
+  membraneJitter: {
+    group: 'Membrane (bioelectrical)',
+    label: 'Initial voltage jitter σ',
+    type: 'float',
+    min: 0,
+    max: 40,
+    step: 0.1,
+    default: 3,
+    visible: (cfg) => isMembrane(cfg) && cfg.membraneInit === 'noisy-rest',
+  },
+
   // ---------------------------------------------------------------- painting
   paintTool: {
     group: 'Painting',
@@ -356,6 +585,50 @@ export const SCHEMA = {
     visible: (cfg) => cfg.paintTool === 'fill',
     hint: 'Drag a rectangle on the grid, release to apply.',
   },
+  membraneTool: {
+    group: 'Painting',
+    label: 'Membrane paint target',
+    type: 'enum',
+    options: ['stimulus', 'depolarize', 'clamp'],
+    default: 'stimulus',
+    optionLabels: {
+      stimulus: 'Inject stimulus current',
+      depolarize: 'Set V above threshold',
+      clamp: 'Clamp cell voltage',
+    },
+    visible: isMembrane,
+    hint: 'Shift-drag / right-drag erases (stimulus 0, V → V_rest, unclamp).',
+  },
+  stimulusAmplitude: {
+    group: 'Painting',
+    label: 'Stimulus amplitude (dV/tick)',
+    type: 'float',
+    min: -50,
+    max: 50,
+    step: 0.5,
+    default: 8,
+    visible: (cfg) => isMembrane(cfg) && cfg.membraneTool === 'stimulus',
+  },
+  stimulusMode: {
+    group: 'Painting',
+    label: 'Stimulus persistence',
+    type: 'enum',
+    options: STIMULUS_MODES,
+    default: 'pulse',
+    optionLabels: { pulse: 'Pulse (one tick)', hold: 'Hold (until erased)' },
+    visible: (cfg) => isMembrane(cfg) && cfg.membraneTool === 'stimulus',
+  },
+  clampVoltage: {
+    group: 'Painting',
+    label: 'Clamp voltage',
+    type: 'float',
+    min: -120,
+    max: 40,
+    step: 0.5,
+    default: -20,
+    visible: (cfg) => isMembrane(cfg) && cfg.membraneTool !== 'stimulus',
+    hint: 'Also used by the "clamped pacemaker" initial condition.',
+  },
 
   // ---------------------------------------------------------------- playback
   stepsPerSecond: {
@@ -399,6 +672,7 @@ export const SCHEMA = {
       u: 'Control output u_t',
       integral: 'Integral I_t (frustration)',
       error: 'Error e_t',
+      voltage: 'Membrane potential V',
     },
   },
   overlayScale: {
@@ -497,6 +771,41 @@ export function validateConfig(raw) {
   }
   if (config.stateCardinality === 2 && config.expression === 'semantic') {
     errors.push('semantic mapping is intended for 3-state mode; states will be clamped to {0,1}');
+  }
+  // ---- membrane invariants (bioelectrical.md §5) -------------------------
+  const maxN = maxNeighborCount(config);
+  if (config.kCoupling * maxN > 1) {
+    config.kCoupling = Math.round((1 / maxN) * 1000) / 1000;
+    errors.push('k_coupling · maxNeighbours must be ≤ 1; reduced k_coupling');
+  }
+  if (config.polarity === 'depolarizing') {
+    if (config.vClose >= config.vThreshold) {
+      config.vClose = config.vThreshold - 1;
+      errors.push('require V_close < V_threshold; adjusted V_close');
+    }
+    if (config.vRelease >= config.vClose) {
+      config.vRelease = config.vClose - 1;
+      errors.push('require V_release < V_close; adjusted V_release');
+    }
+  } else {
+    if (config.vClose <= config.vThreshold) {
+      config.vClose = config.vThreshold + 1;
+      errors.push('require V_close > V_threshold (hyperpolarizing); adjusted V_close');
+    }
+    if (config.vRelease <= config.vClose) {
+      config.vRelease = config.vClose + 1;
+      errors.push('require V_release > V_close (hyperpolarizing); adjusted V_release');
+    }
+  }
+  const needMin = Math.min(config.vRelease, config.vClose, config.vThreshold, config.vRest);
+  const needMax = Math.max(config.vRelease, config.vClose, config.vThreshold, config.vRest);
+  if (config.vMin > needMin) {
+    config.vMin = needMin;
+    errors.push('V_min must not exceed the configured potentials; lowered V_min');
+  }
+  if (config.vMax < needMax) {
+    config.vMax = needMax;
+    errors.push('V_max must not be below the configured potentials; raised V_max');
   }
 
   return { config, errors };

@@ -6,7 +6,7 @@
  */
 
 import { SCHEMA, GROUPS, toHashString } from './config.js';
-import { STATE_COLORS } from './renderer.js';
+import { STATE_COLORS, MEMBRANE_COLORS } from './renderer.js';
 
 function el(tag, cls, text) {
   const node = document.createElement(tag);
@@ -38,7 +38,9 @@ export class UI {
     this.presets = presets;
 
     this.controls = new Map();
+    this.sections = new Map();
     this._statusFields = {};
+    this._statusMode = null;
     this._applying = false;
 
     this._buildToolbar();
@@ -110,15 +112,33 @@ export class UI {
   }
 
   // --------------------------------------------------------------- status
-  _buildStatus() {
+  /** Status read-outs differ per domain (PID error metrics vs. gate census). */
+  _statusFieldSpec(mode) {
+    if (mode === 'pid') {
+      return [
+        ['step', 'step'],
+        ['rate', 'steps/s'],
+        ['active', 'active'],
+        ['err', 'mean |e|'],
+        ['energy', 'Σe²'],
+        ['integral', 'mean I'],
+      ];
+    }
     const fields = [
       ['step', 'step'],
       ['rate', 'steps/s'],
-      ['active', 'active'],
-      ['err', 'mean |e|'],
-      ['energy', 'Σe²'],
-      ['integral', 'mean I'],
+      ['firing', 'firing'],
+      ['refractory', 'refractory'],
+      ['meanV', 'mean V'],
     ];
+    if (mode === 'pid-homeostat') fields.push(['integral', 'mean I']);
+    return fields;
+  }
+
+  _buildStatus(mode = this.config.get('mode')) {
+    this._statusMode = mode;
+    this._statusFields = {};
+    const fields = this._statusFieldSpec(mode);
     this.statusRoot.textContent = '';
     for (const [key, label] of fields) {
       const item = el('div', 'stat');
@@ -133,17 +153,22 @@ export class UI {
   updateStatus() {
     const s = this.sim.stats;
     const f = this._statusFields;
-    f.step.textContent = String(s.step);
-    f.rate.textContent = this.sim.running ? this.sim.measuredRate.toFixed(1) : '0.0';
-    f.active.textContent = (s.activeFraction * 100).toFixed(1) + '%';
-    f.err.textContent = s.meanAbsError.toFixed(3);
-    f.energy.textContent = s.energy.toFixed(0);
-    f.integral.textContent = s.meanIntegral.toFixed(3);
+    if (f.step) f.step.textContent = String(s.step);
+    if (f.rate) f.rate.textContent = this.sim.running ? this.sim.measuredRate.toFixed(1) : '0.0';
+    if (f.active) f.active.textContent = (s.activeFraction * 100).toFixed(1) + '%';
+    if (f.err) f.err.textContent = s.meanAbsError.toFixed(3);
+    if (f.energy) f.energy.textContent = s.energy.toFixed(0);
+    if (f.integral) f.integral.textContent = s.meanIntegral.toFixed(3);
+    if (f.firing) f.firing.textContent = ((s.firingFraction || 0) * 100).toFixed(2) + '%';
+    if (f.refractory)
+      f.refractory.textContent = ((s.refractoryFraction || 0) * 100).toFixed(2) + '%';
+    if (f.meanV) f.meanV.textContent = (s.meanV || 0).toFixed(2);
   }
 
   // ---------------------------------------------------------------- panel
   _buildPanel() {
     this.panel.textContent = '';
+    this.sections.clear();
     this.panel.appendChild(this._buildPresetSection());
 
     for (const group of GROUPS) {
@@ -155,6 +180,7 @@ export class UI {
       for (const key of keys) body.appendChild(this._buildControl(key, SCHEMA[key]));
       section.append(header, body);
       this._makeCollapsible(section, header);
+      this.sections.set(group, section);
       this.panel.appendChild(section);
     }
 
@@ -210,7 +236,10 @@ export class UI {
     loadBtn.addEventListener('click', () => {
       const preset = this.presets[Number(select.value)];
       if (!preset) return;
-      this.config.patch(preset.config);
+      // Presets that do not name a `mode` are PID-domain presets.
+      const patch = { ...preset.config };
+      if (patch.mode === undefined) patch.mode = 'pid';
+      this.config.patch(patch);
       this.sim.reset();
     });
 
@@ -348,6 +377,7 @@ export class UI {
 
   syncFromConfig() {
     const cfg = this.config.all();
+    if (this._statusMode !== cfg.mode) this._buildStatus(cfg.mode);
     this._applying = true;
     for (const [key, control] of this.controls) {
       control.setValue(cfg[key]);
@@ -355,7 +385,19 @@ export class UI {
         typeof control.spec.visible === 'function' ? !control.spec.visible(cfg) : false;
     }
     this._applying = false;
+    for (const [group, section] of this.sections) {
+      section.hidden = !this._groupVisible(group, cfg);
+    }
     this._renderLegend();
+    this.updateStatus();
+  }
+  /** Whole-group visibility: the two domains share the panel (§6.1). */
+  _groupVisible(group, cfg) {
+    if (group === 'Membrane (bioelectrical)') return cfg.mode !== 'pid';
+    if (cfg.mode === 'pid') return true;
+    if (group === 'Target' || group === 'State expression') return false;
+    if (group === 'PID gains') return cfg.mode === 'pid-homeostat';
+    return true;
   }
 
   _renderLegend() {
@@ -364,16 +406,27 @@ export class UI {
     if (!root) return;
     root.textContent = '';
 
+    const membrane = cfg.mode !== 'pid';
     let names;
-    if (cfg.stateCardinality === 2) names = ['inactive', 'active'];
-    else if (cfg.expression === 'semantic')
-      names = ['inactive', 'integral-dominant (stabilising)', 'P/D-dominant (driving)'];
-    else names = ['state 0', 'state 1', 'state 2'];
+    let palette = STATE_COLORS;
+    let count = cfg.stateCardinality;
 
-    for (let s = 0; s < cfg.stateCardinality; s++) {
+    if (membrane) {
+      palette = MEMBRANE_COLORS;
+      count = 3;
+      names = ['polarized (gate closed)', 'firing (gate open)', 'refractory'];
+    } else if (cfg.stateCardinality === 2) {
+      names = ['inactive', 'active'];
+    } else if (cfg.expression === 'semantic') {
+      names = ['inactive', 'integral-dominant (stabilising)', 'P/D-dominant (driving)'];
+    } else {
+      names = ['state 0', 'state 1', 'state 2'];
+    }
+
+    for (let s = 0; s < count; s++) {
       const item = el('div', 'legend-item');
       const swatch = el('span', 'swatch');
-      const c = STATE_COLORS[s] || STATE_COLORS[0];
+      const c = palette[s] || palette[0];
       swatch.style.background = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
       item.append(swatch, el('span', null, names[s]));
       root.appendChild(item);
@@ -381,10 +434,11 @@ export class UI {
 
     if (cfg.overlay !== 'none') {
       const item = el('div', 'legend-item');
-      item.append(
-        el('span', 'swatch ramp'),
-        el('span', null, 'overlay: ' + cfg.overlay + ' (blue −, red +), ±' + cfg.overlayScale)
-      );
+      const label =
+        cfg.overlay === 'voltage'
+          ? 'overlay: V (' + cfg.vMin + ' → ' + cfg.vRest + ' → ' + cfg.vMax + ')'
+          : 'overlay: ' + cfg.overlay + ' (blue −, red +), ±' + cfg.overlayScale;
+      item.append(el('span', 'swatch ramp'), el('span', null, label));
       root.appendChild(item);
     }
   }
@@ -408,7 +462,7 @@ export class UI {
           const x = x0 + dx;
           const y = y0 + dy;
           if (x < 0 || y < 0 || x >= grid.width || y >= grid.height) continue;
-          this.sim.paintCell(x, y, value);
+          this._paint(x, y, value);
         }
       }
     };
@@ -438,8 +492,8 @@ export class UI {
               paint = Math.random() < density;
               break;
           }
-          if (paint) this.sim.paintCell(x, y, value);
-          else if (cfg.fillPattern !== 'random') this.sim.paintCell(x, y, 0);
+          if (paint) this._paint(x, y, value);
+          else if (cfg.fillPattern !== 'random') this._paint(x, y, 0);
         }
       }
     };
@@ -448,9 +502,13 @@ export class UI {
       const cell = cellOf(event);
       if (!cell) return;
       const cfg = this.config.all();
-      const current = this.sim.grid.getState(cell.x, cell.y);
-      paintValue =
-        event.button === 2 || event.shiftKey ? 0 : current > 0 ? 0 : cfg.stateCardinality - 1;
+      const erase = event.button === 2 || event.shiftKey;
+      if (cfg.mode !== 'pid') {
+        paintValue = erase ? 0 : 1;
+      } else {
+        const current = this.sim.grid.getState(cell.x, cell.y);
+        paintValue = erase ? 0 : current > 0 ? 0 : cfg.stateCardinality - 1;
+      }
       painting = true;
       try {
         this.canvas.setPointerCapture(event.pointerId);
@@ -485,6 +543,39 @@ export class UI {
     this.canvas.addEventListener('pointercancel', stop);
     this.canvas.addEventListener('pointerleave', stop);
     this.canvas.addEventListener('contextmenu', (event) => event.preventDefault());
+  }
+  /**
+   * Domain-aware paint dispatch. In PID mode this writes discrete states; in
+   * membrane mode it writes the stimulus field, the potential, or the clamp
+   * (bioelectrical.md §7 "UI additions"). `value === 0` means erase.
+   */
+  _paint(x, y, value) {
+    const cfg = this.config.all();
+    if (cfg.mode === 'pid') {
+      this.sim.paintCell(x, y, value);
+      return;
+    }
+    const erase = !value;
+    switch (cfg.membraneTool) {
+      case 'clamp':
+        this.sim.paintClamp(x, y, !erase, cfg.clampVoltage);
+        break;
+      case 'depolarize':
+        this.sim.paintVoltage(
+          x,
+          y,
+          erase
+            ? cfg.vRest
+            : cfg.polarity === 'hyperpolarizing'
+              ? cfg.vThreshold - 1
+              : cfg.vThreshold + 1
+        );
+        break;
+      case 'stimulus':
+      default:
+        this.sim.paintStimulus(x, y, erase ? 0 : cfg.stimulusAmplitude);
+        break;
+    }
   }
 
   _bindKeys() {

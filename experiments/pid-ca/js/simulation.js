@@ -10,14 +10,17 @@ import { SCHEMA, targetAt, isTargetSpatiallyUniform } from './config.js';
 import {
   Grid,
   populate,
+  populateMembrane,
   neighborOffsets,
   countActiveNeighbors,
+  sumNeighborVoltageDelta,
   makeActivePredicate,
   createRng,
   makeGaussianSampler,
 } from './grid.js';
 import { pidStep } from './controller.js';
-import { expressState } from './stateExpression.js';
+import { expressState, expressBioelectrical } from './stateExpression.js';
+import { membraneStep, makeMembraneInput, makeMembraneOutput } from './membrane.js';
 
 export class Simulation {
   constructor(config) {
@@ -28,10 +31,21 @@ export class Simulation {
     this.time = 0;
     this.running = false;
     this.measuredRate = 0;
-    this.stats = { step: 0, activeFraction: 0, meanAbsError: 0, energy: 0, meanIntegral: 0 };
+    this.stats = {
+      step: 0,
+      activeFraction: 0,
+      meanAbsError: 0,
+      energy: 0,
+      meanIntegral: 0,
+      firingFraction: 0,
+      refractoryFraction: 0,
+      meanV: 0,
+    };
 
     this._listeners = Object.create(null);
     this._out = { p: 0, i: 0, d: 0, u: 0, error: 0 };
+    this._mIn = makeMembraneInput();
+    this._mOut = makeMembraneOutput();
     this._accumulator = 0;
     this._lastFrame = 0;
     this._raf = null;
@@ -88,9 +102,15 @@ export class Simulation {
     }
     this._refreshDerived();
     this.rng = createRng(cfg.seed);
+    this.gaussian = makeGaussianSampler(this.rng);
     this.grid.clearControllerState();
-    populate(this.grid, cfg, this.rng);
-    this._seedControllerState();
+    if (cfg.mode === 'pid') {
+      populate(this.grid, cfg, this.rng);
+      this._seedControllerState();
+    } else {
+      populateMembrane(this.grid, cfg, this.rng);
+      this._seedMembraneState();
+    }
     this.time = 0;
     this._accumulator = 0;
     this._measure();
@@ -99,9 +119,15 @@ export class Simulation {
 
   /** Empty the grid and its controller memory without touching the config. */
   clear() {
+    const cfg = this.config.all();
     this.grid.clearStates();
     this.grid.clearControllerState();
-    this._seedControllerState();
+    if (cfg.mode === 'pid') {
+      this._seedControllerState();
+    } else {
+      this.grid.clearMembrane(cfg.vRest);
+      this._seedMembraneState();
+    }
     this.time = 0;
     this._measure();
     this.emit('reset');
@@ -141,16 +167,80 @@ export class Simulation {
       }
     }
   }
+  /**
+   * Derive the initial display state from (V, gate), and — in pid-homeostat
+   * mode — seed e_(t-1) so the first derivative term is zero.
+   */
+  _seedMembraneState() {
+    const cfg = this.config.all();
+    const g = this.grid;
+    const homeostat = cfg.mode === 'pid-homeostat';
+    for (let i = 0; i < g.size; i++) {
+      g.states[i] = expressBioelectrical(g.V[i], g.gate[i]);
+      g.nextStates[i] = g.states[i];
+      if (homeostat) {
+        const e = cfg.vTarget - g.V[i];
+        g.prevError[i] = e;
+        g.nextPrevError[i] = e;
+        g.error[i] = e;
+        g.integral[i] = 0;
+        g.nextIntegral[i] = 0;
+        g.u[i] = 0;
+      }
+    }
+  }
 
   /** Live intervention / painting (§7.7). Controller memory is preserved. */
   paintCell(x, y, value) {
     this.grid.setState(x, y, value);
     this.emit('paint', { x, y, value });
   }
+  // ------------------------------------------- membrane-domain interventions
+  /** Write into the stimulus field (bioelectrical.md §7 "paint stimulus"). */
+  paintStimulus(x, y, amount) {
+    const g = this.grid;
+    if (!g.inBounds(x, y)) return;
+    g.stimulus[g.index(x, y)] = amount;
+    this.emit('paint', { x, y, value: amount });
+  }
+  /** Directly set a cell's membrane potential (manual excitation). */
+  paintVoltage(x, y, V) {
+    const cfg = this.config.all();
+    const g = this.grid;
+    if (!g.inBounds(x, y)) return;
+    const idx = g.index(x, y);
+    g.V[idx] = V < cfg.vMin ? cfg.vMin : V > cfg.vMax ? cfg.vMax : V;
+    this.emit('paint', { x, y, value: g.V[idx] });
+  }
+  /** Pin / unpin a cell's potential — pacemakers, boundaries, conduction block. */
+  paintClamp(x, y, on, V) {
+    const cfg = this.config.all();
+    const g = this.grid;
+    if (!g.inBounds(x, y)) return;
+    const idx = g.index(x, y);
+    if (on) {
+      const v = V < cfg.vMin ? cfg.vMin : V > cfg.vMax ? cfg.vMax : V;
+      g.clamped[idx] = 1;
+      g.clampV[idx] = v;
+      g.V[idx] = v;
+    } else {
+      g.clamped[idx] = 0;
+      g.clampV[idx] = cfg.vRest;
+    }
+    this.emit('paint', { x, y, value: g.clamped[idx] });
+  }
 
   // -------------------------------------------------------------- one step
   step() {
     const cfg = this.config.all();
+    if (cfg.mode === 'pid') this._stepPid(cfg);
+    else this._stepMembrane(cfg);
+    this.time++;
+    this._measure();
+    this._trackRate();
+    this.emit('step');
+  }
+  _stepPid(cfg) {
     const g = this.grid;
 
     const st = g.states,
@@ -197,13 +287,75 @@ export class Simulation {
 
     // (d) atomic buffer swap
     g.commit();
-    this.time++;
-    this._measure();
-    this._trackRate();
-    this.emit('step');
+  }
+  /**
+   * Bioelectrical membrane step (bioelectrical.md §4). Neighbour voltages are
+   * read from the frozen snapshot only; no cell observes another cell's gate.
+   */
+  _stepMembrane(cfg) {
+    const g = this.grid;
+    const V = g.V,
+      gate = g.gate,
+      ot = g.openTicks,
+      rt = g.restTicks;
+    const nV = g.nextV,
+      nGate = g.nextGate,
+      nOt = g.nextOpenTicks,
+      nRt = g.nextRestTicks;
+    const offsets = this.offsets;
+    const boundary = cfg.boundary;
+    const input = this._mIn;
+    const out = this._mOut;
+    const pidOut = this._out;
+    const homeostat = cfg.mode === 'pid-homeostat';
+    const noisy = cfg.noiseAmplitude > 0;
+    const gaussian = this.gaussian;
+    const pulse = cfg.stimulusMode === 'pulse';
+    for (let y = 0; y < g.height; y++) {
+      const row = y * g.width;
+      for (let x = 0; x < g.width; x++) {
+        const idx = row + x;
+        // 1. SENSE
+        input.V = V[idx];
+        input.gate = gate[idx];
+        input.openTicks = ot[idx];
+        input.restTicks = rt[idx];
+        input.neighborSum = sumNeighborVoltageDelta(g, V, x, y, offsets, boundary);
+        input.stimulus = g.stimulus[idx];
+        input.noise = noisy ? gaussian() * cfg.noiseAmplitude : 0;
+        input.clamp = g.clamped[idx] ? g.clampV[idx] : null;
+        // optional homeostat: u_t replaces the fixed leak term (§6.3)
+        if (homeostat) {
+          const e = cfg.vTarget - input.V;
+          pidStep(g.prevError[idx], g.integral[idx], e, cfg, pidOut);
+          input.leak = pidOut.u;
+          g.nextPrevError[idx] = e;
+          g.nextIntegral[idx] = pidOut.i;
+          g.error[idx] = e;
+          g.u[idx] = pidOut.u;
+        } else {
+          input.leak = null;
+        }
+        // 2. INTEGRATE + 3. ADVANCE GATE
+        membraneStep(input, cfg, out);
+        nV[idx] = out.V;
+        nGate[idx] = out.gate;
+        nOt[idx] = out.openTicks;
+        nRt[idx] = out.restTicks;
+        // 4. EXPRESS
+        g.nextStates[idx] = expressBioelectrical(out.V, out.gate);
+        // painted stimulus is consumed unless explicitly held
+        if (pulse && input.stimulus !== 0) g.stimulus[idx] = 0;
+      }
+    }
+    g.commit();
   }
 
   _measure() {
+    if (this.config.get('mode') !== 'pid') {
+      this._measureMembrane();
+      return;
+    }
     const g = this.grid;
     const isActive = this.isActive;
     let active = 0,
@@ -222,6 +374,33 @@ export class Simulation {
       activeFraction: active / g.size,
       meanAbsError: sumAbs / g.size,
       energy: sumSq,
+      meanIntegral: sumI / g.size,
+      firingFraction: 0,
+      refractoryFraction: 0,
+      meanV: 0,
+    };
+  }
+  _measureMembrane() {
+    const g = this.grid;
+    let open = 0,
+      refractory = 0,
+      sumV = 0,
+      sumI = 0;
+    for (let i = 0; i < g.size; i++) {
+      const gate = g.gate[i];
+      if (gate === 1) open++;
+      else if (gate === 2) refractory++;
+      sumV += g.V[i];
+      sumI += g.integral[i];
+    }
+    this.stats = {
+      step: this.time,
+      activeFraction: open / g.size,
+      firingFraction: open / g.size,
+      refractoryFraction: refractory / g.size,
+      meanV: sumV / g.size,
+      meanAbsError: 0,
+      energy: 0,
       meanIntegral: sumI / g.size,
     };
   }

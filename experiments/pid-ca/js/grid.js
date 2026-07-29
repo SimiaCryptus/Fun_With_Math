@@ -111,6 +111,33 @@ export function countActiveNeighbors(grid, states, x, y, offsets, boundary, isAc
   }
   return count;
 }
+/**
+ * Σ_{n ∈ N(c)} (V_n − V_c): the discrete diffusion / gap-junction sum
+ * (bioelectrical.md §3.4). `V` is passed explicitly so callers can guarantee a
+ * frozen snapshot. For the 'fixed' boundary, outside cells are treated as
+ * absent (a sealed, no-flux edge) rather than as clamped voltages.
+ */
+export function sumNeighborVoltageDelta(grid, V, x, y, offsets, boundary) {
+  const w = grid.width;
+  const h = grid.height;
+  const v0 = V[y * w + x];
+  let sum = 0;
+  for (let k = 0; k < offsets.length; k += 2) {
+    let nx = x + offsets[k];
+    let ny = y + offsets[k + 1];
+    if (boundary === 'toroidal') {
+      nx = wrapIndex(nx, w);
+      ny = wrapIndex(ny, h);
+    } else if (boundary === 'reflective') {
+      nx = reflectIndex(nx, w);
+      ny = reflectIndex(ny, h);
+    } else if (nx < 0 || ny < 0 || nx >= w || ny >= h) {
+      continue;
+    }
+    sum += V[ny * w + nx] - v0;
+  }
+  return sum;
+}
 
 export class Grid {
   constructor(width, height) {
@@ -135,6 +162,19 @@ export class Grid {
     // diagnostics (single-buffered; written during a step, read by the renderer)
     this.u = new Float32Array(this.size);
     this.error = new Float32Array(this.size);
+    // ---- bioelectrical membrane substrate (bioelectrical.md §3.1) --------
+    this.V = new Float32Array(this.size);
+    this.nextV = new Float32Array(this.size);
+    this.gate = new Int8Array(this.size);
+    this.nextGate = new Int8Array(this.size);
+    this.openTicks = new Int16Array(this.size);
+    this.nextOpenTicks = new Int16Array(this.size);
+    this.restTicks = new Int16Array(this.size);
+    this.nextRestTicks = new Int16Array(this.size);
+    // externally imposed fields (painted by the UI; not double-buffered)
+    this.stimulus = new Float32Array(this.size);
+    this.clamped = new Uint8Array(this.size);
+    this.clampV = new Float32Array(this.size);
   }
 
   index(x, y) {
@@ -165,6 +205,18 @@ export class Grid {
     tmp = this.integral;
     this.integral = this.nextIntegral;
     this.nextIntegral = tmp;
+    tmp = this.V;
+    this.V = this.nextV;
+    this.nextV = tmp;
+    tmp = this.gate;
+    this.gate = this.nextGate;
+    this.nextGate = tmp;
+    tmp = this.openTicks;
+    this.openTicks = this.nextOpenTicks;
+    this.nextOpenTicks = tmp;
+    tmp = this.restTicks;
+    this.restTicks = this.nextRestTicks;
+    this.nextRestTicks = tmp;
   }
 
   clearControllerState() {
@@ -179,6 +231,20 @@ export class Grid {
   clearStates() {
     this.states.fill(0);
     this.nextStates.fill(0);
+  }
+  /** Reset the membrane substrate to a uniform resting state. */
+  clearMembrane(rest = 0) {
+    this.V.fill(rest);
+    this.nextV.fill(rest);
+    this.gate.fill(0);
+    this.nextGate.fill(0);
+    this.openTicks.fill(0);
+    this.nextOpenTicks.fill(0);
+    this.restTicks.fill(0);
+    this.nextRestTicks.fill(0);
+    this.stimulus.fill(0);
+    this.clamped.fill(0);
+    this.clampV.fill(rest);
   }
 
   clampStates(cardinality) {
@@ -233,6 +299,44 @@ export function populate(grid, cfg, rng) {
           states[i] = maxState > 1 && rng() < 0.35 ? 2 : 1;
         }
       }
+      break;
+  }
+}
+/** Initial-condition population for the membrane domain (bioelectrical.md §5). */
+export function populateMembrane(grid, cfg, rng) {
+  grid.clearStates();
+  grid.clearMembrane(cfg.vRest);
+  const clampV = (v) => (v < cfg.vMin ? cfg.vMin : v > cfg.vMax ? cfg.vMax : v);
+  const cx = grid.width >> 1;
+  const cy = grid.height >> 1;
+  switch (cfg.membraneInit) {
+    case 'noisy-rest': {
+      const gaussian = makeGaussianSampler(rng);
+      for (let i = 0; i < grid.size; i++) {
+        grid.V[i] = clampV(cfg.vRest + gaussian() * cfg.membraneJitter);
+      }
+      break;
+    }
+    case 'seeded-spike': {
+      const spike = cfg.vThreshold + Math.max(1, (cfg.vMax - cfg.vThreshold) * 0.25);
+      const r = Math.max(1, Math.round(Math.min(grid.width, grid.height) / 40));
+      for (let y = cy - r; y <= cy + r; y++) {
+        for (let x = cx - r; x <= cx + r; x++) {
+          if (grid.inBounds(x, y)) grid.V[grid.index(x, y)] = clampV(spike);
+        }
+      }
+      break;
+    }
+    case 'pacemaker': {
+      const idx = grid.index(cx, cy);
+      grid.clamped[idx] = 1;
+      grid.clampV[idx] = clampV(cfg.clampVoltage);
+      grid.V[idx] = grid.clampV[idx];
+      break;
+    }
+    case 'painted':
+    case 'uniform-rest':
+    default:
       break;
   }
 }

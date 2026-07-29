@@ -10,6 +10,12 @@ export const STATE_COLORS = [
   [78, 201, 176], // 1 — active / stabilising
   [240, 162, 74], // 2 — driving
 ];
+/** Bioelectrical palette (bioelectrical.md §7): polarized / firing / refractory. */
+export const MEMBRANE_COLORS = [
+  [18, 28, 52], // 0 — polarized (gate CLOSED)
+  [244, 248, 255], // 1 — firing (gate OPEN)
+  [168, 56, 56], // 2 — refractory
+];
 
 const OVERLAY_MID = [16, 18, 24];
 const OVERLAY_COLD = [70, 130, 255];
@@ -60,6 +66,8 @@ export class Renderer {
         return grid.integral;
       case 'error':
         return grid.error;
+      case 'voltage':
+        return grid.V;
       default:
         return null;
     }
@@ -76,15 +84,22 @@ export class Renderer {
     const states = grid.states;
     const overlay = this._overlayBuffer(grid, cfg.overlay);
     const scale = Math.max(0.0001, cfg.overlayScale);
+    const palette = cfg.mode === 'pid' ? STATE_COLORS : MEMBRANE_COLORS;
+    const voltageOverlay = cfg.overlay === 'voltage';
+    const hotSpan = Math.max(1e-6, cfg.vMax - cfg.vRest);
+    const coldSpan = Math.max(1e-6, cfg.vRest - cfg.vMin);
 
     for (let idx = 0, p = 0; idx < grid.size; idx++, p += 4) {
-      const base = STATE_COLORS[states[idx]] || STATE_COLORS[0];
+      const base = palette[states[idx]] || palette[0];
       let r = base[0],
         g = base[1],
         b = base[2];
 
       if (overlay) {
-        let t = overlay[idx] / scale;
+        // Voltage maps V_min (cold) → V_rest (neutral) → V_max (hot) (§7).
+        let t = voltageOverlay
+          ? (overlay[idx] - cfg.vRest) / (overlay[idx] >= cfg.vRest ? hotSpan : coldSpan)
+          : overlay[idx] / scale;
         if (t > 1) t = 1;
         else if (t < -1) t = -1;
         const a = Math.abs(t);

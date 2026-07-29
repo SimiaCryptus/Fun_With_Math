@@ -59,7 +59,24 @@ export const STRATEGIES = {
       return 1;
     },
   },
+  /**
+   * 5. Bioelectrical mapping (bioelectrical.md §7): (V, gate) -> {0,1,2}.
+   *    0 = polarized (CLOSED), 1 = firing (OPEN), 2 = refractory.
+   *    Invoked through `expressBioelectrical`, which the membrane domain calls
+   *    in place of `expressState` (the u_t argument list does not apply here).
+   */
+  bioelectrical: {
+    label: 'Bioelectrical (V, gate)',
+    cardinality: 3,
+    apply(V, gate) {
+      return gate === 1 ? 1 : gate === 2 ? 2 : 0;
+    },
+  },
 };
+/** Membrane display state (bioelectrical.md §7); gate: 0=CLOSED 1=OPEN 2=REFRACTORY. */
+export function expressBioelectrical(V, gate) {
+  return STRATEGIES.bioelectrical.apply(V, gate);
+}
 
 export function strategyNames() {
   return Object.keys(STRATEGIES);
