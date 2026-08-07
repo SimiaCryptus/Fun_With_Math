@@ -1,5 +1,11 @@
 // order.js — intra-ring total orders (§2.1). Ties always broken lexicographically
 // by (x, y) so `≺` is total and deterministic.
+//
+// NOTE on metrics: the *ring* is an L∞ shell (see lattice.js), but the ordering
+// *within* a ring is where the Euclidean notion lives — `nearest_first` sorts by
+// squared L2 radius x²+y², so the traversal sweeps the square shell in true
+// distance-from-origin order. `clockwise` ignores distance entirely and walks the
+// perimeter bijection. Neither choice can change which cells belong to ring R.
 import {ringLength, perimeterToCell} from './lattice.js';
 
 const cache = new Map(); // `${mode}:${R}` -> Int32Array of perimeter indices
@@ -16,6 +22,8 @@ export function ringOrder(R, mode = 'clockwise') {
         const r2 = new Float64Array(n);
         for (let i = 0; i < n; i++) {
             perimeterToCell(R, i, c);
+             // squared Euclidean radius: exact in f64 for |c| < 2^26, and avoids a
+             // sqrt that could make two genuinely equal radii compare unequal.
             r2[i] = c[0] * c[0] + c[1] * c[1];
         }
         const arr = Array.from(idx).sort((a, b) => {

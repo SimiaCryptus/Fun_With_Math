@@ -15,8 +15,15 @@ const isI32 = (v) => typeof v === 'number' && (v | 0) === v;
 
 export const DEFAULT_CONFIG = {
     rMax: 256,
-    ringMetric: 'chebyshev',        // normative (§2.2); euclidean is out of scope for v1
-    intraRingOrder: 'clockwise',    // clockwise | nearest_first
+     // ringMetric selects the SHELL metric only: 'chebyshev' = L∞ = max(|x|,|y|),
+     // so ring R is the square boundary [-R,R]^2. Normative (§2.2). A Euclidean
+     // shell is out of scope for v1: the calendar needs an integral ring key with
+     // a clean perimeter bijection, and `outward_only` needs g(t) = ||p+td||_∞ to
+     // be a piecewise-linear convex max of four affine pieces (see convexitySplit).
+     ringMetric: 'chebyshev',
+     // intraRingOrder selects the metric used to order cells WITHIN a shell:
+     // 'nearest_first' sorts by Euclidean radius; 'clockwise' by perimeter index.
+     intraRingOrder: 'clockwise',    // clockwise | nearest_first
     markMode: 'outward_only',       // outward_only | full_line (debug)
     seedPoints: [[0, 0]],
     band: 64,
@@ -81,7 +88,12 @@ function normalizeSeeds(seeds) {
 }
 
 
-/** g(t) = ||p + t·d||_∞ — a max of four affine functions of t: convex, PL. */
+/**
+  * g(t) = ||p + t·d||_∞ = max(|px+t·dx|, |py+t·dy|) — a max of FOUR affine functions
+  * of t, hence convex and piecewise linear with an integer minimizer. (Note the max:
+  * with min(|·|,|·|) this would be neither convex nor a norm, and the whole bucket
+  * queue argument would collapse.)
+  */
 function gOf(px, py, dx, dy, t) {
     const x = px + t * dx, y = py + t * dy;
     const ax = x < 0 ? -x : x, ay = y < 0 ? -y : y;

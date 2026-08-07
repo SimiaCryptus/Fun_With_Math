@@ -1,12 +1,13 @@
 node_modules/
-  coverage/
-  .nyc_output/
-  *.log
-  .DS_Store
-  # exported artifacts land in the download dir, but people do drop them here
-  no3sieve_*.csv
-  no3sieve_*.json
-  no3sieve_*.ndjson
-  no3sieve_*.png
-  no3sieve_*.svg
-  no3sieve_*.txt
+coverage/
+.nyc_output/
+*.log
+.DS_Store
+# exported artifacts land in the download dir, but people do drop them here
+no3sieve_*.csv
+no3sieve_*.json
+no3sieve_*.ndjson
+no3sieve_*.png
+no3sieve_*.svg
+no3sieve_*.txt
+

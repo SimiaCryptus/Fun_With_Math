@@ -2,6 +2,14 @@
 // NOTE (plan header erratum): the metric is L∞ (Chebyshev) everywhere. No symbol
 // named `l0` exists in this codebase, by policy (R14).
 //
+// METRIC ROLES — these are two different metrics and they are not interchangeable:
+//   * ring / scheduling metric  = L∞ (Chebyshev) = MAX(|x|,|y|)  ← `linfIndex`
+//   * intra-ring ordering metric = L2 (squared)                  ← order.js
+// L∞ is the p→+∞ limit of the p-norms, so it is the MAX coordinate, not the min.
+// The min-coordinate quantity min(|x|,|y|) is the p→-∞ limit; it is NOT a norm and
+// NOT a metric (it vanishes on both coordinate axes, so ||v|| = 0 for v ≠ 0), which
+// is why nothing here uses it and why no such function exists.
+//
 // Every entry point validates int32-ness with the cheap `(v | 0) !== v` test: these
 // are hot-loop functions, and a non-integer silently propagating into key2 or a
 // typed array produces a *wrong picture*, not a crash.
@@ -37,7 +45,16 @@ export function primdir(vx, vy) {
      return [x === 0 ? 0 : x, y === 0 ? 0 : y];
 }
 
-/** L∞ index (= ring) of a lattice point. Named `linfIndex`, never `l0` (R14). */
+/**
+  * L∞ index (= ring) of a lattice point: MAX(|x|, |y|), i.e. the Chebyshev norm.
+  *
+  * This is the *bounding-box* metric: linfIndex(v) <= R  <=>  v lies in the axis
+  * aligned square [-R,R]^2, and linfIndex(v) === R <=> v lies on its boundary
+  * shell S_∞(R) (8R cells). It is emphatically NOT min(|x|,|y|): a point on an
+  * axis, e.g. (7,0), has ring 7, not 0.
+  *
+  * Named `linfIndex`, never `l0` (R14).
+  */
 export function linfIndex(x, y) {
     if (!isI32(x) || !isI32(y)) throw new TypeError(`linfIndex: non-int32 point (${x}, ${y})`);
     const ax = x < 0 ? -x : x, ay = y < 0 ? -y : y;
