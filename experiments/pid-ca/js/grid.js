@@ -58,10 +58,90 @@ function reflectIndex(v, n) {
   return p < n ? p : period - p;
 }
 
+// ------------------------------------------------------------- link masks
+/**
+ * Custom neighbourhoods are described by a binary convolution table: a
+ * row-major string of '0'/'1' of length (2r+1)², centre included (and always
+ * '0' — a cell is not its own neighbour).
+ */
+export function maskSide(radius) {
+  return 2 * Math.max(1, radius | 0) + 1;
+}
+
+export function maskLength(radius) {
+  const s = maskSide(radius);
+  return s * s;
+}
+
+/** All links enabled within the radius. */
+export function defaultMask(radius) {
+  const s = maskSide(radius);
+  const c = (s - 1) / 2;
+  let out = '';
+  for (let y = 0; y < s; y++) {
+    for (let x = 0; x < s; x++) out += x === c && y === c ? '0' : '1';
+  }
+  return out;
+}
+
+/**
+ * Coerce an arbitrary mask string to the table size implied by `radius`.
+ * A mask from a different radius is re-centred; newly exposed rings start off.
+ */
+export function normalizeMask(mask, radius) {
+  const s = maskSide(radius);
+  const cleaned = typeof mask === 'string' ? mask.replace(/[^01]/g, '') : '';
+  if (!cleaned) return defaultMask(radius);
+  const oldS = Math.round(Math.sqrt(cleaned.length));
+  const square = oldS * oldS === cleaned.length;
+  if (square && oldS === s) {
+    // enforce the "no self link" rule
+    const c = (s - 1) / 2;
+    const centre = c * s + c;
+    if (cleaned[centre] === '0') return cleaned;
+    return cleaned.slice(0, centre) + '0' + cleaned.slice(centre + 1);
+  }
+  const src = square ? cleaned : null;
+  const oldC = square ? (oldS - 1) / 2 : 0;
+  const c = (s - 1) / 2;
+  let out = '';
+  for (let y = 0; y < s; y++) {
+    for (let x = 0; x < s; x++) {
+      let bit = '0';
+      if (src) {
+        const ox = x - c + oldC;
+        const oy = y - c + oldC;
+        if (ox >= 0 && oy >= 0 && ox < oldS && oy < oldS) bit = src[oy * oldS + ox];
+      }
+      out += x === c && y === c ? '0' : bit;
+    }
+  }
+  return out;
+}
+
+/** Number of enabled links in a mask (used for diffusion-stability limits). */
+export function countMaskLinks(mask, radius) {
+  const m = normalizeMask(mask, radius);
+  let n = 0;
+  for (let i = 0; i < m.length; i++) if (m.charCodeAt(i) === 49) n++;
+  return n;
+}
+
 /** Flat [dx, dy, dx, dy, ...] offsets for the configured neighbourhood. */
-export function neighborOffsets(neighborhood, radius) {
+export function neighborOffsets(neighborhood, radius, mask) {
   const offs = [];
   const r = Math.max(1, radius | 0);
+  if (neighborhood === 'custom') {
+    const bits = normalizeMask(mask, r);
+    let k = 0;
+    for (let dy = -r; dy <= r; dy++) {
+      for (let dx = -r; dx <= r; dx++, k++) {
+        if (dx === 0 && dy === 0) continue;
+        if (bits.charCodeAt(k) === 49) offs.push(dx, dy);
+      }
+    }
+    return Int16Array.from(offs);
+  }
   for (let dy = -r; dy <= r; dy++) {
     for (let dx = -r; dx <= r; dx++) {
       if (dx === 0 && dy === 0) continue;
@@ -72,14 +152,30 @@ export function neighborOffsets(neighborhood, radius) {
   return Int16Array.from(offs);
 }
 
-/** The configurable "active" predicate over state values (§4). */
-export function makeActivePredicate(name, cardinality) {
-  const max = cardinality - 1;
+/**
+ * The configurable "active" predicate over state values (§4).
+ * `spec` is a config-like object exposing stateMin/stateMax; a bare number is
+ * accepted for backwards compatibility (legacy `stateCardinality`).
+ */
+export function makeActivePredicate(name, spec) {
+  let min = 0;
+  let max = 1;
+  if (typeof spec === 'number') max = Math.max(1, spec - 1);
+  else if (spec) {
+    min = spec.stateMin | 0 || 0;
+    max = spec.stateMax === undefined ? 1 : spec.stateMax | 0;
+  }
   switch (name) {
+    case 'nonzero':
+      return (s) => s !== 0;
+    case 'lt0':
+      return (s) => s < 0;
     case 'ge2':
       return (s) => s >= 2;
     case 'eqMax':
       return (s) => s === max;
+    case 'eqMin':
+      return (s) => s === min;
     case 'gt0':
     default:
       return (s) => s > 0;
@@ -110,6 +206,31 @@ export function countActiveNeighbors(grid, states, x, y, offsets, boundary, isAc
     if (isActive(states[ny * w + nx])) count++;
   }
   return count;
+}
+/**
+ * Signed alternative to N_t(c): Σ_{n ∈ N(c)} s_n. With a signed state range
+ * this carries far more information than a binary count, and reduces to the
+ * active count when states are {0,1}.
+ */
+export function sumNeighborStates(grid, states, x, y, offsets, boundary) {
+  const w = grid.width;
+  const h = grid.height;
+  let sum = 0;
+  for (let k = 0; k < offsets.length; k += 2) {
+    let nx = x + offsets[k];
+    let ny = y + offsets[k + 1];
+    if (boundary === 'toroidal') {
+      nx = wrapIndex(nx, w);
+      ny = wrapIndex(ny, h);
+    } else if (boundary === 'reflective') {
+      nx = reflectIndex(nx, w);
+      ny = reflectIndex(ny, h);
+    } else if (nx < 0 || ny < 0 || nx >= w || ny >= h) {
+      continue;
+    }
+    sum += states[ny * w + nx];
+  }
+  return sum;
 }
 /**
  * Σ_{n ∈ N(c)} (V_n − V_c): the discrete diffusion / gap-junction sum
@@ -247,18 +368,26 @@ export class Grid {
     this.clampV.fill(rest);
   }
 
-  clampStates(cardinality) {
-    const max = Math.max(0, cardinality - 1);
+  /** Clamp every expressed state into the signed range [min, max]. */
+  clampStates(min, max) {
+    const lo = Math.min(0, min | 0);
+    const hi = Math.max(lo, max | 0);
     for (let i = 0; i < this.size; i++) {
-      if (this.states[i] > max) this.states[i] = max;
-      if (this.states[i] < 0) this.states[i] = 0;
+      if (this.states[i] > hi) this.states[i] = hi;
+      else if (this.states[i] < lo) this.states[i] = lo;
     }
   }
 }
 
 /** Initial-condition population routines (§7.2). */
 export function populate(grid, cfg, rng) {
-  const maxState = cfg.stateCardinality - 1;
+  const maxState = Math.max(1, cfg.stateMax | 0);
+  const minState = Math.min(0, cfg.stateMin | 0);
+  // Pick a random non-zero level from the configured signed range.
+  const pick = () => {
+    if (minState < 0 && rng() < 0.5) return -1 - Math.floor(rng() * -minState);
+    return 1 + Math.floor(rng() * maxState);
+  };
   grid.clearStates();
   const { width, height, states } = grid;
 
@@ -278,7 +407,7 @@ export function populate(grid, cfg, rng) {
       const density = Math.max(0.05, cfg.initialDensity);
       for (let y = y0; y < y0 + bh; y++) {
         for (let x = x0; x < x0 + bw; x++) {
-          if (rng() < density) states[grid.index(x, y)] = maxState;
+          if (rng() < density) states[grid.index(x, y)] = pick();
         }
       }
       break;
@@ -296,7 +425,7 @@ export function populate(grid, cfg, rng) {
     default:
       for (let i = 0; i < grid.size; i++) {
         if (rng() < cfg.initialDensity) {
-          states[i] = maxState > 1 && rng() < 0.35 ? 2 : 1;
+          states[i] = pick();
         }
       }
       break;

@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://no3sieve.local/schema/pointset.schema.json",
+  "title": "no3sieve point set",
+  "type": "object",
+  "required": [
+    "version",
+    "config",
+    "config_hash",
+    "k",
+    "metric",
+    "points",
+    "verification"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "metric": {
+      "const": "linf"
+    },
+    "config_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "points_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "k": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "config": {
+      "type": "object",
+      "required": [
+        "rMax",
+        "ringMetric",
+        "intraRingOrder",
+        "markMode"
+      ],
+      "properties": {
+        "rMax": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ringMetric": {
+          "enum": [
+            "chebyshev",
+            "euclidean"
+          ]
+        },
+        "intraRingOrder": {
+          "enum": [
+            "clockwise",
+            "nearest_first"
+          ]
+        },
+        "markMode": {
+          "enum": [
+            "outward_only",
+            "full_line"
+          ]
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": [
+        "ok",
+        "method",
+        "k"
+      ],
+      "properties": {
+        "ok": {
+          "type": "boolean"
+        },
+        "method": {
+          "type": "string"
+        },
+        "triple": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "window": {
+      "type": "object",
+      "required": [
+        "s",
+        "origin_world"
+      ],
+      "properties": {
+        "s": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "origin_world": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "integer"
+          }
+        },
+        "pop": {
+          "type": "integer"
+        },
+        "c": {
+          "type": "number"
+        }
+      }
+    },
+    "points": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "minItems": 2,
+        "maxItems": 2,
+        "items": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

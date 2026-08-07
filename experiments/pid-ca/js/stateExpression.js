@@ -55,12 +55,36 @@ export const STRATEGIES = {
     apply(u, p, i, d, cfg, rng) {
       const pr = sigmoid(cfg.sigmoidScale * (u - cfg.theta));
       if (rng() >= pr) return 0;
-      if (cfg.stateCardinality > 2 && rng() < pr) return 2;
+      if (cfg.stateMax > 1 && rng() < pr) return cfg.stateMax;
       return 1;
     },
   },
   /**
-   * 5. Bioelectrical mapping (bioelectrical.md §7): (V, gate) -> {0,1,2}.
+   * 5. Signed saturating mapping: the sign of u_t (outside a |θ| dead-zone)
+   *    selects the extreme of the configured signed range.
+   */
+  signed: {
+    label: 'Signed saturating (min / 0 / max)',
+    apply(u, p, i, d, cfg) {
+      const dead = Math.abs(cfg.theta);
+      if (u > dead) return cfg.stateMax;
+      if (u < -dead) return cfg.stateMin;
+      return 0;
+    },
+  },
+  /**
+   * 6. Signed level quantisation: u_t is mapped linearly onto the integer
+   *    interval [stateMin, stateMax] (clamping is done by `expressState`).
+   *    This is the general case of which threshold/quantise are special cases.
+   */
+  levels: {
+    label: 'Signed levels (round gain·u)',
+    apply(u, p, i, d, cfg) {
+      return Math.round(cfg.levelGain * (u - cfg.theta));
+    },
+  },
+  /**
+   * 7. Bioelectrical mapping (bioelectrical.md §7): (V, gate) -> {0,1,2}.
    *    0 = polarized (CLOSED), 1 = firing (OPEN), 2 = refractory.
    *    Invoked through `expressBioelectrical`, which the membrane domain calls
    *    in place of `expressState` (the u_t argument list does not apply here).
@@ -84,14 +108,15 @@ export function strategyNames() {
 
 /**
  * Map a control output (and its components) to the next discrete state,
- * clamped into the configured state cardinality.
+ * clamped into the configured signed state range [stateMin, stateMax].
  */
 export function expressState(name, u, p, i, d, cfg, rng) {
   const strategy = STRATEGIES[name] || STRATEGIES.threshold;
   let s = strategy.apply(u, p, i, d, cfg, rng);
-  const max = cfg.stateCardinality - 1;
+  const min = Math.min(0, cfg.stateMin | 0);
+  const max = Math.max(min, cfg.stateMax | 0);
   if (!Number.isFinite(s)) s = 0;
-  if (s < 0) s = 0;
-  if (s > max) s = max;
+  if (s < min) s = min;
+  else if (s > max) s = max;
   return s | 0;
 }

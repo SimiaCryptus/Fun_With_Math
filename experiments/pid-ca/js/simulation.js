@@ -13,6 +13,7 @@ import {
   populateMembrane,
   neighborOffsets,
   countActiveNeighbors,
+  sumNeighborStates,
   sumNeighborVoltageDelta,
   makeActivePredicate,
   createRng,
@@ -79,8 +80,8 @@ export class Simulation {
   // ------------------------------------------------------- config reaction
   _onConfigChange(changed) {
     const structural = changed.some((k) => SCHEMA[k] && SCHEMA[k].structural);
-    if (changed.includes('stateCardinality')) {
-      this.grid.clampStates(this.config.get('stateCardinality'));
+    if (changed.includes('stateMin') || changed.includes('stateMax')) {
+      this.grid.clampStates(this.config.get('stateMin'), this.config.get('stateMax'));
     }
     this._refreshDerived();
     if (structural) this.reset();
@@ -89,9 +90,16 @@ export class Simulation {
 
   _refreshDerived() {
     const cfg = this.config.all();
-    this.offsets = neighborOffsets(cfg.neighborhood, cfg.radius);
-    this.isActive = makeActivePredicate(cfg.activePredicate, cfg.stateCardinality);
+    this.offsets = neighborOffsets(cfg.neighborhood, cfg.radius, cfg.neighborhoodMask);
+    this.isActive = makeActivePredicate(cfg.activePredicate, cfg);
+    this.sumMode = cfg.neighborMetric === 'sum';
     this.maxNeighbors = this.offsets.length / 2;
+  }
+  /** N_t(c): either the active-neighbour count or the signed neighbour sum. */
+  _neighborMeasure(states, x, y, boundary) {
+    return this.sumMode
+      ? sumNeighborStates(this.grid, states, x, y, this.offsets, boundary)
+      : countActiveNeighbors(this.grid, states, x, y, this.offsets, boundary, this.isActive);
   }
 
   // -------------------------------------------------------------- lifecycle
@@ -143,15 +151,7 @@ export class Simulation {
       const row = y * g.width;
       for (let x = 0; x < g.width; x++) {
         const idx = row + x;
-        const n = countActiveNeighbors(
-          g,
-          g.states,
-          x,
-          y,
-          this.offsets,
-          cfg.boundary,
-          this.isActive
-        );
+        const n = this._neighborMeasure(g.states, x, y, cfg.boundary);
         const T = uniform !== null ? uniform : targetAt(cfg, x, y, 0);
         const e = T - n;
         let prevError = e;
@@ -254,6 +254,7 @@ export class Simulation {
 
     const offsets = this.offsets;
     const isActive = this.isActive;
+    const sumMode = this.sumMode;
     const boundary = cfg.boundary;
     const expression = cfg.expression;
     const out = this._out;
@@ -267,7 +268,9 @@ export class Simulation {
         const idx = row + x;
 
         // (a) neighbour count from the frozen snapshot
-        const n = countActiveNeighbors(g, st, x, y, offsets, boundary, isActive);
+        const n = sumMode
+          ? sumNeighborStates(g, st, x, y, offsets, boundary)
+          : countActiveNeighbors(g, st, x, y, offsets, boundary, isActive);
 
         // (b) error + PID terms
         const T = uniformTarget !== null ? uniformTarget : targetAt(cfg, x, y, t);

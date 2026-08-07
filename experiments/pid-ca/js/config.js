@@ -8,10 +8,20 @@
  *  - notify subscribers when parameters change
  */
 
+import { normalizeMask, countMaskLinks } from './grid.js';
+
 export const BOUNDARIES = ['toroidal', 'fixed', 'reflective'];
-export const NEIGHBORHOODS = ['moore', 'vonNeumann'];
-export const EXPRESSIONS = ['threshold', 'quantize', 'semantic', 'probabilistic'];
-export const ACTIVE_PREDICATES = ['gt0', 'ge2', 'eqMax'];
+export const NEIGHBORHOODS = ['moore', 'vonNeumann', 'custom'];
+export const EXPRESSIONS = [
+  'threshold',
+  'quantize',
+  'semantic',
+  'probabilistic',
+  'signed',
+  'levels',
+];
+export const ACTIVE_PREDICATES = ['gt0', 'nonzero', 'ge2', 'lt0', 'eqMax', 'eqMin'];
+export const NEIGHBOR_METRICS = ['count', 'sum'];
 export const INITIAL_CONDITIONS = ['random', 'center', 'singleCell', 'stripes', 'empty'];
 export const TARGET_MODES = ['constant', 'gradientX', 'radial', 'oscillating'];
 export const OVERLAYS = ['none', 'u', 'integral', 'error', 'voltage'];
@@ -52,6 +62,9 @@ const isMembrane = (cfg) => cfg.mode !== 'pid';
 /** Maximum neighbour count for the configured neighbourhood (diffusion stability). */
 export function maxNeighborCount(cfg) {
   const r = Math.max(1, cfg.radius | 0);
+  if (cfg.neighborhood === 'custom') {
+    return Math.max(1, countMaskLinks(cfg.neighborhoodMask, r));
+  }
   return cfg.neighborhood === 'vonNeumann' ? 2 * r * (r + 1) : (2 * r + 1) * (2 * r + 1) - 1;
 }
 
@@ -112,7 +125,11 @@ export const SCHEMA = {
     type: 'enum',
     options: NEIGHBORHOODS,
     default: 'moore',
-    optionLabels: { moore: 'Moore', vonNeumann: 'von Neumann' },
+    optionLabels: {
+      moore: 'Moore',
+      vonNeumann: 'von Neumann',
+      custom: 'Custom (binary link table)',
+    },
   },
   radius: {
     group: 'Grid & topology',
@@ -123,15 +140,43 @@ export const SCHEMA = {
     step: 1,
     default: 1,
   },
+  neighborhoodMask: {
+    group: 'Grid & topology',
+    label: 'Custom link table',
+    type: 'mask',
+    default: '',
+    visible: (cfg) => cfg.neighborhood === 'custom',
+    hint: 'Binary convolution table over the (2r+1)² window: click a cell to enable/disable that relational link. The centre is never a neighbour of itself.',
+  },
+  neighborMetric: {
+    group: 'Grid & topology',
+    label: 'Neighbour measure',
+    type: 'enum',
+    options: NEIGHBOR_METRICS,
+    default: 'count',
+    optionLabels: {
+      count: 'Count of "active" neighbours',
+      sum: 'Signed sum of neighbour states',
+    },
+    visible: isPid,
+    hint: 'With a signed state range, the sum carries sign and magnitude; e_t = T − measure.',
+  },
   activePredicate: {
     group: 'Grid & topology',
     label: '"Active" predicate',
     type: 'enum',
     options: ACTIVE_PREDICATES,
     default: 'gt0',
-    optionLabels: { gt0: 'state > 0', ge2: 'state >= 2', eqMax: 'state = max' },
+    optionLabels: {
+      gt0: 'state > 0',
+      nonzero: 'state ≠ 0',
+      ge2: 'state >= 2',
+      lt0: 'state < 0',
+      eqMax: 'state = max',
+      eqMin: 'state = min',
+    },
     hint: 'Definition of "active" used when counting N_t(c).',
-    visible: isPid,
+    visible: (cfg) => isPid(cfg) && cfg.neighborMetric === 'count',
   },
 
   // ------------------------------------------------------------------ target
@@ -234,13 +279,24 @@ export const SCHEMA = {
   },
 
   // -------------------------------------------------------- state expression
-  stateCardinality: {
+  stateMin: {
     group: 'State expression',
-    label: 'State cardinality',
-    type: 'enum',
-    options: [2, 3],
-    default: 2,
-    optionLabels: { 2: '2-state {0,1}', 3: '3-state {0,1,2}' },
+    label: 'State min (signed floor)',
+    type: 'int',
+    min: -16,
+    max: 0,
+    step: 1,
+    default: 0,
+    hint: 'Expressed states live in the integer interval [min, max]; 0 is always the neutral state.',
+  },
+  stateMax: {
+    group: 'State expression',
+    label: 'State max',
+    type: 'int',
+    min: 1,
+    max: 16,
+    step: 1,
+    default: 1,
   },
   expression: {
     group: 'State expression',
@@ -253,6 +309,8 @@ export const SCHEMA = {
       quantize: 'Ternary quantisation',
       semantic: 'Ternary semantic (dominant term)',
       probabilistic: 'Probabilistic (sigmoid)',
+      signed: 'Signed saturating (min / 0 / max)',
+      levels: 'Signed levels (round gain·u)',
     },
   },
   theta: {
@@ -295,6 +353,17 @@ export const SCHEMA = {
     step: 0.1,
     default: 1,
     visible: isExpr('probabilistic'),
+  },
+  levelGain: {
+    group: 'State expression',
+    label: 'Level gain (states per unit u)',
+    type: 'float',
+    min: 0.05,
+    max: 8,
+    step: 0.05,
+    default: 1,
+    visible: isExpr('levels'),
+    hint: 'state = clamp(round(gain · u_t), min, max).',
   },
 
   // -------------------------------------------------------- initial condition
@@ -714,7 +783,16 @@ function clamp(v, lo, hi) {
  * @returns {{config: object, errors: string[]}}
  */
 export function validateConfig(raw) {
-  const source = raw && typeof raw === 'object' ? raw : {};
+  let source = raw && typeof raw === 'object' ? raw : {};
+  // Legacy configs (share links / old presets) used `stateCardinality: n`.
+  if (
+    source.stateCardinality !== undefined &&
+    source.stateMin === undefined &&
+    source.stateMax === undefined
+  ) {
+    const n = Math.max(2, Math.round(Number(source.stateCardinality)) || 2);
+    source = { ...source, stateMin: 0, stateMax: n - 1 };
+  }
   const config = defaultConfig();
   const errors = [];
 
@@ -746,6 +824,9 @@ export function validateConfig(raw) {
       case 'bool':
         config[key] = value === 'false' ? false : Boolean(value);
         break;
+      case 'mask':
+        config[key] = String(value).replace(/[^01]/g, '');
+        break;
       case 'enum': {
         const match = spec.options.find((o) => o === value || String(o) === String(value));
         if (match === undefined) {
@@ -761,6 +842,16 @@ export function validateConfig(raw) {
   }
 
   // ---- cross-field invariants -------------------------------------------
+  // Custom neighbourhood: keep the link table sized to the current radius.
+  config.neighborhoodMask = normalizeMask(config.neighborhoodMask, config.radius);
+  if (
+    config.neighborhood === 'custom' &&
+    countMaskLinks(config.neighborhoodMask, config.radius) === 0
+  ) {
+    errors.push('custom neighbourhood has no enabled links; N_t(c) will always be 0');
+  }
+  if (config.stateMin > 0) config.stateMin = 0;
+  if (config.stateMax < 1) config.stateMax = 1;
   if (config.bandA >= config.bandB) {
     config.bandB = config.bandA + Math.max(0.05, Math.abs(config.bandA) * 0.05);
     errors.push('band edges must satisfy a < b; adjusted b');
@@ -769,8 +860,16 @@ export function validateConfig(raw) {
     config.integralMin = -Math.abs(config.integralMax) - 1;
     errors.push('integral clamp must satisfy min < max; adjusted min');
   }
-  if (config.stateCardinality === 2 && config.expression === 'semantic') {
-    errors.push('semantic mapping is intended for 3-state mode; states will be clamped to {0,1}');
+  if (
+    config.stateMax < 2 &&
+    (config.expression === 'semantic' || config.expression === 'quantize')
+  ) {
+    errors.push(
+      'semantic / quantised mappings need state max ≥ 2; states will be clamped to {0,1}'
+    );
+  }
+  if (config.stateMin === 0 && (config.expression === 'signed' || config.expression === 'levels')) {
+    errors.push('signed expressions are intended for state min < 0 (currently 0)');
   }
   // ---- membrane invariants (bioelectrical.md §5) -------------------------
   const maxN = maxNeighborCount(config);
@@ -846,6 +945,8 @@ export function diffFromDefaults(cfg) {
   const defaults = defaultConfig();
   const out = {};
   for (const key of CONFIG_KEYS) {
+    // The link table is only meaningful for the custom neighbourhood.
+    if (key === 'neighborhoodMask' && cfg.neighborhood !== 'custom') continue;
     if (cfg[key] !== defaults[key]) out[key] = cfg[key];
   }
   return out;

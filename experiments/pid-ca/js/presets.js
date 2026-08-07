@@ -265,6 +265,106 @@ export const PRESETS = [
     },
   },
   // ---------------------------------------------------------------------
+  // Custom link tables + signed state ranges
+  // ---------------------------------------------------------------------
+  {
+    name: 'Custom link table — knight moves',
+    description:
+      'Radius-2 custom neighbourhood with only the eight knight-move links enabled: non-local, interleaved lattices.',
+    config: {
+      neighborhood: 'custom',
+      radius: 2,
+      // 5×5 row-major table (y = −2 … +2): the eight (±1,±2)/(±2,±1) links.
+      neighborhoodMask: '0101010001000001000101010',
+      neighborMetric: 'count',
+      activePredicate: 'gt0',
+      target: 3,
+      kp: 1,
+      ki: 0.02,
+      kd: 0.4,
+      stateMin: 0,
+      stateMax: 1,
+      expression: 'threshold',
+      theta: 0,
+      initialCondition: 'random',
+      initialDensity: 0.35,
+      stepsPerSecond: 20,
+      overlay: 'none',
+    },
+  },
+  {
+    name: 'Custom link table — anisotropic cross',
+    description:
+      'Only the horizontal links of a radius-2 window are enabled: growth becomes strongly directional.',
+    config: {
+      neighborhood: 'custom',
+      radius: 2,
+      neighborhoodMask: '0000000000110110000000000',
+      target: 2,
+      kp: 1.1,
+      ki: 0.03,
+      kd: 0.4,
+      stateMin: 0,
+      stateMax: 1,
+      expression: 'threshold',
+      theta: 0,
+      initialCondition: 'random',
+      initialDensity: 0.3,
+      stepsPerSecond: 20,
+    },
+  },
+  {
+    name: 'Bipolar domains (signed ±3)',
+    description:
+      'Signed state range with a saturating expression: positive and negative domains compete across a signed neighbour sum.',
+    config: {
+      neighborhood: 'moore',
+      radius: 1,
+      neighborMetric: 'sum',
+      target: 0,
+      targetMode: 'constant',
+      kp: 0.8,
+      ki: 0.01,
+      kd: 0.35,
+      integralClamp: true,
+      integralMin: -6,
+      integralMax: 6,
+      stateMin: -3,
+      stateMax: 3,
+      expression: 'signed',
+      theta: 0.5,
+      initialCondition: 'random',
+      initialDensity: 0.5,
+      stepsPerSecond: 20,
+      overlay: 'none',
+    },
+  },
+  {
+    name: 'Signed level field (−6 … +6)',
+    description:
+      'Thirteen-level signed expression: u_t is quantised linearly into the range, giving smooth grey-scale morphogenesis.',
+    config: {
+      neighborMetric: 'sum',
+      target: 0,
+      kp: 0.55,
+      ki: 0.012,
+      kd: 0.45,
+      integralClamp: true,
+      integralMin: -8,
+      integralMax: 8,
+      stateMin: -6,
+      stateMax: 6,
+      expression: 'levels',
+      levelGain: 0.9,
+      theta: 0,
+      initialCondition: 'random',
+      initialDensity: 0.45,
+      stepsPerSecond: 24,
+      overlay: 'u',
+      overlayScale: 8,
+    },
+  },
+  // ---------------------------------------------------------------------
   // Bioelectrical membrane domain (bioelectrical.md §8 behaviour classes)
   // ---------------------------------------------------------------------
   {

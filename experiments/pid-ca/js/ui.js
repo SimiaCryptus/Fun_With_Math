@@ -6,7 +6,8 @@
  */
 
 import { SCHEMA, GROUPS, toHashString } from './config.js';
-import { STATE_COLORS, MEMBRANE_COLORS } from './renderer.js';
+import { MEMBRANE_COLORS, buildStatePalette } from './renderer.js';
+import { normalizeMask } from './grid.js';
 
 function el(tag, cls, text) {
   const node = document.createElement(tag);
@@ -239,6 +240,12 @@ export class UI {
       // Presets that do not name a `mode` are PID-domain presets.
       const patch = { ...preset.config };
       if (patch.mode === undefined) patch.mode = 'pid';
+      // Legacy presets may still describe the state space by cardinality.
+      if (patch.stateCardinality !== undefined && patch.stateMax === undefined) {
+        patch.stateMin = 0;
+        patch.stateMax = Math.max(1, Math.round(patch.stateCardinality) - 1);
+        delete patch.stateCardinality;
+      }
       this.config.patch(patch);
       this.sim.reset();
     });
@@ -327,6 +334,90 @@ export class UI {
       setValue = (v) => {
         select.value = String(v);
       };
+    } else if (spec.type === 'mask') {
+      // Binary convolution table: one toggle per relational link (§7.2).
+      const wrap = el('div', 'mask');
+      const table = el('div', 'mask-grid');
+      table.style.display = 'grid';
+      table.style.gap = '2px';
+      table.style.margin = '2px 0 6px';
+      const tools = el('div', 'row mask-tools');
+      let cells = [];
+      let current = '';
+      const write = (mask) => {
+        current = mask;
+        this._push(key, mask);
+      };
+      const paintCells = () => {
+        for (let k = 0; k < cells.length; k++) {
+          const on = current.charCodeAt(k) === 49;
+          const centre = cells[k].dataset.centre === '1';
+          cells[k].style.background = centre
+            ? 'rgb(60,66,78)'
+            : on
+              ? 'rgb(78,201,176)'
+              : 'rgb(30,36,46)';
+        }
+      };
+      const rebuild = (side) => {
+        table.textContent = '';
+        table.style.gridTemplateColumns = 'repeat(' + side + ', 14px)';
+        cells = [];
+        const centre = (side * side - 1) / 2;
+        for (let k = 0; k < side * side; k++) {
+          const cell = el('button', 'mask-cell');
+          cell.type = 'button';
+          cell.style.width = '14px';
+          cell.style.height = '14px';
+          cell.style.padding = '0';
+          cell.style.border = '0';
+          cell.style.borderRadius = '2px';
+          cell.style.cursor = k === centre ? 'default' : 'pointer';
+          if (k === centre) {
+            cell.dataset.centre = '1';
+            cell.disabled = true;
+            cell.title = 'centre cell (never its own neighbour)';
+          } else {
+            const index = k;
+            cell.addEventListener('click', () => {
+              const arr = current.split('');
+              arr[index] = arr[index] === '1' ? '0' : '1';
+              write(arr.join(''));
+            });
+          }
+          cells.push(cell);
+          table.appendChild(cell);
+        }
+      };
+      const allBtn = el('button', null, 'All');
+      allBtn.addEventListener('click', () => {
+        const side = Math.round(Math.sqrt(cells.length));
+        const c = (side * side - 1) / 2;
+        write(Array.from({ length: cells.length }, (_, k) => (k === c ? '0' : '1')).join(''));
+      });
+      const noneBtn = el('button', null, 'None');
+      noneBtn.addEventListener('click', () => write('0'.repeat(cells.length)));
+      const invertBtn = el('button', null, 'Invert');
+      invertBtn.addEventListener('click', () => {
+        const side = Math.round(Math.sqrt(cells.length));
+        const c = (side * side - 1) / 2;
+        write(
+          current
+            .split('')
+            .map((b, k) => (k === c ? '0' : b === '1' ? '0' : '1'))
+            .join('')
+        );
+      });
+      tools.append(allBtn, noneBtn, invertBtn);
+      wrap.append(table, tools);
+      field.appendChild(wrap);
+      setValue = (v) => {
+        const radius = Math.max(1, this.config.get('radius') | 0);
+        const side = 2 * radius + 1;
+        current = normalizeMask(v, radius);
+        if (cells.length !== side * side) rebuild(side);
+        paintCells();
+      };
     } else {
       const range = el('input', 'ctl-range');
       range.type = 'range';
@@ -406,30 +497,59 @@ export class UI {
     if (!root) return;
     root.textContent = '';
 
-    const membrane = cfg.mode !== 'pid';
-    let names;
-    let palette = STATE_COLORS;
-    let count = cfg.stateCardinality;
+    const rgb = (c) =>
+      'rgb(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ')';
 
-    if (membrane) {
-      palette = MEMBRANE_COLORS;
-      count = 3;
-      names = ['polarized (gate closed)', 'firing (gate open)', 'refractory'];
-    } else if (cfg.stateCardinality === 2) {
-      names = ['inactive', 'active'];
-    } else if (cfg.expression === 'semantic') {
-      names = ['inactive', 'integral-dominant (stabilising)', 'P/D-dominant (driving)'];
+    if (cfg.mode !== 'pid') {
+      const names = ['polarized (gate closed)', 'firing (gate open)', 'refractory'];
+      for (let s = 0; s < 3; s++) {
+        const item = el('div', 'legend-item');
+        const swatch = el('span', 'swatch');
+        swatch.style.background = rgb(MEMBRANE_COLORS[s]);
+        item.append(swatch, el('span', null, names[s]));
+        root.appendChild(item);
+      }
     } else {
-      names = ['state 0', 'state 1', 'state 2'];
-    }
+      const min = Math.min(0, cfg.stateMin | 0);
+      const max = Math.max(min, cfg.stateMax | 0);
+      const palette = buildStatePalette(min, max);
+      const count = max - min + 1;
+      const semantic = cfg.expression === 'semantic' && min === 0 && max >= 2;
+      const nameOf = (s) => {
+        if (min === 0 && max === 1) return s === 0 ? 'inactive' : 'active';
+        if (semantic) {
+          return (
+            ['inactive', 'integral-dominant (stabilising)', 'P/D-dominant (driving)'][s] ||
+            'state ' + s
+          );
+        }
+        if (s === 0) return 'state 0 (neutral)';
+        return 'state ' + (s > 0 ? '+' + s : String(s));
+      };
 
-    for (let s = 0; s < count; s++) {
-      const item = el('div', 'legend-item');
-      const swatch = el('span', 'swatch');
-      const c = palette[s] || palette[0];
-      swatch.style.background = 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')';
-      item.append(swatch, el('span', null, names[s]));
-      root.appendChild(item);
+      if (count <= 9) {
+        for (let s = min; s <= max; s++) {
+          const item = el('div', 'legend-item');
+          const swatch = el('span', 'swatch');
+          swatch.style.background = rgb(palette[s - min]);
+          item.append(swatch, el('span', null, nameOf(s)));
+          root.appendChild(item);
+        }
+      } else {
+        // Wide signed ranges: show the ramp rather than one row per level.
+        const item = el('div', 'legend-item');
+        const ramp = el('span', 'swatch-ramp');
+        ramp.style.display = 'inline-flex';
+        for (let s = min; s <= max; s++) {
+          const cell = el('span');
+          cell.style.width = '8px';
+          cell.style.height = '12px';
+          cell.style.background = rgb(palette[s - min]);
+          ramp.appendChild(cell);
+        }
+        item.append(ramp, el('span', null, 'states ' + min + ' … 0 … +' + max));
+        root.appendChild(item);
+      }
     }
 
     if (cfg.overlay !== 'none') {
@@ -505,9 +625,12 @@ export class UI {
       const erase = event.button === 2 || event.shiftKey;
       if (cfg.mode !== 'pid') {
         paintValue = erase ? 0 : 1;
+      } else if (event.altKey && cfg.stateMin < 0) {
+        // alt paints the negative extreme of the signed range
+        paintValue = cfg.stateMin;
       } else {
         const current = this.sim.grid.getState(cell.x, cell.y);
-        paintValue = erase ? 0 : current > 0 ? 0 : cfg.stateCardinality - 1;
+        paintValue = erase ? 0 : current !== 0 ? 0 : cfg.stateMax;
       }
       painting = true;
       try {

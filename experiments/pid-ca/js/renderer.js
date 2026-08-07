@@ -5,11 +5,39 @@
  * ImageData, then upscales with nearest-neighbour sampling.
  */
 
-export const STATE_COLORS = [
-  [16, 21, 28], // 0 — inactive
-  [78, 201, 176], // 1 — active / stabilising
-  [240, 162, 74], // 2 — driving
-];
+/** Neutral (state 0) and the two signed ramp endpoints. */
+export const ZERO_COLOR = [16, 21, 28];
+const POS_LOW = [78, 201, 176]; // +1 — teal
+const POS_HIGH = [240, 162, 74]; // +max — amber
+const NEG_LOW = [86, 132, 224]; // −1 — blue
+const NEG_HIGH = [186, 92, 226]; // −min — violet
+
+/** Legacy 3-entry palette (0 / +1 / +2), retained for convenience. */
+export const STATE_COLORS = [ZERO_COLOR, POS_LOW, POS_HIGH];
+
+function lerpColor(a, b, t) {
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+}
+
+/** Colour for a signed state within [min, max] (§7.6). */
+export function colorForState(s, min, max) {
+  if (s === 0) return ZERO_COLOR;
+  if (s > 0) {
+    const span = Math.max(1, max - 1);
+    return lerpColor(POS_LOW, POS_HIGH, Math.min(1, (s - 1) / span));
+  }
+  const span = Math.max(1, -min - 1);
+  return lerpColor(NEG_LOW, NEG_HIGH, Math.min(1, (-s - 1) / span));
+}
+
+/** Palette indexed by (state − min). */
+export function buildStatePalette(min, max) {
+  const lo = Math.min(0, min | 0);
+  const hi = Math.max(lo, max | 0);
+  const out = [];
+  for (let s = lo; s <= hi; s++) out.push(colorForState(s, lo, hi));
+  return out;
+}
 /** Bioelectrical palette (bioelectrical.md §7): polarized / firing / refractory. */
 export const MEMBRANE_COLORS = [
   [18, 28, 52], // 0 — polarized (gate CLOSED)
@@ -33,6 +61,17 @@ export class Renderer {
     this.offCtx = this.offscreen.getContext('2d');
     this.image = null;
     this.cellSize = config.get('cellSize');
+    this._paletteKey = null;
+    this._palette = STATE_COLORS;
+  }
+  /** Cached signed-range palette; rebuilt only when the range changes. */
+  _statePalette(min, max) {
+    const key = min + ':' + max;
+    if (this._paletteKey !== key) {
+      this._paletteKey = key;
+      this._palette = buildStatePalette(min, max);
+    }
+    return this._palette;
   }
 
   /** Effective cell size, capped so the backing canvas never explodes. */
@@ -84,13 +123,16 @@ export class Renderer {
     const states = grid.states;
     const overlay = this._overlayBuffer(grid, cfg.overlay);
     const scale = Math.max(0.0001, cfg.overlayScale);
-    const palette = cfg.mode === 'pid' ? STATE_COLORS : MEMBRANE_COLORS;
+    const pid = cfg.mode === 'pid';
+    const palette = pid ? this._statePalette(cfg.stateMin, cfg.stateMax) : MEMBRANE_COLORS;
+    // Signed states are stored as-is, so shift into palette space.
+    const offset = pid ? -Math.min(0, cfg.stateMin | 0) : 0;
     const voltageOverlay = cfg.overlay === 'voltage';
     const hotSpan = Math.max(1e-6, cfg.vMax - cfg.vRest);
     const coldSpan = Math.max(1e-6, cfg.vRest - cfg.vMin);
 
     for (let idx = 0, p = 0; idx < grid.size; idx++, p += 4) {
-      const base = palette[states[idx]] || palette[0];
+      const base = palette[states[idx] + offset] || palette[offset] || palette[0];
       let r = base[0],
         g = base[1],
         b = base[2];
