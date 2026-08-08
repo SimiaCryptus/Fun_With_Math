@@ -18,6 +18,15 @@
       "pitch": "A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize the Shannon entropy of their pairwise-distance distribution."
     },
     {
+      "icon": "PC",
+      "title": "PID-Regulated Cellular Automaton",
+      "href": "experiments/pid-ca/index.html",
+      "readme": "experiments/pid-ca/README.md",
+      "video": "videos/pid-ca-demo.mp4",
+      "launchLabel": "Open the PID-Regulated Cellular Automaton lab",
+      "pitch": "A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor count against a target and computes proportional, integral, and derivative terms to decide its next state. The result is a rule family with local memory (integral windup), local anticipation (derivative), and tunable dynamical regimes — under-damped ripples, critically-damped blobs, over-damped glassy creep — all from the same control-theoretic mechanism."
+    },
+    {
       "icon": "CA",
       "title": "Layered Cellular Automata",
       "href": "experiments/layered_ca/index.html",
@@ -59,22 +68,6 @@
       "pitch": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits."
     },
     {
-      "icon": "3L",
-      "title": "No-Three-in-Line Explorer",
-      "href": "experiments/3inline/index.html",
-      "readme": "experiments/3inline/README.md",
-      "launchLabel": "Open the No-Three-in-Line Explorer lab",
-      "pitch": "An interactive laboratory for the classic no-three-in-line problem: place ~2n points on an n×n grid so no three are collinear along any rational slope. Solve it by hand with instant collinearity feedback, or watch an entropic simulated-annealing solver with parabola warm starts, sublattice mutations, and a tabu list search for dense configurations — all powered by an incremental line index for fast O(k) move checks."
-    },
-    {
-      "icon": "NM",
-      "title": "nam — Numbers as Machines",
-      "href": "experiments/nam-calculator/index.html",
-      "readme": "experiments/nam-calculator/README.md",
-      "launchLabel": "Open the nam interactive calculator",
-      "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie."
-    },
-    {
       "icon": "MA",
       "title": "Bidirectional Markov Text Analyzer",
       "href": "experiments/markov-analysis/index.html",
@@ -91,18 +84,34 @@
       "pitch": "A deformable surface mesh flows downhill on geometric fitness functionals (area, volume, edge-length entropy, angular regularity, Laplacian smoothness) while an exact continuous collision-detection pipeline guarantees it never intrudes into an inner keep-out volume — a differentiable shrink-wrap where every gradient step is clipped at the moment of contact."
     },
     {
-      "icon": "FL",
-      "title": "Fractal Learning",
-      "href": "experiments/fractal_learning/index.html",
-      "readme": "experiments/fractal_learning/idea.md",
-      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
-    },
-    {
       "icon": "🔒",
       "title": "Static Secrets",
       "href": "experiments/static-secrets/index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
       "readme": "experiments/static-secrets/README.md",
       "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key."
+    },
+    {
+      "icon": "3L",
+      "title": "No-Three-in-Line Explorer",
+      "href": "experiments/3inline/index.html",
+      "readme": "experiments/3inline/README.md",
+      "launchLabel": "Open the No-Three-in-Line Explorer lab",
+      "pitch": "An interactive laboratory for the classic no-three-in-line problem: place ~2n points on an n×n grid so no three are collinear along any rational slope. Solve it by hand with instant collinearity feedback, or watch an entropic simulated-annealing solver with parabola warm starts, sublattice mutations, and a tabu list search for dense configurations — all powered by an incremental line index for fast O(k) move checks."
+    },
+    {
+      "icon": "NM",
+      "title": "nam — Numbers as Machines",
+      "href": "experiments/nam-calculator/index.html",
+      "readme": "experiments/nam-calculator/README.md",
+      "launchLabel": "Open the nam interactive calculator",
+      "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie."
+    },
+    {
+      "icon": "FL",
+      "title": "Fractal Learning",
+      "href": "experiments/fractal_learning/index.html",
+      "readme": "experiments/fractal_learning/idea.md",
+      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric."
     },
     {
       "icon": "OM",
@@ -119,14 +128,6 @@
       "readme": "experiments/chromatic/README.md",
       "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
       "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem."
-    },
-    {
-      "icon": "PC",
-      "title": "PID-Regulated Cellular Automaton",
-      "href": "experiments/pid-ca/index.html",
-      "readme": "experiments/pid-ca/README.md",
-      "launchLabel": "Open the PID-Regulated Cellular Automaton lab",
-      "pitch": "A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor count against a target and computes proportional, integral, and derivative terms to decide its next state. The result is a rule family with local memory (integral windup), local anticipation (derivative), and tunable dynamical regimes — under-damped ripples, critically-damped blobs, over-damped glassy creep — all from the same control-theoretic mechanism."
     }
   ],
   "essays": [],

@@ -3,15 +3,7 @@
   "$id": "https://no3sieve.local/schema/pointset.schema.json",
   "title": "no3sieve point set",
   "type": "object",
-  "required": [
-    "version",
-    "config",
-    "config_hash",
-    "k",
-    "metric",
-    "points",
-    "verification"
-  ],
+  "required": ["version", "config", "config_hash", "k", "metric", "points", "verification"],
   "properties": {
     "version": {
       "type": "string"
@@ -33,44 +25,26 @@
     },
     "config": {
       "type": "object",
-      "required": [
-        "rMax",
-        "ringMetric",
-        "intraRingOrder",
-        "markMode"
-      ],
+      "required": ["rMax", "ringMetric", "intraRingOrder", "markMode"],
       "properties": {
         "rMax": {
           "type": "integer",
           "minimum": 0
         },
         "ringMetric": {
-          "enum": [
-            "chebyshev",
-            "euclidean"
-          ]
+          "enum": ["chebyshev", "euclidean"]
         },
         "intraRingOrder": {
-          "enum": [
-            "clockwise",
-            "nearest_first"
-          ]
+          "enum": ["clockwise", "nearest_first"]
         },
         "markMode": {
-          "enum": [
-            "outward_only",
-            "full_line"
-          ]
+          "enum": ["outward_only", "full_line"]
         }
       }
     },
     "verification": {
       "type": "object",
-      "required": [
-        "ok",
-        "method",
-        "k"
-      ],
+      "required": ["ok", "method", "k"],
       "properties": {
         "ok": {
           "type": "boolean"
@@ -95,10 +69,7 @@
     },
     "window": {
       "type": "object",
-      "required": [
-        "s",
-        "origin_world"
-      ],
+      "required": ["s", "origin_world"],
       "properties": {
         "s": {
           "type": "integer",

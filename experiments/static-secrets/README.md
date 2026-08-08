@@ -1,5 +1,7 @@
 # Static Secrets
 
+> Note: The password for the demo page is 'secret'
+
 Ordinarily, "private content on the web" means a server that checks who you
 are, decides what you're allowed to see, and hands you the plaintext. The
 server is the gatekeeper — and, inconveniently, the server also _sees
