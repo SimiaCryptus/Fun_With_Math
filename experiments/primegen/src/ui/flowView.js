@@ -4,7 +4,9 @@ import { fmt } from '../util/format.js';
 
 let canvas = null;
 
-export function mount() { canvas = qs('#flowCanvas'); }
+export function mount() {
+  canvas = qs('#flowCanvas');
+}
 
 export function render(stack, state) {
   const { ctx, w, h } = fitCanvas(canvas, 330);
@@ -30,24 +32,29 @@ function frame(ctx, r, title) {
   ctx.fillText(title, r.x + 6, r.y + 12);
 }
 
-function xAt(r, i, n) { return r.x + (n === 1 ? r.w / 2 : (i / (n - 1)) * r.w); }
+function xAt(r, i, n) {
+  return r.x + (n === 1 ? r.w / 2 : (i / (n - 1)) * r.w);
+}
 
 function drawDensity(ctx, stages, r, state) {
   frame(ctx, r, 'ρ_k = Π(1−1/p_i)   [log10 scale]   ·   dashed: e^{−γ}/log p_k');
-  const vals = stages.map(s => Math.log10(s.rho));
-  const asym = stages.map(s => Math.log10(s.mertensAsym));
+  const vals = stages.map((s) => Math.log10(s.rho));
+  const asym = stages.map((s) => Math.log10(s.mertensAsym));
   const lo = Math.min(...vals, ...asym) - 0.05;
   const hi = 0.02;
-  const yOf = v => r.y + r.h * (1 - (v - lo) / (hi - lo));
+  const yOf = (v) => r.y + r.h * (1 - (v - lo) / (hi - lo));
 
   // gridlines / labels
   ctx.textAlign = 'right';
   ctx.font = '10px ui-monospace, monospace';
   for (let t = 0; t <= 4; t++) {
-    const v = lo + (hi - lo) * t / 4;
+    const v = lo + ((hi - lo) * t) / 4;
     const y = yOf(v);
     ctx.strokeStyle = 'rgba(31,39,58,0.9)';
-    ctx.beginPath(); ctx.moveTo(r.x, y); ctx.lineTo(r.x + r.w, y); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(r.x, y);
+    ctx.lineTo(r.x + r.w, y);
+    ctx.stroke();
     ctx.fillStyle = INK.text;
     ctx.fillText(`10^${v.toFixed(2)}`, r.x - 6, y + 3);
   }
@@ -57,7 +64,8 @@ function drawDensity(ctx, stages, r, state) {
   ctx.setLineDash([4, 3]);
   ctx.beginPath();
   stages.forEach((s, i) => {
-    const x = xAt(r, i, stages.length), y = yOf(asym[i]);
+    const x = xAt(r, i, stages.length),
+      y = yOf(asym[i]);
     i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
   });
   ctx.stroke();
@@ -68,16 +76,20 @@ function drawDensity(ctx, stages, r, state) {
   ctx.lineWidth = 2;
   ctx.beginPath();
   stages.forEach((s, i) => {
-    const x = xAt(r, i, stages.length), y = yOf(vals[i]);
+    const x = xAt(r, i, stages.length),
+      y = yOf(vals[i]);
     i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
   });
   ctx.stroke();
   ctx.lineWidth = 1;
 
   stages.forEach((s, i) => {
-    const x = xAt(r, i, stages.length), y = yOf(vals[i]);
+    const x = xAt(r, i, stages.length),
+      y = yOf(vals[i]);
     ctx.fillStyle = primeColor(i, i === state.selected ? 1 : 0.85);
-    ctx.beginPath(); ctx.arc(x, y, i === state.selected ? 4.5 : 3, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, i === state.selected ? 4.5 : 3, 0, Math.PI * 2);
+    ctx.fill();
   });
 
   axisLabels(ctx, stages, r);
@@ -86,20 +98,24 @@ function drawDensity(ctx, stages, r, state) {
 function drawEntropy(ctx, stages, r, state) {
   frame(ctx, r, 'H_joint(k) = Σ H(p_i)  (line, bits)   ·   ΔH = H(p_k)  (bars, bits)');
   const hi = stages[stages.length - 1].Hjoint * 1.12 || 1;
-  const yOf = v => r.y + r.h * (1 - v / hi);
+  const yOf = (v) => r.y + r.h * (1 - v / hi);
 
   ctx.textAlign = 'right';
   ctx.font = '10px ui-monospace, monospace';
   for (let t = 0; t <= 4; t++) {
-    const v = hi * t / 4, y = yOf(v);
+    const v = (hi * t) / 4,
+      y = yOf(v);
     ctx.strokeStyle = 'rgba(31,39,58,0.9)';
-    ctx.beginPath(); ctx.moveTo(r.x, y); ctx.lineTo(r.x + r.w, y); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(r.x, y);
+    ctx.lineTo(r.x + r.w, y);
+    ctx.stroke();
     ctx.fillStyle = INK.text;
     ctx.fillText(v.toFixed(2), r.x - 6, y + 3);
   }
 
   // ΔH bars, scaled to be visible against the cumulative curve
-  const dhMax = Math.max(...stages.map(s => s.H));
+  const dhMax = Math.max(...stages.map((s) => s.H));
   const barScale = (r.h * 0.55) / (dhMax || 1);
   const bw = Math.max(2, r.w / stages.length - 3);
   stages.forEach((s, i) => {
@@ -114,7 +130,8 @@ function drawEntropy(ctx, stages, r, state) {
   ctx.lineWidth = 2;
   ctx.beginPath();
   stages.forEach((s, i) => {
-    const x = xAt(r, i, stages.length), y = yOf(s.Hjoint);
+    const x = xAt(r, i, stages.length),
+      y = yOf(s.Hjoint);
     i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
   });
   ctx.stroke();
@@ -124,7 +141,11 @@ function drawEntropy(ctx, stages, r, state) {
   const last = stages[stages.length - 1];
   ctx.fillStyle = INK.text;
   ctx.textAlign = 'right';
-  ctx.fillText(`h_k ≈ 10^${fmt(last.log10EntropyDensity, 2)} bits/integer`, r.x + r.w - 6, r.y + 12);
+  ctx.fillText(
+    `h_k ≈ 10^${fmt(last.log10EntropyDensity, 2)} bits/integer`,
+    r.x + r.w - 6,
+    r.y + 12
+  );
 
   axisLabels(ctx, stages, r);
 }

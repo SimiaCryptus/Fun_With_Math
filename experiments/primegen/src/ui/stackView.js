@@ -1,7 +1,10 @@
 import { qs, fitCanvas } from '../util/dom.js';
 import { primeColor, INK } from '../util/colors.js';
 
-let canvas = null, tip = null, geom = null, lastStack = null;
+let canvas = null,
+  tip = null,
+  geom = null,
+  lastStack = null;
 
 export function mount() {
   canvas = qs('#stackCanvas');
@@ -14,7 +17,10 @@ export function render(stack, state) {
   lastStack = stack;
   const rows = stack.basis.length + 1;
   const rowH = rows <= 12 ? 20 : Math.max(8, Math.floor(260 / rows));
-  const padT = 14, padB = 20, left = 62, right = 10;
+  const padT = 14,
+    padB = 20,
+    left = 62,
+    right = 10;
   const height = padT + padB + rows * rowH;
 
   const { ctx, w, h } = fitCanvas(canvas, height);
@@ -95,7 +101,7 @@ function drawDensity(ctx, stack, state, g) {
   const acc = Array.from({ length: rows }, () => new Float32Array(px));
   const cnt = new Float32Array(px);
   for (let idx = 0; idx < stack.N; idx++) {
-    const x = Math.min(px - 1, (idx * px / stack.N) | 0);
+    const x = Math.min(px - 1, ((idx * px) / stack.N) | 0);
     cnt[x]++;
     const s = stack.stageOf[idx];
     acc[s === 0 ? rows - 1 : s - 1][x]++;
@@ -109,7 +115,7 @@ function drawDensity(ctx, stack, state, g) {
     if (mx <= 0) mx = 1;
     for (let x = 0; x < px; x++) {
       if (!cnt[x]) continue;
-      const v = (acc[i][x] / cnt[x]) / mx;
+      const v = acc[i][x] / cnt[x] / mx;
       if (v <= 0) continue;
       ctx.fillStyle = surv
         ? `rgba(183,247,208,${0.15 + 0.85 * v})`
@@ -122,18 +128,27 @@ function drawDensity(ctx, stack, state, g) {
 function onMove(ev) {
   if (!geom || !lastStack) return;
   const rect = canvas.getBoundingClientRect();
-  const x = ev.clientX - rect.left, y = ev.clientY - rect.top;
-  if (x < geom.left || x > geom.left + geom.plotW) { tip.classList.remove('on'); return; }
-  const idx = Math.min(geom.N - 1, Math.max(0, Math.floor((x - geom.left) / geom.plotW * geom.N)));
+  const x = ev.clientX - rect.left,
+    y = ev.clientY - rect.top;
+  if (x < geom.left || x > geom.left + geom.plotW) {
+    tip.classList.remove('on');
+    return;
+  }
+  const idx = Math.min(
+    geom.N - 1,
+    Math.max(0, Math.floor(((x - geom.left) / geom.plotW) * geom.N))
+  );
   const n = geom.start + idx;
   const s = lastStack.stageOf[idx];
   const row = Math.floor((y - geom.padT) / geom.rowH);
-  const rowLabel = row >= 0 && row < lastStack.basis.length
-    ? `row: p = ${lastStack.basis[row]}`
-    : 'row: survivors';
-  const status = s === 0
-    ? 'survivor (no basis prime divides it)'
-    : `first killed at stage ${s} by p = ${lastStack.killer[idx]}  ⇒ n ∈ C_${s}`;
+  const rowLabel =
+    row >= 0 && row < lastStack.basis.length
+      ? `row: p = ${lastStack.basis[row]}`
+      : 'row: survivors';
+  const status =
+    s === 0
+      ? 'survivor (no basis prime divides it)'
+      : `first killed at stage ${s} by p = ${lastStack.killer[idx]}  ⇒ n ∈ C_${s}`;
   tip.textContent = `n = ${n}\n${status}\n${rowLabel}`;
   tip.style.left = `${x}px`;
   tip.style.top = `${Math.max(24, y)}px`;

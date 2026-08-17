@@ -3,7 +3,8 @@ import { primeColor, INK } from '../util/colors.js';
 import { interferenceField, harmonicsForExactness } from '../core/spectrum.js';
 import { fmt } from '../util/format.js';
 
-let canvas = null, info = null;
+let canvas = null,
+  info = null;
 
 export function mount() {
   canvas = qs('#waveCanvas');
@@ -12,8 +13,12 @@ export function mount() {
 
 export function render(stack, state) {
   const { ctx, w, h } = fitCanvas(canvas, 260);
-  const left = 46, right = 12, top = 14, bottom = 26;
-  const plotW = w - left - right, plotH = h - top - bottom;
+  const left = 46,
+    right = 12,
+    top = 14,
+    bottom = 26;
+  const plotW = w - left - right,
+    plotH = h - top - bottom;
 
   const count = Math.min(stack.N, state.waveWindow);
   const H = state.harmonics;
@@ -21,8 +26,8 @@ export function render(stack, state) {
 
   const hi = Math.max(1.2, field.hi, Math.max(...field.exact) + 0.2);
   const lo = Math.min(-0.4, field.lo);
-  const yOf = v => top + plotH * (1 - (v - lo) / (hi - lo));
-  const xOf = j => left + (j + 0.5) * (plotW / count);
+  const yOf = (v) => top + plotH * (1 - (v - lo) / (hi - lo));
+  const xOf = (j) => left + (j + 0.5) * (plotW / count);
 
   ctx.fillStyle = '#0a0d13';
   ctx.fillRect(0, 0, w, h);
@@ -38,8 +43,10 @@ export function render(stack, state) {
   ctx.strokeStyle = 'rgba(135,148,173,0.55)';
   ctx.beginPath();
   for (let j = 0; j < count; j++) {
-    const x = left + j * cw, y = yOf(field.exact[j]);
-    ctx.moveTo(x, y); ctx.lineTo(x + cw, y);
+    const x = left + j * cw,
+      y = yOf(field.exact[j]);
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + cw, y);
   }
   ctx.stroke();
 
@@ -51,7 +58,8 @@ export function render(stack, state) {
     ctx.beginPath();
     const row = field.perPrime[i];
     for (let j = 0; j < count; j++) {
-      const x = xOf(j), y = yOf(row[j]);
+      const x = xOf(j),
+        y = yOf(row[j]);
       j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
     }
     ctx.stroke();
@@ -61,14 +69,17 @@ export function render(stack, state) {
   // zero line
   ctx.strokeStyle = INK.axisLine;
   ctx.beginPath();
-  ctx.moveTo(left, yOf(0)); ctx.lineTo(left + plotW, yOf(0)); ctx.stroke();
+  ctx.moveTo(left, yOf(0));
+  ctx.lineTo(left + plotW, yOf(0));
+  ctx.stroke();
 
   // total interference field
   ctx.strokeStyle = '#6ee7ff';
   ctx.lineWidth = 2;
   ctx.beginPath();
   for (let j = 0; j < count; j++) {
-    const x = xOf(j), y = yOf(field.total[j]);
+    const x = xOf(j),
+      y = yOf(field.total[j]);
     j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
   }
   ctx.stroke();
@@ -78,7 +89,9 @@ export function render(stack, state) {
   ctx.fillStyle = INK.alive;
   for (let j = 0; j < count; j++) {
     if (field.exact[j] !== 0) continue;
-    ctx.beginPath(); ctx.arc(xOf(j), yOf(0), 2.6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath();
+    ctx.arc(xOf(j), yOf(0), 2.6, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   // axes
@@ -90,7 +103,7 @@ export function render(stack, state) {
   }
   ctx.textAlign = 'center';
   for (let t = 0; t <= 4; t++) {
-    const j = Math.round(t / 4 * (count - 1));
+    const j = Math.round((t / 4) * (count - 1));
     ctx.fillText(String(stack.start + j), xOf(j), top + plotH + 15);
   }
   ctx.textAlign = 'left';

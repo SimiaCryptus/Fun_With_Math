@@ -8,19 +8,19 @@ The sieve of Eratosthenes is usually presented as a procedure: cross out multipl
 
 ## 1. Introduction
 
-The sieve of Eratosthenes is arguably the oldest nontrivial algorithm in mathematics, and it is easy to underestimate precisely because it is so old and so simple. Cross out multiples of 2, then multiples of 3, then multiples of 5, and so on; whatever remains is prime. The procedural description is complete and correct, but it is also analytically flat: it tells you *what to do* without telling you much about *what kind of object* you are building.
+The sieve of Eratosthenes is arguably the oldest nontrivial algorithm in mathematics, and it is easy to underestimate precisely because it is so old and so simple. Cross out multiples of 2, then multiples of 3, then multiples of 5, and so on; whatever remains is prime. The procedural description is complete and correct, but it is also analytically flat: it tells you _what to do_ without telling you much about _what kind of object_ you are building.
 
 This paper is about making that object explicit. The central observation — simple to state, but with more mileage in it than one might expect — is this:
 
-> Each prime \(p\) emits a perfectly periodic field of exclusions on the integers, with period \(p\). The sieve, at any finite stage, is the product (equivalently: the pointwise AND) of these fields. Crucially, the *new* information contributed by each successive prime is not the whole periodic field — it is only the part of that field that is *orthogonal* to the exclusion fields of all smaller primes.
+> Each prime \(p\) emits a perfectly periodic field of exclusions on the integers, with period \(p\). The sieve, at any finite stage, is the product (equivalently: the pointwise AND) of these fields. Crucially, the _new_ information contributed by each successive prime is not the whole periodic field — it is only the part of that field that is _orthogonal_ to the exclusion fields of all smaller primes.
 
 Once this is stated precisely, three things happen almost for free:
 
-1. **Density becomes multiplicative.** The fraction of survivors after incorporating \(p_k\) is the previous fraction scaled by \((1 - 1/p_k)\). This is not new — it is the Mertens product — but the *mechanism* by which it happens becomes transparent: each new periodic field removes a fixed proportion of whatever remains, independent of the fine structure of what remains.
+1. **Density becomes multiplicative.** The fraction of survivors after incorporating \(p_k\) is the previous fraction scaled by \((1 - 1/p_k)\). This is not new — it is the Mertens product — but the _mechanism_ by which it happens becomes transparent: each new periodic field removes a fixed proportion of whatever remains, independent of the fine structure of what remains.
 
 2. **Entropy becomes additive.** Because the combined period \(L_k = p_1 p_2 \cdots p_k\) decomposes, via the Chinese Remainder Theorem, as a product \(\mathbb{Z}/L_k\mathbb{Z} \cong \mathbb{Z}/p_1\mathbb{Z} \times \cdots \times \mathbb{Z}/p_k\mathbb{Z}\), the sieve pattern over one period is literally a product distribution over independent coordinates. The Shannon entropy of a product distribution is the sum of the marginal entropies — so the entropy of the sieve is exactly the sum, over primes, of the entropy contributed by each prime's residue coordinate. (Here "entropy" refers to the joint entropy of the independent per-prime indicators; other entropy-like quantities are discussed in Section 4.)
 
-3. **The sieve has an exact finite Fourier expansion, and each prime's contribution is spectrally disjoint from every other prime's *nonzero-frequency* contribution.** This is the least obvious and, we will argue, the most novel part of the picture: the sieve is not just periodic, it is a sum of harmonics, and the harmonics can be partitioned by which prime "owns" them — except at the single shared DC frequency. In the limit, this produces an infinite Fourier-type series whose support structure encodes the primes — a genuine frequency-space representation of primality.
+3. **The sieve has an exact finite Fourier expansion, and each prime's contribution is spectrally disjoint from every other prime's _nonzero-frequency_ contribution.** This is the least obvious and, we will argue, the most novel part of the picture: the sieve is not just periodic, it is a sum of harmonics, and the harmonics can be partitioned by which prime "owns" them — except at the single shared DC frequency. In the limit, this produces an infinite Fourier-type series whose support structure encodes the primes — a genuine frequency-space representation of primality.
 
 The remainder of this paper develops each of these points carefully, discusses precedents in the literature, and closes with a survey of applications and interpretive directions, including a deliberately provocative but mathematically grounded "wave–particle duality" reading of the construction.
 
@@ -52,15 +52,15 @@ Because the \(p_i\) are pairwise coprime, \(S_k\) is periodic with period
 L_k = \operatorname{lcm}(p_1, \ldots, p_k) = p_1 p_2 \cdots p_k.
 \]
 
-This is the first structural fact worth pausing on: *the sieve is always exactly periodic, at every finite stage*, with a period that grows as the primorial of the primes incorporated so far. There is no asymptotic approximation here — within one block of length \(L_k\), the pattern of survivors repeats exactly forever.
+This is the first structural fact worth pausing on: _the sieve is always exactly periodic, at every finite stage_, with a period that grows as the primorial of the primes incorporated so far. There is no asymptotic approximation here — within one block of length \(L_k\), the pattern of survivors repeats exactly forever.
 
-Now consider what is genuinely *new* when we move from stage \(k-1\) to stage \(k\), i.e. when we incorporate \(p_k\). The mask \(M_{p_k}\), taken in isolation, kills every \(n \equiv 0 \pmod{p_k}\). But many of those positions are already dead — killed by some smaller prime. The *new* contribution of \(p_k\) is only the set of positions that \(p_k\) kills for the first time:
+Now consider what is genuinely _new_ when we move from stage \(k-1\) to stage \(k\), i.e. when we incorporate \(p_k\). The mask \(M_{p_k}\), taken in isolation, kills every \(n \equiv 0 \pmod{p_k}\). But many of those positions are already dead — killed by some smaller prime. The _new_ contribution of \(p_k\) is only the set of positions that \(p_k\) kills for the first time:
 
 \[
 C_k = \left\{ n \in [1, L_k] : n \equiv 0 \pmod{p_k},\ \ n \not\equiv 0 \pmod{p_i} \text{ for all } i < k \right\}.
 \]
 
-This is the sense in which \(p_k\)'s contribution is **orthogonal** to the lesser primes: \(C_k\) is disjoint, by construction, from the union of all earlier kill-sets. It is still a perfectly periodic set — periodic with period \(L_k\) — it is simply a *longer-period* pattern than \(p_k\)'s raw period-\(p_k\) mask, because it has been filtered through the residues already excluded by \(p_1, \ldots, p_{k-1}\).
+This is the sense in which \(p_k\)'s contribution is **orthogonal** to the lesser primes: \(C_k\) is disjoint, by construction, from the union of all earlier kill-sets. It is still a perfectly periodic set — periodic with period \(L_k\) — it is simply a _longer-period_ pattern than \(p_k\)'s raw period-\(p_k\) mask, because it has been filtered through the residues already excluded by \(p_1, \ldots, p_{k-1}\).
 
 ### 2.3 Algorithmic restatement
 
@@ -68,9 +68,9 @@ This gives a clean recursive construction of the sieve, equivalent to Eratosthen
 
 1. Initialize \(P = [\,]\), \(L_0 = 1\), and a trivial pattern (everything alive) on \([1, L_0]\).
 2. For each new prime \(p_k\) (found as the smallest surviving integer greater than 1 at the current stage):
-    - Set \(L_k = L_{k-1} \cdot p_k\).
-    - Lift the current pattern from period \(L_{k-1}\) to period \(L_k\) by repetition (\(p_k\) copies).
-    - Kill every position \(n \in [1, L_k]\) with \(n \equiv 0 \pmod {p_k}\) that is *still alive* under the lifted pattern. This is exactly \(C_k\).
+   - Set \(L_k = L_{k-1} \cdot p_k\).
+   - Lift the current pattern from period \(L_{k-1}\) to period \(L_k\) by repetition (\(p_k\) copies).
+   - Kill every position \(n \in [1, L_k]\) with \(n \equiv 0 \pmod {p_k}\) that is _still alive_ under the lifted pattern. This is exactly \(C_k\).
 3. The survivors greater than 1 in \([1, L_k]\), once the sieve has been carried out to a sufficient bound, are precisely the primes.
 
 This is nothing more than the sieve of Eratosthenes — but re-expressed so that periodicity and orthogonality are load-bearing, explicit structural claims rather than incidental procedural facts.
@@ -83,7 +83,7 @@ The reason the orthogonality condition is so clean is the Chinese Remainder Theo
 \mathbb{Z}/L_k\mathbb{Z} \;\cong\; \mathbb{Z}/p_1\mathbb{Z} \times \mathbb{Z}/p_2\mathbb{Z} \times \cdots \times \mathbb{Z}/p_k\mathbb{Z}.
 \]
 
-Every residue \(n \bmod L_k\) corresponds to a unique tuple of residues \((n \bmod p_1, \ldots, n \bmod p_k)\). The mask \(M_{p_i}\) depends *only* on the \(i\)-th coordinate of this tuple. So the global sieve pattern
+Every residue \(n \bmod L_k\) corresponds to a unique tuple of residues \((n \bmod p_1, \ldots, n \bmod p_k)\). The mask \(M_{p_i}\) depends _only_ on the \(i\)-th coordinate of this tuple. So the global sieve pattern
 
 \[
 S_k(n) = \prod_{i=1}^k M_{p_i}(n)
@@ -101,13 +101,13 @@ The density of survivors in \([1, L_k]\) is immediate from the product structure
 \rho_k = \frac{\#\{n \in [1, L_k] : S_k(n) = 1\}}{L_k} = \prod_{i=1}^{k} \left(1 - \frac{1}{p_i}\right).
 \]
 
-This is the classical Mertens product (itself a refinement of Legendre's sieve). What the orthogonal-fields framing adds is not a new formula but a new *reading* of the formula: density updates locally and multiplicatively,
+This is the classical Mertens product (itself a refinement of Legendre's sieve). What the orthogonal-fields framing adds is not a new formula but a new _reading_ of the formula: density updates locally and multiplicatively,
 
 \[
 \rho_k = \rho_{k-1} \left(1 - \frac{1}{p_k}\right),
 \]
 
-because each new prime removes a fixed fraction of *whatever survives so far*, regardless of the internal structure of the survivor set. This is exactly the "attenuation" picture: each periodic field is an independent filter, and independent filters compose multiplicatively in the fraction of signal they pass through. No recomputation of the whole pattern is conceptually necessary — only the marginal effect of the new filter.
+because each new prime removes a fixed fraction of _whatever survives so far_, regardless of the internal structure of the survivor set. This is exactly the "attenuation" picture: each periodic field is an independent filter, and independent filters compose multiplicatively in the fraction of signal they pass through. No recomputation of the whole pattern is conceptually necessary — only the marginal effect of the new filter.
 
 ---
 
@@ -143,7 +143,7 @@ Two derived quantities are worth naming:
   \[
   h_k = \frac{H_{\text{joint}}(k)}{L_k} = \frac{1}{L_k}\sum_{i=1}^{k} H(p_i).
   \]
-  Since \(L_k\) grows super-exponentially (as a primorial) while \(H_{\text{joint}}(k)\) grows only linearly in \(k\) (and each term shrinks like \(\log p_i / p_i\)), \(h_k \to 0\) rapidly. The sieve pattern becomes overwhelmingly *structured* — low joint entropy per position — relative to its period, even though the absolute amount of joint entropy keeps growing.
+  Since \(L_k\) grows super-exponentially (as a primorial) while \(H_{\text{joint}}(k)\) grows only linearly in \(k\) (and each term shrinks like \(\log p_i / p_i\)), \(h_k \to 0\) rapidly. The sieve pattern becomes overwhelmingly _structured_ — low joint entropy per position — relative to its period, even though the absolute amount of joint entropy keeps growing.
 
 - **Marginal entropy contribution** of the \(k\)-th prime:
   \[
@@ -208,6 +208,7 @@ This is the precise sense in which the construction is "an infinite series for t
 It is important to be precise about what in this picture is classical and what, to the best of our knowledge, is a new synthesis.
 
 **Classical / well precedented:**
+
 - The Mertens product for the density of integers coprime to the first \(k\) primes is a foundational and thoroughly studied result in analytic number theory (Legendre, Mertens).
 - The entropy of multiplicative arithmetic functions (Möbius, Liouville, squarefree indicators) has been studied, generally in a probabilistic or ergodic-theoretic framework (e.g., Cramér's model, Kubilius' work on weakly dependent arithmetic functions).
 - **Ramanujan–Fourier expansions** of arithmetic functions (Ramanujan, Carmichael, Wintner; see also Gadiyar & Padma for twin primes) provide the canonical Fourier-analytic treatment of functions defined via prime-divisibility rules, and are a direct antecedent of the spectral decomposition in Section 5.
@@ -218,13 +219,14 @@ It is important to be precise about what in this picture is classical and what, 
 - The **Good–Thomas Prime-Factor FFT** is a CRT-based tensor factorization of the discrete Fourier transform, structurally identical to the CRT-dual factorization used in Section 5.2 to separate per-prime spectral supports.
 
 **What appears to be a genuine — though modest — new synthesis:**
-- The explicit treatment of each prime as an *orthogonal periodic projector* acting on a growing CRT product space, with the orthogonality condition stated combinatorially (each prime's contribution is the newly-killed residue set, disjoint from all previous kill-sets) rather than as an approximation.
-- The resulting *exact* (not asymptotic) multiplicative density recursion read as a filter-attenuation process, with each prime as an independent filter stage.
-- The *additive* entropy decomposition, derived directly from the CRT product structure rather than from an independence assumption imposed probabilistically — here, independence is a structural fact (product measure on independent coordinates), not a modeling approximation. (The additive decomposition refers to the joint entropy of the per-prime indicators.)
+
+- The explicit treatment of each prime as an _orthogonal periodic projector_ acting on a growing CRT product space, with the orthogonality condition stated combinatorially (each prime's contribution is the newly-killed residue set, disjoint from all previous kill-sets) rather than as an approximation.
+- The resulting _exact_ (not asymptotic) multiplicative density recursion read as a filter-attenuation process, with each prime as an independent filter stage.
+- The _additive_ entropy decomposition, derived directly from the CRT product structure rather than from an independence assumption imposed probabilistically — here, independence is a structural fact (product measure on independent coordinates), not a modeling approximation. (The additive decomposition refers to the joint entropy of the per-prime indicators.)
 - The claim that each prime's exclusion field has **spectrally disjoint nonzero support** in the finite Fourier expansion of the sieve indicator, and the resulting notion of a frequency-indexed "prime spectrum" built additively, prime by prime — with the explicit caveat that all primes share the DC term.
 - The interpretive unification of all of the above as a single renormalization-style flow: adding a prime simultaneously (a) extends the period, (b) multiplicatively reduces density, (c) additively increases joint entropy, and (d) injects new, disjoint nonzero harmonics into the spectrum.
 
-We are not aware of a source that assembles these observations into a single structural lens in the way presented here, although we note that sieve theory is a vast field and it is possible that isolated pieces of this picture exist under different terminology (for instance, in the study of "sieve weights" in Selberg's sieve, or in the Fourier-analytic treatment of the Möbius function used in some proofs related to the Prime Number Theorem). The contribution of this paper is the *unification for expository and pedagogical purposes*, not the invention of any single piece in isolation.
+We are not aware of a source that assembles these observations into a single structural lens in the way presented here, although we note that sieve theory is a vast field and it is possible that isolated pieces of this picture exist under different terminology (for instance, in the study of "sieve weights" in Selberg's sieve, or in the Fourier-analytic treatment of the Möbius function used in some proofs related to the Prime Number Theorem). The contribution of this paper is the _unification for expository and pedagogical purposes_, not the invention of any single piece in isolation.
 
 ---
 
@@ -236,7 +238,7 @@ It is tempting — and, we argue, mathematically defensible rather than merely c
 
 **Wave picture (frequency space).** In the Fourier decomposition above, each prime is instead a pure periodic generator — a tone with a specific, computable frequency (multiples of \(L/p\), except DC) and a specific amplitude. There is nothing irregular about a single prime's contribution in frequency space: it is exactly periodic, exactly localized to its own nonzero harmonic comb, and exactly orthogonal to every other prime's nonzero contribution.
 
-**Duality.** The *same* object — the sieve indicator function — is irregular and particle-like when read in position space, and regular, structured, and wave-like when read in frequency space. The passage between the two pictures is literally a Fourier transform. Prime gaps, in this reading, are not primitive facts about primes; they are **interference patterns** produced by the superposition of many pure periodic waves, one per prime. A large gap is a stretch of destructive interference (many small-prime waves happening to align to exclude a long run of integers); a small gap (e.g., twin primes) is a stretch where the waves fail to align.
+**Duality.** The _same_ object — the sieve indicator function — is irregular and particle-like when read in position space, and regular, structured, and wave-like when read in frequency space. The passage between the two pictures is literally a Fourier transform. Prime gaps, in this reading, are not primitive facts about primes; they are **interference patterns** produced by the superposition of many pure periodic waves, one per prime. A large gap is a stretch of destructive interference (many small-prime waves happening to align to exclude a long run of integers); a small gap (e.g., twin primes) is a stretch where the waves fail to align.
 
 This duality is not merely decorative. It suggests several concrete lines of analysis, taken up in the next section — while also inviting caution, as discussed in Section 8.7, about conflating these rational CRT frequencies with the zeta zeros.
 
@@ -246,7 +248,7 @@ This duality is not merely decorative. It suggests several concrete lines of ana
 
 **8.1 Spectral fingerprint of a prime.** Each prime \(p\) can be assigned a canonical, computable set of nonzero harmonics (\(L/p\) and its multiples, within any fixed period \(L\) divisible by \(p\)) and an amplitude. This gives a "spectral fingerprint" that could, in principle, be used to measure how much spectral complexity a given prime contributes relative to its size.
 
-**8.2 Prime gaps as interference.** Reframing gaps as interference phenomena between periodic exclusion waves suggests studying gap statistics via spectral/interference methods (constructive vs. destructive alignment of small-prime waves) rather than purely combinatorially. This is a plausible bridge between sieve methods and Fourier/harmonic analysis of gap distributions. However, one must distinguish between the *local* interference from small primes and the deeper, unresolved arithmetic of long gaps.
+**8.2 Prime gaps as interference.** Reframing gaps as interference phenomena between periodic exclusion waves suggests studying gap statistics via spectral/interference methods (constructive vs. destructive alignment of small-prime waves) rather than purely combinatorially. This is a plausible bridge between sieve methods and Fourier/harmonic analysis of gap distributions. However, one must distinguish between the _local_ interference from small primes and the deeper, unresolved arithmetic of long gaps.
 
 **8.3 Density as attenuation; entropy as information flow.** The multiplicative density recursion and additive joint-entropy decomposition give two independent, exactly computable "flows" indexed by the sequence of primes. Studying the joint behavior of \(\rho_k\) (density) and \(H_{\text{joint}}(k)\) (entropy) as \(k \to \infty\) — e.g., the rate at which entropy density \(h_k\) collapses to zero relative to the rate at which \(\rho_k\) decays via Mertens — offers a concrete, fully computable toy model of "structure vs. randomness" trade-offs, potentially useful pedagogically or as a sandbox for information-theoretic heuristics about prime distribution.
 
@@ -259,7 +261,7 @@ This duality is not merely decorative. It suggests several concrete lines of ana
 **8.7 Caution regarding RH-adjacent speculation — strengthened.** It is tempting to reach for a connection to the Riemann Hypothesis, given that both the explicit formula and this construction relate primes to frequency-like data. We flag this only as a speculative direction, not a claim, and we now add two specific reasons for caution beyond the surface-level resemblance:
 
 1. The harmonics here are indexed by rational points in \(\mathbb{Q}/\mathbb{Z}\) — a purely combinatorial/CRT structure — whereas the zeta zeros are transcendental frequencies tied to the analytic continuation of \(\sum n^{-s}\). The two frequency sets are categorically different.
-2. The natural dynamical system underlying this construction is the **profinite odometer** \(n \mapsto n+1\) on \(\widehat{\mathbb{Z}}\), which is a textbook example of a **zero-entropy, equicontinuous** dynamical system. By contrast, the Möbius function (and the prime counting function) is conjectured to exhibit pseudorandomness compatible with **Sarnak's Möbius Disjointness Conjecture**, which asserts that the Möbius function is orthogonal to *all* zero-entropy deterministic sequences. If the primes were fully captured by this sieve construction, they would be too regular to be orthogonal to zero-entropy systems. Hence there are principled dynamical reasons why this exact construction **cannot** capture the fine pseudorandomness of the primes, and cannot serve as a step toward Hilbert–Pólya-style spectral interpretations of the zeta zeros. This is a sharp, citable obstruction to RH-adjacent optimism.
+2. The natural dynamical system underlying this construction is the **profinite odometer** \(n \mapsto n+1\) on \(\widehat{\mathbb{Z}}\), which is a textbook example of a **zero-entropy, equicontinuous** dynamical system. By contrast, the Möbius function (and the prime counting function) is conjectured to exhibit pseudorandomness compatible with **Sarnak's Möbius Disjointness Conjecture**, which asserts that the Möbius function is orthogonal to _all_ zero-entropy deterministic sequences. If the primes were fully captured by this sieve construction, they would be too regular to be orthogonal to zero-entropy systems. Hence there are principled dynamical reasons why this exact construction **cannot** capture the fine pseudorandomness of the primes, and cannot serve as a step toward Hilbert–Pólya-style spectral interpretations of the zeta zeros. This is a sharp, citable obstruction to RH-adjacent optimism.
 
 **8.8 Pedagogical value.** Despite the computational and spectral caveats, the reframing of density as attenuation, CRT as independence, and entropy additivity remains a clear and useful teaching device for Mertens' theorem, the Chinese Remainder Theorem, and Shannon entropy in a single coherent example. This is the document's most defensible contribution.
 

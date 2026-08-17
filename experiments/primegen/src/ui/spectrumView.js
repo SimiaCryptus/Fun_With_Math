@@ -3,16 +3,26 @@ import { primeColor, INK } from '../util/colors.js';
 import { primeComb, dcTerm } from '../core/spectrum.js';
 import { sci, fmt } from '../util/format.js';
 
-let canvas = null, info = null, lines = [], baseInfo = '';
+let canvas = null,
+  info = null,
+  lines = [],
+  baseInfo = '';
 
 export function mount() {
   canvas = qs('#spectrumCanvas');
   info = qs('#spectrumInfo');
-  canvas.addEventListener('mousemove', ev => {
+  canvas.addEventListener('mousemove', (ev) => {
     const rect = canvas.getBoundingClientRect();
     const x = ev.clientX - rect.left;
-    let best = null, bd = Infinity;
-    for (const L of lines) { const d = Math.abs(L.x - x); if (d < bd) { bd = d; best = L; } }
+    let best = null,
+      bd = Infinity;
+    for (const L of lines) {
+      const d = Math.abs(L.x - x);
+      if (d < bd) {
+        bd = d;
+        best = L;
+      }
+    }
     if (best && bd < 7) {
       info.textContent =
         `frequency ${best.m}/${best.p} = ${(best.m / best.p).toFixed(8)} ∈ ℚ/ℤ` +
@@ -20,40 +30,57 @@ export function mount() {
         `   owner: prime ${best.p} (stage k=${best.stage})`;
     } else info.textContent = baseInfo;
   });
-  canvas.addEventListener('mouseleave', () => { info.textContent = baseInfo; });
+  canvas.addEventListener('mouseleave', () => {
+    info.textContent = baseInfo;
+  });
 }
 
 export function render(stack, state) {
   const { ctx, w, h } = fitCanvas(canvas, 250);
-  const left = 52, right = 14, top = 16, bottom = 30;
-  const plotW = w - left - right, plotH = h - top - bottom;
+  const left = 52,
+    right = 14,
+    top = 16,
+    bottom = 30;
+  const plotW = w - left - right,
+    plotH = h - top - bottom;
   lines = [];
 
   ctx.fillStyle = '#0a0d13';
   ctx.fillRect(0, 0, w, h);
 
   // ---- amplitude scale ----
-  const amps = stack.basis.map(p => 1 / p);
+  const amps = stack.basis.map((p) => 1 / p);
   const aMax = 0.5;
   const aMin = Math.min(...amps, 0.5) / 2;
-  const scale = a => {
+  const scale = (a) => {
     if (state.logSpectrum) {
       const t = (Math.log10(a) - Math.log10(aMin)) / (Math.log10(aMax) - Math.log10(aMin));
       return Math.max(0, Math.min(1, t));
     }
-    return Math.sqrt(Math.max(0, a) / 1);           // sqrt keeps small primes visible
+    return Math.sqrt(Math.max(0, a) / 1); // sqrt keeps small primes visible
   };
-  const yOf = v => top + plotH - v * plotH;
+  const yOf = (v) => top + plotH - v * plotH;
 
   // ---- grid: notable rationals ----
   ctx.strokeStyle = INK.grid;
   ctx.fillStyle = INK.text;
   ctx.font = '10px ui-monospace, monospace';
   ctx.textAlign = 'center';
-  for (const [num, den] of [[0, 1], [1, 4], [1, 3], [1, 2], [2, 3], [3, 4], [1, 1]]) {
+  for (const [num, den] of [
+    [0, 1],
+    [1, 4],
+    [1, 3],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [1, 1],
+  ]) {
     const f = num / den;
     const x = left + f * plotW;
-    ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, top + plotH); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, top);
+    ctx.lineTo(x, top + plotH);
+    ctx.stroke();
     ctx.fillText(den === 1 ? String(num) : `${num}/${den}`, x, top + plotH + 14);
   }
   ctx.textAlign = 'left';
@@ -65,7 +92,10 @@ export function render(stack, state) {
     if (a > aMax || a < aMin) continue;
     const y = yOf(scale(a));
     ctx.strokeStyle = 'rgba(35,44,61,0.7)';
-    ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(left + plotW, y); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(left + plotW, y);
+    ctx.stroke();
     ctx.fillStyle = INK.text;
     ctx.fillText(a >= 0.1 ? a.toFixed(2) : a.toFixed(3), left - 6, y + 3);
   }
@@ -82,7 +112,8 @@ export function render(stack, state) {
     ctx.beginPath();
     for (const { m, f } of comb.freqs) {
       const x = left + f * plotW;
-      ctx.moveTo(x, y0); ctx.lineTo(x, y1);
+      ctx.moveTo(x, y0);
+      ctx.lineTo(x, y1);
       if (comb.freqs.length < 400) lines.push({ x, m, p: st.p, stage: st.stage });
     }
     ctx.stroke();

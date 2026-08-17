@@ -128,6 +128,14 @@
       "readme": "experiments/chromatic/README.md",
       "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
       "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem."
+    },
+    {
+      "icon": "PF",
+      "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields",
+      "href": "experiments/primegen/index.html",
+      "readme": "experiments/primegen/README.md",
+      "launchLabel": "Open the Prime Sieve as a Stack of Orthogonal Periodic Fields lab",
+      "pitch": "An interactive essay on the periodic machinery underneath the primes: each prime emits an orthogonal exclusion field, their stacked product has primorial period, and CRT independence makes density multiplicative, entropy additive, and spectral support disjoint."
     }
   ],
   "essays": [],

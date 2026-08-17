@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Algorithm B — wheeled streaming prime generator</title>
+    <style>
+      :root {
+        --bg: #0e1116;
+        --panel: #161b22;
+        --panel2: #1c2230;
+        --fg: #d8e0ea;
+        --dim: #8b97a8;
+        --acc: #7ee0c0;
+        --acc2: #8ab4ff;
+        --warn: #ffcc66;
+        --bad: #ff7b72;
+        --good: #7ee787;
+        --mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font:
+          14px/1.55 -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+      }
+      header {
+        padding: 26px 22px 14px;
+        border-bottom: 1px solid #232b36;
+        background: linear-gradient(180deg, #131922, #0e1116);
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 21px;
+        letter-spacing: 0.2px;
+      }
+      h1 small {
+        color: var(--dim);
+        font-weight: 400;
+        font-size: 13px;
+      }
+      h2 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        color: var(--acc);
+      }
+      h2 .ref {
+        color: var(--dim);
+        font-weight: 400;
+        font-size: 12px;
+        margin-left: 8px;
+      }
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 18px 22px 90px;
+      }
+      section {
+        background: var(--panel);
+        border: 1px solid #232b36;
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin: 16px 0;
+      }
+      p.note {
+        color: var(--dim);
+        margin: 2px 0 10px;
+        font-size: 13px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin: 8px 0;
+      }
+      label {
+        color: var(--dim);
+        font-size: 12.5px;
+      }
+      input,
+      select {
+        background: var(--panel2);
+        color: var(--fg);
+        border: 1px solid #2c3546;
+        border-radius: 6px;
+        padding: 5px 8px;
+        font-family: var(--mono);
+        font-size: 12.5px;
+      }
+      input[type='number'] {
+        width: 130px;
+      }
+      button {
+        background: #20304a;
+        color: var(--acc2);
+        border: 1px solid #33455f;
+        border-radius: 6px;
+        padding: 6px 13px;
+        font: 600 12.5px var(--mono);
+        cursor: pointer;
+      }
+      button:hover {
+        background: #28405f;
+      }
+      button.primary {
+        background: #1d4034;
+        color: var(--acc);
+        border-color: #2c6350;
+      }
+      button.primary:hover {
+        background: #255141;
+      }
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      pre {
+        background: #0b0f15;
+        border: 1px solid #222a35;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin: 8px 0 0;
+        font-family: var(--mono);
+        font-size: 12.4px;
+        white-space: pre-wrap;
+        word-break: break-word;
+        max-height: 430px;
+        overflow: auto;
+      }
+      .pass {
+        color: var(--good);
+      }
+      .fail {
+        color: var(--bad);
+      }
+      .head {
+        color: var(--acc2);
+        font-weight: 700;
+      }
+      .dim {
+        color: var(--dim);
+      }
+      .warn {
+        color: var(--warn);
+      }
+      .acc {
+        color: var(--acc);
+      }
+      code {
+        font-family: var(--mono);
+        color: var(--acc);
+      }
+      .badge {
+        display: inline-block;
+        padding: 1px 7px;
+        border-radius: 99px;
+        font: 600 11px var(--mono);
+        background: #1d4034;
+        color: var(--acc);
+        border: 1px solid #2c6350;
+        margin-left: 6px;
+      }
+      .badge.bad {
+        background: #3a1d1f;
+        color: var(--bad);
+        border-color: #65302f;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>
+        Algorithm B — wheeled streaming prime generator
+        <small>— minimal reference for <code>algorithm.md</code> §4</small>
+      </h1>
+      <p class="note" style="max-width: 820px">
+        The whole algorithm is 40 lines: a wheel table <code>step[]</code> (§4.2), a min-heap of
+        <code>(value, p, a)</code> records, deferred activation of stream <i>p</i> at
+        <code>n = p²</code> (Lemma 4.2), and the O(1) advancement
+        <code>a += step[a % W]; v = p*a</code> (Thm 4.4). Memory is π(√n) records plus the table —
+        never an array over the range. Nothing is loaded from the network.
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Generate <span class="ref">§4.3 — unbounded stream, bounded driver</span></h2>
+        <p class="note">
+          <code>w</code> is the number of wheel primes; W = p₁···p_w, κ<sub>W</sub> = φ(W)/W is the
+          candidate density. Primes ≤ p_w are emitted directly and their composites never become
+          candidates.
+        </p>
+        <div class="row">
+          <label>N</label><input type="number" id="limit" value="1000000" min="10" />
+          <label>w</label><input type="number" id="w" value="6" min="1" max="7" />
+          <label
+            ><input type="checkbox" id="verify" checked style="width: auto" /> verify vs
+            Eratosthenes (N ≤ 3·10⁶)</label
+          >
+        </div>
+        <div class="row">
+          <button class="primary" id="btnRun">▶ generate primes ≤ N</button>
+          <button id="btnFirst">first 50 primes (unbounded generator)</button>
+          <span id="badge"></span>
+        </div>
+        <pre id="out" class="dim">—</pre>
+      </section>
+    </main>
+
+    <script type="module">
+      /* =====================================================================
+   ALGORITHM B — wheeled streaming prime generator
+   Reference implementation of algorithm.md §4.  Stripped to essentials.
+   ===================================================================== */
+
+      const SMALL_PRIMES = [2, 3, 5, 7, 11, 13, 17];
+
+      /* ---------------------------------------------------------------------
+   §4.2  wheel tables
+     spokes  = { r in [0,W) : gcd(r,W) = 1 },  spokes[0] = 1
+     step[r] = (smallest spoke > r, possibly wrapped) - r
+     gte[r]  = (smallest spoke >= r, possibly wrapped) - r
+   Built in one backward pass over [0,W).
+   ------------------------------------------------------------------ */
+      const wheelCache = new Map();
+
+      export function buildWheel(w) {
+        if (wheelCache.has(w)) return wheelCache.get(w);
+        const wp = SMALL_PRIMES.slice(0, w);
+        let W = 1;
+        for (const p of wp) W *= p;
+        const isSpoke = new Uint8Array(W).fill(1);
+        isSpoke[0] = 0; // gcd(0,W) = W
+        for (const p of wp) for (let r = 0; r < W; r += p) isSpoke[r] = 0;
+        const step = new Int32Array(W),
+          gte = new Int32Array(W);
+        let nxt = W + 1; // spokes[0] === 1
+        for (let r = W - 1; r >= 0; r--) {
+          step[r] = nxt - r;
+          gte[r] = isSpoke[r] ? 0 : nxt - r;
+          if (isSpoke[r]) nxt = r;
+        }
+        let phi = 0;
+        for (let r = 0; r < W; r++) if (isSpoke[r]) phi++;
+        const wheel = {
+          w,
+          primes: wp,
+          W,
+          phi,
+          kappa: phi / W,
+          step,
+          gte,
+          next: (x) => x + step[x % W], // next_coprime
+          nextGE: (x) => x + gte[x % W], // next_coprime_ge (§4.6)
+          first: 1 + step[1], // = p_{w+1}
+        };
+        wheelCache.set(w, wheel);
+        return wheel;
+      }
+
+      /* ---------------------------------------------------------------------
+   binary min-heap keyed by item[0]  (the "merge" of §5.4)
+   ------------------------------------------------------------------ */
+      class MinHeap {
+        constructor() {
+          this.a = [];
+        }
+        get size() {
+          return this.a.length;
+        }
+        key() {
+          return this.a[0][0];
+        }
+        push(item) {
+          const a = this.a;
+          a.push(item);
+          let i = a.length - 1;
+          while (i > 0) {
+            const p = (i - 1) >> 1;
+            if (a[p][0] <= a[i][0]) break;
+            const t = a[p];
+            a[p] = a[i];
+            a[i] = t;
+            i = p;
+          }
+        }
+        pop() {
+          const a = this.a,
+            top = a[0],
+            last = a.pop();
+          if (a.length) {
+            a[0] = last;
+            let i = 0;
+            for (;;) {
+              const l = 2 * i + 1,
+                r = l + 1;
+              let m = i;
+              if (l < a.length && a[l][0] < a[m][0]) m = l;
+              if (r < a.length && a[r][0] < a[m][0]) m = r;
+              if (m === i) break;
+              const t = a[i];
+              a[i] = a[m];
+              a[m] = t;
+              i = m;
+            }
+          }
+          return top;
+        }
+      }
+
+      /* ---------------------------------------------------------------------
+   §4.3  B() — the unbounded generator, verbatim from the pseudocode
+   ------------------------------------------------------------------ */
+      export function* primesB(w = 6) {
+        const wh = buildWheel(w),
+          step = wh.step,
+          W = wh.W;
+        for (const p of wh.primes) yield p; // p_1 … p_w
+        const primes = []; // primes > p_w, in order
+        const Q = new MinHeap();
+        let act = 0,
+          n = wh.first; // n = p_{w+1}
+        for (;;) {
+          /* deferred activation: stream p enters exactly when n reaches p² */
+          while (act < primes.length && primes[act] * primes[act] <= n) {
+            const p = primes[act++];
+            Q.push([p * p, p, p]);
+          }
+          if (Q.size === 0 || Q.key() > n) {
+            primes.push(n);
+            yield n; // no owner ⇒ prime
+          } else {
+            while (Q.size && Q.key() === n) {
+              // ≥1 owner: duplicates allowed
+              const rec = Q.pop();
+              const p = rec[1];
+              let a = rec[2];
+              a += step[a % W]; // O(1) advancement
+              Q.push([p * a, p, a]);
+            }
+          }
+          n += step[n % W];
+        }
+      }
+
+      /* bounded driver with statistics (same loop, plus counters) */
+      export function runB(limit, w = 6) {
+        const wh = buildWheel(w),
+          step = wh.step,
+          W = wh.W;
+        const primes = wh.primes.filter((p) => p <= limit);
+        const big = []; // primes > p_w
+        const Q = new MinHeap();
+        const st = { pops: 0, pushes: 0, candidates: 0, peakQueue: 0 };
+        let act = 0,
+          n = wh.first;
+        const t0 = performance.now();
+        while (n <= limit) {
+          while (act < big.length && big[act] * big[act] <= n) {
+            const p = big[act++];
+            Q.push([p * p, p, p]);
+            st.pushes++;
+          }
+          st.candidates++;
+          if (Q.size === 0 || Q.key() > n) {
+            big.push(n);
+            primes.push(n);
+          } else {
+            while (Q.size && Q.key() === n) {
+              const rec = Q.pop();
+              st.pops++;
+              const p = rec[1];
+              let a = rec[2];
+              a += step[a % W];
+              Q.push([p * a, p, a]);
+              st.pushes++;
+            }
+          }
+          if (Q.size > st.peakQueue) st.peakQueue = Q.size;
+          n += step[n % W];
+        }
+        st.ms = performance.now() - t0;
+        return { primes, stats: st, wheel: wh };
+      }
+
+      /* §4.6  random-access restart: state of stream p at segment start X, in O(1) */
+      export function streamStateAt(p, X, wh) {
+        const a0 = Math.max(p, wh.nextGE(Math.ceil(X / p)));
+        return { a: a0, v: p * a0 };
+      }
+
+      /* reference sieve — validation only, never used by the generator */
+      function sieveRef(limit) {
+        if (limit < 2) return [];
+        const s = new Uint8Array(limit + 1).fill(1);
+        s[0] = s[1] = 0;
+        for (let i = 2; i * i <= limit; i++)
+          if (s[i]) for (let j = i * i; j <= limit; j += i) s[j] = 0;
+        const out = [];
+        for (let i = 2; i <= limit; i++) if (s[i]) out.push(i);
+        return out;
+      }
+
+      /* =====================================================================
+   minimal UI
+   ===================================================================== */
+      const $ = (id) => document.getElementById(id);
+      const sleep = (ms = 0) => new Promise((r) => setTimeout(r, ms));
+      const fmt = (n) =>
+        typeof n === 'number' && isFinite(n)
+          ? Number.isInteger(n)
+            ? n.toLocaleString('en-US')
+            : n.toFixed(4)
+          : String(n);
+
+      function panel(id) {
+        const el = $(id);
+        return {
+          clear() {
+            el.innerHTML = '';
+            el.classList.remove('dim');
+          },
+          line(text = '', cls) {
+            const s = document.createElement('span');
+            if (cls) s.className = cls;
+            s.textContent = text + '\n';
+            el.appendChild(s);
+          },
+          head(t) {
+            this.line(t, 'head');
+          },
+          dim(t) {
+            this.line(t, 'dim');
+          },
+        };
+      }
+
+      async function generate() {
+        const P = panel('out'),
+          badge = $('badge');
+        P.clear();
+        badge.innerHTML = '';
+        const N = Math.max(10, +$('limit').value | 0);
+        const w = Math.max(1, Math.min(7, +$('w').value | 0));
+        P.head(`Algorithm B — N = ${fmt(N)}, w = ${w}`);
+        await sleep(0);
+
+        const { primes, stats: st, wheel: wh } = runB(N, w);
+        const pw = wh.primes[wh.primes.length - 1];
+
+        P.line(
+          `wheel            : W = ${fmt(wh.W)}   κ_W = ${wh.kappa.toFixed(4)}   ` +
+            `p_w = ${pw}   p_{w+1} = ${wh.first}`
+        );
+        P.line(
+          `primes emitted   : ${fmt(primes.length)}   (last = ${fmt(primes[primes.length - 1])})`
+        );
+        P.line(`first primes     : ${primes.slice(0, 15).join(' ')} …`);
+        P.line(
+          `candidates seen  : ${fmt(st.candidates)}   (κ_W·N ≈ ${fmt(Math.round(wh.kappa * N))})`
+        );
+        P.line(`queue pops       : ${fmt(st.pops)}   = ${(st.pops / N).toFixed(3)}·N   (§4.5)`);
+        P.line(
+          `live streams     : ${fmt(st.peakQueue)}   = π(√N) − w, the entire persistent state`
+        );
+        P.line(
+          `time             : ${st.ms.toFixed(1)} ms   ` +
+            `(${(N / st.ms / 1000).toFixed(2)} M integers/s, binary heap)`
+        );
+
+        if ($('verify').checked && N <= 3_000_000) {
+          await sleep(0);
+          const ref = sieveRef(N);
+          const ok = ref.length === primes.length && ref.every((v, i) => v === primes[i]);
+          P.line('');
+          P.line(
+            `vs Eratosthenes  : ${ok ? 'identical, ' + fmt(ref.length) + ' primes' : 'MISMATCH'}`,
+            ok ? 'pass' : 'fail'
+          );
+          badge.innerHTML = ok
+            ? '<span class="badge">verified</span>'
+            : '<span class="badge bad">mismatch</span>';
+        } else if ($('verify').checked) {
+          P.line('');
+          P.dim('verification skipped (N > 3·10⁶)');
+        }
+
+        P.line('');
+        P.line('§4.6 random-access restart — stream state at an arbitrary X, computed in O(1):');
+        for (const [p, X] of [
+          [17, 1],
+          [17, 1000],
+          [101, 50000],
+          [1009, 4000000],
+        ]) {
+          const s = streamStateAt(p, X, wh);
+          P.line(
+            `   p=${String(p).padStart(5)}  X=${fmt(X).padStart(11)}  →  ` +
+              `a₀=${fmt(s.a).padStart(9)}  v=${fmt(s.v)}`
+          );
+        }
+        P.dim(
+          'Segments are therefore independent: Algorithm B parallelises like a segmented sieve.'
+        );
+      }
+
+      function firstPrimes() {
+        const P = panel('out');
+        $('badge').innerHTML = '';
+        P.clear();
+        const w = Math.max(1, Math.min(7, +$('w').value | 0));
+        P.head(`first 50 primes from the unbounded generator primesB(${w})`);
+        const g = primesB(w),
+          got = [];
+        for (let i = 0; i < 50; i++) got.push(g.next().value);
+        P.line(got.join(' '));
+        P.line('');
+        const ok = got.every((v, i) => v === sieveRef(300)[i]);
+        P.line(`vs Eratosthenes : ${ok ? 'identical' : 'MISMATCH'}`, ok ? 'pass' : 'fail');
+        P.dim('The generator never received a limit: streams activate at n = p² and the queue');
+        P.dim('holds π(√n) records at all times (Thm 4.4).');
+      }
+
+      $('btnRun').onclick = () => generate();
+      $('btnFirst').onclick = firstPrimes;
+
+      firstPrimes(); /* cheap initial render */
+    </script>
+  </body>
+</html>

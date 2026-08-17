@@ -5,6 +5,7 @@ npm run validate
 aws s3 cp --recursive ./ s3://math.cognotik.com/ \
   --exclude "node_modules/*" \
   --exclude "test/*" \
+  --exclude ".pnpm/*" \
   --exclude "public/*" \
   --exclude "docs/*" \
   --exclude "scripts/*" \

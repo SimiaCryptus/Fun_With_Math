@@ -30,7 +30,7 @@ export function tupleCoefficient(basis, tuple) {
   let v = 1;
   for (let i = 0; i < basis.length; i++) {
     const p = basis[i];
-    v *= (tuple[i] % p === 0) ? (1 - 1 / p) : (-1 / p);
+    v *= tuple[i] % p === 0 ? 1 - 1 / p : -1 / p;
   }
   return v;
 }
@@ -70,8 +70,12 @@ export function interferenceField(basis, start, count, H) {
       if (n % p === 0) exact[j]++;
     }
   }
-  let lo = Infinity, hi = -Infinity;
-  for (let j = 0; j < count; j++) { if (total[j] < lo) lo = total[j]; if (total[j] > hi) hi = total[j]; }
+  let lo = Infinity,
+    hi = -Infinity;
+  for (let j = 0; j < count; j++) {
+    if (total[j] < lo) lo = total[j];
+    if (total[j] > hi) hi = total[j];
+  }
   return { total, exact, perPrime, lo, hi };
 }
 

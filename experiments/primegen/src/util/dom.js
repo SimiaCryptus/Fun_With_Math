@@ -19,7 +19,7 @@ export function fitCanvas(canvas, cssHeight) {
   const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
   const w = Math.max(60, Math.floor(rect.width || canvas.clientWidth || 300));
-  const h = Math.max(20, Math.floor(cssHeight != null ? cssHeight : (rect.height || 160)));
+  const h = Math.max(20, Math.floor(cssHeight != null ? cssHeight : rect.height || 160));
   canvas.style.height = h + 'px';
   canvas.width = Math.floor(w * dpr);
   canvas.height = Math.floor(h * dpr);
@@ -31,5 +31,8 @@ export function fitCanvas(canvas, cssHeight) {
 
 export function debounce(fn, ms = 120) {
   let t = null;
-  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  return (...a) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...a), ms);
+  };
 }

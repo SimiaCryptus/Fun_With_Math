@@ -18,7 +18,11 @@ export function firstNPrimes(n) {
   if (cache.list.length >= n) return cache.list.slice(0, n);
   let limit = Math.max(32, Math.ceil(n * (Math.log(n + 2) + Math.log(Math.log(n + 3) + 1)) * 1.5));
   let list = primesUpTo(limit);
-  while (list.length < n) { limit *= 2; list = primesUpTo(limit); }
-  cache.limit = limit; cache.list = list;
+  while (list.length < n) {
+    limit *= 2;
+    list = primesUpTo(limit);
+  }
+  cache.limit = limit;
+  cache.list = list;
   return list.slice(0, n);
 }

@@ -2,9 +2,13 @@ import { qs, fitCanvas } from '../util/dom.js';
 import { INK } from '../util/colors.js';
 import { fmt } from '../util/format.js';
 
-let canvas = null, info = null;
+let canvas = null,
+  info = null;
 
-export function mount() { canvas = qs('#gapCanvas'); info = qs('#gapInfo'); }
+export function mount() {
+  canvas = qs('#gapCanvas');
+  info = qs('#gapInfo');
+}
 
 export function render(stack) {
   const { ctx, w, h } = fitCanvas(canvas, 230);
@@ -12,25 +16,32 @@ export function render(stack) {
   ctx.fillRect(0, 0, w, h);
 
   const pos = stack.survivorPositions;
-  if (pos.length < 3) { info.textContent = 'not enough survivors in this window'; return; }
+  if (pos.length < 3) {
+    info.textContent = 'not enough survivors in this window';
+    return;
+  }
 
   const gaps = [];
   for (let i = 1; i < pos.length; i++) gaps.push(pos[i] - pos[i - 1]);
   const maxGap = Math.max(...gaps);
   const cap = Math.min(maxGap, 48);
-  const hist = new Array(cap + 2).fill(0);        // last bucket = overflow
+  const hist = new Array(cap + 2).fill(0); // last bucket = overflow
   for (const g of gaps) hist[g <= cap ? g : cap + 1]++;
   const hiCount = Math.max(...hist);
 
-  const left = 34, right = 8, top = 12, bottom = 22;
-  const plotW = w - left - right, plotH = h - top - bottom;
+  const left = 34,
+    right = 8,
+    top = 12,
+    bottom = 22;
+  const plotW = w - left - right,
+    plotH = h - top - bottom;
   const bw = plotW / (cap + 2);
 
   for (let g = 0; g <= cap + 1; g++) {
     const c = hist[g];
     if (!c) continue;
     const bh = (c / hiCount) * plotH;
-    ctx.fillStyle = g === cap + 1 ? INK.warn : `rgba(110,231,255,${0.35 + 0.65 * c / hiCount})`;
+    ctx.fillStyle = g === cap + 1 ? INK.warn : `rgba(110,231,255,${0.35 + (0.65 * c) / hiCount})`;
     ctx.fillRect(left + g * bw, top + plotH - bh, Math.max(1, bw - 1), bh);
   }
 

@@ -1,5 +1,7 @@
 // Golden-angle hue walk: adjacent primes always get well separated colors.
-export function primeHue(i) { return (i * 137.508 + 8) % 360; }
+export function primeHue(i) {
+  return (i * 137.508 + 8) % 360;
+}
 
 export function primeColor(i, alpha = 1, light = 60, sat = 78) {
   return `hsla(${primeHue(i).toFixed(1)}, ${sat}%, ${light}%, ${alpha})`;

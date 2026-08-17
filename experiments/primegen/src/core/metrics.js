@@ -3,7 +3,8 @@ const GAMMA = 0.5772156649015329;
 
 /** Marginal entropy (bits) of one prime's alive/dead indicator on Z/pZ. */
 export function entropyBits(p) {
-  const q = 1 / p, r = 1 - q;
+  const q = 1 / p,
+    r = 1 - q;
   return -(q * Math.log(q) + r * Math.log(r)) / LOG2;
 }
 
