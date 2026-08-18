@@ -138,6 +138,7 @@
       }
       .canvas-wrap {
         margin-top: 10px;
+        position: relative;
         border: 1px solid #222a35;
         border-radius: 8px;
         overflow: hidden;
@@ -150,10 +151,24 @@
         display: block;
         width: 100%;
         height: 460px;
-        cursor: grab;
+        cursor: crosshair;
       }
       #spiralCanvas.dragging {
         cursor: grabbing;
+      }
+      #spiralTooltip {
+        position: absolute;
+        pointer-events: none;
+        display: none;
+        background: rgba(22, 27, 34, 0.95);
+        border: 1px solid #2c3546;
+        color: var(--fg);
+        font-family: var(--mono);
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 6px;
+        white-space: nowrap;
+        z-index: 10;
       }
       .pass {
         color: var(--good);
@@ -234,17 +249,33 @@
         <pre id="out" class="dim">—</pre>
       </section>
       <section>
-        <h2>Ulam spiral <span class="ref">consume generated primes</span></h2>
+        <h2>
+          Number spiral
+          <span class="ref">consume generated primes — square (Ulam) or hexagonal</span>
+        </h2>
         <p class="note">
-          Primes ≤ <code>N</code> (or side length <code>L = ⌊√N⌋</code>, capped at 2000) are
-          plotted in a square Ulam spiral. Drag to pan · wheel to zoom · reset to fit.
+          <b>square</b>: primes ≤ <code>L²</code>, side <code>L = ⌊√N⌋</code> (capped at 8192), laid
+          out on the classic Ulam spiral. <b>hexagonal</b>: primes ≤ <code>1+3R(R+1)</code> walked
+          around a hex ring spiral (ring <i>k</i> holds 6<i>k</i> cells, consecutive integers are
+          always neighbours), stored in an axial <code>(2R+1)²</code> bitset and drawn by
+          nearest-hex sampling. Zoomed in the exact prime bitset is sampled; zoomed out a
+          pre-computed <b>density mip pyramid</b> is used so no prime is ever dropped by
+          nearest-neighbour downscaling. Drag to pan · wheel to zoom · reset to fit.
         </p>
         <div class="row">
-          <button class="primary" id="btnSpiral">▶ draw Ulam spiral</button>
+          <label>grid</label>
+          <select id="spiralGrid">
+            <option value="square">square (Ulam)</option>
+            <option value="hex">hexagonal</option>
+          </select>
+          <button class="primary" id="btnSpiral">▶ draw spiral</button>
           <button id="btnSpiralReset">reset view</button>
           <span id="spiralInfo" class="dim"></span>
         </div>
-        <div class="canvas-wrap"><canvas id="spiralCanvas" width="800" height="460"></canvas></div>
+        <div class="canvas-wrap">
+          <canvas id="spiralCanvas" width="800" height="460"></canvas>
+          <div id="spiralTooltip"></div>
+        </div>
       </section>
     </main>
 
@@ -255,6 +286,26 @@
    ===================================================================== */
 
       const SMALL_PRIMES = [2, 3, 5, 7, 11, 13, 17];
+      /* ---------------------------------------------------------------------
+   integer hygiene — why there is no BigInt in the hot loop
+     Every quantity of Algorithm B (n, p, a and the composite v = p·a) is an
+     *exact* integer while it stays below 2^53, so plain Numbers are the
+     correct representation: a BigInt in the heap would either throw on mixed
+     arithmetic (`p * a` with one BigInt operand) or cost ~20× in speed.
+     The drivers therefore assert the exact range instead of silently
+     returning wrong primes — that assertion is precisely the point where
+     BigInt (or a segmented restart, §4.6) would become necessary.
+     The only bitwise code in this file is the packed bitset of the Ulam
+     spiral below; `&`, `|` and `>>>` truncate to 32 bits, so those indices
+     are asserted to stay under 2^31.
+   ------------------------------------------------------------------ */
+      const MAX_EXACT = Number.MAX_SAFE_INTEGER; // 2^53 − 1
+      function assertExact(x, what) {
+        if (!Number.isSafeInteger(x))
+          throw new RangeError(
+            `${what} = ${x} leaves the exact-integer range (2^53 − 1); BigInt required here`
+          );
+      }
 
       /* ---------------------------------------------------------------------
    §4.2  wheel tables
@@ -377,7 +428,9 @@
               const p = rec[1];
               let a = rec[2];
               a += step[a % W]; // O(1) advancement
-              Q.push([p * a, p, a]);
+              const v = p * a;
+              if (v > MAX_EXACT) assertExact(v, 'composite p·a');
+              Q.push([v, p, a]);
             }
           }
           n += step[n % W];
@@ -386,6 +439,7 @@
 
       /* bounded driver with statistics (same loop, plus counters) */
       export function runB(limit, w = 6) {
+        assertExact(limit, 'N');
         const wh = buildWheel(w),
           step = wh.step,
           W = wh.W;
@@ -413,7 +467,9 @@
               const p = rec[1];
               let a = rec[2];
               a += step[a % W];
-              Q.push([p * a, p, a]);
+              const v = p * a;
+              if (v > MAX_EXACT) assertExact(v, 'composite p·a');
+              Q.push([v, p, a]);
               st.pushes++;
             }
           }
@@ -442,62 +498,679 @@
         return out;
       }
       /* =====================================================================
-   Ulam spiral + pan/zoom canvas
+   Ulam spiral — exact bitset + pre-computed density mip pyramid
+   ---------------------------------------------------------------------
+   The grid is stored once as a packed L×L bit mask (1 bit / cell).  Three
+   rendering regimes are picked from the zoom level:
+
+     cellPx ≥ 1        one cell covers ≥ 1 device pixel  → exact
+                       nearest-neighbour sample of the mask (crisp)
+     1 > cellPx ≥ ½    a device pixel covers ≤ 4 cells   → exact box
+                       average of the mask (anti-aliased density)
+     cellPx < ½        a device pixel covers many cells  → pre-computed
+                       density mip level whose texel is 1–2 device px,
+                       drawn with bilinear filtering
+
+   Nearest-neighbour *downscaling* — what the previous version handed to
+   drawImage — silently discards most primes when zoomed out (moiré, points
+   popping in and out while panning); averaging removes that entirely.
+   Every path touches only the visible sub-rectangle, so pan/zoom costs
+   O(viewport pixels) independent of L.
    ===================================================================== */
-      const spiralCanvas = () => document.getElementById('spiralCanvas');
-      let spiralBitmap = null; // offscreen canvas L×L
-      let spiralL = 0;
-      let spiralView = { scale: 1, tx: 0, ty: 0 };
-      let lastSpiral = null; // { primes, N, w } from the latest generator run
-      function buildSpiralBitmap(primes, L) {
-        const canvas = document.createElement('canvas');
-        canvas.width = L;
-        canvas.height = L;
-        const ctx = canvas.getContext('2d', { alpha: false });
-        ctx.fillStyle = '#0b0f15';
-        ctx.fillRect(0, 0, L, L);
-        const img = ctx.getImageData(0, 0, L, L);
-        const data = img.data;
-        const isPrime = new Uint8Array(L * L + 1);
-        for (const p of primes) {
-          if (p <= L * L) isPrime[p] = 1;
+      const MAX_SIDE = 8192; // L² bits = 8 MB bitset at the cap
+      const MAX_RING = (MAX_SIDE - 1) >> 1; // hex mode: axial box side 2R+1 ≤ MAX_SIDE
+      const MAX_TEX = 2048; // largest offscreen texture side we allocate
+      const GAMMA = 0.6; // density → brightness curve
+      const BG_RGB = [0x0b, 0x0f, 0x15];
+      const FG_RGB = [0x7e, 0xe0, 0xc0];
+      /* hex lattice, pointy-top, cell width 1:
+           X(q,r) = q + r/2 + R + 0.5      (columns are sheared by half a cell)
+           Y(q,r) = (r + R + 0.5)·√3/2     (row pitch = √3/2, hex area = √3/2)
+         so one hex occupies exactly the same area as one square cell of width 1. */
+      const HEX_K = Math.sqrt(3) / 2; // row pitch
+      const HEX_DQ = [1, 1, 0, -1, -1, 0]; // the six axial directions, CCW on screen
+      const HEX_DR = [0, -1, -1, 0, 1, 1];
+      /* endianness-agnostic pixel packing for the Uint32 view of an ImageData */
+      const packRGBA = (() => {
+        const buf = new ArrayBuffer(4),
+          u8 = new Uint8Array(buf),
+          u32 = new Uint32Array(buf);
+        return (r, g, b, a = 255) => {
+          u8[0] = r;
+          u8[1] = g;
+          u8[2] = b;
+          u8[3] = a;
+          return u32[0];
+        };
+      })();
+      const BG_PX = packRGBA(...BG_RGB);
+      const RAMP = (() => {
+        // 257-entry background→accent ramp, index = round(t·256)
+        const r = new Uint32Array(257);
+        for (let i = 0; i <= 256; i++) {
+          const t = i / 256;
+          r[i] = packRGBA(
+            Math.round(BG_RGB[0] + (FG_RGB[0] - BG_RGB[0]) * t),
+            Math.round(BG_RGB[1] + (FG_RGB[1] - BG_RGB[1]) * t),
+            Math.round(BG_RGB[2] + (FG_RGB[2] - BG_RGB[2]) * t)
+          );
         }
-        let x = L >> 1;
-        let y = L >> 1;
-        const setPx = (n) => {
-          if (isPrime[n]) {
-            const idx = (y * L + x) * 4;
-            data[idx] = 0x7e;
-            data[idx + 1] = 0xe0;
-            data[idx + 2] = 0xc0;
-            data[idx + 3] = 255;
+        return r;
+      })();
+
+      const spiralCanvas = () => document.getElementById('spiralCanvas');
+      let spiralMask = null; // Uint32Array bitset over the L×L grid
+      let spiralL = 0;
+      let spiralLevels = []; // [{ canvas, size, cell }] — cell = cells per texel
+      let spiralRef = 1e-6; // reference density for the brightness ramp
+      let spiralCount = 0; // primes actually placed in the grid
+      let spiralView = { scale: 1, tx: 0, ty: 0, min: 0.01 };
+      let lastSpiral = null; // { primes, N, w } from the latest generator run
+      let renderPending = false;
+      let exactImg = null; // reused ImageData for the exact paths
+      let spiralMode = 'square'; // 'square' (Ulam) | 'hex'
+      let spiralR = 0; // hex mode: ring count, mask side = 2R+1
+      let spiralCells = 0; // integers enumerated by the walk (L² or 1+3R(R+1))
+      let spiralFill = 1; // enumerated cells / mask cells (hex ⇒ ≈ 3/4)
+      let spiralExtW = 0; // grid bounding box in cell units (fit + clipping)
+      let spiralExtH = 0;
+      let spiralLabel = ''; // HUD prefix
+      let hexCounts = null; // reused accumulator for the hex scatter paths
+
+      /* density → ramp index; spiralRef ≈ 4·(global density) keeps mid-tones lit */
+      function shade(dens) {
+        if (!(dens > 0)) return 0;
+        const t = Math.pow(dens / spiralRef, GAMMA);
+        return t >= 1 ? 256 : Math.round(256 * t);
+      }
+
+      /* --- full-resolution prime mask over the spiral grid (1 bit per cell) --- */
+      function buildSpiralMask(primes, L) {
+        const cells = L * L;
+        /* bit indices are used with `&`/`|`/`>>>`, which truncate to 32 bits */
+        assertExact(cells, 'L²');
+        if (cells >= 0x80000000)
+          throw new RangeError(`spiral side ${L} exceeds the 32-bit bitset range`);
+        const bitset = (n) => new Uint32Array(Math.ceil(n / 32));
+        const isPrime = bitset(cells + 1);
+        for (const p of primes) {
+          if (p > cells) break; // primes[] is ascending
+          isPrime[p >>> 5] |= 1 << (p & 31);
+        }
+        const mask = bitset(cells);
+        const dx = [1, 0, -1, 0],
+          dy = [0, -1, 0, 1];
+        let x = L >> 1,
+          y = L >> 1,
+          n = 1,
+          dir = 0,
+          len = 1,
+          count = 0;
+        const put = () => {
+          /* bounds check: for even L the walk leaves the grid on one side */
+          if ((isPrime[n >>> 5] >>> (n & 31)) & 1 && x >= 0 && x < L && y >= 0 && y < L) {
+            const i = y * L + x;
+            mask[i >>> 5] |= 1 << (i & 31);
+            count++;
           }
         };
-        const dx = [1, 0, -1, 0];
-        const dy = [0, -1, 0, 1];
-        let dir = 0;
-        let stepLen = 1;
-        let stepCount = 0;
-        let leg = 0;
-        setPx(1);
-        for (let n = 2; n <= L * L; n++) {
-          x += dx[dir];
-          y += dy[dir];
-          stepCount++;
-          if (stepCount === stepLen) {
+        put(); // n = 1 at the centre
+        while (n < cells) {
+          for (let leg = 0; leg < 2 && n < cells; leg++) {
+            for (let s = 0; s < len && n < cells; s++) {
+              x += dx[dir];
+              y += dy[dir];
+              n++;
+              put();
+            }
             dir = (dir + 1) & 3;
-            stepCount = 0;
-            leg++;
-            if (leg === 2) {
-              leg = 0;
-              stepLen++;
+          }
+          len++;
+        }
+        spiralCount = count;
+        spiralCells = cells;
+        spiralFill = 1;
+        spiralExtW = L;
+        spiralExtH = L;
+        spiralLabel = `L = ${fmt(L)}`;
+        spiralRef = Math.max(1e-6, Math.min(1, (4 * count) / cells));
+        return mask;
+      }
+      /* --- hexagonal ring spiral over the triangular lattice ---------------
+         Ring k holds 6k cells, so the plot covers n ≤ H_R = 1 + 3R(R+1) (the
+         centred hexagonal numbers).  The walk takes one step outward and then
+         follows the ring, hence consecutive integers are always neighbours —
+         the defining property of the Ulam spiral, transplanted to hexes.
+         Cells live in an axial (2R+1)² bit box, indexed (r+R)·D + (q+R); the
+         ~25% of the box outside the hexagon simply stays zero, which lets the
+         square-grid mip pyramid and viewport code be reused verbatim.        */
+      function buildHexMask(primes, R) {
+        const D = 2 * R + 1;
+        const box = D * D;
+        const cells = 1 + 3 * R * (R + 1);
+        assertExact(box, '(2R+1)²');
+        if (box >= 0x80000000)
+          throw new RangeError(`hex radius ${R} exceeds the 32-bit bitset range`);
+        const bitset = (n) => new Uint32Array(Math.ceil(n / 32));
+        const isPrime = bitset(cells + 1);
+        for (const p of primes) {
+          if (p > cells) break; // primes[] is ascending
+          isPrime[p >>> 5] |= 1 << (p & 31);
+        }
+        const mask = bitset(box);
+        let q = 0,
+          r = 0,
+          n = 1,
+          count = 0;
+        const put = () => {
+          if ((isPrime[n >>> 5] >>> (n & 31)) & 1 && q >= -R && q <= R && r >= -R && r <= R) {
+            const i = (r + R) * D + (q + R);
+            mask[i >>> 5] |= 1 << (i & 31);
+            count++;
+          }
+        };
+        put(); // n = 1 at the centre
+        for (let k = 1; n < cells; k++) {
+          /* 1 step outward, k−1 along the edge we entered on, then k per side */
+          const legs = [
+            [0, 1],
+            [1, k - 1],
+            [2, k],
+            [3, k],
+            [4, k],
+            [5, k],
+            [0, k],
+          ];
+          for (const [d, len] of legs)
+            for (let s = 0; s < len && n < cells; s++) {
+              q += HEX_DQ[d];
+              r += HEX_DR[d];
+              n++;
+              put();
+            }
+        }
+        spiralCount = count;
+        spiralCells = cells;
+        spiralFill = cells / box; // mip densities are per box cell, not per hex
+        spiralExtW = D; // X ∈ [0, D]
+        spiralExtH = D * HEX_K; // Y ∈ [0, D·√3/2]
+        spiralLabel = `hex R = ${fmt(R)}`;
+        spiralRef = Math.max(1e-6, Math.min(1, (4 * count) / cells));
+        return mask;
+      }
+
+      /* --- mip pyramid of *densities*, base texel ≤ MAX_TEX per side --- */
+      function buildSpiralLevels(mask, L) {
+        let cell = 1;
+        while (Math.ceil(L / cell) > MAX_TEX) cell <<= 1;
+        let size = Math.ceil(L / cell);
+        const shift = Math.round(Math.log2(cell));
+        /* histogram the set bits (iterate primes, not the L² cells) */
+        let counts = new Uint32Array(size * size);
+        for (let w = 0; w < mask.length; w++) {
+          let word = mask[w];
+          while (word) {
+            const lsb = word & -word;
+            word ^= lsb;
+            const i = (w << 5) + (31 - Math.clz32(lsb));
+            const y = (i / L) | 0;
+            counts[(y >>> shift) * size + ((i - y * L) >>> shift)]++;
+          }
+        }
+        const levels = [];
+        for (;;) {
+          levels.push({ canvas: levelCanvas(counts, size, cell), size, cell });
+          if (size <= 2) return levels;
+          const nsize = Math.ceil(size / 2);
+          const next = new Uint32Array(nsize * nsize);
+          for (let y = 0; y < size; y++) {
+            const out = (y >> 1) * nsize,
+              row = y * size;
+            for (let x = 0; x < size; x++) next[out + (x >> 1)] += counts[row + x];
+          }
+          counts = next;
+          size = nsize;
+          cell *= 2;
+        }
+      }
+
+      function levelCanvas(counts, size, cell) {
+        const c = document.createElement('canvas');
+        c.width = size;
+        c.height = size;
+        const ctx = c.getContext('2d', { alpha: false });
+        const img = ctx.createImageData(size, size);
+        const px = new Uint32Array(img.data.buffer);
+        const area = cell * cell;
+        /* spiralFill < 1 in hex mode: only that fraction of the box cells is a hex */
+        const per = 1 / (area * spiralFill);
+        for (let i = 0; i < counts.length; i++) px[i] = RAMP[shade(counts[i] * per)];
+        ctx.putImageData(img, 0, 0);
+        return c;
+      }
+
+      /* --- rendering ------------------------------------------------------ */
+      function scheduleRender() {
+        if (renderPending) return;
+        renderPending = true;
+        requestAnimationFrame(() => {
+          renderPending = false;
+          renderSpiral();
+        });
+      }
+
+      function viewportImageData(ctx, w, h) {
+        if (!exactImg || exactImg.width !== w || exactImg.height !== h)
+          exactImg = ctx.createImageData(w, h);
+        return exactImg;
+      }
+
+      /* exact regimes: sample / box-average the bitset, visible pixels only */
+      function drawExact(ctx, canvas, cellPx, ox, oy) {
+        const x0 = Math.max(0, Math.floor(ox)),
+          y0 = Math.max(0, Math.floor(oy)),
+          x1 = Math.min(canvas.width, Math.ceil(ox + spiralL * cellPx)),
+          y1 = Math.min(canvas.height, Math.ceil(oy + spiralL * cellPx));
+        if (x1 <= x0 || y1 <= y0) return 'off screen';
+        const w = x1 - x0,
+          h = y1 - y0;
+        const img = viewportImageData(ctx, w, h);
+        const px = new Uint32Array(img.data.buffer);
+        px.fill(BG_PX);
+        const mask = spiralMask,
+          L = spiralL,
+          inv = 1 / cellPx;
+        let label;
+        if (cellPx >= 1) {
+          const on = RAMP[256];
+          for (let py = y0; py < y1; py++) {
+            const cy = Math.floor((py + 0.5 - oy) * inv);
+            if (cy < 0 || cy >= L) continue;
+            const row = cy * L,
+              out = (py - y0) * w - x0;
+            for (let p = x0; p < x1; p++) {
+              const cx = Math.floor((p + 0.5 - ox) * inv);
+              if (cx < 0 || cx >= L) continue;
+              const i = row + cx;
+              if ((mask[i >>> 5] >>> (i & 31)) & 1) px[out + p] = on;
             }
           }
-          setPx(n);
+          label = `exact · ${cellPx.toFixed(1)} px/cell`;
+        } else {
+          /* ≤ 4 cells per pixel: average them, so nothing can be dropped */
+          for (let py = y0; py < y1; py++) {
+            const cyA = Math.max(0, Math.floor((py - oy) * inv)),
+              cyB = Math.min(L, Math.ceil((py + 1 - oy) * inv));
+            if (cyB <= cyA) continue;
+            const out = (py - y0) * w - x0;
+            for (let p = x0; p < x1; p++) {
+              const cxA = Math.max(0, Math.floor((p - ox) * inv)),
+                cxB = Math.min(L, Math.ceil((p + 1 - ox) * inv));
+              if (cxB <= cxA) continue;
+              let cnt = 0;
+              for (let cy = cyA; cy < cyB; cy++) {
+                const row = cy * L;
+                for (let cx = cxA; cx < cxB; cx++) {
+                  const i = row + cx;
+                  cnt += (mask[i >>> 5] >>> (i & 31)) & 1;
+                }
+              }
+              if (cnt) px[out + p] = RAMP[shade(cnt / ((cyB - cyA) * (cxB - cxA)))];
+            }
+          }
+          label = `exact density · ${inv.toFixed(1)} cells/px`;
         }
-        ctx.putImageData(img, 0, 0);
-        return canvas;
+        ctx.putImageData(img, x0, y0);
+        return label;
       }
+
+      /* coarse regime: the mip whose texel is 1–2 device px, bilinear, culled */
+      function drawMip(ctx, canvas, cellPx, ox, oy) {
+        if (!spiralLevels.length) return null;
+        const need = 1 / cellPx; // cells per device pixel
+        let k = 0;
+        while (k < spiralLevels.length - 1 && spiralLevels[k].cell < need) k++;
+        const lv = spiralLevels[k];
+        const texPx = lv.cell * cellPx; // device px per texel, ≈ 1…2
+        const sx0 = Math.max(0, Math.floor(-ox / texPx)),
+          sy0 = Math.max(0, Math.floor(-oy / texPx)),
+          sx1 = Math.min(lv.size, Math.ceil((canvas.width - ox) / texPx)),
+          sy1 = Math.min(lv.size, Math.ceil((canvas.height - oy) / texPx));
+        if (sx1 <= sx0 || sy1 <= sy0) return 'off screen';
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(
+          lv.canvas,
+          sx0,
+          sy0,
+          sx1 - sx0,
+          sy1 - sy0,
+          ox + sx0 * texPx,
+          oy + sy0 * texPx,
+          (sx1 - sx0) * texPx,
+          (sy1 - sy0) * texPx
+        );
+        ctx.imageSmoothingEnabled = false;
+        return `density mip ${k} · ${lv.cell}×${lv.cell} cells/texel`;
+      }
+      /* ==================== hexagonal grid rendering ======================
+         Screen ← axial is the linear map (device px):
+           sx = ox + cellPx·(q + r/2 + R + 0.5)
+           sy = oy + cellPx·√3/2·(r + R + 0.5)
+         Its inverse (pixel → fractional axial) plus cube rounding gives the
+         nearest hex, i.e. a crisp hexagonal Voronoi cell per prime.
+         ==================================================================== */
+      function hexClip(canvas, cellPx, ox, oy) {
+        const pad = cellPx; // hex corners poke ≈0.15 cell past the box
+        const x0 = Math.max(0, Math.floor(ox - pad)),
+          y0 = Math.max(0, Math.floor(oy - pad)),
+          x1 = Math.min(canvas.width, Math.ceil(ox + spiralExtW * cellPx + pad)),
+          y1 = Math.min(canvas.height, Math.ceil(oy + spiralExtH * cellPx + pad));
+        return x1 <= x0 || y1 <= y0 ? null : { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0 };
+      }
+      function hexScatterBuffer(n) {
+        if (!hexCounts || hexCounts.length < n) hexCounts = new Uint32Array(n);
+        else hexCounts.fill(0, 0, n);
+        return hexCounts;
+      }
+      /* visit every prime hex whose centre lands inside the pixel rect — the
+         scatter direction, so no cell can be missed however small it is */
+      function forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, hit) {
+        const mask = spiralMask,
+          D = spiralL,
+          R = spiralR,
+          pitch = cellPx * HEX_K;
+        const rLo = Math.max(-R, Math.ceil((y0 - oy) / pitch - R - 0.5)),
+          rHi = Math.min(R, Math.ceil((y1 - oy) / pitch - R - 0.5) - 1);
+        for (let r = rLo; r <= rHi; r++) {
+          const sy = Math.floor(oy + pitch * (r + R + 0.5));
+          if (sy < y0 || sy >= y1) continue;
+          const base = ox + cellPx * (r / 2 + R + 0.5); // screen x of q = 0
+          const qLo = Math.max(-R, Math.ceil((x0 - base) / cellPx)),
+            qHi = Math.min(R, Math.ceil((x1 - base) / cellPx) - 1);
+          const row = (r + R) * D;
+          for (let q = qLo; q <= qHi; q++) {
+            const i = row + q + R;
+            if ((mask[i >>> 5] >>> (i & 31)) & 1) {
+              const sx = Math.floor(base + cellPx * q);
+              if (sx >= x0 && sx < x1) hit(sx, sy);
+            }
+          }
+        }
+      }
+      /* cellPx ≥ 1: nearest-hex gather (filled hexagons) + scatter guarantee */
+      function drawHexExact(ctx, canvas, cellPx, ox, oy) {
+        const c = hexClip(canvas, cellPx, ox, oy);
+        if (!c) return 'off screen';
+        const { x0, y0, x1, y1, w } = c;
+        const img = viewportImageData(ctx, c.w, c.h);
+        const px = new Uint32Array(img.data.buffer);
+        px.fill(BG_PX);
+        const mask = spiralMask,
+          D = spiralL,
+          R = spiralR,
+          inv = 1 / cellPx,
+          on = RAMP[256];
+        for (let py = y0; py < y1; py++) {
+          const rf = ((py + 0.5 - oy) * inv) / HEX_K - (R + 0.5);
+          let qf = (x0 + 0.5 - ox) * inv - (R + 0.5) - rf / 2;
+          const out = (py - y0) * w - x0;
+          for (let p = x0; p < x1; p++, qf += inv) {
+            /* cube rounding: round q, r, s = −q−r and repair the worst one */
+            let q = Math.round(qf),
+              r = Math.round(rf);
+            const s = Math.round(-qf - rf);
+            if (q + r + s !== 0) {
+              const dq = Math.abs(q - qf),
+                dr = Math.abs(r - rf),
+                ds = Math.abs(s + qf + rf);
+              if (dq > dr && dq > ds) q = -r - s;
+              else if (dr > ds) r = -q - s;
+            }
+            if (q < -R || q > R || r < -R || r > R) continue;
+            const i = (r + R) * D + (q + R);
+            if ((mask[i >>> 5] >>> (i & 31)) & 1) px[out + p] = on;
+          }
+        }
+        /* a hex has area √3/2 < 1, so near cellPx = 1 some contain no pixel
+           centre; light their centre pixel explicitly — nothing is dropped */
+        forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, (sx, sy) => {
+          px[(sy - y0) * w - x0 + sx] = on;
+        });
+        ctx.putImageData(img, x0, y0);
+        return `exact hex · ${cellPx.toFixed(1)} px/cell`;
+      }
+      /* ½ ≤ cellPx < 1: exact density by scattering cell centres into pixels */
+      function drawHexDensity(ctx, canvas, cellPx, ox, oy) {
+        const c = hexClip(canvas, cellPx, ox, oy);
+        if (!c) return 'off screen';
+        const { x0, y0, x1, y1, w, h } = c;
+        const img = viewportImageData(ctx, w, h);
+        const px = new Uint32Array(img.data.buffer);
+        px.fill(BG_PX);
+        const counts = hexScatterBuffer(w * h);
+        forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, (sx, sy) => {
+          counts[(sy - y0) * w - x0 + sx]++;
+        });
+        const norm = HEX_K * cellPx * cellPx; // 1 / (hex cells per device pixel)
+        const n = w * h;
+        for (let i = 0; i < n; i++) if (counts[i]) px[i] = RAMP[shade(counts[i] * norm)];
+        ctx.putImageData(img, x0, y0);
+        return `exact hex density · ${(1 / norm).toFixed(1)} cells/px`;
+      }
+      /* cellPx < ½: the axial density mip drawn through the hex shear matrix —
+         a texel becomes a parallelogram of exactly one hex area per cell, so
+         the bilinear blur is still an area-correct density plot */
+      function drawHexMip(ctx, canvas, cellPx, ox, oy) {
+        if (!spiralLevels.length) return null;
+        const need = 1 / cellPx;
+        let k = 0;
+        while (k < spiralLevels.length - 1 && spiralLevels[k].cell < need) k++;
+        const lv = spiralLevels[k],
+          cel = lv.cell,
+          R = spiralR;
+        const ma = cellPx * cel, // ∂screen.x / ∂texel.x
+          mc = 0.5 * cellPx * cel, // ∂screen.x / ∂texel.y  (the shear)
+          md = HEX_K * cellPx * cel, // ∂screen.y / ∂texel.y
+          me = ox - cellPx * (R / 2 + 0.25),
+          mf = oy;
+        let t0 = Infinity,
+          t1 = -Infinity,
+          s0 = Infinity,
+          s1 = -Infinity;
+        for (const [X, Y] of [
+          [0, 0],
+          [canvas.width, 0],
+          [0, canvas.height],
+          [canvas.width, canvas.height],
+        ]) {
+          const s = (Y - mf) / md,
+            t = (X - me - mc * s) / ma;
+          if (t < t0) t0 = t;
+          if (t > t1) t1 = t;
+          if (s < s0) s0 = s;
+          if (s > s1) s1 = s;
+        }
+        const tx0 = Math.max(0, Math.floor(t0)),
+          ty0 = Math.max(0, Math.floor(s0)),
+          tx1 = Math.min(lv.size, Math.ceil(t1) + 1),
+          ty1 = Math.min(lv.size, Math.ceil(s1) + 1);
+        if (tx1 <= tx0 || ty1 <= ty0) return 'off screen';
+        ctx.save();
+        ctx.setTransform(ma, 0, mc, md, me, mf); // texel space → device px
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(lv.canvas, tx0, ty0, tx1 - tx0, ty1 - ty0, tx0, ty0, tx1 - tx0, ty1 - ty0);
+        ctx.restore();
+        ctx.imageSmoothingEnabled = false;
+        return `hex density mip ${k} · ${cel}×${cel} cells/texel`;
+      }
+
+      function drawHud(ctx, canvas, dpr, mode) {
+        if (!mode) return;
+        const hCss = canvas.height / dpr;
+        ctx.save();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.font = '11px ui-monospace, Menlo, Consolas, monospace';
+        const label = `${spiralLabel || `L = ${fmt(spiralL)}`} · ${mode}`;
+        const tw = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(11,15,21,0.75)';
+        ctx.fillRect(6, hCss - 23, tw + 12, 17);
+        ctx.fillStyle = '#8b97a8';
+        ctx.fillText(label, 12, hCss - 11);
+        ctx.restore();
+      }
+      function tooltipEl() {
+        return document.getElementById('spiralTooltip');
+      }
+      function hideSpiralTooltip() {
+        const el = tooltipEl();
+        if (el) el.style.display = 'none';
+      }
+      function spiralIntegerAt(clientX, clientY) {
+        const canvas = spiralCanvas();
+        if (!canvas || !spiralMask) return null;
+        const rect = canvas.getBoundingClientRect();
+        const mx = clientX - rect.left;
+        const my = clientY - rect.top;
+        if (mx < 0 || my < 0 || mx > rect.width || my > rect.height) return null;
+        const dpr = window.devicePixelRatio || 1;
+        const cellPx = spiralView.scale * dpr;
+        const px = mx * dpr;
+        const py = my * dpr;
+        const ox = spiralView.tx * dpr;
+        const oy = spiralView.ty * dpr;
+        if (spiralMode === 'hex') {
+          const R = spiralR;
+          const inv = 1 / cellPx;
+          const rd = ((py - oy) * inv) / HEX_K - (R + 0.5);
+          const qd = (px - ox) * inv - (R + 0.5) - rd / 2;
+          let q = Math.round(qd);
+          let r = Math.round(rd);
+          const s = Math.round(-qd - rd);
+          if (q + r + s !== 0) {
+            const dq = Math.abs(q - qd);
+            const dr = Math.abs(r - rd);
+            const ds = Math.abs(s + qd + rd);
+            if (dq > dr && dq > ds) q = -r - s;
+            else if (dr > ds) r = -q - s;
+          }
+          const k = Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r));
+          if (k === 0) return 1;
+          if (k > R) return null;
+          const base = 1 + 3 * (k - 1) * k;
+          if (q === 1 && r === k - 1) return base + 1;
+          if (q + r === k && q >= 2 && q <= k) return base + q;
+          if (q === k && r <= -1 && r >= -k) return base + k - r;
+          if (r === -k && q >= 0 && q <= k - 1) return base + 3 * k - q;
+          if (q + r === -k && q <= -1 && q >= -k) return base + 3 * k - q;
+          if (q === -k && r >= 1 && r <= k) return base + 4 * k + r;
+          if (r === k && q >= -k + 1 && q <= 0) return base + 6 * k + q;
+          return null;
+        }
+        const L = spiralL;
+        const gx = (px - ox) / cellPx;
+        const gy = (py - oy) / cellPx;
+        const cx = Math.floor(gx);
+        const cy = Math.floor(gy);
+        if (cx < 0 || cy < 0 || cx >= L || cy >= L) return null;
+        const c = L >> 1;
+        const dx = cx - c;
+        const dy = cy - c;
+        const r = Math.max(Math.abs(dx), Math.abs(dy));
+        if (r === 0) return 1;
+        const E = (2 * r + 1) * (2 * r + 1);
+        let n;
+        if (dy === r) n = E - (r - dx);
+        else if (dx === -r) n = E - 2 * r - (r - dy);
+        else if (dy === -r) n = E - 6 * r + (r - dx);
+        else if (dx === r) n = E - 6 * r - (dy + r);
+        else return null;
+        if (n < 1 || n > spiralCells) return null;
+        return n;
+      }
+      const FACTOR_SUP = {
+        0: '⁰',
+        1: '¹',
+        2: '²',
+        3: '³',
+        4: '⁴',
+        5: '⁵',
+        6: '⁶',
+        7: '⁷',
+        8: '⁸',
+        9: '⁹',
+      };
+      function formatExponent(e) {
+        return String(e)
+          .split('')
+          .map((d) => FACTOR_SUP[d])
+          .join('');
+      }
+      function factorCanonical(n, primesUpToN) {
+        if (n <= 1) return String(n);
+        let rem = n;
+        const factors = [];
+        if (primesUpToN) {
+          for (const p of primesUpToN) {
+            if (p * p > rem) break;
+            if (rem % p === 0) {
+              let e = 0;
+              while (rem % p === 0) {
+                rem /= p;
+                e++;
+              }
+              factors.push([p, e]);
+            }
+          }
+        } else {
+          if (rem % 2 === 0) {
+            let e = 0;
+            while (rem % 2 === 0) {
+              rem /= 2;
+              e++;
+            }
+            factors.push([2, e]);
+          }
+          for (let p = 3; p * p <= rem; p += 2) {
+            if (rem % p === 0) {
+              let e = 0;
+              while (rem % p === 0) {
+                rem /= p;
+                e++;
+              }
+              factors.push([p, e]);
+            }
+          }
+        }
+        if (rem > 1) factors.push([rem, 1]);
+        return factors
+          .map(([p, e]) => (e === 1 ? fmt(p) : `${fmt(p)}${formatExponent(e)}`))
+          .join(' × ');
+      }
+
+      function moveSpiralTooltip(clientX, clientY) {
+        const canvas = spiralCanvas();
+        const el = tooltipEl();
+        if (!canvas || !el) return;
+        const n = spiralIntegerAt(clientX, clientY);
+        if (n == null) {
+          el.style.display = 'none';
+          return;
+        }
+        const rect = canvas.getBoundingClientRect();
+        el.textContent = `n = ${fmt(n)} = ${factorCanonical(n, lastSpiral && lastSpiral.primes)}`;
+        el.style.display = 'block';
+        let x = clientX - rect.left + 12;
+        let y = clientY - rect.top + 12;
+        const tw = el.offsetWidth;
+        const th = el.offsetHeight;
+        if (x + tw > rect.width - 4) x = Math.max(4, clientX - rect.left - tw - 8);
+        if (y + th > rect.height - 4) y = Math.max(4, clientY - rect.top - th - 8);
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+      }
+
       function renderSpiral() {
         const canvas = spiralCanvas();
         if (!canvas) return;
@@ -510,40 +1183,70 @@
           canvas.height = Math.round(hCss * dpr);
         }
         const ctx = canvas.getContext('2d');
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // work in device pixels
+        ctx.imageSmoothingEnabled = false;
         ctx.fillStyle = '#0b0f15';
-        ctx.fillRect(0, 0, wCss, hCss);
-        if (spiralBitmap) {
-          ctx.imageSmoothingEnabled = false;
-          const { scale, tx, ty } = spiralView;
-          ctx.drawImage(spiralBitmap, tx, ty, spiralL * scale, spiralL * scale);
-        }
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (!spiralMask) return;
+        const cellPx = spiralView.scale * dpr; // device px per spiral cell
+        const ox = spiralView.tx * dpr, // device px of cell (0,0)
+          oy = spiralView.ty * dpr;
+        const mode =
+          spiralMode === 'hex'
+            ? cellPx >= 1
+              ? drawHexExact(ctx, canvas, cellPx, ox, oy)
+              : cellPx >= 0.5
+                ? drawHexDensity(ctx, canvas, cellPx, ox, oy)
+                : drawHexMip(ctx, canvas, cellPx, ox, oy)
+            : cellPx >= 0.5
+              ? drawExact(ctx, canvas, cellPx, ox, oy)
+              : drawMip(ctx, canvas, cellPx, ox, oy);
+        drawHud(ctx, canvas, dpr, mode);
       }
+
       function resetSpiralView() {
         const canvas = spiralCanvas();
-        if (!canvas || !spiralBitmap) return;
+        if (!canvas || !spiralMask) return;
+        hideSpiralTooltip();
         const rect = canvas.getBoundingClientRect();
         const pad = 12;
-        const scale = Math.min((rect.width - pad * 2) / spiralL, (rect.height - pad * 2) / spiralL);
-        spiralView.scale = Math.max(0.01, scale);
-        spiralView.tx = (rect.width - spiralL * spiralView.scale) / 2;
-        spiralView.ty = (rect.height - spiralL * spiralView.scale) / 2;
+        const gw = spiralExtW || spiralL,
+          gh = spiralExtH || spiralL;
+        const fit = Math.min((rect.width - pad * 2) / gw, (rect.height - pad * 2) / gh);
+        spiralView.scale = Math.max(1e-4, fit);
+        spiralView.min = spiralView.scale / 4; // allow zooming a bit past "fit"
+        spiralView.tx = (rect.width - gw * spiralView.scale) / 2;
+        spiralView.ty = (rect.height - gh * spiralView.scale) / 2;
         renderSpiral();
       }
+
       async function drawUlamSpiral() {
         const info = document.getElementById('spiralInfo');
-        const Ninput = Math.max(10, +document.getElementById('limit').value | 0);
-        const w = Math.max(1, Math.min(7, +document.getElementById('w').value | 0));
-        const maxSide = 20000;
-        let L = Math.floor(Math.sqrt(Ninput));
-        let Nspiral = Ninput;
-        if (L > maxSide) {
-          L = maxSide;
-          Nspiral = L * L;
-        }
-        if (L < 2) {
-          info.textContent = 'N too small for a Ulam spiral.';
-          return;
+        const Ninput = Math.max(10, +$('limit').value | 0);
+        const w = Math.max(1, Math.min(7, +$('w').value | 0));
+        const grid = $('spiralGrid').value === 'hex' ? 'hex' : 'square';
+        let L = 0,
+          R = 0,
+          Nspiral = 0;
+        if (grid === 'hex') {
+          /* largest R with H_R = 1 + 3R(R+1) ≤ N (sqrt then integer repair) */
+          R = Math.max(0, Math.floor((Math.sqrt(12 * Ninput - 3) - 3) / 6));
+          while (1 + 3 * (R + 1) * (R + 2) <= Ninput) R++;
+          while (R > 0 && 1 + 3 * R * (R + 1) > Ninput) R--;
+          if (R > MAX_RING) R = MAX_RING;
+          if (R < 1) {
+            info.textContent = 'N too small for a hex spiral.';
+            return;
+          }
+          Nspiral = 1 + 3 * R * (R + 1); // the hex spiral shows n ≤ H_R
+        } else {
+          L = Math.floor(Math.sqrt(Ninput));
+          if (L > MAX_SIDE) L = MAX_SIDE;
+          if (L < 2) {
+            info.textContent = 'N too small for a Ulam spiral.';
+            return;
+          }
+          Nspiral = L * L; // the spiral can only ever show n ≤ L²
         }
         let primes;
         if (lastSpiral && lastSpiral.N >= Nspiral && lastSpiral.w === w) {
@@ -555,13 +1258,31 @@
           primes = res.primes;
           lastSpiral = { primes, N: Nspiral, w };
         }
-        info.textContent = `building Ulam spiral side ${fmt(L)}…`;
+        info.textContent = `walking the ${grid} spiral (${fmt(Nspiral)} cells)…`;
         await sleep(0);
-        spiralBitmap = buildSpiralBitmap(primes, L);
-        spiralL = L;
+        spiralMode = grid;
+        if (grid === 'hex') {
+          spiralR = R;
+          spiralL = 2 * R + 1; // axial box side
+          spiralMask = buildHexMask(primes, R);
+        } else {
+          spiralR = 0;
+          spiralL = L;
+          spiralMask = buildSpiralMask(primes, L);
+        }
+        info.textContent = 'building density mip pyramid…';
+        await sleep(0);
+        spiralLevels = buildSpiralLevels(spiralMask, spiralL);
         resetSpiralView();
-        info.textContent = `${fmt(primes.length)} primes · side ${fmt(L)} · drag to pan, wheel to zoom`;
+        info.textContent =
+          `${fmt(spiralCount)} primes · ` +
+          (grid === 'hex'
+            ? `${fmt(R)} rings, n ≤ ${fmt(spiralCells)} (axial box ${fmt(spiralL)}²) · `
+            : `side ${fmt(L)} · `) +
+          `${spiralLevels.length} density levels (base ${spiralLevels[0].cell}×${spiralLevels[0].cell}) · ` +
+          `drag to pan, wheel to zoom`;
       }
+
       function initSpiralInteractions() {
         const canvas = spiralCanvas();
         if (!canvas) return;
@@ -570,6 +1291,7 @@
         let lastY = 0;
         canvas.addEventListener('pointerdown', (e) => {
           dragging = true;
+          hideSpiralTooltip();
           canvas.classList.add('dragging');
           lastX = e.clientX;
           lastY = e.clientY;
@@ -577,14 +1299,18 @@
           e.preventDefault();
         });
         canvas.addEventListener('pointermove', (e) => {
-          if (!dragging) return;
+          if (!dragging) {
+            moveSpiralTooltip(e.clientX, e.clientY);
+            return;
+          }
+          hideSpiralTooltip();
           const dx = e.clientX - lastX;
           const dy = e.clientY - lastY;
           lastX = e.clientX;
           lastY = e.clientY;
           spiralView.tx += dx;
           spiralView.ty += dy;
-          renderSpiral();
+          scheduleRender(); // coalesce to one draw per frame
         });
         canvas.addEventListener('pointerup', (e) => {
           dragging = false;
@@ -595,24 +1321,31 @@
           dragging = false;
           canvas.classList.remove('dragging');
         });
-        canvas.addEventListener('wheel', (e) => {
-          e.preventDefault();
-          const rect = canvas.getBoundingClientRect();
-          const mx = e.clientX - rect.left;
-          const my = e.clientY - rect.top;
-          const factor = Math.pow(1.0015, -e.deltaY);
-          const oldScale = spiralView.scale;
-          spiralView.scale = Math.max(0.1, Math.min(200, oldScale * factor));
-          const sx = mx - spiralView.tx;
-          const sy = my - spiralView.ty;
-          const nx = sx * (spiralView.scale / oldScale);
-          const ny = sy * (spiralView.scale / oldScale);
-          spiralView.tx = mx - nx;
-          spiralView.ty = my - ny;
-          renderSpiral();
-        }, { passive: false });
+        canvas.addEventListener('pointerleave', () => {
+          hideSpiralTooltip();
+        });
+        canvas.addEventListener(
+          'wheel',
+          (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            const factor = Math.pow(1.0015, -e.deltaY);
+            const oldScale = spiralView.scale;
+            spiralView.scale = Math.max(spiralView.min, Math.min(400, oldScale * factor));
+            const sx = mx - spiralView.tx;
+            const sy = my - spiralView.ty;
+            const nx = sx * (spiralView.scale / oldScale);
+            const ny = sy * (spiralView.scale / oldScale);
+            spiralView.tx = mx - nx;
+            spiralView.ty = my - ny;
+            scheduleRender();
+          },
+          { passive: false }
+        );
         window.addEventListener('resize', () => {
-          if (spiralBitmap) resetSpiralView();
+          if (spiralMask) resetSpiralView();
         });
       }
 
@@ -741,6 +1474,9 @@
       $('btnFirst').onclick = firstPrimes;
       $('btnSpiral').onclick = () => drawUlamSpiral();
       $('btnSpiralReset').onclick = () => resetSpiralView();
+      $('spiralGrid').onchange = () => {
+        if (spiralMask) drawUlamSpiral(); // re-walk with the other geometry
+      };
       initSpiralInteractions();
 
       firstPrimes(); /* cheap initial render */

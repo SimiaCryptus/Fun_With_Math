@@ -162,13 +162,18 @@ the lattice names its own successor, which is Claim C1 seen from the outside.
 >
 > _Status: routine (CRT + counting); not yet formalised. Its algorithmic content **is** machine-checked: the deleted
 > set is `Θ_p = p·A_p` read mod `P_{k+1}` — `Primegen.theta_eq_image`._
-> Two consequences matter here.
+> Three consequences matter here.
 
 1. **The stream decomposition and the fractal decomposition are the same theorem.** "Prime times a wheel" (§2.2) and
    "affine copy of the previous stage" (F1) are two readings of one identity.
 2. **The construction is a Moran/IFS construction** with `p_{k+1} − 1` children per parent and contraction ratio
    `1/p_{k+1}` — but with a _non-constant, unbounded_ ratio sequence: zooming proceeds by primorials, i.e. doubly
    exponentially.
+3. **A wheel sieve is this recursion, materialised.** Pritchard's wheel-extension step _is_ F1. A wheel sieve at fixed
+   depth `w` stops the recursion there, stores the stage, and hands every deeper stage to a marking pass over the
+   range; Algorithm B stops it there, stores the stage, and hands the deeper stages to `O(1)`-state streams that reuse
+   the depth-`w` template. §6.1 works this out, and it is why the `O(N / log log N)` row of §6 is not the comparison it
+   appears to be.
 
 > **Claim F2 (dimension is the wrong invariant).** Rescaling stage `k` to `[0,1]` gives `φ(P_k)` intervals of length
 > `1/P_k`. Lebesgue measure is `κ_k → 0`, so the limit set is null; but box dimension is
@@ -453,14 +458,17 @@ than asserted.
 
 ## 6. Comparison
 
-| method                       | touches / time                                                  | working memory  | array over range             | segment-parallel |
-| ---------------------------- | --------------------------------------------------------------- | --------------- | ---------------------------- | ---------------- |
-| trial-division extension     | `Θ(N π(√N))`                                                    | `O(π(√N))`      | no                           | yes              |
-| Eratosthenes, segmented      | `O(N log log N)`                                                | `O(√N + Δ)`     | yes (segment)                | yes              |
-| wheel sieve                  | `O(N / log log N)`                                              | `O(√N)`         | yes                          | partly           |
-| priority-queue sieve (naive) | `O(N log N log log N)`                                          | `O(π(√N))`      | no                           | no               |
-| **Algorithm A**              | `N − π(N)` touches (**optimal**), `×log S` or `O(1)` bucketed   | `S(N) ≈ N^0.75` | no                           | no               |
-| **Algorithm B**              | `κ_W N (ln ln √N − ln ln p_w)`, `×log π(√N)` or `O(1)` bucketed | `O(π(√N) + W)`  | no (heap) / segment (bucket) | **yes**          |
+| method                                                                                                                | touches / time                                                  | working memory                                           | array over range             | segment-parallel |
+| --------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------- | ---------------- |
+| trial-division extension                                                                                              | `Θ(N π(√N))`                                                    | `O(π(√N))`                                               | no                           | yes              |
+| Eratosthenes, segmented                                                                                               | `O(N log log N)`                                                | `O(√N + Δ)`                                              | yes (segment)                | yes              |
+| wheel sieve (Pritchard) †                                                                                             | `O(N / log log N)` †                                            | `O(√N)` compact; `Θ(N / log log N)` for the quoted bound | yes                          | partly           |
+| priority-queue sieve (naive)                                                                                          | `O(N log N log log N)`                                          | `O(π(√N))`                                               | no                           | no               |
+| **Algorithm A**                                                                                                       | `N − π(N)` touches (**optimal**), `×log S` or `O(1)` bucketed   | `S(N) ≈ N^0.75`                                          | no                           | no               |
+| **Algorithm B**                                                                                                       | `κ_W N (ln ln √N − ln ln p_w)`, `×log π(√N)` or `O(1)` bucketed | `O(π(√N) + W)`                                           | no (heap) / segment (bucket) | **yes**          |
+| † Read with §6.1. The `log log` is a Mertens ceiling on the whole wheel family, not a trend; the wheel is a candidate |
+| enumerator and not a primality test; the wheel array and its construction are part of the cost; and a fixed wheel is  |
+| this construction truncated.                                                                                          |
 
 Reading: Algorithm A is the only entry that touches each composite exactly once _and_ uses no range-proportional array.
 Algorithm B keeps `π(√N)` memory and O (1) per-prime state at a small constant factor of redundant touches, and is the
@@ -469,6 +477,53 @@ claim is structural — orthogonal, incremental, array-free, unbounded — not a
 nothing in it is machine-checked, and nothing in it is intended to be. The rows are asymptotics about running times; the
 formalisation of §9 covers the objects those asymptotics count (the partition, the streams, the invariant, the claimant
 sets), which is where the contribution actually is. Treat the table as measurement, and measure before quoting it.
+
+### 6.1 The `O(N / log log N)` row, read honestly
+
+That row deserves more scrutiny than the others, both because it is the figure most often quoted _against_
+constructions like this one, and because — on the reading of §2.5 — it _is_ this construction, materialised and
+truncated. Four points, in order of how badly the short quotation misleads.
+**(a) A wheel is not a primality test; it is a candidate enumerator.** Claim O2/F3 is sharp: the holes of `S_k` are
+certified prime exactly on `[p_{k+1}, p_{k+1}²)`, and `121 = 11² ∈ S_4` with `121 < P_4 = 210` is the first
+counterexample — the mod-210 wheel already has a composite hole inside its own first period. So wheel membership
+decides primality in one window per stage and nowhere else. To decide all of `[2, N]` from wheel membership alone one
+needs `p_{k+1} > √N`, i.e. modulus `P_k = e^{(1+o(1))√N} ≫ N`: superpolynomially more space than simply writing down
+the answer. Consequently _every_ wheel sieve is a wheel **plus** a composite-removal mechanism, and all of the
+correctness lives in the second component; the wheel contributes density, not truth. Pritchard's construction is
+non-circular precisely because it respects the window: the prime needed to extend `S_k` to `S_{k+1}` is
+`p_{k+1} = ` the least hole `> 1`, which lies inside the window `S_k` has already certified. That is Claim C1 read on
+the lattice — the same self-hosting argument this generator runs on. A wheel-based generator that consults a primality
+test _outside_ its window has smuggled in the thing it was supposed to compute; a wheel-based generator that trusts
+holes outside its window is simply wrong.
+**(b) The `log log` is Mertens, and it is a ceiling rather than a trend.** Touch count is proportional to the candidate
+density `κ_k = φ(P_k)/P_k ~ e^{−γ}/log p_k`, so `O(N / log log N)` is attainable only by letting the wheel modulus grow
+with `N`. The return on space is doubly logarithmic: a reduction factor `c` in touches demands `log p_k ≍ c`, i.e.
+`P_k = exp exp Θ(c)`. Numerically: `w = 6` gives `κ = 0.1918` at `W = 30 030`; `w = 8` gives `κ = 0.1636` at
+`W = 9 699 690` — a 323× larger table for 15% fewer touches — and _halving_ `κ` to ≈ 0.10 requires primes up to ≈ 274,
+i.e. a modulus of order `10^{117}`. No member of the wheel family beats `log log`, so the bound is a ceiling on the
+family, not something to extrapolate; and no storable member beats a small constant. This is the same wall as
+Conjecture X1 and the same wall as §4.5's `ln ln √N − ln ln p_w`: `φ(P_k)/P_k` decays logarithmically while `P_k` grows
+exponentially in `p_k`.
+**(c) The table is part of the cost, and at the quoted bound it is range-proportional.** Reaching `O(N / log log N)`
+requires `Θ(N / log log N)` words of wheel, built stage by stage at `Θ(P_k)` each and accessed with no locality;
+Pritchard's compact variants trade the space back to `O(√N)` and pay in constants. This is exactly why every production
+sieve uses a small fixed wheel (`w = 3..8`) rather than an asymptotically growing one: in practice the wheel sieve is
+run in Algorithm B's regime, not in the regime whose bound is quoted.
+**(d) So a fixed wheel is this construction, truncated.** By §2.5 the wheel-extension step is the lattice recursion F1,
+`S_{k+1} = (p tilings of S_k) \ p·S_k`, whose deleted set is the stream `Θ_p = p·A_p`. The three constructions differ
+only in where materialisation stops and generation begins:
+
+| construction                                                                                                            | recursion followed to | deeper stages handled by                                     | price                                                     |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
+| static wheel sieve, depth `w`                                                                                           | `w`, materialised     | a marking pass over the range                                | array over the range; density gain only, ceiling (b)      |
+| growing wheel sieve                                                                                                     | `k(N)`, materialised  | —                                                            | `Θ(N / log log N)` wheel array, `Θ(P_k)` build per stage  |
+| **Algorithm B**                                                                                                         | `w`, materialised     | one `O(1)`-state stream per prime, depth-`w` template reused | `ω_{>p_w}(m)` touches per composite — the `ln ln` of §4.5 |
+| **Algorithm A**                                                                                                         | full depth, streamed  | —                                                            | `S(N) ≈ N^{0.75}` live streams                            |
+| One recursion, four stopping points. The interesting axis is therefore not the `log log` in the table above — that is a |
+| statement about candidate density, shared by everything in the family — but _the cost of continuing the recursion past  |
+| the tabulated depth_: an array over the range (wheel sieve), a `ln ln` duplicate factor (Algorithm B), or `N^{0.75}`    |
+| live streams (Algorithm A). Claim B5 and §4.5 are that cost, exactly and in machine-checked form; the wheel-sieve row   |
+| prices the same quantity by storing it instead.                                                                         |
 
 ---
 
@@ -577,3 +632,40 @@ the verified step are literally the same definitions.
 
 The formalisation is therefore a check on the _structure_ — the partition, the relaxation, the invariant — which is
 exactly what §6 says the contribution is, and exactly what §2.5 says the fractal reading is a picture of.
+| Pritchard wheel sieve (see §7.1) | \(O(N/\log\log N)\) — Mertens ceiling, wheel construction excluded | \(O(\sqrt N)\) compact; \(\Theta(N/\log\log N)\) at the quoted bound | yes | partly |
+
+### 7.1 On the "Pritchard wheel sieve" row
+
+The \(O (N/\log\log N)\) entry is the figure most often quoted against this architecture, and the short form of it
+hides three costs and one identification. (Fuller discussion: `paper.md` §6.1; statement-level status and dependencies:
+`theory.md` T57–T60.)
+
+1. **A wheel does not decide primality — it enumerates candidates.** By Lemma 2.3 the holes of the wheel of modulus
+   \(P_{<p}\) are certified prime exactly on \([p, p^2)\); the first failure is \(121 = 11^2\), a hole of the mod-\(210\)
+   wheel _inside its own first period_ (Cor. 2.4). Hence a wheel sieve is always **wheel + composite removal**, and all
+   of its correctness lives in the second half. Deciding all of \([2,N]\) from wheel membership alone would require
+   modulus \(P_{<\sqrt N} = e^{ (1+o (1))\sqrt N}\) — superpolynomially more space than the answer occupies. The
+   construction is non-circular only because it respects the window: extending \(S_k\) requires \(p_{k+1}\), the least
+   hole \(>1\) (§2.3), which the previous stage has already certified. That is Theorem 2.8 (causality) read on the
+   lattice. Use a wheel one step outside its window and it is wrong; consult an external primality test to patch that,
+   and you have assumed what you set out to compute.
+2. **The \(\log\log\) is Mertens, and it is a ceiling on the whole family.** Touches scale with the candidate density
+   \(\kappa_k = \varphi (P_k)/P_k \sim e^{-\gamma}/\log p_k\), so the bound is attained only by letting the modulus grow
+   with \(N\). The return on space is doubly logarithmic: \(w=6 \Rightarrow \kappa = 0.1918\) at \(W = 30\,030\);
+   \(w=8 \Rightarrow \kappa = 0.1636\) at \(W = 9\,699\,690\) (a \(323\times\) table for \(15\%\) fewer touches);
+   halving \(\kappa\) to \(\approx 0.10\) needs primes up to \(\approx 274\), i.e. a modulus near \(10^{117}\). No
+   wheel beats \(\log\log\), and no _storable_ wheel beats a small constant — which is why real sieves live at
+   \(w \in \{3,\dots,8\}\), i.e. in Algorithm B's regime and not in the asymptotic one the row describes.
+3. **The table is part of the cost.** At the quoted bound the wheel array is proportional to the range
+   (\(\Theta (N/\log\log N)\) words), built stage by stage at \(\Theta (P_k)\) each, with no access locality; the compact
+   variants trade the space back to \(O (\sqrt N)\) and pay in constants. Remark 2.9 is the same obstruction seen from
+   the per-prime side.
+4. **A fixed wheel is this algorithm, truncated.** The wheel-extension step is exactly the recursion
+   \(S_{k+1} = (p\text{ tilings of } S_k)\setminus p\cdot S_k\) whose deleted set is \(\Theta_p = p\cdot A_p\)
+   (Theorem 2.1; `fractal.md`). A depth-\(w\) wheel sieve runs that recursion to depth \(w\), **stores** the stage, and
+   delegates every deeper stage to a marking pass over the range. **Algorithm B** runs it to depth \(w\), stores the
+   stage, and delegates the deeper stages to \(O (1)\)-state streams that reuse the depth-\(w\) template — paying
+   precisely the \(\omega_{>p_w}\) duplicate factor of §4.5 for the reuse. **Algorithm A** runs it to full depth with no
+   template reuse and pays \(S (N)\approx N^{0.75}\) live streams. One recursion; three choices of where
+   materialisation stops and generation begins. That is the axis on which these rows should be compared, and it is a
+   space/duplication axis, not a time-complexity axis.
