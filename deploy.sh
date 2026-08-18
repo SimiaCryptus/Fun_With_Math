@@ -7,6 +7,7 @@ aws s3 cp --recursive ./ s3://math.cognotik.com/ \
   --exclude "test/*" \
   --exclude ".pnpm/*" \
   --exclude "public/*" \
+  --exclude "videos/*" \
   --exclude "docs/*" \
   --exclude "scripts/*" \
   --exclude "package.json" \
