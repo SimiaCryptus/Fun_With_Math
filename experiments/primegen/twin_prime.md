@@ -1,12 +1,13 @@
 # Twin Primes in the Wheel Lattice: Structure, Density, and the Period–Window Dichotomy
 
 **Status:** structural results, exact numerics, one sufficient condition. **Companions:** `paper.md` §2.5 (lattice
-recursion F1, phase separation O2/F3), `fractal.md` (lattice reading), `theory.md` (statement inventory, status
-legend), `algorithm.md` (Theorem 2.1, Lemma 2.3).
+recursion F1, phase separation O2/F3), `fractal.md` (lattice reading), `theory.md` (statement inventory, status legend),
+`algorithm.md` (Theorem 2.1, Lemma 2.3), `lean/Primegen/Twin.lean` (kernel-checked: TP0's rough half, TP1's per-prime
+factor, TP7 in full, TP8 (a)/ (b), and the _statement_ of Claim W together with witnesses for small primes).
 
 This document develops the **pair lattice** — the twin-candidate residues of a wheel — as an object in its own right:
-its exact recursion under wheel promotion, the geometry of the deletions that promotion performs, its density (which
-is the Hardy–Littlewood singular series, materialised), and the precise sense in which it does and does not carry
+its exact recursion under wheel promotion, the geometry of the deletions that promotion performs, its density (which is
+the Hardy–Littlewood singular series, materialised), and the precise sense in which it does and does not carry
 information about twin primes.
 
 Two facts frame everything that follows, and both are already in `paper.md`:
@@ -14,11 +15,11 @@ Two facts frame everything that follows, and both are already in `paper.md`:
 - a wheel **counts exactly** over its full period `P_k` (Claim F1, §2.5);
 - a wheel **certifies primality** only on the window `[p_{k+1}, p_{k+1}²)` (Claim O2/F3, and `paper.md` §6.1 (a)).
 
-The window has relative length `p_{k+1}²/P_k = e^{−(1+o(1))p_k}` inside the period, so the two ranges are separated by
-a doubly exponential factor. Everything the pair lattice says is on one side of that separation or the other, and
-knowing which side a statement lives on is the whole content of the subject. The document closes with three things the
-framework delivers on the certified side: a well-posed conjecture (TP-J), a Lean-formalisable implication (W ⟹ TPC),
-and a twin generator that is free given Algorithm B.
+The window has relative length `p_{k+1}²/P_k = e^{−(1+o(1))p_k}` inside the period, so the two ranges are separated by a
+doubly exponential factor. Everything the pair lattice says is on one side of that separation or the other, and knowing
+which side a statement lives on is the whole content of the subject. The document closes with three things the framework
+delivers on the certified side: a well-posed conjecture (TP-J), a Lean-formalisable implication (W ⟹ TPC), and a twin
+generator that is free given Algorithm B.
 
 ---
 
@@ -31,9 +32,13 @@ and a twin generator that is free given Algorithm B.
 | deletion geometry `δ_k`               | which copies die (TP8)               | period-wide, per class     | structural, tile-indexed     |
 | roughness certificate (O2)            | holes **are** primes                 | `[p_{k+1}, p_{k+1}²)`      | equality, but no count       |
 
+Rows 1, 3 and 4 now have kernel-checked fragments in `lean/Primegen/Twin.lean` (§8.3), and formalising row 4's window
+statement immediately turned up an edge case the prose glossed: Claim W is _false at `p = 2`_, for width reasons only
+(`Twin.not_windowAt_two`), so §6 quantifies it over `p > 2` — which is all TP7 consumes.
+
 The first three rows are elementary and exact. The last row is the only place where holes are primes, and it carries no
-count. Bridging the top three rows to the bottom row is an equidistribution problem at scale `e^{−p_k}` (§5.3), and
-that problem is the twin prime conjecture in localised form (§6).
+count. Bridging the top three rows to the bottom row is an equidistribution problem at scale `e^{−p_k}` (§5.3), and that
+problem is the twin prime conjecture in localised form (§6).
 
 ---
 
@@ -63,8 +68,8 @@ Extends `algorithm.md` §1.
 
 ## 2. Two objects: classes and integers
 
-Two distinct objects travel under the phrase "twin primes in the wheel", and every statement below is about exactly
-one of them:
+Two distinct objects travel under the phrase "twin primes in the wheel", and every statement below is about exactly one
+of them:
 
 - **Classes.** `S_k^{(2)}` is a set of `T_k` residue classes mod `P_k`. It is finite, exactly computable, and its
   behaviour under promotion is elementary (§4).
@@ -103,11 +108,20 @@ consequences of the direction.
 | 8   | 19    | 9 699 690 | 1 658 880 | 0.16967     | 378 675 | 0.03904         | 0.2283       |
 
 Sanity checks by hand: mod 6 the only pair class is `5` (`5,7`); mod 30 there are three — `(11,13)`, `(17,19)`,
-`(29,31)` — and `T_3 = 1·1·3 = 3`. ✔
+`(29,31)` — and `T_3 = 1·1·3 = 3`. ✔ Machine check, from `Twin.lean` (`T n = |pairLattice n|`, computed by brute-force
+filter, not by the recursion):
 
-Read the table the way `paper.md` §6.1 (b) reads `κ_k`: the _count_ `T_k` explodes, the _density_ `τ_k` decays, and
-the decay is `1/log²`. Both are consequences of the single recursion of §4.1, and the two facts are worth quoting
-together — the growth of `T_k` is a statement about `P_k` growing faster than the density falls, nothing more.
+```
+#eval [T 2, T 6, T 30, T 210, T 2310, T 30030]      -- [1, 1, 3, 15, 135, 1485]
+#eval (T 210 == 5 * T 30, T 2310 == 9 * T 210, T 30030 == 11 * T 2310)   -- (true, true, true)
+```
+
+The first line reproduces the `T_k` column for `k ≤ 6`; the second checks TP1's multiplier `p_{k+1} − 2` at the first
+three promotions independently of its proof. ✔
+
+Read the table the way `paper.md` §6.1 (b) reads `κ_k`: the _count_ `T_k` explodes, the _density_ `τ_k` decays, and the
+decay is `1/log²`. Both are consequences of the single recursion of §4.1, and the two facts are worth quoting together —
+the growth of `T_k` is a statement about `P_k` growing faster than the density falls, nothing more.
 
 ---
 
@@ -118,7 +132,10 @@ together — the growth of `T_k` is a statement about `P_k` growing faster than 
 > **Claim TP1 (pair count).** `T_1 = 1` and, for `k ≥ 1` with `p = p_{k+1}`,
 > `T_{k+1} = (p − 2)·T_k`. Hence `T_k = ∏_{3 ≤ p_i ≤ p_k} (p_i − 2)`.
 >
-> _Status: `[T]` (CRT, `theory.md` T4)._
+> _Status: `[T]` (CRT, `theory.md` T4). The per-stage factor is formalised: `Twin.pairLattice_prime` identifies
+> `S^{(2)} mod p` as `range p` minus `{0, p−2}` and `Twin.card_pairLattice_prime` gives `|S^{(2)} mod p| = p − 2` for
+> every prime `p ≥ 3`. Joining the stages needs CRT counting over `ZMod (P·p)` — mechanical, unwritten, and
+> `#eval`-checked instead (§3)._
 
 _Proof._ By CRT, `r mod P_{k+1}` is `(r mod P_k, r mod p)`, and `gcd(r(r+2), P_{k+1}) = 1` iff `r mod P_k ∈ S_k^{(2)}`
 and `r ≢ 0, −2 (mod p)`. For `p ≥ 3` the two excluded classes mod `p` are distinct (else `p | 2`), so exactly `p − 2`
@@ -131,8 +148,8 @@ Three features of the constants, since they are easy to misremember:
   one-dimensional one.
 - The net effect on **density** is `τ_{k+1} = τ_k·(1 − 2/p)`, strictly decreasing. `T_k` grows only because `P_k`
   grows faster.
-- At `p = 3` the factor is `p − 2 = 1`: stage 3 adds no new pair classes at all (mod 2 and mod 6 both have exactly
-  one), so the growth of `T_k` is not even strict at the bottom of the range.
+- At `p = 3` the factor is `p − 2 = 1`: stage 3 adds no new pair classes at all (mod 2 and mod 6 both have exactly one),
+  so the growth of `T_k` is not even strict at the bottom of the range.
 
 ### 4.2 The promotion (pair version of Claim F1)
 
@@ -213,7 +230,10 @@ has a complete elementary answer, and it is sharper than "two of them do".
 > - **(c) survivors come in two arcs.** The surviving tiles of each class are the two cyclic intervals of lengths
 >   `δ_k − 1` and `p − δ_k − 1`, so every class survives on a run of `≥ ⌈(p−2)/2⌉` **consecutive** copies.
 >
-> _Status: `[T]` (CRT plus one unit multiplication); not formalised (§8.3)._
+> _Status: `[T]` (CRT plus one unit multiplication). (a) and (b) are formalised: `Twin.deleted_tiles_ne` /
+> `Twin.deleted_tiles_ne_tile` for "no copy dies twice", `Twin.deleted_tile_offset` for `(j₁ − j₀)·P = −2` in
+> `ZMod p`, and `Twin.deleted_tile_offset_eq` for `j₁ − j₀ = δ_k` with `delta p P = −2·P⁻¹` — note that the class `r`
+> has disappeared from the conclusion, which is the whole content of (b). (c) is not formalised._
 
 _Proof._ `r + jP ≡ 0 (mod p) ⟺ j ≡ −rP̄ (mod p)` since `P` is a unit mod `p`; likewise `r + jP + 2 ≡ 0 ⟺ j ≡ −(r+2)P̄`.
 Subtracting gives `δ_k`, and `δ_k ≢ 0` because `p ∤ 2`, which is (a) — and counting `p − 2` survivors per class over all
@@ -242,10 +262,10 @@ cut `ℤ_p` into arcs of lengths `δ_k − 1` and `p − δ_k − 1`, whose maxi
 >
 > _Status: `[T]` for the criterion and the table._
 
-**What TP8 pins down.** (i) The loss is exactly `2` per class, so the multiplier is `p − 2`: the two strikes can
-neither coincide (which would give `p − 1`) nor cascade (`p − 3`). (ii) The second deletion set is not an independent
-object but a rigid translate of the first, which removes half of §4.2's twist. (iii) `δ_k` is a computable invariant of
-the stage with no analogue in the single-hole recursion F1, where there is only one strike.
+**What TP8 pins down.** (i) The loss is exactly `2` per class, so the multiplier is `p − 2`: the two strikes can neither
+coincide (which would give `p − 1`) nor cascade (`p − 3`). (ii) The second deletion set is not an independent object but
+a rigid translate of the first, which removes half of §4.2's twist. (iii) `δ_k` is a computable invariant of the stage
+with no analogue in the single-hole recursion F1, where there is only one strike.
 
 **What TP8 is about.** Copies of residue classes. It constrains _which_ of the `p` copies of a class dies, and every
 such statement is period-wide; §5.4 records how that relates to the window.
@@ -263,8 +283,8 @@ pair-marking pass needs one traversal and a fixed offset rather than two indepen
 
 TP4 is the reason the class-level picture is well behaved for every admissible pattern and self-corrects for
 inadmissible ones: run the recursion on `{0,2,4}` and it dies at `p = 3` (`ν = 3`), as it must, since there is exactly
-one prime triple of that shape. The class-level theory is thus complete and pattern-uniform; the distance between it
-and a statement about integers is uniform too, and is the subject of §5.
+one prime triple of that shape. The class-level theory is thus complete and pattern-uniform; the distance between it and
+a statement about integers is uniform too, and is the subject of §5.
 
 ---
 
@@ -275,8 +295,8 @@ differ. None of them is a defect of the recursion; they are the boundary of what
 
 ### 5.1 Holes are candidates: composite pair-holes exist
 
-The holes of `S_k` are certified prime on `[p_{k+1}, p_{k+1}²)` and nowhere else (Claim O2/F3, `paper.md` §6.1 (a)).
-The boundary is reached inside the first period: `121 = 11²` is coprime to `P_4 = 210`, so `121 ∈ S_4` with
+The holes of `S_k` are certified prime on `[p_{k+1}, p_{k+1}²)` and nowhere else (Claim O2/F3, `paper.md` §6.1 (a)). The
+boundary is reached inside the first period: `121 = 11²` is coprime to `P_4 = 210`, so `121 ∈ S_4` with
 `121 < P_4` — a composite hole in the mod-210 wheel's own first period, and the exact reason
 `Primegen.prime_of_rough_of_lt_sq` carries the hypothesis `n < p²`.
 
@@ -285,7 +305,10 @@ For pairs the same thing happens, and one can exhibit it in both flavours:
 - **one coordinate composite.** `(167, 169) ∈ S_4^{(2)}` — both coprime to `210`, `167` prime, `169 = 13²`. It sits at
   `167 < 210`, i.e. inside the first period, above the window `[11, 121)`.
 - **both coordinates composite.** `(527, 529) ∈ S_5^{(2)}` — both coprime to `2310`, `527 = 17·31`, `529 = 23²`, and
-  `527 < 2310`, again inside the first period.
+  `527 < 2310`, again inside the first period. The first of these is checked in the kernel, as an `example` in
+  `Twin.lean`:
+  `Rough 11 167 ∧ Rough 11 169 ∧ ¬ Nat.Prime 169` by `decide`/`norm_num`. Holes are _candidates_; only the window
+  certifies.
 
 The general statement needs no lucky example:
 
@@ -329,8 +352,8 @@ coordinates prime" from "both coordinates have an odd number of prime factors". 
 
 ### 5.4 The bridging input is equidistribution
 
-The one range where TP0 is an equality is the window, so the natural localised question is whether the window contains
-a candidate pair (§6). Getting there from §4 means converting a count over a full period `P_k = e^{(1+o(1))p_k}` into
+The one range where TP0 is an equality is the window, so the natural localised question is whether the window contains a
+candidate pair (§6). Getting there from §4 means converting a count over a full period `P_k = e^{(1+o(1))p_k}` into
 occupancy of an interval of relative length `p_{k+1}²/P_k = e^{−(1+o(1))p_k}` — i.e. equidistribution of `S_k^{(2)}` at
 scale `e^{−p_k}`. That is the input the modern literature works hardest for and obtains only in averaged form:
 Goldston–Pintz–Yıldırım, Zhang's extension of Bombieri–Vinogradov, Maynard–Tao and Polymath8 give **bounded gaps**
@@ -361,15 +384,22 @@ The two ranges do not overlap, and the gap between them is doubly exponential.
 
 On the certified side there is one honest, well-posed target.
 
-> **Claim W (window occupancy).** For every prime `p` there exist `h` with `p ≤ h`, `h + 2 < p²`, and both `h` and
-> `h+2` coprime to `P_{<p}`.
+> **Claim W (window occupancy).** For every prime `p > 2` there exist `h` with `p ≤ h`, `h + 2 < p²`, and both `h` and
+> `h+2` coprime to `P_{<p}` (equivalently: `p`-rough).
 >
 > Equivalently: for every prime `p`, the pair lattice at the stage below `p` has a hole-pair inside the certified
 > window.
+>
+> _Formalised as a statement: `Twin.WindowAt p` (single prime) and `Twin.Window` (the quantified claim). The
+> restriction to `p > 2` is forced, not cosmetic: the window of `p = 2` is `[2, 4)`, which has no room for a pair at
+> distance `2` at all, so the unrestricted form is outright false (`Twin.not_windowAt_two`). This is the one place
+> where formalising the prose changed it._
 
 > **Claim TP7 (W ⟹ TPC).** Claim W implies there are infinitely many twin primes.
 >
-> _Status: `[P]` — provable now, in Lean, from `Primegen.prime_of_rough_of_lt_sq` alone. See §8.3._
+> _Status: `[F]` — **done**, `Twin.infinite_twins_of_window` (with the unbounded form `Twin.exists_twin_ge`), from
+> `Primegen.prime_of_rough_of_lt_sq` alone. The proof is three lines and mentions the promotion recursion nowhere;
+> see §8.3._
 
 _Proof._ Given `p`, Claim W produces `h` with `p ≤ h < h+2 < p²`, both `p`-rough. By Claim O2
 (`prime_of_rough_of_lt_sq`) applied to each coordinate, both `h` and `h+2` are prime, so `(h, h+2)` is a twin pair with
@@ -378,8 +408,8 @@ _Proof._ Given `p`, Claim W produces `h` with `p ≤ h < h+2 < p²`, both `p`-ro
 Three remarks on the standing of W:
 
 1. **W is not weaker than TPC.** TP7 gives `W ⟹ TPC`, and no implication is known in the other direction, so W sits at
-   or above TPC in strength. It is a _reformulation with a sharper localisation_, in the family of
-   Legendre/Brocard-type short-interval statements (Brocard: at least four primes between consecutive prime squares for
+   or above TPC in strength. It is a _reformulation with a sharper localisation_, in the family of Legendre/Brocard-type
+   short-interval statements (Brocard: at least four primes between consecutive prime squares for
    `p ≥ 3`; W is its twin analogue). It is not available as a lemma toward TPC.
 2. **What W would follow from is a pair-Jacobsthal bound.** Define `g_2(n)` = the maximal gap between consecutive
    elements of `S^{(2)}` mod `n`. Then
@@ -388,15 +418,54 @@ Three remarks on the standing of W:
 
    `TP-J ⟹ W` up to constants (a gap bound below the window length `p_{k+1}²` forces a hole-pair in the window), hence
    `TP-J ⟹ TPC`, hence TP-J is hard. Note the calibration: for the **single**-hole analogue the corresponding bound is
-   Iwaniec's theorem `g(P_k) ≪ log²P_k` (`theory.md` T9) — the single-coordinate version of the required input is
-   known, and lands _exactly_ at the window length, which is why the single-prime version of the window statement is
-   within reach and the pair version is not. The lower bound of Ford–Green–Konyagin–Maynard–Tao shows there is no slack
-   to spare.
+   Iwaniec's theorem `g(P_k) ≪ log²P_k` (`theory.md` T9) — the single-coordinate version of the required input is known,
+   and lands _exactly_ at the window length, which is why the single-prime version of the window statement is within
+   reach and the pair version is not. The lower bound of Ford–Green–Konyagin–Maynard–Tao shows there is no slack to
+   spare.
 
 3. **TP-J is measurable.** `g_2(P_k)` is computable exactly for `k ≤ 8` (period `9 699 690`) and by segmented
    enumeration well beyond. Fitting `g_2(P_k)` against `p_k^α` either supports TP-J with a credible exponent or kills
    it. This is where the framework of `paper.md` contributes something new to the twin question, and it contributes
    _data_. Measure before quoting — `paper.md` §6's caveat applies verbatim.
+
+### 6.1 Occupancy of the certified window, computed
+
+`Twin.windowWitnesses p` enumerates every `h` witnessing `WindowAt p` — an empty list at some prime would _refute_ W,
+and any single element certifies it there via `Twin.windowAt_of_witness`. Counts, straight from the `#eval` over the
+primes below `60`, against the period-wide prediction `τ·(p² − p)` with `τ` the pair density of the stage below `p`
+(§3, §4.3):
+
+| `p` | `τ` (stage below `p`) | window length `p² − p` | predicted `τ(p²−p)` | hole-pairs in `[p, p²)` |
+| --- | --------------------- | ---------------------- | ------------------- | ----------------------- |
+| 2   | 1.00000               | 2                      | —                   | **0**                   |
+| 3   | 0.50000               | 6                      | 3.0                 | 2                       |
+| 5   | 0.16667               | 20                     | 3.3                 | 3                       |
+| 7   | 0.10000               | 42                     | 4.2                 | 4                       |
+| 11  | 0.07143               | 110                    | 7.9                 | 8                       |
+| 13  | 0.05844               | 156                    | 9.1                 | 9                       |
+| 17  | 0.04945               | 272                    | 13.4                | 16                      |
+| 19  | 0.04363               | 342                    | 14.9                | 17                      |
+| 23  | 0.03904               | 506                    | 19.8                | 21                      |
+| 29  | 0.03565               | 812                    | 28.9                | 29                      |
+| 31  | 0.03319               | 930                    | 30.9                | 30                      |
+| 37  | 0.03105               | 1 332                  | 41.4                | 41                      |
+| 41  | 0.02937               | 1 640                  | 48.2                | 48                      |
+| 43  | 0.02794               | 1 806                  | 50.5                | 50                      |
+| 47  | 0.02664               | 2 162                  | 57.6                | 61                      |
+| 53  | 0.02550               | 2 756                  | 70.3                | 74                      |
+| 59  | 0.02454               | 3 422                  | 84.0                | 87                      |
+
+Three readings, and only the first is a theorem:
+
+- **W holds for every prime `2 < p < 60`**, with the witness count never below `2`. Each row is a finite certificate, so
+  this part of open problem 2 is closed in the small range — by evaluation, not by argument.
+- **`p = 2` is the sole failure**, and it fails on width (`0` witnesses in `[2, 4)`), exactly as `not_windowAt_two`
+  says. Nothing above `2` shows any sign of scarcity.
+- **No systematic deficit against the period-wide prediction yet.** Observed/predicted stays in `0.66 … 1.19` and is
+  above `1` for the larger half of the range; the §5.4 equidistribution defect is not visible at these sizes, which is
+  expected — the window is a _fixed positive_ fraction `p²/P_{<p}` of the period only while `p²  ≳ P_{<p}`, i.e. for
+  `k ≤ 4`, and the doubly exponential separation has barely begun by `p = 59`. Extending this table is open problem 2
+  proper; the interesting range starts where the counts are in the thousands.
 
 ---
 
@@ -412,8 +481,8 @@ Three remarks on the standing of W:
 | Iwaniec; Ford–Green–Konyagin–Maynard–Tao                   | `g(P_k)` bounds — the single-coordinate calibration for TP-J (`theory.md` T9)          |
 | Pritchard (1982)                                           | wheel promotion = TP2/F1; not novel (`theory.md` T55, `paper.md` §6.1 (d))             |
 
-The pattern is uniform: every classical counterpart of a statement in §4 is one-sided in the direction TP0 predicts,
-and that one-sidedness is the parity problem.
+The pattern is uniform: every classical counterpart of a statement in §4 is one-sided in the direction TP0 predicts, and
+that one-sidedness is the parity problem.
 
 ---
 
@@ -434,8 +503,8 @@ twins():                       # unbounded; O(π(√n)) memory, as B()
       prev := q
 ```
 
-No extra asymptotic cost, and it inherits `paper.md` §4.6's `O(1)` random-access restart, so twin counting is exactly
-as segment-parallel as prime counting. This is the right tool for §6's measurements and for checking `π_2(x)` against
+No extra asymptotic cost, and it inherits `paper.md` §4.6's `O(1)` random-access restart, so twin counting is exactly as
+segment-parallel as prime counting. This is the right tool for §6's measurements and for checking `π_2(x)` against
 `2C_2 x/log²x`.
 
 ### 8.2 A pair wheel for the scan — with a caveat
@@ -453,49 +522,67 @@ Restricting stream `p` to multipliers whose product lands on a pair-relevant pos
 pair-restrict the scan, never the advance. Marking still covers `pairSpokes ∪ (pairSpokes + 2)`, which is `2T_w = 2970`
 of `5760` spokes at `w = 6` — a genuine but modest `~48%` reduction in useful marks, not in performed marks.
 
-### 8.3 Formalisation targets
+### 8.3 Formalisation status
 
-Consistent with `paper.md` §9, and all reachable from lemmas already in `lean/`:
+`lean/Primegen/Twin.lean` is `sorry`-free and builds against the pinned Mathlib. What is in the kernel:
 
-| statement                      | proposed Lean name               | file (new)  | input                              |
-| ------------------------------ | -------------------------------- | ----------- | ---------------------------------- |
-| TP1 pair count recursion       | `Twin.card_pairLattice_succ`     | `Twin.lean` | CRT, Mathlib                       |
-| TP2 pair lattice recursion     | `Twin.pairLattice_succ`          | `Twin.lean` | CRT + units                        |
-| TP8 deletion geometry (`δ_k`)  | `Twin.deleted_tile_offset`       | `Twin.lean` | CRT + `ZMod` units                 |
-| TP8(a) no copy dies twice      | `Twin.deleted_tiles_ne`          | `Twin.lean` | `p ∤ 2`                            |
-| TP4 admissibility              | `Twin.pairLattice_nonempty_iff`  | `Twin.lean` | CRT                                |
-| TP7 `W ⟹ TPC`                  | `Twin.infinite_twins_of_window`  | `Twin.lean` | `Primegen.prime_of_rough_of_lt_sq` |
-| TP5 composite pair-holes exist | `Twin.exists_composite_pairHole` | `Twin.lean` | `algorithm.md` Cor. 2.4            |
+| statement                       | Lean name                                                 | status |
+| ------------------------------- | --------------------------------------------------------- | ------ |
+| TP7 `W ⟹ TPC`                   | `Twin.infinite_twins_of_window`, `Twin.exists_twin_ge`    | ✔      |
+| Claim W, statement + witnesses  | `Twin.WindowAt`, `Twin.Window`, `Twin.windowWitnesses`    | ✔      |
+| W is false at `p = 2`           | `Twin.not_windowAt_two`                                   | ✔      |
+| twin pair ⟹ window witness      | `Twin.windowAt_of_twin`, `Twin.windowAt_of_witness`       | ✔      |
+| TP0, containment (rough half)   | `Twin.rough_pair_of_twin`                                 | ✔      |
+| TP1, per-prime factor `p − 2`   | `Twin.pairLattice_prime`, `Twin.card_pairLattice_prime`   | ✔      |
+| TP8(a) no copy dies twice       | `Twin.deleted_tiles_ne`, `Twin.deleted_tiles_ne_tile`     | ✔      |
+| TP8(b) offset `δ_k`, class-free | `Twin.deleted_tile_offset`, `Twin.deleted_tile_offset_eq` | ✔      |
+| TP5, one composite pair-hole    | `example : Rough 11 167 ∧ Rough 11 169 ∧ ¬ Prime 169`     | ✔      |
 
-`Twin.infinite_twins_of_window` is short and is worth doing precisely because it makes the shape of §5 **machine-visible**:
+What is still open, and why:
+
+| statement                    | proposed Lean name               | missing input                                |
+| ---------------------------- | -------------------------------- | -------------------------------------------- |
+| TP1 full recursion `T_{k+1}` | `Twin.card_pairLattice_succ`     | CRT counting over `ZMod (P·p)`; `#eval`-only |
+| TP2 pair lattice recursion   | `Twin.pairLattice_succ`          | CRT + unit multiplication, as above          |
+| TP4 admissibility            | `Twin.pairLattice_nonempty_iff`  | CRT, general pattern `H`                     |
+| TP5 general form (`k ≥ 4`)   | `Twin.exists_composite_pairHole` | `algorithm.md` Cor. 2.4 (`p_{k+1}² < P_k`)   |
+| TP8(c) two survivor arcs     | `Twin.survivor_arcs`             | cyclic-interval bookkeeping in `ZMod p`      |
+
+`Twin.infinite_twins_of_window` is short and is worth doing precisely because it makes the shape of §5
+**machine-visible**:
 the hypothesis is Claim W, the conclusion is TPC, and the promotion recursion appears nowhere in the proof — the
-certified window carries the entire primality content.
+certified window carries the entire primality content. That is now a fact about a checked proof term rather than a
+prediction about one: `infinite_twins_of_window` cites `prime_of_rough_of_lt_sq` twice and nothing else from §4.
+Symmetrically, the _exact_ material (TP1, TP2) is the part still unformalised, and its absence costs the implication
+nothing — which is the period–window dichotomy in the crispest form the repository can state it.
 
 A note on scope, since it is the same point in kernel form: there is no statement of the form "TP1 ⟹ TPC" to formalise.
-TP1 is a statement about residue classes and TPC is a statement about integers, so the goal cannot be closed at the
-step where classes must become integers; that step is §5.2, and its content is §5.4.
+TP1 is a statement about residue classes and TPC is a statement about integers, so the goal cannot be closed at the step
+where classes must become integers; that step is §5.2, and its content is §5.4.
 
 ---
 
 ## 9. Claim → status table
 
-| id   | statement                                             | status                   | depends on   |
-| ---- | ----------------------------------------------------- | ------------------------ | ------------ |
-| TP0  | one-way containment, equality only on the window      | `[T]`                    | O2 / F3, T1  |
-| TP1  | `T_{k+1} = (p−2)T_k`                                  | `[T]`                    | T4           |
-| TP2  | pair lattice recursion, two twisted affine deletions  | `[T]` (not formalised)   | T4, F1       |
-| TP3  | `τ_k` = singular series; `~ 2C_2e^{−2γ}/log²p_k`      | `[C]`                    | T7           |
-| TP3a | hole density exceeds prime density by `(2e^{−γ})^h`   | `[C]`                    | T7 + PNT     |
-| TP4  | admissibility ⟺ classes survive forever               | `[T]`                    | T4           |
-| TP5  | composite pair-holes exist for `k ≥ 4`                | `[T]`                    | Cor. 2.4, T8 |
-| TP6  | period-wide counts bound `π_2` from above             | `[T]`                    | TP0          |
-| TP8  | deletion geometry: `j_1 − j_0 ≡ δ_k`, `D' = D + δ_kP` | `[T]` (not formalised)   | T4, TP2      |
-| TP8a | deleted copies adjacent ⟺ `P_k ≡ ∓2 (mod p_{k+1})`    | `[T]`                    | TP8          |
-| W    | window occupancy                                      | `[?]` open, `⟹` TPC      | —            |
-| TP7  | `W ⟹ TPC`                                             | `[P]` (formalisable now) | O2           |
-| TP-J | `g_2(P_k) ≪ p_k²`                                     | `[?]` open, `⟹ W ⟹ TPC`  | —            |
+| id   | statement                                             | status                  | depends on   | in the kernel                                       |
+| ---- | ----------------------------------------------------- | ----------------------- | ------------ | --------------------------------------------------- |
+| TP0  | one-way containment, equality only on the window      | `[T]`                   | O2 / F3, T1  | rough half: `Twin.rough_pair_of_twin`               |
+| TP1  | `T_{k+1} = (p−2)T_k`                                  | `[T]`                   | T4           | factor only: `Twin.card_pairLattice_prime`; `#eval` |
+| TP2  | pair lattice recursion, two twisted affine deletions  | `[T]`                   | T4, F1       | —                                                   |
+| TP3  | `τ_k` = singular series; `~ 2C_2e^{−2γ}/log²p_k`      | `[C]`                   | T7           | —                                                   |
+| TP3a | hole density exceeds prime density by `(2e^{−γ})^h`   | `[C]`                   | T7 + PNT     | —                                                   |
+| TP4  | admissibility ⟺ classes survive forever               | `[T]`                   | T4           | —                                                   |
+| TP5  | composite pair-holes exist for `k ≥ 4`                | `[T]`                   | Cor. 2.4, T8 | the `(167,169)` instance                            |
+| TP6  | period-wide counts bound `π_2` from above             | `[T]`                   | TP0          | —                                                   |
+| TP8  | deletion geometry: `j_1 − j_0 ≡ δ_k`, `D' = D + δ_kP` | `[F]` for (a), (b)      | T4, TP2      | `Twin.deleted_tiles_ne`, `..._tile_offset_eq`       |
+| TP8a | deleted copies adjacent ⟺ `P_k ≡ ∓2 (mod p_{k+1})`    | `[T]`                   | TP8          | —                                                   |
+| W    | window occupancy, `p > 2`                             | `[?]` open, `⟹` TPC     | —            | statement `Twin.Window`; verified `2 < p < 60`      |
+| TP7  | `W ⟹ TPC`                                             | `[F]` formalised        | O2           | `Twin.infinite_twins_of_window`                     |
+| TP-J | `g_2(P_k) ≪ p_k²`                                     | `[?]` open, `⟹ W ⟹ TPC` | —            | —                                                   |
 
-Status tags follow `theory.md` §0.
+Status tags follow `theory.md` §0, with `[F]` = "`[T]` and machine-checked in `lean/`". Note the shape of the table:
+everything `[F]` is on the _certified_ side of the dichotomy, and everything exact and period-wide is `[T]` only — not
+because the exact material is hard, but because it is not on the path to anything (§8.3).
 
 ---
 
@@ -504,20 +591,25 @@ Status tags follow `theory.md` §0.
 1. **Measure `g_2(P_k)`** exactly for `k ≤ 8` and by segmented enumeration for `k ≤ 12`; fit `g_2(P_k) ≍ p_k^α`. Does
    `α ≤ 2` look plausible (TP-J), or does the pair gap outgrow the window? This is the single most informative
    experiment the framework supports, and it is cheap with §8.1.
-2. **Window occupancy statistics.** For each `k`, count the pair-holes actually inside `[p_{k+1}, p_{k+1}²)` and
-   compare with the period-wide prediction `τ_k·p_{k+1}²`. Any systematic deficit is the §5.4 equidistribution defect,
-   made numerical.
-3. **Formalise TP7 and TP1** (§8.3). Small, honest, and they put the period/window boundary in the kernel.
+2. **Window occupancy statistics.** For each `k`, count the pair-holes actually inside `[p_{k+1}, p_{k+1}²)` and compare
+   with the period-wide prediction `τ_k·p_{k+1}²`. Any systematic deficit is the §5.4 equidistribution defect, made
+   numerical. **Started:** §6.1 tabulates every prime below `60` from `Twin.windowWitnesses`; the ratio sits in
+   `0.66 … 1.19` with no trend, so the defect is invisible at this size. Push it to `p ≤ 10^4` with §8.1 (the
+   brute-force `List.range (p*p)` filter of `Twin.lean` is fine to `p ~ 10^3` and should be replaced by a segmented
+   rough-scan beyond).
+3. **Formalise TP7 and TP1** (§8.3). **TP7 is done** (`Twin.infinite_twins_of_window`), as is TP1's per-prime factor
+   `p − 2` (`Twin.card_pairLattice_prime`) and TP8 (a)/ (b). What remains is joining TP1's stages by CRT over
+   `ZMod (P·p)`, plus TP2, TP4 and TP8 (c) — mechanical, and the boundary they would put in the kernel is already there.
 4. **Does TP2's twist matter?** The pair recursion deletes affine copies of _shifted_ pair lattices rather than of
-   itself (§4.2). TP8(b) halves the problem: the two deletion sets are translates, `D' = D + δ_k P_k`, so a single
+   itself (§4.2). TP8 (b) halves the problem: the two deletion sets are translates, `D' = D + δ_k P_k`, so a single
    generator plus a stage-dependent translation may suffice, and the only residual twist is that `D` is a dilate of
    `{ s : gcd(s(s + 2p̄), P) = 1 }` — a pair lattice with a stage-dependent shift `2p̄` — rather than of `S_k^{(2)}`
    itself. Is there an exact recursion on a finite family of shifted lattices closed under promotion — a genuine IFS on
    a finite alphabet? If so, `paper.md` §2.5's Moran reading extends to pairs and its transfer operator is computable.
    This is a structural question about the lattice; TP6 is unaffected either way.
-5. **`π_2` versus the wheel prediction.** Verify TP3a's `1.26` factor numerically to `10^{10}` with §8.1, and check
-   that the discrepancy is the predicted constant rather than a trend. If it is a trend, something in the accounting is
-   wrong and worth finding.
+5. **`π_2` versus the wheel prediction.** Verify TP3a's `1.26` factor numerically to `10^{10}` with §8.1, and check that
+   the discrepancy is the predicted constant rather than a trend. If it is a trend, something in the accounting is wrong
+   and worth finding.
 6. **Where does the window's copy die?** TP8 fixes the offset `δ_k` between the two deleted copies but says nothing
    about their location. Tabulate, for each `k`, the distribution of `j_0(r) = −rP̄ mod p_{k+1}` over `r ∈ S_k^{(2)}`,
    and in particular how many classes lose tile `0` — the only tile the certified window meets. Equidistribution of
@@ -539,6 +631,8 @@ constant (TP3a). The one region where holes _are_ primes is `[p_{k+1}, p_{k+1}²
 inside that period, and it carries a certificate but no count. Bridging the two is a short-interval equidistribution
 problem — the input GPY/Zhang/Maynard obtain only in averaged form, yielding bounded gaps rather than gap 2, and which
 the parity problem prevents a pure sieve from converting into a lower bound. On the certified side the framework
-contributes a sufficient window condition with a two-line proof from an already machine-checked lemma (`W ⟹ TPC`, TP7),
-a sharp and measurable conjecture calibrated against Iwaniec's theorem (TP-J), a set of small formalisation targets, and
-a twin generator that costs one register on top of Algorithm B.
+contributes a sufficient window condition whose implication is now itself machine-checked (`W ⟹ TPC`, TP7,
+`Twin.infinite_twins_of_window`, three lines, citing only `prime_of_rough_of_lt_sq`), a sharp and measurable conjecture
+calibrated against Iwaniec's theorem (TP-J), occupancy data for the certified window at every prime below `60` with no
+deficit yet visible (§6.1), and a twin generator that costs one register on top of Algorithm B. The formalisation also
+corrected the claim it formalised: W fails at `p = 2` on width alone, so it is a statement about `p > 2`.

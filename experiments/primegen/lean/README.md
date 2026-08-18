@@ -20,6 +20,12 @@ The development is `sorry`-free; every claim below is checked by the kernel.
 | B3 decision rule (kernel)         | `AlgB.emit_iff`, `AlgB.prime_iff_forall_not_claims`                   | `AlgorithmB.lean` |
 | deferred activation is complete   | `AlgB.inv_step` (`complete` field), `AlgB.inv_init`                   | `AlgorithmB.lean` |
 | B5 duplicate accounting §4.5      | `AlgB.claims_iff`, `AlgB.mem_claimants`                               | `AlgorithmB.lean` |
+| W window occupancy (statement)    | `Twin.WindowAt`, `Twin.Window`, `Twin.windowAt_of_twin`               | `Twin.lean`       |
+| TP7 `W ⟹ TPC`                     | `Twin.infinite_twins_of_window`, `Twin.exists_twin_ge`                | `Twin.lean`       |
+| TP0 containment (rough half)      | `Twin.rough_pair_of_twin`                                             | `Twin.lean`       |
+| TP8(a) no copy dies twice         | `Twin.deleted_tiles_ne`, `Twin.deleted_tiles_ne_tile`                 | `Twin.lean`       |
+| TP8(b) deletion offset `δ_k`      | `Twin.deleted_tile_offset`, `Twin.deleted_tile_offset_eq`             | `Twin.lean`       |
+| TP1, prime-modulus factor `p − 2` | `Twin.pairLattice_prime`, `Twin.card_pairLattice_prime`               | `Twin.lean`       |
 
 Two facts are worth singling out, because they are the paper's structural claims and nothing else:
 
@@ -28,12 +34,27 @@ Two facts are worth singling out, because they are the paper's structural claims
 - `AlgB.claims_iff` says the claimant set of a `W`-coprime composite `m` is precisely
   `{p prime : p ∣ m, p² ≤ m}`. Every duplicate the wheeled relaxation pays for is accounted
   here; §4.5's `κ_W · N · (ln ln √N − ln ln p_w)` is the sum of these cardinalities.
+- `Twin.infinite_twins_of_window` is `twin_prime.md`'s Claim TP7, and its proof is three lines:
+  apply `prime_of_rough_of_lt_sq` to each coordinate. The promotion recursion appears nowhere,
+  which is exactly the period–window dichotomy of `twin_prime.md` §5 made machine-visible — the
+  certified window carries all of the primality content, and the exact period-wide counts carry
+  none of it.
+  Formalising the statement of Claim W also turns up an edge case the prose glosses: W as literally
+  stated ("for every prime `p`") is false at `p = 2`, since the window `[2, 4)` is too short to hold
+  a pair at distance 2 (`Twin.not_windowAt_two`). `Twin.Window` therefore quantifies over `p > 2`,
+  which is all TP7 consumes.
 
 ## What is _not_ proved (deliberately)
 
 - **Conjecture X1** (no O(1)-time, polylog-space `NextRough`) and **Conjecture A4**
   (`S(N) = N^{θ+o(1)}`) — open, and out of scope for a formalisation.
 - All cost statements: `ops(N)`, `O(N log log N)`, `S(N)`, the comparison table of §6. These are
+- **Claim W** itself, and **Conjecture TP-J** (`g_2(P_k) ≪ log² P_k`): open, and `W ⟹ TPC`, so
+  not lemmas one proves on the way to anything. `Twin.lean` states W and proves only the
+  implication; `Twin.windowWitnesses` computes witnesses for small primes.
+- The **full TP1 recursion** `T_{k+1} = (p_{k+1} − 2)·T_k`. The per-prime factor is proved
+  (`Twin.card_pairLattice_prime`); joining the stages needs CRT counting over `ZMod (P·p)`, which
+  is mechanical but unwritten. The recursion is checked numerically by `#eval` instead.
   asymptotics about running times, not statements about the objects defined here.
 - The **outer induction** for Algorithm B: "the emitted list equals the primes below `n`". The
   per-candidate decision (`emit_iff`) and the invariant preservation (`inv_step`, `inv_init`)
