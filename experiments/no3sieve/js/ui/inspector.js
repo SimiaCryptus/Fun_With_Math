@@ -41,6 +41,18 @@ export class Inspector {
           : `blocked by — (free: skipped only if traversal not yet reached)`
       );
     }
+     // I2 budget for the four lines through this cell. `2/2` means the cell can
+     // NEVER be occupied, however far it is from the two points that closed the
+     // line — this is what the 2-wide empty strips through the origin are.
+     const L = lineLoad(x, y, ps.points, ps.k);
+     const dead = [
+       L.row >= 2 && `row y=${y}`,
+       L.col >= 2 && `col x=${x}`,
+       L.diag >= 2 && `diag x−y=${x - y}`,
+       L.anti >= 2 && `anti x+y=${x + y}`,
+     ].filter(Boolean);
+     lines.push(`I2 load    row ${L.row}/2  col ${L.col}/2  diag ${L.diag}/2  anti ${L.anti}/2`);
+     if (dead.length) lines.push(`DEAD lines ${dead.join(', ')} (saturated forever)`);
     if (opts.density) {
       const D = windowPop(ps, x, y, opts.s);
       lines.push(`D_${opts.s}       ${D}`);
@@ -72,6 +84,21 @@ function blockers(cx, cy, P, k) {
   }
   return null;
 }
+/** Points on the 4 axis/diagonal lines through (cx,cy), excluding the cell itself. */
+function lineLoad(cx, cy, P, k) {
+   const L = { row: 0, col: 0, diag: 0, anti: 0 };
+   for (let i = 0; i < k; i++) {
+     const x = P[2 * i],
+       y = P[2 * i + 1];
+     if (x === cx && y === cy) continue;
+     if (y === cy) L.row++;
+     if (x === cx) L.col++;
+     if (x - y === cx - cy) L.diag++;
+     if (x + y === cx + cy) L.anti++;
+   }
+   return L;
+}
+
 
 // Exact (unaggregated) centered-window count for the hovered cell.
 function windowPop(ps, x, y, s) {

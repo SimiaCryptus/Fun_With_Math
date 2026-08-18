@@ -7,6 +7,7 @@ import { createLogger } from '../util/log.js';
 
 const log = createLogger('runner');
 const WORKER_HANDSHAKE_MS = 4000; // no 'started' by then ⇒ assume the worker is dead
+const bump = (m, k) => m.set(k, (m.get(k) || 0) + 1);
 
 export class PointStore {
   constructor() {
@@ -19,6 +20,10 @@ export class PointStore {
     this.rGen = -1;
     this.occ = new Map(); // key2(x,y) -> index (inspector / blocked-by)
     this.kOfRing = [];
+     // I2 ledger: a line holding 2 points is DEAD for the rest of the run, at any
+     // distance. These maps are what turn "mysterious 2-wide empty strips" into a
+     // drawable, checkable fact (see renderer `_drawDead`).
+     this.sat = { row: new Map(), col: new Map(), diag: new Map(), anti: new Map() };
   }
 
   _grow(need) {
@@ -60,6 +65,10 @@ export class PointStore {
       this.points[2 * (this.k + i)] = x;
       this.points[2 * (this.k + i) + 1] = y;
       this.occ.set(kk, this.k + i);
+       bump(this.sat.row, y);
+       bump(this.sat.col, x);
+       bump(this.sat.diag, x - y);
+       bump(this.sat.anti, x + y);
     }
     this.k += m;
     this.rGen = rep.r;
@@ -73,7 +82,12 @@ export class PointStore {
   }
 
   snapshot() {
-    return { points: this.points.subarray(0, this.k * 2), k: this.k, rGen: this.rGen };
+     return {
+       points: this.points.subarray(0, this.k * 2),
+       k: this.k,
+       rGen: this.rGen,
+       sat: this.sat,
+     };
   }
 }
 

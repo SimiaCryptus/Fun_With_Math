@@ -4,7 +4,14 @@
 //   3. verifier + brute-force triple check agree (§7.1, §7.2)
 //   4. segment-closure regression: disabling the {(c1,c2)} family must FAIL (§7.4)
 //   5. Lemma 3.3.1 mark bound holds for random lines
-import { ringLength, perimeterToCell, cellToPerimeter, linfIndex, primdir } from './lattice.js';
+import {
+   ringLength,
+   perimeterToCell,
+   cellToPerimeter,
+   linfIndex,
+   primdir,
+   key2,
+} from './lattice.js';
 import { SieveEngine, referenceRun, convexitySplit } from './sieve.js';
 import { verify, verifyBruteForce } from './verify.js';
 import { pointsHash } from './util/sha256.js';
@@ -111,6 +118,42 @@ export function runSelfTest(log = console.log) {
     why = ` (${e.message})`;
   }
   all &= say(twoSided, `I4 both directions: no over-blocking for R<=48${why}`);
+   // 2c. The recurring "the constraint is unbounded / 2-wide strips shoot to
+   // infinity" report. It is I2, not a leak: the greedy takes the origin 2x2
+   // cluster, which puts 2 points into each of rows y=0,1 and cols x=0,1, and a
+   // line with 2 points is closed at EVERY distance. Assert both halves: the
+   // strips really hold exactly 2 points, and every vacant cell in them is
+   // rejected by the independent O(k) oracle too (so nothing was over-blocked).
+   test('2-wide empty strips are saturated rows/columns (I2), not unbounded marking', () => {
+     const R = 24;
+     const eng = new SieveEngine({ rMax: R });
+     eng.run();
+     const get = (m, k) => m.get(k) || 0;
+     const rows = new Map(),
+       cols = new Map();
+     for (let i = 0; i < eng.k; i++) {
+       rows.set(eng.py[i], get(rows, eng.py[i]) + 1);
+       cols.set(eng.px[i], get(cols, eng.px[i]) + 1);
+     }
+     for (const v of [0, 1]) {
+       if (get(rows, v) !== 2) return { ok: false, msg: `row y=${v} holds ${get(rows, v)}, want 2` };
+       if (get(cols, v) !== 2) return { ok: false, msg: `col x=${v} holds ${get(cols, v)}, want 2` };
+     }
+     let checked = 0;
+     for (let t = -R; t <= R; t++)
+       for (const v of [0, 1])
+         for (const c of [
+           [t, v],
+           [v, t],
+         ]) {
+           if (eng.occupied.has(key2(c[0], c[1]))) continue;
+           checked++;
+           if (eng.exactCheck(c[0], c[1]))
+             return { ok: false, msg: `(${c[0]},${c[1]}) is admissible but was skipped` };
+         }
+     return { ok: true, msg: `rows/cols {0,1} hold 2 each; ${checked} strip cells provably blocked` };
+   });
+
 
   // 3. verifier + brute force
   const ps = new SieveEngine({ rMax: 20 }).run();

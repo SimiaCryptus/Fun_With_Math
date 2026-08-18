@@ -47,6 +47,9 @@ export class Renderer {
     this._layer('density', () => {
       if (opts.density && ps.k > 0) this._drawDensity(vp, ps, opts);
     });
+     this._layer('dead', () => {
+       if (opts.dead && ps.sat) this._drawDead(vp, ps.sat);
+     });
     this._layer('grid', () => {
       if (opts.grid) this._drawGrid(vp);
     });
@@ -105,6 +108,53 @@ export class Renderer {
     ctx.stroke();
     ctx.restore();
   }
+   /**
+    * I2-dead lines. A row / column / diagonal that already holds two points can
+    * never accept a third — at ANY distance, because collinearity has no cutoff.
+    * Shading them explains the 2-wide vacancy strips the origin 2x2 cluster
+    * projects to infinity: that emptiness is the greedy's line budget, not an
+    * unbounded/leaking constraint (paranoid mode asserts I4 in both directions).
+    */
+   _drawDead(vp, sat) {
+     const ctx = this.ctx,
+       b = vp.visibleBox();
+     const MAX = 4096; // zoomed far out: skip rather than draw 10^6 hairlines
+     const t = Math.max(1, vp.zoom);
+     ctx.save();
+     ctx.fillStyle = 'rgba(248,81,73,0.10)';
+     if (b.y1 - b.y0 <= MAX)
+       for (let y = b.y0; y <= b.y1; y++)
+         if ((sat.row.get(y) || 0) >= 2) ctx.fillRect(0, vp.toScreenY(y + 0.5), vp.w, t);
+     if (b.x1 - b.x0 <= MAX)
+       for (let x = b.x0; x <= b.x1; x++)
+         if ((sat.col.get(x) || 0) >= 2) ctx.fillRect(vp.toScreenX(x - 0.5), 0, t, vp.h);
+     ctx.strokeStyle = 'rgba(248,81,73,0.16)';
+     ctx.lineWidth = Math.max(1, vp.zoom * 0.9);
+     const kd0 = b.x0 - b.y1,
+       kd1 = b.x1 - b.y0;
+     if (kd1 - kd0 <= MAX) {
+       ctx.beginPath();
+       for (let k = kd0; k <= kd1; k++)
+         if ((sat.diag.get(k) || 0) >= 2) {
+           ctx.moveTo(vp.toScreenX(b.x0), vp.toScreenY(b.x0 - k));
+           ctx.lineTo(vp.toScreenX(b.x1), vp.toScreenY(b.x1 - k));
+         }
+       ctx.stroke();
+     }
+     const ka0 = b.x0 + b.y0,
+       ka1 = b.x1 + b.y1;
+     if (ka1 - ka0 <= MAX) {
+       ctx.beginPath();
+       for (let k = ka0; k <= ka1; k++)
+         if ((sat.anti.get(k) || 0) >= 2) {
+           ctx.moveTo(vp.toScreenX(b.x0), vp.toScreenY(k - b.x0));
+           ctx.lineTo(vp.toScreenX(b.x1), vp.toScreenY(k - b.x1));
+         }
+       ctx.stroke();
+     }
+     ctx.restore();
+   }
+
 
   _drawDensity(vp, ps, opts) {
     const s = opts.s;

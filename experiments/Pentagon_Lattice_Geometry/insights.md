@@ -2,7 +2,7 @@
 
 This document collects synthetic insights drawn from across the project corpus
 (`idea.md`, `affine.md`, `polyhedra.md`, `pinwheels.md`, `erdos.md`, `sweep_ngon.md`,
-`analysis.md`, `experiment.md`, `README.md`) and crystallizes the open questions that
+`analysis.md`, `experiment.md`, `README_DEV.md`) and crystallizes the open questions that
 the current framework raises but does not yet resolve. The goal is not to summarize the
 existing documents — which already contain their own summaries — but to identify
 **cross-cutting patterns**, **tensions**, and **research directions** that emerge only

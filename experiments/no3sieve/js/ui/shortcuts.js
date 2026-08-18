@@ -36,6 +36,9 @@ export function bindShortcuts(target, handlers) {
       case 'r':
         handlers.toggle('rings');
         break;
+       case 'l':
+         handlers.toggle('dead');
+         break;
       case 'j':
         handlers.topk(1);
         break;

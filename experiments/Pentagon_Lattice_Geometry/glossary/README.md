@@ -2,7 +2,7 @@
 
 A comprehensive reference for terms used across the multi-sheeted n-gon tiling project
 (`idea.md`, `affine.md`, `polyhedra.md`, `pinwheels.md`, `erdos.md`, `insights.md`,
-`sweep_ngon.md`, `analysis.md`, `experiment.md`, `README.md`). Entries are alphabetized
+`sweep_ngon.md`, `analysis.md`, `experiment.md`, `README_DEV.md`). Entries are alphabetized
 within thematic sections.
 
 ---

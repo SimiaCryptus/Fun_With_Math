@@ -87,6 +87,16 @@
               >“unknown” hatch (ungenerated)</span
             ></label
           >
+         <label class="check"
+           ><input id="ov-dead" type="checkbox" checked /><span
+             >I2-dead lines (rows/cols/diagonals already holding 2)</span
+           ></label
+         >
+         <p class="hint">
+           Empty 2-wide strips through the origin are <em>expected</em>: the 2×2 cluster
+           saturates rows y=0,1 and columns x=0,1, and collinearity has no distance cutoff.
+           Enable <code>paranoid</code> to assert the sieve never over-blocks (I4, both directions).
+         </p>
         </section>
 
         <section class="panel">
@@ -119,7 +129,7 @@
         <div id="inspector" class="inspector"></div>
         <div id="help" class="help">
           drag = pan · wheel = zoom (cursor anchored) · arrows = pan · +/- = zoom · f = fit · g/d/r
-          = toggle layers
+           = toggle layers · l = I2-dead lines
         </div>
       </main>
     </div>

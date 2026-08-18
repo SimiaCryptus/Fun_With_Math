@@ -68,6 +68,7 @@ const opts = {
   rings: true,
   unknown: true,
   density: true,
+   dead: true,
   s: 16,
   norm: 's',
   alpha: 0.7,
@@ -206,7 +207,7 @@ bindShortcuts(window, {
   },
   toggle(k) {
     opts[k] = !opts[k];
-    const map = { grid: 'ov-grid', density: 'ov-density', rings: 'ov-rings' };
+     const map = { grid: 'ov-grid', density: 'ov-density', rings: 'ov-rings', dead: 'ov-dead' };
     if (map[k]) $(map[k]).checked = opts[k];
     renderer.invalidateOverlay();
     dirty = true;
@@ -325,6 +326,7 @@ bindCheck('ov-density', 'density');
 bindCheck('ov-grid', 'grid');
 bindCheck('ov-rings', 'rings');
 bindCheck('ov-unknown', 'unknown');
+bindCheck('ov-dead', 'dead');
 
 $('ov-s').oninput = guard('window size', (e) => {
   const v = Number.parseInt(e.target.value, 10);
@@ -471,7 +473,13 @@ function pushPermalink() {
     s: opts.s,
     rmax: cfg.rMax,
     order: cfg.intraRingOrder,
-    ov: [opts.density && 'd', opts.grid && 'g', opts.rings && 'r', opts.unknown && 'u']
+     ov: [
+       opts.density && 'd',
+       opts.grid && 'g',
+       opts.rings && 'r',
+       opts.unknown && 'u',
+       opts.dead && 'x',
+     ]
       .filter(Boolean)
       .join(''),
   });
@@ -501,11 +509,12 @@ function readPermalink() {
   vp.cy = num('cy', 0, -1e12, 1e12);
   vp.zoom = num('zoom', 12, 1 / 64, 64);
   opts.s = Math.round(num('s', 16, 3, 129));
-  const ov = p.get('ov') || 'dgru';
+   const ov = p.get('ov') || 'dgrux';
   opts.density = ov.includes('d');
   opts.grid = ov.includes('g');
   opts.rings = ov.includes('r');
   opts.unknown = ov.includes('u');
+   opts.dead = ov.includes('x');
   $('cfg-rmax').value = Math.round(num('rmax', 256, 0, 8192));
   const order = p.get('order');
   if (order) {
@@ -519,6 +528,7 @@ function readPermalink() {
   $('ov-grid').checked = opts.grid;
   $('ov-rings').checked = opts.rings;
   $('ov-unknown').checked = opts.unknown;
+   $('ov-dead').checked = opts.dead;
 }
 
 // -------------------------------------------------------------------- bootstrap
