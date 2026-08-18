@@ -136,6 +136,39 @@
         max-height: 430px;
         overflow: auto;
       }
+      details.log {
+        margin: 8px 0 0;
+        background: #0b0f15;
+        border: 1px solid #222a35;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      details.log > summary {
+        cursor: pointer;
+        padding: 5px 10px;
+        color: var(--dim);
+        font: 600 11.5px var(--mono);
+        list-style: none;
+        user-select: none;
+      }
+      details.log > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.log > summary::before {
+        content: '▸ ';
+      }
+      details.log[open] > summary::before {
+        content: '▾ ';
+      }
+      details.log > summary:hover {
+        color: var(--acc2);
+      }
+      details.log > pre {
+        margin: 0;
+        border: none;
+        border-top: 1px solid #222a35;
+        border-radius: 0;
+      }
       .canvas-wrap {
         margin-top: 10px;
         position: relative;
@@ -246,7 +279,10 @@
           <button id="btnFirst">first 50 primes (unbounded generator)</button>
           <span id="badge"></span>
         </div>
-        <pre id="out" class="dim">—</pre>
+        <details class="log" id="outWrap" open>
+          <summary>log</summary>
+          <pre id="out" class="dim">—</pre>
+        </details>
       </section>
       <section>
         <h2>
@@ -260,13 +296,25 @@
           always neighbours), stored in an axial <code>(2R+1)²</code> bitset and drawn by
           nearest-hex sampling. Zoomed in the exact prime bitset is sampled; zoomed out a
           pre-computed <b>density mip pyramid</b> is used so no prime is ever dropped by
-          nearest-neighbour downscaling. Drag to pan · wheel to zoom · reset to fit.
+          nearest-neighbour downscaling. <b>Twin primes</b> (members of a pair <code>p, p+2</code>)
+          are drawn in <span style="color: #ff7b72">red</span>: every mip texel keeps the prime
+          count <i>and</i> the twin count, and is converted to RGB only at the end, so the hue mix
+          stays area-correct at every level. <code>n₀</code> truncates the spiral at the origin —
+          the centre cell may start counting at 0, 1, 2 or 3. Drag to pan · wheel to zoom · reset to
+          fit.
         </p>
         <div class="row">
           <label>grid</label>
           <select id="spiralGrid">
             <option value="square">square (Ulam)</option>
             <option value="hex">hexagonal</option>
+          </select>
+          <label>n₀</label>
+          <select id="spiralOrigin">
+            <option value="0">0</option>
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
           </select>
           <button class="primary" id="btnSpiral">▶ draw spiral</button>
           <button id="btnSpiralReset">reset view</button>
@@ -523,6 +571,7 @@
       const GAMMA = 0.6; // density → brightness curve
       const BG_RGB = [0x0b, 0x0f, 0x15];
       const FG_RGB = [0x7e, 0xe0, 0xc0];
+      const TW_RGB = [0xff, 0x7b, 0x72]; // twin primes (p, p+2)
       /* hex lattice, pointy-top, cell width 1:
            X(q,r) = q + r/2 + R + 0.5      (columns are sheared by half a cell)
            Y(q,r) = (r + R + 0.5)·√3/2     (row pitch = √3/2, hex area = √3/2)
@@ -544,22 +593,39 @@
         };
       })();
       const BG_PX = packRGBA(...BG_RGB);
+      /* (TW_STEPS+1) × 257 colour table:
+          row j → twin fraction u = j/TW_STEPS, hue = accent ⊕ twin-red
+          col i → density t = i/256,            colour = background ⊕ hue
+        Every density path accumulates *counts* (primes and twins separately)
+        and converts to RGB only here, so a mip texel is the area-correct
+        average of both channels — summarising RGB directly would wash the red
+        out (or drop it entirely) as soon as a texel covers > 1 cell. */
+      const TW_STEPS = 32;
       const RAMP = (() => {
-        // 257-entry background→accent ramp, index = round(t·256)
-        const r = new Uint32Array(257);
-        for (let i = 0; i <= 256; i++) {
-          const t = i / 256;
-          r[i] = packRGBA(
-            Math.round(BG_RGB[0] + (FG_RGB[0] - BG_RGB[0]) * t),
-            Math.round(BG_RGB[1] + (FG_RGB[1] - BG_RGB[1]) * t),
-            Math.round(BG_RGB[2] + (FG_RGB[2] - BG_RGB[2]) * t)
-          );
+        const r = new Uint32Array((TW_STEPS + 1) * 257);
+        for (let j = 0; j <= TW_STEPS; j++) {
+          const u = j / TW_STEPS;
+          const hue = [0, 1, 2].map((c) => FG_RGB[c] + (TW_RGB[c] - FG_RGB[c]) * u);
+          for (let i = 0; i <= 256; i++) {
+            const t = i / 256;
+            r[j * 257 + i] = packRGBA(
+              Math.round(BG_RGB[0] + (hue[0] - BG_RGB[0]) * t),
+              Math.round(BG_RGB[1] + (hue[1] - BG_RGB[1]) * t),
+              Math.round(BG_RGB[2] + (hue[2] - BG_RGB[2]) * t)
+            );
+          }
         }
         return r;
       })();
+      /* twin fraction → ramp row offset; rampPx(density index, twin fraction) */
+      const twRow = (f) => (f > 0 ? (f >= 1 ? TW_STEPS : Math.round(f * TW_STEPS)) : 0) * 257;
+      const rampPx = (idx, frac) => RAMP[twRow(frac) + idx];
+      const PX_PRIME = RAMP[256]; // solid accent
+      const PX_TWIN = RAMP[TW_STEPS * 257 + 256]; // solid red
 
       const spiralCanvas = () => document.getElementById('spiralCanvas');
       let spiralMask = null; // Uint32Array bitset over the L×L grid
+      let spiralTwin = null; // same shape: 1 where the cell's n is a twin prime
       let spiralL = 0;
       let spiralLevels = []; // [{ canvas, size, cell }] — cell = cells per texel
       let spiralRef = 1e-6; // reference density for the brightness ramp
@@ -575,7 +641,10 @@
       let spiralExtW = 0; // grid bounding box in cell units (fit + clipping)
       let spiralExtH = 0;
       let spiralLabel = ''; // HUD prefix
-      let hexCounts = null; // reused accumulator for the hex scatter paths
+      let spiralOrigin = 1; // integer sitting on the centre cell (0…3)
+      let spiralLast = 0; // largest integer placed on the grid
+      let hexCounts = null; // reused accumulators for the hex scatter paths
+      let hexTwins = null;
 
       /* density → ramp index; spiralRef ≈ 4·(global density) keeps mid-tones lit */
       function shade(dens) {
@@ -584,25 +653,45 @@
         return t >= 1 ? 256 : Math.round(256 * t);
       }
 
+      /* isPrime / isTwin bitsets over [0, hi]; twin = member of a pair (p, p+2).
+        `primes` must extend to hi+2 for the top cell to be classified right. */
+      function primeBitsets(primes, hi) {
+        const bits = (n) => new Uint32Array(Math.ceil((n + 1) / 32));
+        const isPrime = bits(hi),
+          isTwin = bits(hi);
+        for (let i = 0; i < primes.length; i++) {
+          const p = primes[i];
+          if (p > hi) break; // primes[] is ascending
+          isPrime[p >>> 5] |= 1 << (p & 31);
+        }
+        for (let i = 1; i < primes.length; i++) {
+          if (primes[i] - primes[i - 1] !== 2) continue;
+          const a = primes[i - 1],
+            b = primes[i];
+          if (a <= hi) isTwin[a >>> 5] |= 1 << (a & 31);
+          if (b <= hi) isTwin[b >>> 5] |= 1 << (b & 31);
+          if (a > hi) break;
+        }
+        return { isPrime, isTwin };
+      }
+
       /* --- full-resolution prime mask over the spiral grid (1 bit per cell) --- */
-      function buildSpiralMask(primes, L) {
+      function buildSpiralMask(primes, L, origin) {
         const cells = L * L;
+        const last = origin + cells - 1; // centre cell holds `origin`
         /* bit indices are used with `&`/`|`/`>>>`, which truncate to 32 bits */
         assertExact(cells, 'L²');
         if (cells >= 0x80000000)
           throw new RangeError(`spiral side ${L} exceeds the 32-bit bitset range`);
         const bitset = (n) => new Uint32Array(Math.ceil(n / 32));
-        const isPrime = bitset(cells + 1);
-        for (const p of primes) {
-          if (p > cells) break; // primes[] is ascending
-          isPrime[p >>> 5] |= 1 << (p & 31);
-        }
-        const mask = bitset(cells);
+        const { isPrime, isTwin } = primeBitsets(primes, last);
+        const mask = bitset(cells),
+          twin = bitset(cells);
         const dx = [1, 0, -1, 0],
           dy = [0, -1, 0, 1];
         let x = L >> 1,
           y = L >> 1,
-          n = 1,
+          n = origin,
           dir = 0,
           len = 1,
           count = 0;
@@ -611,13 +700,14 @@
           if ((isPrime[n >>> 5] >>> (n & 31)) & 1 && x >= 0 && x < L && y >= 0 && y < L) {
             const i = y * L + x;
             mask[i >>> 5] |= 1 << (i & 31);
+            if ((isTwin[n >>> 5] >>> (n & 31)) & 1) twin[i >>> 5] |= 1 << (i & 31);
             count++;
           }
         };
-        put(); // n = 1 at the centre
-        while (n < cells) {
-          for (let leg = 0; leg < 2 && n < cells; leg++) {
-            for (let s = 0; s < len && n < cells; s++) {
+        put(); // n = origin at the centre
+        while (n < last) {
+          for (let leg = 0; leg < 2 && n < last; leg++) {
+            for (let s = 0; s < len && n < last; s++) {
               x += dx[dir];
               y += dy[dir];
               n++;
@@ -629,12 +719,14 @@
         }
         spiralCount = count;
         spiralCells = cells;
+        spiralOrigin = origin;
+        spiralLast = last;
         spiralFill = 1;
         spiralExtW = L;
         spiralExtH = L;
-        spiralLabel = `L = ${fmt(L)}`;
+        spiralLabel = `L = ${fmt(L)} · n₀ = ${origin}`;
         spiralRef = Math.max(1e-6, Math.min(1, (4 * count) / cells));
-        return mask;
+        return { mask, twin };
       }
       /* --- hexagonal ring spiral over the triangular lattice ---------------
          Ring k holds 6k cells, so the plot covers n ≤ H_R = 1 + 3R(R+1) (the
@@ -644,33 +736,32 @@
          Cells live in an axial (2R+1)² bit box, indexed (r+R)·D + (q+R); the
          ~25% of the box outside the hexagon simply stays zero, which lets the
          square-grid mip pyramid and viewport code be reused verbatim.        */
-      function buildHexMask(primes, R) {
+      function buildHexMask(primes, R, origin) {
         const D = 2 * R + 1;
         const box = D * D;
         const cells = 1 + 3 * R * (R + 1);
+        const last = origin + cells - 1;
         assertExact(box, '(2R+1)²');
         if (box >= 0x80000000)
           throw new RangeError(`hex radius ${R} exceeds the 32-bit bitset range`);
         const bitset = (n) => new Uint32Array(Math.ceil(n / 32));
-        const isPrime = bitset(cells + 1);
-        for (const p of primes) {
-          if (p > cells) break; // primes[] is ascending
-          isPrime[p >>> 5] |= 1 << (p & 31);
-        }
-        const mask = bitset(box);
+        const { isPrime, isTwin } = primeBitsets(primes, last);
+        const mask = bitset(box),
+          twin = bitset(box);
         let q = 0,
           r = 0,
-          n = 1,
+          n = origin,
           count = 0;
         const put = () => {
           if ((isPrime[n >>> 5] >>> (n & 31)) & 1 && q >= -R && q <= R && r >= -R && r <= R) {
             const i = (r + R) * D + (q + R);
             mask[i >>> 5] |= 1 << (i & 31);
+            if ((isTwin[n >>> 5] >>> (n & 31)) & 1) twin[i >>> 5] |= 1 << (i & 31);
             count++;
           }
         };
-        put(); // n = 1 at the centre
-        for (let k = 1; n < cells; k++) {
+        put(); // n = origin at the centre
+        for (let k = 1; n < last; k++) {
           /* 1 step outward, k−1 along the edge we entered on, then k per side */
           const legs = [
             [0, 1],
@@ -682,7 +773,7 @@
             [0, k],
           ];
           for (const [d, len] of legs)
-            for (let s = 0; s < len && n < cells; s++) {
+            for (let s = 0; s < len && n < last; s++) {
               q += HEX_DQ[d];
               r += HEX_DR[d];
               n++;
@@ -691,50 +782,63 @@
         }
         spiralCount = count;
         spiralCells = cells;
+        spiralOrigin = origin;
+        spiralLast = last;
         spiralFill = cells / box; // mip densities are per box cell, not per hex
         spiralExtW = D; // X ∈ [0, D]
         spiralExtH = D * HEX_K; // Y ∈ [0, D·√3/2]
-        spiralLabel = `hex R = ${fmt(R)}`;
+        spiralLabel = `hex R = ${fmt(R)} · n₀ = ${origin}`;
         spiralRef = Math.max(1e-6, Math.min(1, (4 * count) / cells));
-        return mask;
+        return { mask, twin };
       }
 
       /* --- mip pyramid of *densities*, base texel ≤ MAX_TEX per side --- */
-      function buildSpiralLevels(mask, L) {
+      function buildSpiralLevels(mask, twin, L) {
         let cell = 1;
         while (Math.ceil(L / cell) > MAX_TEX) cell <<= 1;
         let size = Math.ceil(L / cell);
         const shift = Math.round(Math.log2(cell));
         /* histogram the set bits (iterate primes, not the L² cells) */
-        let counts = new Uint32Array(size * size);
-        for (let w = 0; w < mask.length; w++) {
-          let word = mask[w];
-          while (word) {
-            const lsb = word & -word;
-            word ^= lsb;
-            const i = (w << 5) + (31 - Math.clz32(lsb));
-            const y = (i / L) | 0;
-            counts[(y >>> shift) * size + ((i - y * L) >>> shift)]++;
+        let counts = new Uint32Array(size * size),
+          twins = new Uint32Array(size * size);
+        const hist = (bits, out) => {
+          for (let w = 0; w < bits.length; w++) {
+            let word = bits[w];
+            while (word) {
+              const lsb = word & -word;
+              word ^= lsb;
+              const i = (w << 5) + (31 - Math.clz32(lsb));
+              const y = (i / L) | 0;
+              out[(y >>> shift) * size + ((i - y * L) >>> shift)]++;
+            }
           }
-        }
+        };
+        hist(mask, counts);
+        hist(twin, twins);
         const levels = [];
         for (;;) {
-          levels.push({ canvas: levelCanvas(counts, size, cell), size, cell });
+          levels.push({ canvas: levelCanvas(counts, twins, size, cell), size, cell });
           if (size <= 2) return levels;
           const nsize = Math.ceil(size / 2);
-          const next = new Uint32Array(nsize * nsize);
+          const next = new Uint32Array(nsize * nsize),
+            ntwin = new Uint32Array(nsize * nsize);
           for (let y = 0; y < size; y++) {
             const out = (y >> 1) * nsize,
               row = y * size;
-            for (let x = 0; x < size; x++) next[out + (x >> 1)] += counts[row + x];
+            for (let x = 0; x < size; x++) {
+              /* sum both channels — never the packed pixels */
+              next[out + (x >> 1)] += counts[row + x];
+              ntwin[out + (x >> 1)] += twins[row + x];
+            }
           }
           counts = next;
+          twins = ntwin;
           size = nsize;
           cell *= 2;
         }
       }
 
-      function levelCanvas(counts, size, cell) {
+      function levelCanvas(counts, twins, size, cell) {
         const c = document.createElement('canvas');
         c.width = size;
         c.height = size;
@@ -744,7 +848,10 @@
         const area = cell * cell;
         /* spiralFill < 1 in hex mode: only that fraction of the box cells is a hex */
         const per = 1 / (area * spiralFill);
-        for (let i = 0; i < counts.length; i++) px[i] = RAMP[shade(counts[i] * per)];
+        for (let i = 0; i < counts.length; i++) {
+          const n = counts[i];
+          px[i] = n ? rampPx(shade(n * per), twins[i] / n) : BG_PX;
+        }
         ctx.putImageData(img, 0, 0);
         return c;
       }
@@ -778,11 +885,11 @@
         const px = new Uint32Array(img.data.buffer);
         px.fill(BG_PX);
         const mask = spiralMask,
+          twin = spiralTwin,
           L = spiralL,
           inv = 1 / cellPx;
         let label;
         if (cellPx >= 1) {
-          const on = RAMP[256];
           for (let py = y0; py < y1; py++) {
             const cy = Math.floor((py + 0.5 - oy) * inv);
             if (cy < 0 || cy >= L) continue;
@@ -792,7 +899,8 @@
               const cx = Math.floor((p + 0.5 - ox) * inv);
               if (cx < 0 || cx >= L) continue;
               const i = row + cx;
-              if ((mask[i >>> 5] >>> (i & 31)) & 1) px[out + p] = on;
+              if ((mask[i >>> 5] >>> (i & 31)) & 1)
+                px[out + p] = (twin[i >>> 5] >>> (i & 31)) & 1 ? PX_TWIN : PX_PRIME;
             }
           }
           label = `exact · ${cellPx.toFixed(1)} px/cell`;
@@ -807,15 +915,18 @@
               const cxA = Math.max(0, Math.floor((p - ox) * inv)),
                 cxB = Math.min(L, Math.ceil((p + 1 - ox) * inv));
               if (cxB <= cxA) continue;
-              let cnt = 0;
+              let cnt = 0,
+                tw = 0;
               for (let cy = cyA; cy < cyB; cy++) {
                 const row = cy * L;
                 for (let cx = cxA; cx < cxB; cx++) {
                   const i = row + cx;
-                  cnt += (mask[i >>> 5] >>> (i & 31)) & 1;
+                  const b = (mask[i >>> 5] >>> (i & 31)) & 1;
+                  cnt += b;
+                  if (b) tw += (twin[i >>> 5] >>> (i & 31)) & 1;
                 }
               }
-              if (cnt) px[out + p] = RAMP[shade(cnt / ((cyB - cyA) * (cxB - cxA)))];
+              if (cnt) px[out + p] = rampPx(shade(cnt / ((cyB - cyA) * (cxB - cxA))), tw / cnt);
             }
           }
           label = `exact density · ${inv.toFixed(1)} cells/px`;
@@ -868,15 +979,21 @@
           y1 = Math.min(canvas.height, Math.ceil(oy + spiralExtH * cellPx + pad));
         return x1 <= x0 || y1 <= y0 ? null : { x0, y0, x1, y1, w: x1 - x0, h: y1 - y0 };
       }
-      function hexScatterBuffer(n) {
-        if (!hexCounts || hexCounts.length < n) hexCounts = new Uint32Array(n);
-        else hexCounts.fill(0, 0, n);
-        return hexCounts;
+      function hexScatterBuffers(n) {
+        if (!hexCounts || hexCounts.length < n) {
+          hexCounts = new Uint32Array(n);
+          hexTwins = new Uint32Array(n);
+        } else {
+          hexCounts.fill(0, 0, n);
+          hexTwins.fill(0, 0, n);
+        }
+        return [hexCounts, hexTwins];
       }
       /* visit every prime hex whose centre lands inside the pixel rect — the
          scatter direction, so no cell can be missed however small it is */
       function forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, hit) {
         const mask = spiralMask,
+          twin = spiralTwin,
           D = spiralL,
           R = spiralR,
           pitch = cellPx * HEX_K;
@@ -893,7 +1010,7 @@
             const i = row + q + R;
             if ((mask[i >>> 5] >>> (i & 31)) & 1) {
               const sx = Math.floor(base + cellPx * q);
-              if (sx >= x0 && sx < x1) hit(sx, sy);
+              if (sx >= x0 && sx < x1) hit(sx, sy, (twin[i >>> 5] >>> (i & 31)) & 1);
             }
           }
         }
@@ -907,10 +1024,10 @@
         const px = new Uint32Array(img.data.buffer);
         px.fill(BG_PX);
         const mask = spiralMask,
+          twin = spiralTwin,
           D = spiralL,
           R = spiralR,
-          inv = 1 / cellPx,
-          on = RAMP[256];
+          inv = 1 / cellPx;
         for (let py = y0; py < y1; py++) {
           const rf = ((py + 0.5 - oy) * inv) / HEX_K - (R + 0.5);
           let qf = (x0 + 0.5 - ox) * inv - (R + 0.5) - rf / 2;
@@ -929,13 +1046,14 @@
             }
             if (q < -R || q > R || r < -R || r > R) continue;
             const i = (r + R) * D + (q + R);
-            if ((mask[i >>> 5] >>> (i & 31)) & 1) px[out + p] = on;
+            if ((mask[i >>> 5] >>> (i & 31)) & 1)
+              px[out + p] = (twin[i >>> 5] >>> (i & 31)) & 1 ? PX_TWIN : PX_PRIME;
           }
         }
         /* a hex has area √3/2 < 1, so near cellPx = 1 some contain no pixel
            centre; light their centre pixel explicitly — nothing is dropped */
-        forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, (sx, sy) => {
-          px[(sy - y0) * w - x0 + sx] = on;
+        forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, (sx, sy, tw) => {
+          px[(sy - y0) * w - x0 + sx] = tw ? PX_TWIN : PX_PRIME;
         });
         ctx.putImageData(img, x0, y0);
         return `exact hex · ${cellPx.toFixed(1)} px/cell`;
@@ -948,13 +1066,16 @@
         const img = viewportImageData(ctx, w, h);
         const px = new Uint32Array(img.data.buffer);
         px.fill(BG_PX);
-        const counts = hexScatterBuffer(w * h);
-        forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, (sx, sy) => {
-          counts[(sy - y0) * w - x0 + sx]++;
+        const [counts, twins] = hexScatterBuffers(w * h);
+        forEachVisibleHex(cellPx, ox, oy, x0, y0, x1, y1, (sx, sy, tw) => {
+          const i = (sy - y0) * w - x0 + sx;
+          counts[i]++;
+          if (tw) twins[i]++;
         });
         const norm = HEX_K * cellPx * cellPx; // 1 / (hex cells per device pixel)
         const n = w * h;
-        for (let i = 0; i < n; i++) if (counts[i]) px[i] = RAMP[shade(counts[i] * norm)];
+        for (let i = 0; i < n; i++)
+          if (counts[i]) px[i] = rampPx(shade(counts[i] * norm), twins[i] / counts[i]);
         ctx.putImageData(img, x0, y0);
         return `exact hex density · ${(1 / norm).toFixed(1)} cells/px`;
       }
@@ -1056,16 +1177,17 @@
             else if (dr > ds) r = -q - s;
           }
           const k = Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r));
-          if (k === 0) return 1;
+          const off = spiralOrigin - 1;
+          if (k === 0) return 1 + off;
           if (k > R) return null;
           const base = 1 + 3 * (k - 1) * k;
-          if (q === 1 && r === k - 1) return base + 1;
-          if (q + r === k && q >= 2 && q <= k) return base + q;
-          if (q === k && r <= -1 && r >= -k) return base + k - r;
-          if (r === -k && q >= 0 && q <= k - 1) return base + 3 * k - q;
-          if (q + r === -k && q <= -1 && q >= -k) return base + 3 * k - q;
-          if (q === -k && r >= 1 && r <= k) return base + 4 * k + r;
-          if (r === k && q >= -k + 1 && q <= 0) return base + 6 * k + q;
+          if (q === 1 && r === k - 1) return base + 1 + off;
+          if (q + r === k && q >= 2 && q <= k) return base + q + off;
+          if (q === k && r <= -1 && r >= -k) return base + k - r + off;
+          if (r === -k && q >= 0 && q <= k - 1) return base + 3 * k - q + off;
+          if (q + r === -k && q <= -1 && q >= -k) return base + 3 * k - q + off;
+          if (q === -k && r >= 1 && r <= k) return base + 4 * k + r + off;
+          if (r === k && q >= -k + 1 && q <= 0) return base + 6 * k + q + off;
           return null;
         }
         const L = spiralL;
@@ -1087,7 +1209,7 @@
         else if (dx === r) n = E - 6 * r - (dy + r);
         else return null;
         if (n < 1 || n > spiralCells) return null;
-        return n;
+        return n + spiralOrigin - 1;
       }
       const FACTOR_SUP = {
         0: '⁰',
@@ -1225,62 +1347,75 @@
         const Ninput = Math.max(10, +$('limit').value | 0);
         const w = Math.max(1, Math.min(7, +$('w').value | 0));
         const grid = $('spiralGrid').value === 'hex' ? 'hex' : 'square';
+        const origin = Math.max(0, Math.min(3, +$('spiralOrigin').value | 0));
+        /* the walk numbers its cells origin … origin+cells−1, so the truncation
+          offset eats into the cell budget that still fits below N */
+        const budget = Math.max(4, Ninput - origin + 1);
         let L = 0,
           R = 0,
-          Nspiral = 0;
+          Nspiral = 0,
+          cells = 0;
         if (grid === 'hex') {
-          /* largest R with H_R = 1 + 3R(R+1) ≤ N (sqrt then integer repair) */
-          R = Math.max(0, Math.floor((Math.sqrt(12 * Ninput - 3) - 3) / 6));
-          while (1 + 3 * (R + 1) * (R + 2) <= Ninput) R++;
-          while (R > 0 && 1 + 3 * R * (R + 1) > Ninput) R--;
+          /* largest R with H_R = 1 + 3R(R+1) ≤ budget (sqrt then integer repair) */
+          R = Math.max(0, Math.floor((Math.sqrt(12 * budget - 3) - 3) / 6));
+          while (1 + 3 * (R + 1) * (R + 2) <= budget) R++;
+          while (R > 0 && 1 + 3 * R * (R + 1) > budget) R--;
           if (R > MAX_RING) R = MAX_RING;
           if (R < 1) {
             info.textContent = 'N too small for a hex spiral.';
             return;
           }
-          Nspiral = 1 + 3 * R * (R + 1); // the hex spiral shows n ≤ H_R
+          cells = 1 + 3 * R * (R + 1);
+          Nspiral = origin + cells - 1; // largest n on the plot
         } else {
-          L = Math.floor(Math.sqrt(Ninput));
+          L = Math.floor(Math.sqrt(budget));
           if (L > MAX_SIDE) L = MAX_SIDE;
           if (L < 2) {
             info.textContent = 'N too small for a Ulam spiral.';
             return;
           }
-          Nspiral = L * L; // the spiral can only ever show n ≤ L²
+          cells = L * L; // the spiral can only ever show L² integers
+          Nspiral = origin + cells - 1;
         }
+        /* +2: the prime on the last cell still needs its twin partner to exist */
+        const need = Nspiral + 2;
         let primes;
-        if (lastSpiral && lastSpiral.N >= Nspiral && lastSpiral.w === w) {
+        if (lastSpiral && lastSpiral.N >= need && lastSpiral.w === w) {
           primes = lastSpiral.primes;
         } else {
-          info.textContent = `generating primes ≤ ${fmt(Nspiral)}…`;
+          info.textContent = `generating primes ≤ ${fmt(need)}…`;
           await sleep(0);
-          const res = runB(Nspiral, w);
+          const res = runB(need, w);
           primes = res.primes;
-          lastSpiral = { primes, N: Nspiral, w };
+          lastSpiral = { primes, N: need, w };
         }
-        info.textContent = `walking the ${grid} spiral (${fmt(Nspiral)} cells)…`;
+        info.textContent = `walking the ${grid} spiral (${fmt(cells)} cells)…`;
         await sleep(0);
         spiralMode = grid;
+        let built;
         if (grid === 'hex') {
           spiralR = R;
           spiralL = 2 * R + 1; // axial box side
-          spiralMask = buildHexMask(primes, R);
+          built = buildHexMask(primes, R, origin);
         } else {
           spiralR = 0;
           spiralL = L;
-          spiralMask = buildSpiralMask(primes, L);
+          built = buildSpiralMask(primes, L, origin);
         }
+        spiralMask = built.mask;
+        spiralTwin = built.twin;
         info.textContent = 'building density mip pyramid…';
         await sleep(0);
-        spiralLevels = buildSpiralLevels(spiralMask, spiralL);
+        spiralLevels = buildSpiralLevels(spiralMask, spiralTwin, spiralL);
         resetSpiralView();
         info.textContent =
           `${fmt(spiralCount)} primes · ` +
           (grid === 'hex'
-            ? `${fmt(R)} rings, n ≤ ${fmt(spiralCells)} (axial box ${fmt(spiralL)}²) · `
+            ? `${fmt(R)} rings (axial box ${fmt(spiralL)}²) · `
             : `side ${fmt(L)} · `) +
+          `n ∈ [${fmt(spiralOrigin)}, ${fmt(spiralLast)}] · ` +
           `${spiralLevels.length} density levels (base ${spiralLevels[0].cell}×${spiralLevels[0].cell}) · ` +
-          `drag to pan, wheel to zoom`;
+          `twins in red · drag to pan, wheel to zoom`;
       }
 
       function initSpiralInteractions() {
@@ -1354,6 +1489,10 @@
    ===================================================================== */
       const $ = (id) => document.getElementById(id);
       const sleep = (ms = 0) => new Promise((r) => setTimeout(r, ms));
+      const openLog = () => {
+        const d = $('outWrap');
+        if (d) d.open = true; // never write into a collapsed panel silently
+      };
       const fmt = (n) =>
         typeof n === 'number' && isFinite(n)
           ? Number.isInteger(n)
@@ -1387,6 +1526,7 @@
         const P = panel('out'),
           badge = $('badge');
         P.clear();
+        openLog();
         badge.innerHTML = '';
         const N = Math.max(10, +$('limit').value | 0);
         const w = Math.max(1, Math.min(7, +$('w').value | 0));
@@ -1457,6 +1597,7 @@
         const P = panel('out');
         $('badge').innerHTML = '';
         P.clear();
+        openLog();
         const w = Math.max(1, Math.min(7, +$('w').value | 0));
         P.head(`first 50 primes from the unbounded generator primesB(${w})`);
         const g = primesB(w),
@@ -1476,6 +1617,9 @@
       $('btnSpiralReset').onclick = () => resetSpiralView();
       $('spiralGrid').onchange = () => {
         if (spiralMask) drawUlamSpiral(); // re-walk with the other geometry
+      };
+      $('spiralOrigin').onchange = () => {
+        if (spiralMask) drawUlamSpiral(); // re-walk from the new origin
       };
       initSpiralInteractions();
 
