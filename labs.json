@@ -91,12 +91,12 @@
       "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key."
     },
     {
-      "icon": "3L",
-      "title": "No-Three-in-Line Explorer",
-      "href": "experiments/3inline/index.html",
-      "readme": "experiments/3inline/README.md",
-      "launchLabel": "Open the No-Three-in-Line Explorer lab",
-      "pitch": "An interactive laboratory for the classic no-three-in-line problem: place ~2n points on an n×n grid so no three are collinear along any rational slope. Solve it by hand with instant collinearity feedback, or watch an entropic simulated-annealing solver with parabola warm starts, sublattice mutations, and a tabu list search for dense configurations — all powered by an incremental line index for fast O(k) move checks."
+      "icon": "PF",
+      "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields",
+      "href": "experiments/primegen/index.html",
+      "readme": "experiments/primegen/README.md",
+      "launchLabel": "Open the Prime Sieve as a Stack of Orthogonal Periodic Fields lab",
+      "pitch": "An interactive essay on the periodic machinery underneath the primes: each prime emits an orthogonal exclusion field, their stacked product has primorial period, and CRT independence makes density multiplicative, entropy additive, and spectral support disjoint."
     },
     {
       "icon": "NM",
@@ -130,20 +130,20 @@
       "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem."
     },
     {
-      "icon": "PF",
-      "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields",
-      "href": "experiments/primegen/index.html",
-      "readme": "experiments/primegen/README.md",
-      "launchLabel": "Open the Prime Sieve as a Stack of Orthogonal Periodic Fields lab",
-      "pitch": "An interactive essay on the periodic machinery underneath the primes: each prime emits an orthogonal exclusion field, their stacked product has primorial period, and CRT independence makes density multiplicative, entropy additive, and spectral support disjoint."
-    },
-    {
       "icon": "N3",
       "title": "No-Three-in-Line: A Visual Theory Explorer",
       "href": "experiments/no3sieve/index.html",
       "readme": "experiments/no3sieve/README.md",
       "launchLabel": "Open the No-Three-in-Line Visual Theory Explorer",
       "pitch": "An infinite-canvas explorer for the no-three-in-line rule under deterministic greedy growth: ring-major Chebyshev order, forced empty strips, finite-horizon collinearity, density fields, top-K windows, and paranoid verification."
+    },
+    {
+      "icon": "3L",
+      "title": "No-Three-in-Line Explorer",
+      "href": "experiments/3inline/index.html",
+      "readme": "experiments/3inline/README.md",
+      "launchLabel": "Open the No-Three-in-Line Explorer lab",
+      "pitch": "An interactive laboratory for the classic no-three-in-line problem: place ~2n points on an n×n grid so no three are collinear along any rational slope. Solve it by hand with instant collinearity feedback, or watch an entropic simulated-annealing solver with parabola warm starts, sublattice mutations, and a tabu list search for dense configurations — all powered by an incremental line index for fast O(k) move checks."
     }
   ],
   "essays": [],
