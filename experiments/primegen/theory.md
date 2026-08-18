@@ -18,7 +18,7 @@ work can attack the genuinely open pieces without re-deriving the trivial ones.
 ### Status legend
 
 | Tag   | Meaning                                                                       |
-|-------|-------------------------------------------------------------------------------|
+| ----- | ----------------------------------------------------------------------------- |
 | `[T]` | Trivial. One-line proof, included inline.                                     |
 | `[C]` | Classical. Standard result in number theory; citation given, no proof needed. |
 | `[K]` | Known in the algorithms literature (prior art). Must be cited; not novel.     |
@@ -443,7 +443,7 @@ Interpretive only. Carries no proof obligation and should never be used as a pre
 ## Part VIII — Prior Art That Must Be Cited
 
 | Item                                                                                      | Relation                                                                                                |
-|-------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | O'Neill, _The Genuine Sieve of Eratosthenes_ (JFP 2009)                                   | The priority-queue incremental sieve. `generator.md` §4 is this algorithm plus orthogonalization (T37). |
 | Pritchard, _Explaining the Wheel Sieve_ (1982); _Fast Compact Prime Number Sieves_ (1983) | Wheels = T18/T29; \(O(X/\log\log X)\) bound.                                                            |
 | Bengelloun (1986); Pritchard, incremental sieves                                          | T39 bucketing; unbounded streaming primes.                                                              |

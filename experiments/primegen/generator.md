@@ -17,7 +17,7 @@ The per-prime advance primitive is not an unknown quantity. It is exactly a whee
 
 \[ \text{NextOwnedComposite} (p, x) \;=\; p \cdot \text{NextRough}\!\big (p,\ \max (p-1, \lfloor x/p \rfloor)\big). \]
 
-What is *not* available is an implementation that is simultaneously exact, O (1) in time and O (1) in state per prime:
+What is _not_ available is an implementation that is simultaneously exact, O (1) in time and O (1) in state per prime:
 the exact wheel of \(p\) has period \(P_{<p} = e^{ (1+o (1))p}\). The architecture therefore has two realisations — an
 exact one that derives its rough multipliers from other streams (Algorithm A of `paper.md` §3), and a wheeled one that
 shares a single small wheel across all primes and pays a bounded, measured amount of duplicate work (Algorithm B,
@@ -110,7 +110,7 @@ Explicitly (see `observation.md`, `algorithm.md` Theorem 2.1):
 
 \[ \Theta_p \;=\; p \cdot A_p, \qquad A_p = \{\, a \ge p : \gcd (a, P_{<p}) = 1 \,\} , \]
 
-the \(p\)- **rough** numbers from \(p\) up. A stream is *a prime times a wheel*.
+the \(p\)- **rough** numbers from \(p\) up. A stream is _a prime times a wheel_.
 
 ---
 
@@ -163,7 +163,7 @@ Deciding \(a \in A_p\) is deciding \(\gcd (a, P_{<p}) = 1\), a function of \(a \
 
 - **Tabulate it.** With the sorted totative list of \(P_{<p}\) precomputed, the advance is an index increment plus a
   cycle counter: exact, orthogonal, O (1) time. But the table has \(\varphi (P_{<p}) = e^{ (1+o (1))p}\) entries — past
-  \(p \approx 29\) it exceeds \(10^9\). So this is O (1) time but *not* O (1) state.
+  \(p \approx 29\) it exceeds \(10^9\). So this is O (1) time but _not_ O (1) state.
 - **Don't tabulate it.** Then testing roughness is trial division by the \(\pi (p)-1\) primes below \(p\), which is
   \(\Theta (\pi (p))\), not O (1); and by Jacobsthal-type bounds the gap to the next rough number can be \(\gg p \log p
   \log\log\log p / (\log\log p)^2\), so "scan and test" is superlinear in \(p\) in the worst case.
@@ -172,10 +172,10 @@ We therefore state as a conjecture (`paper.md` Conjecture X1, `theory.md` T31) t
 \(\text{NextRough} (p,y)\) in O (1) time and \(\mathrm{poly} (\log p, \log y)\) space given only the primes \(< p\).
 Past a fixed table boundary, one of two things must happen:
 
-- **Algorithm A** *derives* the rough multipliers from other streams. Exact: every composite is touched exactly once —
+- **Algorithm A** _derives_ the rough multipliers from other streams. Exact: every composite is touched exactly once —
   the information-theoretic optimum — but the number of simultaneously live streams grows like \(N^{\theta}\), \(\theta
   \approx 0.75\), and segments cannot be started in isolation.
-- **Algorithm B** *relaxes* the multiplier set to a single fixed wheel \(W = p_1\cdots p_w\) shared by every prime \(p >
+- **Algorithm B** _relaxes_ the multiplier set to a single fixed wheel \(W = p_1\cdots p_w\) shared by every prime \(p >
   p_w\): \(\tilde A_p = \{a \ge p : \gcd (a,W) = 1\} \supseteq A_p\). The advance becomes
   `a += step[a % W]; v = p*a` — one gather, one multiply: genuinely O (1) time with O (1) state (two words per prime),
   \(\pi (\sqrt N)\) records, unbounded operation, and O (1) random-access restart. The price is that streams now
@@ -288,7 +288,7 @@ Let \(N\) be the current search limit.
 - **Heap size.** \(\pi (\sqrt n)\) by deferred activation (§4.1) — never \(\pi (n)\), since only primes \(\le \sqrt N\)
   ever own a composite \(\le N\).
 - **Time.** \(O (\text{events} \cdot \log \pi (\sqrt N)) = O (N \log\log N)\) with a binary heap; \(O (\text{events})\)
-  amortised with a bucket priority queue (`paper.md` §5.1), which reintroduces a *segment*-sized array but no array
+  amortised with a bucket priority queue (`paper.md` §5.1), which reintroduces a _segment_-sized array but no array
   proportional to \(N\).
 - **Memory.** \(O (\pi (\sqrt N))\) records, plus \(O (W)\) bytes of wheel table for the shared-wheel realisation. For
   exact streams the live-stream count is larger, \(S (N) \approx N^{0.75}\); that is the price of exactness.
@@ -315,11 +315,11 @@ trades away for O (1) state, in a bounded and computable amount.
 
 ### 5.2 Control Flow and Vectorisation
 
-The merge *decision* is a single comparison: if the candidate is below the next claimed composite it is prime, otherwise
+The merge _decision_ is a single comparison: if the candidate is below the next claimed composite it is prime, otherwise
 it is that composite. There are no chains of conditional logic, no residue tests, and no
 "try every prime up to \(\sqrt n\)" loop.
 
-A heap sift, however, is data-dependent and branch-heavy, so the branchless/SIMD story applies to the *bucketed*
+A heap sift, however, is data-dependent and branch-heavy, so the branchless/SIMD story applies to the _bucketed_
 form: the advance step `a += step[a % W]; v = p*a` is a gather plus a multiply and vectorises across streams, and bucket
 drains are independent scatter-writes into a segment bitmap. This is an engineering claim to be benchmarked, not a
 theorem.

@@ -120,10 +120,10 @@ every step:
 
 1. Initialize \(P = [\,]\), \(L_0 = 1\), and a trivial pattern (everything alive) on \([1, L_0]\).
 2. For each new prime \(p_k\) (found as the smallest surviving integer greater than 1 at the current stage):
-    - Set \(L_k = L_{k-1} \cdot p_k\).
-    - Lift the current pattern from period \(L_{k-1}\) to period \(L_k\) by repetition (\(p_k\) copies).
-    - Kill every position \(n \in [1, L_k]\) with \(n \equiv 0 \pmod {p_k}\) that is _still alive_ under the lifted
-      pattern. This is exactly \(C_k\).
+   - Set \(L_k = L_{k-1} \cdot p_k\).
+   - Lift the current pattern from period \(L_{k-1}\) to period \(L_k\) by repetition (\(p_k\) copies).
+   - Kill every position \(n \in [1, L_k]\) with \(n \equiv 0 \pmod {p_k}\) that is _still alive_ under the lifted
+     pattern. This is exactly \(C_k\).
 3. The survivors greater than 1 in \([1, L_k]\), once the sieve has been carried out to a sufficient bound, are
    precisely the primes.
 

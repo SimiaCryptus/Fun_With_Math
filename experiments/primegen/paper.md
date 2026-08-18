@@ -1,7 +1,8 @@
 # The Orthogonal Stream Prime Generator
 
 **An unbounded prime generator built from disjoint composite streams, one per prime, each advanced in O (1) time and O (
-1) state.**
+
+1. state.**
 
 ---
 
@@ -392,7 +393,7 @@ the one-touch ideal `κ_W·N − π(N) ≈ 0.19·N`. **≈2.4× more touches tha
 
 The formula is worth reading twice, because it is where the design pays for Conjecture X1 and the payment is only a
 `ln ln` factor. Exactness costs `N^{0.75}` memory; near-exactness costs `ln ln √N − ln ln p_w` touches. The second is
-obviously the better bargain. 
+obviously the better bargain.
 
 In the lattice language of §2.5 the accounting has a sharper description. Algorithm A
 follows the recursion F1 to every stage: prime `p` deletes `p·S_{k(p)}`, the copies stay disjoint (they are indexed by
@@ -453,7 +454,7 @@ than asserted.
 ## 6. Comparison
 
 | method                       | touches / time                                                  | working memory  | array over range             | segment-parallel |
-|------------------------------|-----------------------------------------------------------------|-----------------|------------------------------|------------------|
+| ---------------------------- | --------------------------------------------------------------- | --------------- | ---------------------------- | ---------------- |
 | trial-division extension     | `Θ(N π(√N))`                                                    | `O(π(√N))`      | no                           | yes              |
 | Eratosthenes, segmented      | `O(N log log N)`                                                | `O(√N + Δ)`     | yes (segment)                | yes              |
 | wheel sieve                  | `O(N / log log N)`                                              | `O(√N)`         | yes                          | partly           |
@@ -524,7 +525,7 @@ kernel; `lean/README.md` carries the same table plus modelling notes.
 ### 9.1 Claim → theorem
 
 | paper claim                       | Lean name                                                                   | file              |
-|-----------------------------------|-----------------------------------------------------------------------------|-------------------|
+| --------------------------------- | --------------------------------------------------------------------------- | ----------------- |
 | O1 ownership `Θ_p = p·A_p`        | `theta_eq_image`                                                            | `Ownership.lean`  |
 | orthogonality (§2.1 partition)    | `theta_disjoint`, `exists_unique_owner`                                     | `Ownership.lean`  |
 | O2 / F3 phase separation          | `prime_of_rough_of_lt_sq`                                                   | `Ownership.lean`  |

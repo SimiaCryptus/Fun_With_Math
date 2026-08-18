@@ -37,7 +37,7 @@ dependencies), two concrete algorithms, and an honest cost model.
 ## 1. Notation
 
 | symbol                                  | meaning                                                                                   |
-|-----------------------------------------|-------------------------------------------------------------------------------------------|
+| --------------------------------------- | ----------------------------------------------------------------------------------------- |
 | \(p_1=2 < p_2=3 < \dots\)               | the primes; `primes[i]` is \(p_{i+1}\) in code (0-based)                                  |
 | \(\mathrm{spf}(m)\)                     | smallest prime factor of \(m>1\)                                                          |
 | \(P(m)\)                                | **largest** prime factor of \(m>1\)                                                       |
@@ -90,8 +90,6 @@ periodic exclusion fields.
 
 _Proof._ \(a>1\) and all prime factors of \(a\) are \(\ge p\); if \(a\) were composite it would have at least two such
 factors, so \(a \ge p^2\). \(\square\)
-
-
 
 > **Corollary 2.4.** \(A_p \cap [p, p^2) = \{\text{primes in that range}\}\). Consequently one period of \(A_p\)
 > consists of \(1\) together with primes only **iff** \(P_{<p} \le p^2\), which holds iff \(p \le 7\)
@@ -283,7 +281,7 @@ trigger is \(8\). \(\square\)
 ### 3.6 Worked trace (\(N = 50\))
 
 | \(n\) | action                                                                                        |
-|-------|-----------------------------------------------------------------------------------------------|
+| ----- | --------------------------------------------------------------------------------------------- |
 | 2     | prime; push EMIT(4,2,0), SPAWN(8,2,0)                                                         |
 | 3     | min 4 > 3 ⇒ prime; push EMIT(9,3,1), SPAWN(27,3,1)                                            |
 | 4     | pop EMIT(4,2,0) ⇒ EMIT(6,2,1)                                                                 |
@@ -601,7 +599,7 @@ to fit \(\theta\) rather than trusting the heuristic exponent.
 ## 7. Comparison
 
 | method                                       | touches / time                                                                            | working memory           | array over range             | segment-parallel |
-|----------------------------------------------|-------------------------------------------------------------------------------------------|--------------------------|------------------------------|------------------|
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------ | ---------------------------- | ---------------- |
 | Trial division extension (`generator.md` §1) | \(\Theta(N\pi(\sqrt N))\)                                                                 | \(O(\pi(\sqrt N))\)      | no                           | yes              |
 | Eratosthenes, segmented                      | \(O(N\log\log N)\)                                                                        | \(O(\sqrt N + \Delta)\)  | yes (segment)                | yes              |
 | Pritchard wheel sieve                        | \(O(N/\log\log N)\)                                                                       | \(O(\sqrt N)\)           | yes                          | partly           |

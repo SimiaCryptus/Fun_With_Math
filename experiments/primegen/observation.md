@@ -27,7 +27,7 @@ In the compact notation used throughout the companion documents,
 
 the braces denote one period of the wheel: the number \(1\), then \(N\) itself, then every further totative of \(P_{<
 N}\) up to the largest one \(M < P_{<N}\). The multiplier \(1\) generates the residue class of \(N\) itself and is
-dropped when the object is used as a stream of *composites*; the stream proper begins at \(a = N\), i.e. at \(N^2\).
+dropped when the object is used as a stream of _composites_; the stream proper begins at \(a = N\), i.e. at \(N^2\).
 
 ---
 
@@ -85,7 +85,7 @@ So the multipliers split into two phases:
 > \(P_{<N} \le N^2\), i.e. iff \(N \le 7\) (\(P_{<7} = 30 < 49\), but \(P_{<11} = 210 > 121\)).
 
 This is why the compact prime-list description of one period is exact for \(N \in \{2,3,5,7\}\) and becomes a
-description of the *prime phase only* from \(N = 11\) on. The first composite multiplier anywhere is \(121 = 11^2\),
+description of the _prime phase only_ from \(N = 11\) on. The first composite multiplier anywhere is \(121 = 11^2\),
 which yields \(11 \cdot 121 = 1331 = 11^3 \in \Theta_{11}\).
 
 Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is reachable below a bound \(X\) only for
@@ -151,11 +151,12 @@ Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is 
   \[ \{1\} \;\cup\; \{\text{the } 42 \text{ primes in } [11,199]\} \;\cup\; \{121,\ 143,\ 169,\ 187,\ 209\}, \]
 
   since \(48 = 1 + 42 + 5\). The five composite totatives are \(11^2,\ 11\cdot13,\ 13^2,\ 11\cdot17,\ 11\cdot19\).
+
 - \(\Theta_{11} = \{121, 143, 187, 209, 253, 319, 341, \ldots\}\), and further out \(11 \cdot 121 = 1331 = 11^3\), \(11
   \cdot 143 = 1573\), …
 - Prime phase \([11,121)\): all primes. First composite multiplier: \(121\).
 
-This is the first prime whose multiplier period is *not* a prime list, and it is exactly the point at which the wheel
+This is the first prime whose multiplier period is _not_ a prime list, and it is exactly the point at which the wheel
 and the prime list part company.
 
 ---
@@ -170,7 +171,7 @@ position \(n\) is
 
 \[ a \;=\; n/N \;\le\; n/2 , \]
 
-while the *next* multiplier \(a' = \operatorname{NextRough} (N, a)\) satisfies \(a' < n\) (the primes are \(N\)-rough,
+while the _next_ multiplier \(a' = \operatorname{NextRough} (N, a)\) satisfies \(a' < n\) (the primes are \(N\)-rough,
 and Bertrand gives a prime in \( (a, 2a]\)). Hence:
 
 - no step ever consults an integer \(\ge n\);
@@ -209,10 +210,10 @@ Tabulating the exact wheel per prime is not an option: it has \(\varphi (P_{<p})
 ## 7. Where this object appears
 
 | reading                            | the same set \(A_N\), seen as…                                                          |
-|------------------------------------|-----------------------------------------------------------------------------------------|
+| ---------------------------------- | --------------------------------------------------------------------------------------- |
 | `paper.md` §2.2, `algorithm.md` §2 | the multiplier set of the stream owned by \(N\)                                         |
 | `idea.md` §2                       | the survivors of the first \(\pi(N)-1\) periodic exclusion fields                       |
 | `fractal.md` §2                    | the stage-\(k\) lattice \(S_k\) whose dilate \(N\cdot S_k\) is deleted at stage \(k+1\) |
 | `theory.md` T15/T18                | the newly-killed residue classes of \(N\); the totatives of \(P_{<N}\)                  |
 
-One object, four vocabularies. The deletion set of the lattice recursion *is* \(\Theta_N = N \cdot A_N\).
+One object, four vocabularies. The deletion set of the lattice recursion _is_ \(\Theta_N = N \cdot A_N\).

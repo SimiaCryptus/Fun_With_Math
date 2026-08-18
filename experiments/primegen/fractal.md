@@ -8,7 +8,6 @@
 > sets that appear here as the deleted dilates `p·S_k`; `idea.md` is the spectral/entropy reading;
 > `theory.md` is the statement inventory.
 
-
 The slogan is not a metaphor: the lattice recursion is exact, and the set deleted at each stage is an _affine copy of
 the previous stage_. That is a Moran/IFS construction, so the word "fractal" is earned. What is _not_ earned is the
 usual payoff of that word — a nontrivial dimension, or an exact scaling symmetry. §4 says exactly where the
@@ -65,7 +64,7 @@ Two things deserve emphasis.
 ### Worked stages
 
 | \(k\) | \(P_k\) | \(S_k\)                        | \(\varphi(P_k)\) | deleted at next stage      | next hole |
-|-------|---------|--------------------------------|------------------|----------------------------|-----------|
+| ----- | ------- | ------------------------------ | ---------------- | -------------------------- | --------- |
 | 1     | 2       | {1}                            | 1                | \(3\cdot\{1\}=\{3\}\)      | 3         |
 | 2     | 6       | {1, 5}                         | 2                | \(5\cdot\{1,5\}=\{5,25\}\) | 5         |
 | 3     | 30      | {1, 7, 11, 13, 17, 19, 23, 29} | 8                | \(7\cdot S_3\)             | 7         |
@@ -83,7 +82,7 @@ leaves the eight spokes of the mod-30 wheel. No primality test occurred anywhere
 >
 > - Lebesgue measure \(= \kappa_k \to 0\), so the limit set is null;
 > - box-counting dimension \(= \lim_k \dfrac{\log \varphi (P_k)}{\log P_k} = \lim_k \left (1 + \dfrac{\log
-    \kappa_k}{\log P_k}\right) = 1\),
+>   \kappa_k}{\log P_k}\right) = 1\),
 >   since \(\log \kappa_k \sim -\log\log p_k\) while \(\log P_k \sim p_k\) (Mertens + PNT).
 >
 > _Status: routine given Mertens; TODO write out._
@@ -131,7 +130,7 @@ Consequently:
 The A/B fork of `paper.md` is exactly a choice of how far to follow the recursion of Claim F1.
 
 |                                 | follows F1                                                      | consequence                                                                                                                                                                                                                        |
-|---------------------------------|-----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Algorithm A** (`paper.md` §3) | to every stage, exactly                                         | deletion sets stay disjoint (\(p\cdot S_k\) for distinct \(p\) never collide because each is indexed by smallest prime factor) ⇒ **one touch per composite**; but the number of live affine copies grows like \(N^{0.75}\)         |
 | **Algorithm B** (`paper.md` §4) | to stage \(w\) only, then reuses \(S_w\) for _all_ later primes | every prime \(p > p_w\) deletes \(p\cdot S_w \supseteq p\cdot S_{k(p)}\) — an over-large copy ⇒ deletion sets overlap, each composite claimed \(\omega_{>p_w}(m)\) times (≈2–2.5), but state collapses to \(\pi(\sqrt N)\) records |
 
