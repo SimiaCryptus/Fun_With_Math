@@ -136,6 +136,25 @@
         max-height: 430px;
         overflow: auto;
       }
+      .canvas-wrap {
+        margin-top: 10px;
+        border: 1px solid #222a35;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #0b0f15;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      #spiralCanvas {
+        display: block;
+        width: 100%;
+        height: 460px;
+        cursor: grab;
+      }
+      #spiralCanvas.dragging {
+        cursor: grabbing;
+      }
       .pass {
         color: var(--good);
       }
@@ -213,6 +232,19 @@
           <span id="badge"></span>
         </div>
         <pre id="out" class="dim">—</pre>
+      </section>
+      <section>
+        <h2>Ulam spiral <span class="ref">consume generated primes</span></h2>
+        <p class="note">
+          Primes ≤ <code>N</code> (or side length <code>L = ⌊√N⌋</code>, capped at 2000) are
+          plotted in a square Ulam spiral. Drag to pan · wheel to zoom · reset to fit.
+        </p>
+        <div class="row">
+          <button class="primary" id="btnSpiral">▶ draw Ulam spiral</button>
+          <button id="btnSpiralReset">reset view</button>
+          <span id="spiralInfo" class="dim"></span>
+        </div>
+        <div class="canvas-wrap"><canvas id="spiralCanvas" width="800" height="460"></canvas></div>
       </section>
     </main>
 
@@ -409,6 +441,180 @@
         for (let i = 2; i <= limit; i++) if (s[i]) out.push(i);
         return out;
       }
+      /* =====================================================================
+   Ulam spiral + pan/zoom canvas
+   ===================================================================== */
+      const spiralCanvas = () => document.getElementById('spiralCanvas');
+      let spiralBitmap = null; // offscreen canvas L×L
+      let spiralL = 0;
+      let spiralView = { scale: 1, tx: 0, ty: 0 };
+      let lastSpiral = null; // { primes, N, w } from the latest generator run
+      function buildSpiralBitmap(primes, L) {
+        const canvas = document.createElement('canvas');
+        canvas.width = L;
+        canvas.height = L;
+        const ctx = canvas.getContext('2d', { alpha: false });
+        ctx.fillStyle = '#0b0f15';
+        ctx.fillRect(0, 0, L, L);
+        const img = ctx.getImageData(0, 0, L, L);
+        const data = img.data;
+        const isPrime = new Uint8Array(L * L + 1);
+        for (const p of primes) {
+          if (p <= L * L) isPrime[p] = 1;
+        }
+        let x = L >> 1;
+        let y = L >> 1;
+        const setPx = (n) => {
+          if (isPrime[n]) {
+            const idx = (y * L + x) * 4;
+            data[idx] = 0x7e;
+            data[idx + 1] = 0xe0;
+            data[idx + 2] = 0xc0;
+            data[idx + 3] = 255;
+          }
+        };
+        const dx = [1, 0, -1, 0];
+        const dy = [0, -1, 0, 1];
+        let dir = 0;
+        let stepLen = 1;
+        let stepCount = 0;
+        let leg = 0;
+        setPx(1);
+        for (let n = 2; n <= L * L; n++) {
+          x += dx[dir];
+          y += dy[dir];
+          stepCount++;
+          if (stepCount === stepLen) {
+            dir = (dir + 1) & 3;
+            stepCount = 0;
+            leg++;
+            if (leg === 2) {
+              leg = 0;
+              stepLen++;
+            }
+          }
+          setPx(n);
+        }
+        ctx.putImageData(img, 0, 0);
+        return canvas;
+      }
+      function renderSpiral() {
+        const canvas = spiralCanvas();
+        if (!canvas) return;
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        const wCss = Math.max(1, rect.width);
+        const hCss = Math.max(1, rect.height);
+        if (canvas.width !== Math.round(wCss * dpr) || canvas.height !== Math.round(hCss * dpr)) {
+          canvas.width = Math.round(wCss * dpr);
+          canvas.height = Math.round(hCss * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.fillStyle = '#0b0f15';
+        ctx.fillRect(0, 0, wCss, hCss);
+        if (spiralBitmap) {
+          ctx.imageSmoothingEnabled = false;
+          const { scale, tx, ty } = spiralView;
+          ctx.drawImage(spiralBitmap, tx, ty, spiralL * scale, spiralL * scale);
+        }
+      }
+      function resetSpiralView() {
+        const canvas = spiralCanvas();
+        if (!canvas || !spiralBitmap) return;
+        const rect = canvas.getBoundingClientRect();
+        const pad = 12;
+        const scale = Math.min((rect.width - pad * 2) / spiralL, (rect.height - pad * 2) / spiralL);
+        spiralView.scale = Math.max(0.01, scale);
+        spiralView.tx = (rect.width - spiralL * spiralView.scale) / 2;
+        spiralView.ty = (rect.height - spiralL * spiralView.scale) / 2;
+        renderSpiral();
+      }
+      async function drawUlamSpiral() {
+        const info = document.getElementById('spiralInfo');
+        const Ninput = Math.max(10, +document.getElementById('limit').value | 0);
+        const w = Math.max(1, Math.min(7, +document.getElementById('w').value | 0));
+        const maxSide = 20000;
+        let L = Math.floor(Math.sqrt(Ninput));
+        let Nspiral = Ninput;
+        if (L > maxSide) {
+          L = maxSide;
+          Nspiral = L * L;
+        }
+        if (L < 2) {
+          info.textContent = 'N too small for a Ulam spiral.';
+          return;
+        }
+        let primes;
+        if (lastSpiral && lastSpiral.N >= Nspiral && lastSpiral.w === w) {
+          primes = lastSpiral.primes;
+        } else {
+          info.textContent = `generating primes ≤ ${fmt(Nspiral)}…`;
+          await sleep(0);
+          const res = runB(Nspiral, w);
+          primes = res.primes;
+          lastSpiral = { primes, N: Nspiral, w };
+        }
+        info.textContent = `building Ulam spiral side ${fmt(L)}…`;
+        await sleep(0);
+        spiralBitmap = buildSpiralBitmap(primes, L);
+        spiralL = L;
+        resetSpiralView();
+        info.textContent = `${fmt(primes.length)} primes · side ${fmt(L)} · drag to pan, wheel to zoom`;
+      }
+      function initSpiralInteractions() {
+        const canvas = spiralCanvas();
+        if (!canvas) return;
+        let dragging = false;
+        let lastX = 0;
+        let lastY = 0;
+        canvas.addEventListener('pointerdown', (e) => {
+          dragging = true;
+          canvas.classList.add('dragging');
+          lastX = e.clientX;
+          lastY = e.clientY;
+          canvas.setPointerCapture(e.pointerId);
+          e.preventDefault();
+        });
+        canvas.addEventListener('pointermove', (e) => {
+          if (!dragging) return;
+          const dx = e.clientX - lastX;
+          const dy = e.clientY - lastY;
+          lastX = e.clientX;
+          lastY = e.clientY;
+          spiralView.tx += dx;
+          spiralView.ty += dy;
+          renderSpiral();
+        });
+        canvas.addEventListener('pointerup', (e) => {
+          dragging = false;
+          canvas.classList.remove('dragging');
+          canvas.releasePointerCapture(e.pointerId);
+        });
+        canvas.addEventListener('pointercancel', () => {
+          dragging = false;
+          canvas.classList.remove('dragging');
+        });
+        canvas.addEventListener('wheel', (e) => {
+          e.preventDefault();
+          const rect = canvas.getBoundingClientRect();
+          const mx = e.clientX - rect.left;
+          const my = e.clientY - rect.top;
+          const factor = Math.pow(1.0015, -e.deltaY);
+          const oldScale = spiralView.scale;
+          spiralView.scale = Math.max(0.1, Math.min(200, oldScale * factor));
+          const sx = mx - spiralView.tx;
+          const sy = my - spiralView.ty;
+          const nx = sx * (spiralView.scale / oldScale);
+          const ny = sy * (spiralView.scale / oldScale);
+          spiralView.tx = mx - nx;
+          spiralView.ty = my - ny;
+          renderSpiral();
+        }, { passive: false });
+        window.addEventListener('resize', () => {
+          if (spiralBitmap) resetSpiralView();
+        });
+      }
 
       /* =====================================================================
    minimal UI
@@ -455,6 +661,7 @@
         await sleep(0);
 
         const { primes, stats: st, wheel: wh } = runB(N, w);
+        lastSpiral = { primes, N, w };
         const pw = wh.primes[wh.primes.length - 1];
 
         P.line(
@@ -532,6 +739,9 @@
 
       $('btnRun').onclick = () => generate();
       $('btnFirst').onclick = firstPrimes;
+      $('btnSpiral').onclick = () => drawUlamSpiral();
+      $('btnSpiralReset').onclick = () => resetSpiralView();
+      initSpiralInteractions();
 
       firstPrimes(); /* cheap initial render */
     </script>
