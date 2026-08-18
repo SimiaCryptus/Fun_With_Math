@@ -220,6 +220,7 @@ canvas {
 }
 
 input[type='number'],
+input[type='text'],
 select,
 textarea {
   background: var(--bg-3);
@@ -228,6 +229,10 @@ textarea {
   border-radius: 5px;
   padding: 4px 6px;
   font: inherit;
+}
+.ctl-text {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 select {

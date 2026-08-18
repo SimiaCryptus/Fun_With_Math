@@ -283,6 +283,10 @@ export class Grid {
     // diagnostics (single-buffered; written during a step, read by the renderer)
     this.u = new Float32Array(this.size);
     this.error = new Float32Array(this.size);
+    // paintable target field T(c) (§3.2). Single-buffered: it is an *input*
+    // to the rule, never written by the rule itself.
+    this.targetField = new Float32Array(this.size);
+    this.targetInitialized = false;
     // ---- bioelectrical membrane substrate (bioelectrical.md §3.1) --------
     this.V = new Float32Array(this.size);
     this.nextV = new Float32Array(this.size);
@@ -313,6 +317,18 @@ export class Grid {
   setState(x, y, value) {
     if (!this.inBounds(x, y)) return;
     this.states[this.index(x, y)] = value | 0;
+  }
+  // ------------------------------------------------ paintable target field
+  getTarget(x, y) {
+    return this.inBounds(x, y) ? this.targetField[this.index(x, y)] : 0;
+  }
+  setTarget(x, y, value) {
+    if (!this.inBounds(x, y)) return;
+    this.targetField[this.index(x, y)] = value;
+  }
+  fillTargetField(value) {
+    this.targetField.fill(value);
+    this.targetInitialized = true;
   }
 
   /** Atomic swap of current/next buffers (synchronous update semantics, §8). */

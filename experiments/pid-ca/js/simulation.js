@@ -22,6 +22,7 @@ import {
 import { pidStep } from './controller.js';
 import { expressState, expressBioelectrical } from './stateExpression.js';
 import { membraneStep, makeMembraneInput, makeMembraneOutput } from './membrane.js';
+import { forEachLineCell, rasterizeText } from './raster.js';
 
 export class Simulation {
   constructor(config) {
@@ -112,6 +113,7 @@ export class Simulation {
     this.rng = createRng(cfg.seed);
     this.gaussian = makeGaussianSampler(this.rng);
     this.grid.clearControllerState();
+    this.ensureTargetField();
     if (cfg.mode === 'pid') {
       populate(this.grid, cfg, this.rng);
       this._seedControllerState();
@@ -146,13 +148,14 @@ export class Simulation {
     const cfg = this.config.all();
     const g = this.grid;
     const uniform = isTargetSpatiallyUniform(cfg) ? targetAt(cfg, 0, 0, 0) : null;
+    const painted = cfg.targetMode === 'painted' ? g.targetField : null;
     const gaussian = cfg.perturbInit === 'normal' ? makeGaussianSampler(this.rng) : null;
     for (let y = 0; y < g.height; y++) {
       const row = y * g.width;
       for (let x = 0; x < g.width; x++) {
         const idx = row + x;
         const n = this._neighborMeasure(g.states, x, y, cfg.boundary);
-        const T = uniform !== null ? uniform : targetAt(cfg, x, y, 0);
+        const T = painted ? painted[idx] : uniform !== null ? uniform : targetAt(cfg, x, y, 0);
         const e = T - n;
         let prevError = e;
         let integral = 0;
@@ -195,6 +198,69 @@ export class Simulation {
     this.grid.setState(x, y, value);
     this.emit('paint', { x, y, value });
   }
+  // ------------------------------------------------ painted target field T(c)
+  /** Lazily initialise the field to the scalar T so it is never all-zero. */
+  ensureTargetField() {
+    if (!this.grid.targetInitialized) this.grid.fillTargetField(this.config.get('target'));
+  }
+  /** Flood the whole field with a single value. */
+  fillTargetField(value) {
+    this.grid.fillTargetField(value);
+    this.emit('paint', { target: true, value });
+  }
+  /** Square stamp, no event (internal building block for the tools). */
+  _brushTarget(cx, cy, value, size) {
+    const s = Math.max(1, size | 0);
+    const half = (s - 1) / 2;
+    const x0 = Math.round(cx - half);
+    const y0 = Math.round(cy - half);
+    for (let dy = 0; dy < s; dy++) {
+      for (let dx = 0; dx < s; dx++) this.grid.setTarget(x0 + dx, y0 + dy, value);
+    }
+  }
+  /** Freehand dab. */
+  paintTargetBrush(x, y, value, size) {
+    this.ensureTargetField();
+    this._brushTarget(x, y, value, size);
+    this.emit('paint', { x, y, value, target: true });
+  }
+  /** Stroke a line of brush stamps (also used to interpolate freehand drags). */
+  paintTargetLine(x0, y0, x1, y1, value, size) {
+    this.ensureTargetField();
+    forEachLineCell(x0, y0, x1, y1, (x, y) => this._brushTarget(x, y, value, size));
+    this.emit('paint', { target: true, value });
+  }
+  /** Filled rectangle between two corners (inclusive). */
+  paintTargetRect(a, b, value) {
+    this.ensureTargetField();
+    const g = this.grid;
+    const x0 = Math.max(0, Math.min(a.x, b.x));
+    const x1 = Math.min(g.width - 1, Math.max(a.x, b.x));
+    const y0 = Math.max(0, Math.min(a.y, b.y));
+    const y1 = Math.min(g.height - 1, Math.max(a.y, b.y));
+    for (let y = y0; y <= y1; y++) {
+      for (let x = x0; x <= x1; x++) g.setTarget(x, y, value);
+    }
+    this.emit('paint', { target: true, value });
+  }
+  /** Rasterise `text` at `fontSize` cells and stamp it centred on (x, y). */
+  stampTargetText(x, y, text, fontSize, value, bold) {
+    const label = String(text == null ? '' : text);
+    if (!label.trim()) return;
+    this.ensureTargetField();
+    const glyph = rasterizeText(label, fontSize, { bold: Boolean(bold) });
+    const g = this.grid;
+    const x0 = Math.round(x - glyph.width / 2);
+    const y0 = Math.round(y - glyph.height / 2);
+    for (let gy = 0; gy < glyph.height; gy++) {
+      const row = gy * glyph.width;
+      for (let gx = 0; gx < glyph.width; gx++) {
+        if (glyph.mask[row + gx]) g.setTarget(x0 + gx, y0 + gy, value);
+      }
+    }
+    this.emit('paint', { x, y, value, target: true });
+  }
+
   // ------------------------------------------- membrane-domain interventions
   /** Write into the stimulus field (bioelectrical.md §7 "paint stimulus"). */
   paintStimulus(x, y, amount) {
@@ -261,6 +327,7 @@ export class Simulation {
     const rng = this.rng;
     const t = this.time;
     const uniformTarget = isTargetSpatiallyUniform(cfg) ? targetAt(cfg, 0, 0, t) : null;
+    const painted = cfg.targetMode === 'painted' ? g.targetField : null;
 
     for (let y = 0; y < g.height; y++) {
       const row = y * g.width;
@@ -273,7 +340,11 @@ export class Simulation {
           : countActiveNeighbors(g, st, x, y, offsets, boundary, isActive);
 
         // (b) error + PID terms
-        const T = uniformTarget !== null ? uniformTarget : targetAt(cfg, x, y, t);
+        const T = painted
+          ? painted[idx]
+          : uniformTarget !== null
+            ? uniformTarget
+            : targetAt(cfg, x, y, t);
         const e = T - n;
         pidStep(pe[idx], ig[idx], e, cfg, out);
 

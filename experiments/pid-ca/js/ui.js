@@ -179,6 +179,7 @@ export class UI {
       const header = el('h2', null, group);
       const body = el('div', 'group-body');
       for (const key of keys) body.appendChild(this._buildControl(key, SCHEMA[key]));
+      if (group === 'Painting') body.appendChild(this._buildTargetFieldTools());
       section.append(header, body);
       this._makeCollapsible(section, header);
       this.sections.set(group, section);
@@ -187,6 +188,32 @@ export class UI {
 
     this.errorBox = el('p', 'errors');
     this.panel.appendChild(this.errorBox);
+  }
+  /** Bulk actions for the painted target field (§3.2). */
+  _buildTargetFieldTools() {
+    const row = el('div', 'row');
+    const fillT = el('button', null, 'Fill field with T');
+    fillT.title = 'Reset every cell of the painted target field to the global scalar T';
+    fillT.addEventListener('click', () => this.sim.fillTargetField(this.config.get('target')));
+    const fillValue = el('button', null, 'Fill with paint value');
+    fillValue.addEventListener('click', () =>
+      this.sim.fillTargetField(this.config.get('targetPaintValue'))
+    );
+    const clearT = el('button', null, 'Clear T');
+    clearT.title = 'Set target field to 0 everywhere';
+    clearT.addEventListener('click', () => this.sim.fillTargetField(0));
+    const use = el('button', null, 'Use painted field');
+    use.title = 'Set Target mode = painted so the drawn field drives the model';
+    use.addEventListener('click', () => this.config.set('targetMode', 'painted'));
+    const show = el('button', null, 'Show T overlay');
+    show.addEventListener('click', () => {
+      const isTarget = this.config.get('overlay') === 'target';
+      this.config.set('overlay', isTarget ? 'none' : 'target');
+    });
+    this._toggleTargetOverlayBtn = show;
+    row.append(fillT, fillValue, clearT, use, show);
+    this._targetToolsRow = row;
+    return row;
   }
   /** Wire a group header to toggle a `.collapsed` class on its section (§9). */
   _makeCollapsible(section, header) {
@@ -418,6 +445,17 @@ export class UI {
         if (cells.length !== side * side) rebuild(side);
         paintCells();
       };
+    } else if (spec.type === 'text') {
+      const input = el('input', 'ctl-text');
+      input.type = 'text';
+      input.id = 'ctl-' + key;
+      input.spellcheck = false;
+      input.addEventListener('input', () => this._push(key, input.value));
+      field.appendChild(input);
+      setValue = (v) => {
+        const s = v == null ? '' : String(v);
+        if (input.value !== s) input.value = s;
+      };
     } else {
       const range = el('input', 'ctl-range');
       range.type = 'range';
@@ -478,6 +516,13 @@ export class UI {
     this._applying = false;
     for (const [group, section] of this.sections) {
       section.hidden = !this._groupVisible(group, cfg);
+    }
+    if (this._targetToolsRow) {
+      this._targetToolsRow.hidden = !(cfg.mode === 'pid' && cfg.paintLayer === 'target');
+    }
+    if (this._toggleTargetOverlayBtn) {
+      this._toggleTargetOverlayBtn.textContent =
+        cfg.overlay === 'target' ? 'Hide T overlay' : 'Show T overlay';
     }
     this._renderLegend();
     this.updateStatus();
@@ -557,7 +602,12 @@ export class UI {
       const label =
         cfg.overlay === 'voltage'
           ? 'overlay: V (' + cfg.vMin + ' → ' + cfg.vRest + ' → ' + cfg.vMax + ')'
-          : 'overlay: ' + cfg.overlay + ' (blue −, red +), ±' + cfg.overlayScale;
+          : cfg.overlay === 'target'
+            ? 'overlay: T(c) relative to ' +
+              cfg.target +
+              ' (blue below, red above), ±' +
+              cfg.overlayScale
+            : 'overlay: ' + cfg.overlay + ' (blue −, red +), ±' + cfg.overlayScale;
       item.append(el('span', 'swatch ramp'), el('span', null, label));
       root.appendChild(item);
     }
@@ -568,6 +618,10 @@ export class UI {
     let painting = false;
     let paintValue = 1;
     let fillStart = null;
+    // target-field drawing state
+    let targetLayer = false;
+    let dragStart = null;
+    let lastCell = null;
 
     const cellOf = (event) => this.renderer.cellFromEvent(event, this.sim.grid);
     const paintBrush = (cx, cy, value) => {
@@ -623,6 +677,36 @@ export class UI {
       if (!cell) return;
       const cfg = this.config.all();
       const erase = event.button === 2 || event.shiftKey;
+      // ---- painted target field T(c): freehand / line / rect / text ------
+      targetLayer = cfg.mode === 'pid' && cfg.paintLayer === 'target';
+      if (targetLayer) {
+        paintValue = erase ? cfg.target : cfg.targetPaintValue;
+        painting = true;
+        dragStart = cell;
+        lastCell = cell;
+        try {
+          this.canvas.setPointerCapture(event.pointerId);
+        } catch (err) {
+          /* ignore */
+        }
+        if (cfg.targetTool === 'text') {
+          this.sim.stampTargetText(
+            cell.x,
+            cell.y,
+            cfg.targetText,
+            cfg.targetFontSize,
+            paintValue,
+            cfg.targetTextBold
+          );
+          painting = false;
+          dragStart = null;
+        } else if (cfg.targetTool === 'brush') {
+          this.sim.paintTargetBrush(cell.x, cell.y, paintValue, cfg.targetBrushSize);
+        }
+        // 'line' / 'rect' are committed on pointerup.
+        event.preventDefault();
+        return;
+      }
       if (cfg.mode !== 'pid') {
         paintValue = erase ? 0 : 1;
       } else if (event.altKey && cfg.stateMin < 0) {
@@ -651,16 +735,43 @@ export class UI {
       const cell = cellOf(event);
       if (!cell) return;
       const cfg = this.config.all();
+      if (targetLayer) {
+        // Interpolate between pointer samples so fast drags stay continuous.
+        if (cfg.targetTool === 'brush') {
+          const from = lastCell || cell;
+          this.sim.paintTargetLine(from.x, from.y, cell.x, cell.y, paintValue, cfg.targetBrushSize);
+        }
+        lastCell = cell;
+        return;
+      }
       if (cfg.paintTool !== 'fill') paintBrush(cell.x, cell.y, paintValue);
     });
 
     const stop = (event) => {
-      if (painting && this.config.get('paintTool') === 'fill' && fillStart) {
+      const cfg = this.config.all();
+      if (painting && targetLayer && dragStart) {
+        const cell = cellOf(event) || lastCell || dragStart;
+        if (cfg.targetTool === 'line') {
+          this.sim.paintTargetLine(
+            dragStart.x,
+            dragStart.y,
+            cell.x,
+            cell.y,
+            paintValue,
+            cfg.targetBrushSize
+          );
+        } else if (cfg.targetTool === 'rect') {
+          this.sim.paintTargetRect(dragStart, cell, paintValue);
+        }
+      } else if (painting && cfg.paintTool === 'fill' && fillStart) {
         const cell = cellOf(event) || fillStart;
         applyFill(fillStart, cell, paintValue);
       }
       painting = false;
       fillStart = null;
+      dragStart = null;
+      lastCell = null;
+      targetLayer = false;
     };
     this.canvas.addEventListener('pointerup', stop);
     this.canvas.addEventListener('pointercancel', stop);

@@ -23,8 +23,9 @@ export const EXPRESSIONS = [
 export const ACTIVE_PREDICATES = ['gt0', 'nonzero', 'ge2', 'lt0', 'eqMax', 'eqMin'];
 export const NEIGHBOR_METRICS = ['count', 'sum'];
 export const INITIAL_CONDITIONS = ['random', 'center', 'singleCell', 'stripes', 'empty'];
-export const TARGET_MODES = ['constant', 'gradientX', 'radial', 'oscillating'];
-export const OVERLAYS = ['none', 'u', 'integral', 'error', 'voltage'];
+export const TARGET_MODES = ['constant', 'gradientX', 'radial', 'oscillating', 'painted'];
+export const OVERLAYS = ['none', 'u', 'integral', 'error', 'voltage', 'target'];
+export const TARGET_TOOLS = ['brush', 'line', 'rect', 'text'];
 
 // ---- bioelectrical membrane domain (bioelectrical.md §5, §6.3) ------------
 export const MODES = ['pid', 'membrane-only', 'pid-homeostat'];
@@ -59,6 +60,9 @@ const isExpr =
 /** Visibility helpers for the two coexisting domains. */
 const isPid = (cfg) => cfg.mode === 'pid';
 const isMembrane = (cfg) => cfg.mode !== 'pid';
+/** Painting-layer helpers: in PID mode the pointer paints states *or* T(c). */
+const isStatePaint = (cfg) => cfg.mode !== 'pid' || cfg.paintLayer === 'state';
+const isTargetPaint = (cfg) => cfg.mode === 'pid' && cfg.paintLayer === 'target';
 /** Maximum neighbour count for the configured neighbourhood (diffusion stability). */
 export function maxNeighborCount(cfg) {
   const r = Math.max(1, cfg.radius | 0);
@@ -191,7 +195,9 @@ export const SCHEMA = {
       gradientX: 'Horizontal gradient',
       radial: 'Radial field',
       oscillating: 'Time-oscillating',
+      painted: 'Painted field T(c)',
     },
+    hint: 'Painted mode reads the per-cell target field drawn with the target paint tools.',
   },
   target: {
     group: 'Target',
@@ -201,6 +207,7 @@ export const SCHEMA = {
     max: 24,
     step: 0.05,
     default: 4,
+    hint: 'Also the "erase" value and the fill value for the painted target field.',
   },
   targetAmplitude: {
     group: 'Target',
@@ -210,7 +217,10 @@ export const SCHEMA = {
     max: 8,
     step: 0.05,
     default: 2,
-    visible: (cfg) => cfg.targetMode !== 'constant',
+    visible: (cfg) =>
+      cfg.targetMode === 'gradientX' ||
+      cfg.targetMode === 'radial' ||
+      cfg.targetMode === 'oscillating',
   },
   targetPeriod: {
     group: 'Target',
@@ -610,13 +620,24 @@ export const SCHEMA = {
   },
 
   // ---------------------------------------------------------------- painting
+  paintLayer: {
+    group: 'Painting',
+    label: 'Paint layer',
+    type: 'enum',
+    options: ['state', 'target'],
+    default: 'state',
+    optionLabels: { state: 'Cell states', target: 'Target field T(c)' },
+    visible: isPid,
+    hint: 'The painted field only drives the model when Target mode = "Painted field T(c)".',
+  },
   paintTool: {
     group: 'Painting',
-    label: 'Paint tool',
+    label: 'State paint tool',
     type: 'enum',
     options: ['brush', 'fill'],
     default: 'brush',
     optionLabels: { brush: 'Brush', fill: 'Area fill (drag rectangle)' },
+    visible: isStatePaint,
   },
   brushSize: {
     group: 'Painting',
@@ -626,7 +647,7 @@ export const SCHEMA = {
     max: 25,
     step: 1,
     default: 1,
-    visible: (cfg) => cfg.paintTool === 'brush',
+    visible: (cfg) => isStatePaint(cfg) && cfg.paintTool === 'brush',
     hint: 'Side length of the square painted around the pointer.',
   },
   fillDensity: {
@@ -637,7 +658,7 @@ export const SCHEMA = {
     max: 100,
     step: 1,
     default: 50,
-    visible: (cfg) => cfg.paintTool === 'fill' && cfg.fillPattern === 'random',
+    visible: (cfg) => isStatePaint(cfg) && cfg.paintTool === 'fill' && cfg.fillPattern === 'random',
   },
   fillPattern: {
     group: 'Painting',
@@ -651,8 +672,69 @@ export const SCHEMA = {
       stripesV: 'Vertical stripes',
       checker: 'Checkerboard',
     },
-    visible: (cfg) => cfg.paintTool === 'fill',
+    visible: (cfg) => isStatePaint(cfg) && cfg.paintTool === 'fill',
     hint: 'Drag a rectangle on the grid, release to apply.',
+  },
+  targetTool: {
+    group: 'Painting',
+    label: 'Target tool',
+    type: 'enum',
+    options: TARGET_TOOLS,
+    default: 'brush',
+    optionLabels: {
+      brush: 'Freehand brush',
+      line: 'Line (drag)',
+      rect: 'Rectangle (drag)',
+      text: 'Text stamp (click)',
+    },
+    visible: isTargetPaint,
+    hint: 'Shift-drag / right-drag paints the global T instead (i.e. erases).',
+  },
+  targetPaintValue: {
+    group: 'Painting',
+    label: 'Target paint value',
+    type: 'float',
+    min: -24,
+    max: 24,
+    step: 0.05,
+    default: 6,
+    visible: isTargetPaint,
+    hint: 'Value written into T(c) by the target tools.',
+  },
+  targetBrushSize: {
+    group: 'Painting',
+    label: 'Target brush size (cells)',
+    type: 'int',
+    min: 1,
+    max: 40,
+    step: 1,
+    default: 3,
+    visible: (cfg) => isTargetPaint(cfg) && cfg.targetTool !== 'rect' && cfg.targetTool !== 'text',
+  },
+  targetText: {
+    group: 'Painting',
+    label: 'Stamp text',
+    type: 'text',
+    default: 'PID',
+    visible: (cfg) => isTargetPaint(cfg) && cfg.targetTool === 'text',
+    hint: 'Click the grid to stamp the string, centred on the pointer.',
+  },
+  targetFontSize: {
+    group: 'Painting',
+    label: 'Font size (cells)',
+    type: 'int',
+    min: 4,
+    max: 200,
+    step: 1,
+    default: 24,
+    visible: (cfg) => isTargetPaint(cfg) && cfg.targetTool === 'text',
+  },
+  targetTextBold: {
+    group: 'Painting',
+    label: 'Bold glyphs',
+    type: 'bool',
+    default: true,
+    visible: (cfg) => isTargetPaint(cfg) && cfg.targetTool === 'text',
   },
   membraneTool: {
     group: 'Painting',
@@ -742,6 +824,7 @@ export const SCHEMA = {
       integral: 'Integral I_t (frustration)',
       error: 'Error e_t',
       voltage: 'Membrane potential V',
+      target: 'Painted target field T(c)',
     },
   },
   overlayScale: {
@@ -800,7 +883,8 @@ export function validateConfig(raw) {
     if (!(key in source)) continue;
     const spec = SCHEMA[key];
     let value = source[key];
-    if (value === undefined || value === null || value === '') continue;
+    // Text parameters legitimately accept the empty string.
+    if (value === undefined || value === null || (value === '' && spec.type !== 'text')) continue;
 
     switch (spec.type) {
       case 'int': {
@@ -823,6 +907,9 @@ export function validateConfig(raw) {
       }
       case 'bool':
         config[key] = value === 'false' ? false : Boolean(value);
+        break;
+      case 'text':
+        config[key] = String(value);
         break;
       case 'mask':
         config[key] = String(value).replace(/[^01]/g, '');
@@ -929,6 +1016,9 @@ export function targetAt(cfg, x, y, t) {
         cfg.target +
         cfg.targetAmplitude * Math.sin((2 * Math.PI * t) / Math.max(2, cfg.targetPeriod))
       );
+    // 'painted' is resolved per-cell from grid.targetField in simulation.js;
+    // the scalar T is the fallback / erase value.
+    case 'painted':
     case 'constant':
     default:
       return cfg.target;

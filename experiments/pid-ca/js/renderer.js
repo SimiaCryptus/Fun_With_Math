@@ -105,6 +105,8 @@ export class Renderer {
         return grid.integral;
       case 'error':
         return grid.error;
+      case 'target':
+        return grid.targetField;
       case 'voltage':
         return grid.V;
       default:
@@ -128,6 +130,8 @@ export class Renderer {
     // Signed states are stored as-is, so shift into palette space.
     const offset = pid ? -Math.min(0, cfg.stateMin | 0) : 0;
     const voltageOverlay = cfg.overlay === 'voltage';
+    // The target field is shown relative to the scalar T (its neutral value).
+    const targetOverlay = cfg.overlay === 'target';
     const hotSpan = Math.max(1e-6, cfg.vMax - cfg.vRest);
     const coldSpan = Math.max(1e-6, cfg.vRest - cfg.vMin);
 
@@ -141,7 +145,9 @@ export class Renderer {
         // Voltage maps V_min (cold) → V_rest (neutral) → V_max (hot) (§7).
         let t = voltageOverlay
           ? (overlay[idx] - cfg.vRest) / (overlay[idx] >= cfg.vRest ? hotSpan : coldSpan)
-          : overlay[idx] / scale;
+          : targetOverlay
+            ? (overlay[idx] - cfg.target) / scale
+            : overlay[idx] / scale;
         if (t > 1) t = 1;
         else if (t < -1) t = -1;
         const a = Math.abs(t);
