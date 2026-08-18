@@ -1,10 +1,10 @@
 # The Orthogonal Stream Prime Generator: A Complete Algorithm
 
-**Status:** normative specification + reference implementation. **Companions:** `generator.md` (architecture, assumes an
-O (1) primitive), `observation.md`
-(multiplier-set conjecture), `idea.md` (spectral/entropy framing). This document supplies what those three do not: an
-exact construction of the per-prime composite streams, proof that the construction is causally realisable as a _stream_
-(no forward dependencies), two concrete algorithms, and an honest cost model.
+**Status:** normative specification + reference implementation. **Companions:** `paper.md` (primary specification),
+`generator.md` (architecture), `observation.md` (worked multiplier sets), `idea.md` (spectral/entropy framing),
+`fractal.md` (lattice reading), `theory.md` (statement inventory). This document supplies the exact construction of the
+per-prime composite streams, the proof that the construction is causally realisable as a _stream_ (no forward
+dependencies), two concrete algorithms, and an honest cost model.
 
 ---
 
@@ -12,14 +12,13 @@ exact construction of the per-prime composite streams, proof that the constructi
 
 1. **Ownership is exact.** The composites owned by prime \(p\) (i.e. those whose smallest prime factor is \(p\)) are
    exactly \(p \cdot A_p\) where \(A_p = \{a \ge p : \gcd (a, P_{<p}) = 1\}\), the \(p\)- **rough** numbers from \(p\)
-   up. \(A_p\) is _not_ a set of primes (§2.3 corrects
-   `observation.md`), it is one period of a wheel.
+   up. \(A_p\) is a wheel, not a list of primes (§2.2); it is infinite, and its elements below \(p^2\) are exactly the
+   primes in \([p,p^2)\) (§2.3).
 
 2. **`NextOwnedComposite` reduces exactly to a rough-successor** (Prop. 2.6):
    \[ \mathrm{NextOwnedComposite} (p,x) \;=\; p \cdot \mathrm{NextRough}\!\big (p,\ \max (p-1,\lfloor x/p\rfloor)
-   \big). \] There is no additional mystery formula to find. The assumption in `generator.md`
-   ("O (1) time, O (1) state per prime") is _not_ attainable in that form (§2.7); one must pay for it in exactly one of
-   two currencies.
+   \big). \] There is no additional mystery formula to find. The primitive cannot be simultaneously exact, O (1) in time
+   and O (1) in state per prime (§2.7); one must pay for it in exactly one of two currencies.
 
 3. **Algorithm A** (§3) pays in _streams_: perfectly orthogonal, **each composite touched exactly once**, O (1)
    advancement, no divisibility, no marking array — but the number of live streams grows like \(N^{\theta}\), \(\theta
@@ -38,7 +37,7 @@ exact construction of the per-prime composite streams, proof that the constructi
 ## 1. Notation
 
 | symbol                                  | meaning                                                                                   |
-| --------------------------------------- | ----------------------------------------------------------------------------------------- |
+|-----------------------------------------|-------------------------------------------------------------------------------------------|
 | \(p_1=2 < p_2=3 < \dots\)               | the primes; `primes[i]` is \(p_{i+1}\) in code (0-based)                                  |
 | \(\mathrm{spf}(m)\)                     | smallest prime factor of \(m>1\)                                                          |
 | \(P(m)\)                                | **largest** prime factor of \(m>1\)                                                       |
@@ -85,28 +84,30 @@ the streams are disjoint **by construction**, and a stream is a prime times a wh
 This is the same object as the wheel of `idea.md` §2 and Pritchard's wheel: the survivors of the first \(\pi (p)-1\)
 periodic exclusion fields.
 
-### 2.3 Correction to `observation.md`
-
-`observation.md` claims \(A_N = \{1\} \cup \{m \text{ prime} : N \le m < P_{<N}\}\). This is **true exactly for \(N \in
-\{2,3,5,7\}\) and false for every larger prime**, and it is also a truncation of an infinite set (Cor. 2.2).
+### 2.3 Phase separation: when the multipliers are primes
 
 > **Lemma 2.3 (phase separation).** If \(a \in A_p\) and \(a < p^2\), then \(a\) is prime.
 
 _Proof._ \(a>1\) and all prime factors of \(a\) are \(\ge p\); if \(a\) were composite it would have at least two such
 factors, so \(a \ge p^2\). \(\square\)
 
-> **Corollary 2.4.** \(A_p \cap [p, \min (p^2, P_{<p})) = \{\text{primes in that range}\}\).
-> Consequently the `observation.md` description of one period is correct **iff**
-> \(P_{<p} \le p^2\), which holds iff \(p \le 7\) (\(P_{<7}=30<49\), but \(P_{<11}=210>121\)).
 
-Explicit counterexample: \(121 = 11^2\) is \(11\)-rough and \(<210\), so \(121 \in A_{11}\) and \(11\cdot 121 = 1331 =
-11^3\) is owned by \(11\); yet \(121\) is not prime, so it is absent from the list in `observation.md`. Similarly \(169
-\in A_{13}\), \(143 = 11\cdot13 \in A_{11}\).
 
-> **Corollary 2.5 (the "weird boundary" dissolved).** There is no forward dependency.
-> `observation.md` §"The Weird Boundary" worries that \(A_N\) depends on primes up to the
-> primorial \(P_{<N}\). It does — but only _eventually_. To emit composites up to \(n\), the
-> stream of \(p\) needs multipliers only up to \(n/p \le n/2\). See Theorem 2.8.
+> **Corollary 2.4.** \(A_p \cap [p, p^2) = \{\text{primes in that range}\}\). Consequently one period of \(A_p\)
+> consists of \(1\) together with primes only **iff** \(P_{<p} \le p^2\), which holds iff \(p \le 7\)
+> (\(P_{<7}=30<49\), but \(P_{<11}=210>121\)).
+
+First composite multiplier: \(121 = 11^2\) is \(11\)-rough and \(<210\), so \(121 \in A_{11}\) and \(11\cdot 121 =
+1331 = 11^3\) is owned by \(11\). Likewise \(143 = 11\cdot 13,\ 169,\ 187,\ 209 \in A_{11}\) — five composites among the
+\(\varphi (210)=48\) residues of one period, the remaining \(43\) being \(1\) and the \(42\) primes in \([11,199]\).
+Since a composite multiplier forces the emitted value \(\ge p^3\), the rough phase matters below \(N\) only for \(p \le
+N^{1/3}\).
+
+> **Corollary 2.5 (no forward dependency).** \(A_p\) is determined by the primes strictly
+> below \(p\), all of which are known the moment \(p\) is discovered; and to emit composites
+> up to \(n\), the stream of \(p\) needs multipliers only up to \(n/p \le n/2\). Multipliers
+> are consumed in increasing order, so the lists are _streams_, never stored objects. See
+> Theorem 2.8.
 
 ### 2.4 The primitive of `generator.md`, derived
 
@@ -124,9 +125,9 @@ pa\) turns "smallest \(m\)" into
 
 So the sought-after primitive is _exactly_ a rough-successor. Two immediate consequences:
 
-- The "first owned composite is \(p^2\)" remark of `generator.md` §3 is Prop. 2.6 at \(x=p\).
 - Any implementation of the primitive is an implementation of a wheel successor and conversely. There is nothing else to
-  derive.
+- The "first owned composite is \(p^2\)" statement of `generator.md` §3.2 is Prop. 2.6 at \(x=p\), and it holds always,
+  not merely typically. derive.
 
 ### 2.5 Advancement inside a stream
 
@@ -150,8 +151,8 @@ which by Bertrand's postulate is \(< 2a \le n\). (iii) \(a'\) is determined by t
 integers in \( (a, a']\subseteq (0,n)\). \(\square\)
 
 Therefore an _online, unbounded stream_ generator is possible in principle: no step ever requires knowledge of an
-integer \(\ge n\). This is the formal content of "the sieve is self-hosting". (`generator.md` §4.4 asserts correctness
-but never checks realisability; Theorem 2.8 is that missing check.)
+integer \(\ge n\). This is the formal content of "the sieve is self-hosting", and it is the realisability check
+underlying `generator.md` §3.4 and §4.4.
 
 ### 2.7 Why "O (1) time **and** O (1) state per prime" is not available
 
@@ -282,7 +283,7 @@ trigger is \(8\). \(\square\)
 ### 3.6 Worked trace (\(N = 50\))
 
 | \(n\) | action                                                                                        |
-| ----- | --------------------------------------------------------------------------------------------- |
+|-------|-----------------------------------------------------------------------------------------------|
 | 2     | prime; push EMIT(4,2,0), SPAWN(8,2,0)                                                         |
 | 3     | min 4 > 3 ⇒ prime; push EMIT(9,3,1), SPAWN(27,3,1)                                            |
 | 4     | pop EMIT(4,2,0) ⇒ EMIT(6,2,1)                                                                 |
@@ -600,7 +601,7 @@ to fit \(\theta\) rather than trusting the heuristic exponent.
 ## 7. Comparison
 
 | method                                       | touches / time                                                                            | working memory           | array over range             | segment-parallel |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------ | ---------------------------- | ---------------- |
+|----------------------------------------------|-------------------------------------------------------------------------------------------|--------------------------|------------------------------|------------------|
 | Trial division extension (`generator.md` §1) | \(\Theta(N\pi(\sqrt N))\)                                                                 | \(O(\pi(\sqrt N))\)      | no                           | yes              |
 | Eratosthenes, segmented                      | \(O(N\log\log N)\)                                                                        | \(O(\sqrt N + \Delta)\)  | yes (segment)                | yes              |
 | Pritchard wheel sieve                        | \(O(N/\log\log N)\)                                                                       | \(O(\sqrt N)\)           | yes                          | partly           |
@@ -617,27 +618,28 @@ segment restart.
 
 ---
 
-## 8. Corrections and clarifications to the companion documents
+## 8. Relation to the companion documents
 
-1. **`generator.md` §3 (assumed primitive).** `NextOwnedComposite` is not an unknown formula; it is exactly
-   \(p\cdot\mathrm{NextRough} (p,\cdot)\) (Prop. 2.6). It cannot be O (1) time with O (1) state per prime (Remark 2.9).
-   Either accept \(N^{\theta}\) streams (Algorithm A) or accept bounded duplication under a fixed wheel (Algorithm B).
-2. **`generator.md` §4.2 (pseudocode).** As written, the composite branch pops a _single_ heap entry and assumes
-   `n == min_composite(H)`. That is valid only under exact orthogonality (Algorithm A). Under any wheel relaxation the
-   pop must be a `while min == n` loop.
-3. **`generator.md` §4.5 (complexity).** "\(O (N)\) heap operations, \(O (N\log N)\) time, \(O (\pi (N))\) memory"
-   should read: \(O (N)\) operations, memory \(O (S (N))\) for the exact variant or \(O (\pi (\sqrt N))\) for the
-   wheeled variant — never \(O (\pi (N))\), since only primes \(\le\sqrt N\) ever own a composite \(\le N\).
-4. **`observation.md` (multiplier list).** The multiplier set is the \(p\)-rough numbers (a wheel), not a list of
-   primes, and it is infinite. The prime-list description of one period is correct exactly for \(p\le 7\) (Cor. 2.4);
-   \(121\in A_{11}\) is the first counterexample. What is true in general is the _phase_ statement: multipliers below
-   \(p^2\) are precisely the primes in \([p,p^2)\) (Lemma 2.3).
-5. **`observation.md` (weird boundary / mutable lists).** No mutable, retroactively-extended lists are needed.
-   Multipliers are consumed in increasing order and the one needed at scan position \(n\) is \(\le n/2\) (Theorem 2.8).
-   The lists are _streams_, not stored objects.
-6. **`idea.md` (wheels).** Both algorithms here are, structurally, the wheel of `idea.md` §2.3 made incremental:
-   Algorithm B materialises the first \(w\) exclusion fields as a table and the remaining ones as lazily-advanced
-   pointers, so the doubly-exponential primorial blow-up noted in `idea.md` §8.5 never occurs.
+1. **`paper.md` (primary specification).** Same objects, different names: Claim O1 = Theorem 2.1, Claim O2 = Lemma 2.3,
+   Claim C1 = Theorem 2.8, Claim A1 = Theorem 3.1, Claims B1–B5 = §4.4–§4.5, Conjecture X1 = Remark 2.9. The structural
+   half of both documents is machine-checked in `lean/`; see `paper.md` §9 for the claim → theorem table.
+2. **`generator.md` (architecture).** Its `NextOwnedComposite` is exactly \(p\cdot\mathrm{NextRough} (p,\cdot)\) (Prop.
+   2.6), and its consuming merge is the loop of §3.4/§4.3 here. Under exact orthogonality the composite branch pops a
+   _single_ record (Algorithm A); under the wheel relaxation it drains all records equal to \(n\) (Algorithm B). Its
+   complexity statement is the one restated in §3.7/§4.6: heap size \(\pi (\sqrt N)\) under deferred activation, never
+   \(\pi (N)\), since only primes \(\le\sqrt N\) own a composite \(\le N\).
+3. **`observation.md` (multiplier sets).** The multiplier set is \(A_p\), the \(p\)-rough numbers from \(p\) up: a
+   wheel, infinite, periodic mod \(P_{<p}\) with \(\varphi (P_{<p})\) residues per period. Its elements below \(p^2\)
+   are exactly the primes in \([p,p^2)\) (Lemma 2.3), which is why one period is "1 plus primes" precisely for \(p \le
+   7\) (Cor. 2.4). Multipliers are consumed in increasing order and the one needed at scan position \(n\) is \(\le n/2\)
+   (Theorem 2.8), so nothing is stored and nothing is retroactively extended.
+4. **`idea.md` (wheels and spectra).** Both algorithms here are, structurally, the wheel of `idea.md` §2.3 made
+   incremental: Algorithm B materialises the first \(w\) exclusion fields as a table and the remaining ones as
+   lazily-advanced pointers, so the doubly-exponential primorial blow-up noted in `idea.md` §8.5 never occurs.
+5. **`fractal.md` (lattice reading).** The set deleted by the lattice recursion \(S_{k+1} = (p\text{ tilings of } S_k)
+   \setminus p\cdot S_k\) is exactly \(\Theta_p = p\cdot A_p\) (Theorem 2.1). Algorithm A follows that recursion to full
+   depth; Algorithm B truncates it at depth \(w\), and the duplicate factor of §4.5 is precisely the truncation error.
+6. **`theory.md` (inventory).** Statement-by-statement status, dependency graph and prior art for everything above.
 
 ---
 
