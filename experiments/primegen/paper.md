@@ -22,6 +22,14 @@ segment parallelism. The price is a bounded, measurable amount of duplicate work
 
 Algorithm B is the recommended construction. Algorithm A is retained because it is the mathematically pure object and
 because its one-touch property is a machine-checkable certificate of the underlying partition.
+Every _structural_ claim in this paper — the partition, the phase separation, causality, the wheel successor
+specification, Algorithm A's stream tree, and Algorithm B's coverage, soundness, emit rule, queue invariant and
+duplicate accounting — is formalised and machine-checked in Lean 4 / Mathlib (`lean/`, `sorry`-free). Every _cost_
+claim is measurement, and is flagged as such. §9 gives the full claim → theorem table.
+A companion note (`fractal.md`) reads the same object from the outside: the wheel lattices `S_k` mod the primorials
+obey an exact recursion whose deleted set is an affine copy of the previous stage, so the construction is a genuine
+Moran/IFS one — and that deletion set _is_ `Θ_p = p·A_p`. §2.5 states the recursion and, more usefully, states where
+its self-similarity breaks.
 
 ---
 
@@ -125,6 +133,57 @@ Deciding `a ∈ A_p` is deciding `gcd(a, P_{<p}) = 1`, a function of `a mod P_{<
 Conjecture X1 says a fixed-size table serves only finitely many primes. Past that boundary one must either **derive**
 rough multipliers from other streams (exact — Algorithm A, §3) or **relax** the multiplier set to a fixed tabulated
 wheel (inexact but bounded — Algorithm B, §4). These are the only two options, and they are the two algorithms.
+
+### 2.5 The lattice reading: primes as holes
+
+The same partition, viewed modulo the primorials, is a self-generating lattice. Let `P_k = p_1⋯p_k` and
+
+```
+S_k = { r mod P_k : gcd(r, P_k) = 1 }        (|S_k| = φ(P_k),  κ_k = φ(P_k)/P_k ~ e^{−γ}/log p_k)
+```
+
+`S_k` is exactly the wheel of §4.2 at `W = P_k`. Its **holes** — elements `> 1` lifted to ℤ — begin with `p_{k+1}`:
+the lattice names its own successor, which is Claim C1 seen from the outside.
+
+> **Claim F1 (lattice recursion).** For every `k ≥ 0`, with `p = p_{k+1}` and all sets taken mod `P_{k+1} = p·P_k`,
+>
+> ```
+> S_{k+1} = ( ⋃_{j=0}^{p−1} (S_k + j·P_k) ) \ p·S_k
+> ```
+>
+> — tile the previous lattice `p` times, then delete one _dilated copy of it_. Counting: `pφ(P_k) − φ(P_k) = φ(P_{k+1})`.
+>
+> _Status: routine (CRT + counting); not yet formalised. Its algorithmic content **is** machine-checked: the deleted
+> set is `Θ_p = p·A_p` read mod `P_{k+1}` — `Primegen.theta_eq_image`._
+> Two consequences matter here.
+
+1. **The stream decomposition and the fractal decomposition are the same theorem.** "Prime times a wheel" (§2.2) and
+   "affine copy of the previous stage" (F1) are two readings of one identity.
+2. **The construction is a Moran/IFS construction** with `p_{k+1} − 1` children per parent and contraction ratio
+   `1/p_{k+1}` — but with a _non-constant, unbounded_ ratio sequence: zooming proceeds by primorials, i.e. doubly
+   exponentially.
+
+> **Claim F2 (dimension is the wrong invariant).** Rescaling stage `k` to `[0,1]` gives `φ(P_k)` intervals of length
+> `1/P_k`. Lebesgue measure is `κ_k → 0`, so the limit set is null; but box dimension is
+> `lim_k log φ(P_k)/log P_k = 1 + lim_k log κ_k / log P_k = 1`, since `log κ_k ~ −log log p_k` while `log P_k ~ p_k`.
+>
+> _Status: routine given Mertens + PNT; not formalised._
+> So the object is measure-zero and dimension-one: "fractal" here means _hierarchical self-generation with affine
+> deletion sets_, not _non-integer dimension_. The informative invariants are the deletion ratios `1/p_k`, the density
+> `κ_k`, and the Buchstab oscillation `ω(u)` of Claim O3 — not a dimension estimate.
+> The slogan "the holes are the next primes" is true in exactly one window, and that window is Claim O2 again:
+> **Claim F3 (= O2, restated).** With `p = p_{k+1}`, every hole `h` of `S_k` with `p ≤ h < p²` is prime; holes `≥ p²`
+> are only _candidates_ (`p²`, `p·p_{k+2}`, `p_{k+2}²`, …). Hence stage `k` certifies primes precisely on
+> `[p_{k+1}, p_{k+1}²)`, and stage `k` closes the window `[p_k², p_{k+1}²)`.
+>
+> _Status: **machine-checked** — `Primegen.prime_of_rough_of_lt_sq`._
+> The first failure is small and explicit: `121 = 11² ∈ S_4` and `121 < P_4 = 210`, so the mod-210 lattice already has a
+> composite hole inside its first period. For `k ≤ 3` it does not (`P_k ≤ p_{k+1}²` iff `p_{k+1} ≤ 7`). Note also that
+> the ratio changes at every stage: there is _no_ fixed `x ↦ λx` fixing the limit object, so claims of log-periodicity in
+> prime statistics do not follow from F1 and must be measured, not asserted.
+> Finally, Conjecture X1 has a one-line lattice statement: **stage `k` cannot be tabulated in `poly(k)` space**, because
+> its period is `P_k = e^{(1+o(1))p_k}`. The lattice is cheap to _generate_ and expensive to _store_ — which is why the
+> generator streams it instead of tabulating it. See `fractal.md` for the worked stages and the full discussion.
 
 ---
 
@@ -299,7 +358,11 @@ Deferred activation is what bounds the state: a prime contributes nothing below 
 > the primes below `n`" is not yet formalised; see `lean/README.md`._
 
 > **Claim B4 (state).** Advancement performs no prime lookups at all; activation reads `primes[act]` with
-> `primes[act] ≤ √n`. Algorithm B is a genuine online stream with O(1) state per prime. _TODO (immediate)._
+> `primes[act] ≤ √n`. Algorithm B is a genuine online stream with O(1) state per prime.
+>
+> _Status: **structural in the formalisation** — `AlgB.Rec` carries exactly `(p, a)`, two words, and `AlgB.advance`
+> is a function of the record alone (it takes no prime list); only `AlgB.activate` sees `primes`. The bound
+> `primes[act] ≤ √n` is the activation condition `p*p ≤ n` in `AlgB.Inv.complete`._
 > **Claim B5 (duplicate accounting).** For a `W`-coprime composite `m`, the set of streams that claim `m` is exactly
 > `{ p prime : p ∣ m, p² ≤ m }`; the primes `≤ p_w` are excluded automatically. _Status: **machine-checked** —
 > `AlgB.claims_iff` and `AlgB.mem_claimants`. This is the identity the `ln ln` estimate of §4.5 sums._
@@ -323,6 +386,14 @@ against the one-touch ideal `κ_W·N − π(N) ≈ 0.19·N`. **≈2.4× more tou
 The formula is worth reading twice, because it is where the design pays for Conjecture X1 and the payment is only a
 `ln ln` factor. Exactness costs `N^{0.75}` memory; near-exactness costs `ln ln √N − ln ln p_w` touches. The second is
 obviously the better bargain.
+In the lattice language of §2.5 the accounting has a sharper description. Algorithm A follows the recursion F1 to
+every stage: prime `p` deletes `p·S_{k(p)}`, the copies stay disjoint (they are indexed by smallest prime factor), and
+each composite is touched once — at the cost of `N^{0.75}` live copies. **Algorithm B truncates the refinement at
+depth `w` and then applies the depth-`w` template at every subsequent scale:** each `p > p_w` deletes
+`p·S_w ⊇ p·S_{k(p)}`, an over-large copy, so the deleted sets overlap and `m` is claimed `ω_{>p_w}(m)` times — which
+is exactly the claimant set of Claim B5. The factor `ln ln √N − ln ln p_w` _is_ the accumulated error of that
+truncation, and the fact that it grows only like `ln ln` is the quantitative statement that the lattice refines very
+slowly. That is Mertens, again, and it is the whole reason the trade is worth taking.
 
 ### 4.6 Cost summary
 
@@ -386,6 +457,10 @@ Reading: Algorithm A is the only entry that touches each composite exactly once 
 Algorithm B keeps `π(√N)` memory and O(1) per-prime state at a small constant factor of redundant touches, and is the
 only variant supporting independent segment restart. Neither is asymptotically better than a good segmented sieve; the
 claim is structural — orthogonal, incremental, array-free, unbounded — not a new complexity class.
+Caveat on this table: nothing in it is machine-checked, and nothing in it is intended to be. The rows are asymptotics
+about running times; the formalisation of §9 covers the objects those asymptotics count (the partition, the streams,
+the invariant, the claimant sets), which is where the contribution actually is. Treat the table as measurement, and
+measure before quoting it.
 
 ---
 
@@ -402,6 +477,18 @@ claim is structural — orthogonal, incremental, array-free, unbounded — not a
    is needed. This should give one-touch behaviour with much smaller `S(N)`. The accounting is not yet done.
 5. **Optimal `w`** as a function of `N` and cache size, trading `κ_W` and the `ln ln` span against the `Θ(W)` table.
 6. **Formal band parallelism.** Formalise the segment decomposition of §4.6 and its synchronisation requirements.
+7. **The outer induction.** Formalise "the list emitted by `B()` is exactly the primes below `n`". The per-candidate
+   decision (`AlgB.emit_iff`) and invariant preservation (`AlgB.inv_step`, `AlgB.inv_init`) are done; wiring them into
+   a loop invariant needs the self-hosting argument (every `p ≤ √n'` has already been emitted — Claim C1 plus
+   Bertrand, both already available as `Primegen.causality`). This is the obvious next piece of work.
+8. **The `φ(P_k) → π` transfer.** Sharp form of the transfer in the certified window `[p_{k+1}, p_{k+1}²)` of Claim F3
+   — i.e. Buchstab `ω` made effective. This is the same quantity as Claim O3 and the only place in the construction
+   where genuinely non-trivial fluctuation lives.
+9. **Log-periodicity, or not.** The Moran ratios `1/p_k` of Claim F1 are non-constant and unbounded, so no exact
+   scaling symmetry survives. Does any _approximate_ log-periodicity show up in prime statistics at primorial scales,
+   or is the apparent signal an artefact of binning? Easy to fool oneself here; measure.
+10. **Moran vs. `S(N)`.** Does the affine-copy picture of §2.5 predict the empirical `S(N) ≈ N^{0.75}` of
+    Conjecture A4 — i.e. is `#{b : b·P(b) ≤ N}` a Moran-counting quantity in disguise?
 
 ---
 
@@ -414,16 +501,71 @@ share one small wheel (bounded duplication, `π(√N)` streams, O(1) state, O(1)
 
 The second is the generator: a min-queue of `π(√n)` records, advanced by a table lookup and a multiply, emitting primes
 forever, with no array over the range, no division, and no limit.
+Seen from the outside it is one object: the wheel lattices `S_k` refine by `S_{k+1} = (p tilings of S_k) \ p·S_k`, the
+deleted set is the stream `Θ_p = p·A_p`, holes are primes exactly on `[p_{k+1}, p_{k+1}²)`, and Algorithm B is that
+recursion truncated at depth `w` — with the truncation error paid, in full and only, as a `ln ln` duplicate factor.
+And the structural half of all of that is checked by a kernel, not by a reader: see §9.
 ---
+
 ## 9. Formal companion (Lean 4 / Mathlib)
-`lean/` contains a `sorry`-free formalisation of the structural claims — the part of this paper that is
-mathematics rather than measurement. See `lean/README.md` for the full claim → theorem table.
-Proved: ownership and the partition (O1, orthogonality), phase separation (O2), `min Θ_p = p²`, causality (C1),
-the wheel successor specification of §4.2, Algorithm A's stream tree and its uniqueness — the mathematical form of
-the `pops == composites` certificate (A1) — and for Algorithm B: coverage (B1), soundness of keys, the emit
-decision under the queue invariant (B3 kernel), preservation of that invariant by one turn of the loop including
-deferred activation firing exactly at `p²` (B2), and the exact claimant set behind §4.5 (B5).
-Not proved, and flagged as such in the Lean sources: Conjectures X1 and A4, every cost statement (`ops(N)`,
-`S(N)`, the table of §6), the outer loop induction for Algorithm B, and the engineering layer of §5. The
-formalisation is therefore a check on the *structure* — the partition, the relaxation, the invariant — which is
-exactly what §6 says the contribution is.
+
+`lean/` contains a `sorry`-free Lean 4 + Mathlib formalisation of the structural claims — the part of this paper that
+is mathematics rather than measurement. Build with `lake exe cache get && lake build` (toolchain
+`leanprover/lean4:v4.15.0`, Mathlib pinned at the matching tag). Every entry in the table below is checked by the
+kernel; `lean/README.md` carries the same table plus modelling notes.
+
+### 9.1 Claim → theorem
+
+| paper claim                       | Lean name                                                                   | file              |
+| --------------------------------- | --------------------------------------------------------------------------- | ----------------- |
+| O1 ownership `Θ_p = p·A_p`        | `theta_eq_image`                                                            | `Ownership.lean`  |
+| orthogonality (§2.1 partition)    | `theta_disjoint`, `exists_unique_owner`                                     | `Ownership.lean`  |
+| O2 / F3 phase separation          | `prime_of_rough_of_lt_sq`                                                   | `Ownership.lean`  |
+| `min Θ_p = p²`                    | `sq_mem_theta`, `sq_le_of_mem_theta`                                        | `Ownership.lean`  |
+| C1 causality (no lookahead)       | `causality`, `mult_le_half`                                                 | `Ownership.lean`  |
+| §4.2 wheel successor spec         | `Wheel.lt_nextCoprime`, `Wheel.coprime_nextCoprime`, `Wheel.nextCoprime_le` | `Wheel.lean`      |
+| A1 stream tree / one-touch        | `AlgA.exists_unique_split`, `AlgA.sigma_disjoint`                           | `AlgorithmA.lean` |
+| B1 coverage                       | `AlgB.coverage`                                                             | `AlgorithmB.lean` |
+| B3 soundness (keys are composite) | `AlgB.not_prime_of_claims`                                                  | `AlgorithmB.lean` |
+| B2 no early claims, `≥ p²` heads  | `AlgB.Inv.ahead` (preserved by `AlgB.inv_step`), `AlgB.sq_le_of_claims`     | `AlgorithmB.lean` |
+| B3 decision rule (kernel)         | `AlgB.emit_iff`, `AlgB.prime_iff_forall_not_claims`                         | `AlgorithmB.lean` |
+| deferred activation is complete   | `AlgB.inv_step` (`complete` field), `AlgB.inv_init`                         | `AlgorithmB.lean` |
+| B4 state is `(p, a)`              | `AlgB.Rec`, `AlgB.advance` (structural: no prime list in scope)             | `AlgorithmB.lean` |
+| B5 duplicate accounting §4.5      | `AlgB.claims_iff`, `AlgB.mem_claimants`                                     | `AlgorithmB.lean` |
+
+Two of these are the paper's structural content and the rest is scaffolding:
+
+- `AlgA.exists_unique_split` is the `pops == composites` certificate of §3.4 in mathematical form — _exactly one_
+  pair `(b, q)` per composite, which is Claim A1 and, mod `P_{k+1}`, Claim F1's disjointness.
+- `AlgB.claims_iff` says the claimant set of a `W`-coprime composite `m` is precisely `{p prime : p ∣ m, p² ≤ m}`.
+  Every duplicate the wheeled relaxation pays for is accounted there; §4.5's `κ_W·N·(ln ln √N − ln ln p_w)` is the
+  sum of these cardinalities, and `Impl.dupStats` `#eval`s it at small scale.
+
+`Impl.lean` runs the same `activate` / `advance` that the proofs are about, with `W = 30`, so the executable model and
+the verified step are literally the same definitions.
+
+### 9.2 What is deliberately _not_ proved
+
+- **Conjecture X1** (no O(1)-time, polylog-space `NextRough`) and **Conjecture A4** (`S(N) = N^{θ+o(1)}`) — open, and
+  out of scope for a formalisation.
+- All cost statements: `ops(N)`, `O(N log log N)`, `S(N)`, the comparison table of §6. These are asymptotics about
+  running times, not statements about the objects defined here.
+- The **outer induction** for Algorithm B ("the emitted list equals the primes below `n`"): the per-candidate decision
+  and the invariant preservation are proved, wiring them into a loop invariant is Open Problem 7.
+- Algorithm A's queue mechanics (§3.3), the bucket priority queue (§5.1) and segment restart (§4.6). Restart is a
+  one-line consequence of `Wheel.nextCoprime_le` plus `AlgB.Inv.minimal`, but the segmented driver is unformalised.
+- The lattice recursion F1 and dimension F2 of §2.5 (routine, but not yet written out); their algorithmic content is
+  covered by `theta_eq_image` and `prime_of_rough_of_lt_sq`.
+
+### 9.3 Modelling notes
+
+- `Rough p m` is stated in the bounded form `∀ q < p, prime q → ¬ q ∣ m`, which is decidable and equivalent
+  (`rough_iff`) to "every prime factor is `≥ p`".
+- `Wheel.nextCoprime` is the _specification_ of §4.2's `step` table (least `W`-coprime integer `> x`), proved total via
+  `exists_coprime_gt` — the wheel never stalls because the class `1 mod W` is always coprime to `W`. The table-driven
+  implementation of §4.2 is a refinement of this spec.
+- Names track Mathlib at the pinned toolchain; the bridging lemmas (`minFac_mul_self_le`, `Wheel.coprime_mul_add_one`)
+  were proved from first principles precisely to keep the API surface small.
+
+The formalisation is therefore a check on the _structure_ — the partition, the relaxation, the invariant — which is
+exactly what §6 says the contribution is, and exactly what §2.5 says the fractal reading is a picture of.
