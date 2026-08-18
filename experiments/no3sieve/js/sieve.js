@@ -3,6 +3,14 @@
 // Invariants asserted here (debug/paranoid): I1 (no 3 collinear), I3 (nondecreasing
 // L∞ ring index), I4 (a candidate is skipped iff genuinely blocked), I5 (segment
 // closure: the {(c1,c2)} family of §3.7 is closed *in order* before advancing).
+//
+// HORIZON (theory.md §2A). `horizonW = W` bounds the constraint: only collinear
+// triples of L∞ span <= W are forbidden. W = 0 means W = ∞ (the classical object),
+// and *that* is why the origin 2x2 cluster empties four 2-wide strips out to
+// infinity — collinearity has no distance cutoff, so a line holding two points is
+// dead at every distance (L2.1/L2.3). Bounding it is a config choice, not a bug
+// fix: at finite W the strips refill beyond W, the set has positive density, and
+// P_W still equals P_∞ *exactly* inside B(floor(W/2)) (T2A.7).
 
 import {
   primdir,
@@ -13,7 +21,7 @@ import {
   key2,
 } from './lattice.js';
 import { ringOrder } from './order.js';
-import { Calendar, EventPool } from './calendar.js';
+import { Calendar, EventPool, T_INF } from './calendar.js';
 import { createLogger } from './util/log.js';
 
 const log = createLogger('sieve');
@@ -22,6 +30,10 @@ const isI32 = (v) => typeof v === 'number' && (v | 0) === v;
 
 export const DEFAULT_CONFIG = {
   rMax: 256,
+  // Constraint radius (theory.md §2A). 0 = ∞ = classical no-three-in-line.
+  // Any finite W >= 2 forbids only triples with L∞ span <= W, i.e. enforces
+  // validity in every (W+1)x(W+1) window (L2A.2) and nothing beyond it.
+  horizonW: 0,
   // ringMetric selects the SHELL metric only: 'chebyshev' = L∞ = max(|x|,|y|),
   // so ring R is the square boundary [-R,R]^2. Normative (§2.2). A Euclidean
   // shell is out of scope for v1: the calendar needs an integral ring key with
@@ -59,6 +71,15 @@ export function normalizeConfig(cfg = {}) {
     throw new TypeError(`r_max must be a finite number (got ${JSON.stringify(c.rMax)})`);
   if (c.rMax > MAX_RMAX) throw new RangeError(`r_max ${c.rMax} exceeds the safety cap ${MAX_RMAX}`);
   c.rMax = Math.max(0, c.rMax | 0);
+  if (c.horizonW === null || c.horizonW === undefined || c.horizonW === Infinity) c.horizonW = 0;
+  if (!Number.isInteger(c.horizonW) || c.horizonW < 0 || c.horizonW > 1 << 20)
+    throw new RangeError(
+      `horizon_w must be an integer in [0, ${1 << 20}] (0 = ∞) (got ${c.horizonW})`
+    );
+  if (c.horizonW === 1)
+    log.warn(
+      'horizon_w=1 forbids nothing: every collinear triple has span >= 2, so the plane fills'
+    );
   if (!Number.isInteger(c.band) || c.band < 1 || c.band > 1 << 20)
     throw new RangeError(`band must be an integer in [1, ${1 << 20}] (got ${c.band})`);
   c.paranoid = !!c.paranoid;
@@ -152,6 +173,14 @@ export function convexitySplit(px, py, dx, dy, rMax) {
 export class SieveEngine {
   constructor(cfg) {
     this.cfg = normalizeConfig(cfg);
+    // W = ∞ is represented by the float Infinity so every `span > W` test is a
+    // single comparison in both regimes (no branch in the hot loops).
+    this.W = this.cfg.horizonW > 0 ? this.cfg.horizonW : Infinity;
+    // Partner index: at finite W only points inside c + B(W) can block, so bin
+    // the set on a W-grid and consult the 3x3 neighbourhood (L2A.4). Without
+    // this the per-commit scan is O(k) and finite W is unusable past R ~ 100.
+    this._G = this.W === Infinity ? 0 : Math.max(1, this.cfg.horizonW);
+    this._bins = this._G ? new Map() : null;
     this.r = 0;
     this.px = new Int32Array(1024);
     this.py = new Int32Array(1024);
@@ -215,30 +244,92 @@ export class SieveEngine {
     this.colPop.set(x, cp);
     if (rp === 2) this.satRows++;
     if (cp === 2) this.satCols++;
-    if (rp > 2 || cp > 2) throw new Error(`I2 violated at (${x},${y}): row=${rp} col=${cp}`);
+    // "<= 2 per line" is an L2.3 statement about W = ∞ only. At a finite horizon
+    // a row holds <= 2 points *per W-window*, so this must not be asserted.
+    if (this.W === Infinity && (rp > 2 || cp > 2))
+      throw new Error(`I2 violated at (${x},${y}): row=${rp} col=${cp}`);
+    if (this._bins) {
+      const G = this._G,
+        bk = key2(Math.floor(x / G), Math.floor(y / G));
+      let a = this._bins.get(bk);
+      if (!a) this._bins.set(bk, (a = []));
+      a.push(this.k);
+    }
     return this.k++;
   }
 
-  /** O(k) authoritative admissibility oracle (§3.6). Used by --paranoid and tests. */
+  /** Indices that could possibly be within W of (cx,cy); null ⇒ "all of them". */
+  _nearby(cx, cy) {
+    if (!this._bins) return null;
+    const G = this._G,
+      out = [];
+    const bx = Math.floor(cx / G),
+      by = Math.floor(cy / G);
+    for (let i = -1; i <= 1; i++)
+      for (let j = -1; j <= 1; j++) {
+        const a = this._bins.get(key2(bx + i, by + j));
+        if (a) for (let t = 0; t < a.length; t++) out.push(a[t]);
+      }
+    return out;
+  }
+
+  /**
+   * Authoritative admissibility oracle (§3.6 / L2A.4). Used by --paranoid and
+   * tests. Two points sharing a direction class as seen from `c` only block it
+   * when ALL THREE pairwise spans are <= W: the `±` quotient means they may sit
+   * on opposite sides, up to 2W apart, and dropping that clause over-blocks.
+   */
   exactCheck(cx, cy) {
-    const seen = new Set();
-    for (let i = 0; i < this.k; i++) {
-      const d = primdir(cx - this.px[i], cy - this.py[i]);
+    const W = this.W;
+    const cand = this._nearby(cx, cy);
+    const n = cand ? cand.length : this.k;
+    const seen = new Map(); // dir key -> indices already seen within W of c
+    for (let ii = 0; ii < n; ii++) {
+      const i = cand ? cand[ii] : ii;
+      const vx = cx - this.px[i],
+        vy = cy - this.py[i];
+      if (vx === 0 && vy === 0) return false; // occupied: not a candidate
+      if (linfIndex(vx, vy) > W) continue;
+      const d = primdir(vx, vy);
       const kk = key2(d[0], d[1]);
-      if (seen.has(kk)) return false;
-      seen.add(kk);
+      const list = seen.get(kk);
+      if (!list) {
+        seen.set(kk, [i]);
+        continue;
+      }
+      for (let q = 0; q < list.length; q++) {
+        const j = list[q];
+        if (linfIndex(this.px[i] - this.px[j], this.py[i] - this.py[j]) <= W) return false;
+      }
+      list.push(i);
     }
     return true;
   }
 
-  /** Return the pair (i,j) of placed points collinear with (cx,cy), or null. */
+  /** Return the pair (i,j) of placed points W-collinear with (cx,cy), or null. */
   blockers(cx, cy) {
+    const W = this.W;
+    const cand = this._nearby(cx, cy);
+    const n = cand ? cand.length : this.k;
     const seen = new Map();
-    for (let i = 0; i < this.k; i++) {
-      const d = primdir(cx - this.px[i], cy - this.py[i]);
+    for (let ii = 0; ii < n; ii++) {
+      const i = cand ? cand[ii] : ii;
+      const vx = cx - this.px[i],
+        vy = cy - this.py[i];
+      if (vx === 0 && vy === 0) continue;
+      if (linfIndex(vx, vy) > W) continue;
+      const d = primdir(vx, vy);
       const kk = key2(d[0], d[1]);
-      if (seen.has(kk)) return [seen.get(kk), i];
-      seen.set(kk, i);
+      const list = seen.get(kk);
+      if (!list) {
+        seen.set(kk, [i]);
+        continue;
+      }
+      for (let q = 0; q < list.length; q++) {
+        const j = list[q];
+        if (linfIndex(this.px[i] - this.px[j], this.py[i] - this.py[j]) <= W) return [j, i];
+      }
+      list.push(i);
     }
     return null;
   }
@@ -252,11 +343,15 @@ export class SieveEngine {
    *     because the ray was split at t*, §3.1).
    * The flat-face case (a line containing an entire face of S_∞(R)) falls out of
    * the walk: g stays === R across the whole face, so the face is blanked.
+   * `[tLo, tHi]` is the horizon interval of L2A.5 (the whole line when W = ∞):
+   * outside it the pair blocks nothing, so neither marks nor events are emitted.
    */
-  _applyLine(bx, by, dx, dy, R, mask) {
+  _applyLine(bx, by, dx, dy, R, mask, tLo = -T_INF, tHi = T_INF) {
     const rMax = this.cfg.rMax;
     if (dx === 0 && dy === 0)
       throw new RangeError(`_applyLine: zero direction at base (${bx},${by})`);
+    if (!Number.isInteger(tLo) || !Number.isInteger(tHi) || tLo > tHi)
+      throw new RangeError(`_applyLine: bad horizon interval [${tLo},${tHi}]`);
     const len = ringLength(R);
     if (!mask || mask.length < len)
       throw new RangeError(
@@ -267,7 +362,11 @@ export class SieveEngine {
     const cap = Math.floor((4 * rMax) / dn) + 8; // Lemma 3.3.1 as a runtime assert
     for (let side = 0; side < 2; side++) {
       const s = side === 0 ? 1 : -1;
-      let t = side === 0 ? tstar : tstar - 1;
+      const tEnd = s === 1 ? tHi : tLo;
+      // Start at the split point, or at the near edge of the horizon interval if
+      // the split lies outside it (g is still monotone from there outwards).
+      let t = s === 1 ? Math.max(tstar, tLo) : Math.min(tstar - 1, tHi);
+      if (s === 1 ? t > tEnd : t < tEnd) continue; // interval is behind this ray
       let steps = 0;
       for (;;) {
         if (++steps > cap + 4 * rMax + 8)
@@ -281,7 +380,7 @@ export class SieveEngine {
         const g = linfIndex(x, y);
         if (g > R) {
           if (g <= rMax) {
-            const ev = this.pool.alloc(bx, by, dx, dy, t, s);
+            const ev = this.pool.alloc(bx, by, dx, dy, t, s, tEnd);
             this.cal.push(g, ev);
           }
           break;
@@ -294,6 +393,7 @@ export class SieveEngine {
           this.marks++;
         }
         t += s;
+        if (s === 1 ? t > tEnd : t < tEnd) break; // horizon reached: ray retires
       }
     }
   }
@@ -328,7 +428,12 @@ export class SieveEngine {
       mask[pi] = 1;
       this.marks++;
       drained++;
+      const tE = pool.tEnd(ev);
       t += s;
+      if (s === 1 ? t > tE : t < tE) {
+        pool.release(ev); // horizon reached (L2A.5): nothing further is blocked
+        continue;
+      }
       const g = linfIndex(bx + t * dx, by + t * dy);
       if (g <= R && g <= rMax)
         throw new Error(
@@ -351,12 +456,29 @@ export class SieveEngine {
   _commit(cx, cy, R, mask, added) {
     if (!isI32(cx) || !isI32(cy)) throw new TypeError(`_commit: non-int32 point (${cx},${cy})`);
     if (linfIndex(cx, cy) !== R) throw new Error(`_commit: (${cx},${cy}) is not on ring ${R}`);
-    const kBefore = this.k;
-    for (let j = 0; j < kBefore; j++) {
+    const W = this.W;
+    const cand = this._nearby(cx, cy);
+    const n = cand ? cand.length : this.k;
+    for (let jj = 0; jj < n; jj++) {
+      const j = cand ? cand[jj] : jj;
       if (this.px[j] === cx && this.py[j] === cy)
         throw new Error(`_commit: (${cx},${cy}) already present at index ${j}`);
-      const d = primdir(cx - this.px[j], cy - this.py[j]);
-      this._applyLine(cx, cy, d[0], d[1], R, mask);
+      const vx = cx - this.px[j],
+        vy = cy - this.py[j];
+      if (linfIndex(vx, vy) > W) continue; // inadmissible pair (L2A.4): no line
+      const d = primdir(vx, vy);
+      let tLo = -T_INF,
+        tHi = T_INF;
+      if (W !== Infinity) {
+        // L2A.5, in the line parameter based at c (t=0 is c, t=tq is the partner):
+        // blocked cells are t ∈ [max(0,tq) - m, min(0,tq) + m], m = ⌊W/||d||_∞⌋.
+        const m = Math.floor(W / linfIndex(d[0], d[1]));
+        const tq = d[0] !== 0 ? (this.px[j] - cx) / d[0] : (this.py[j] - cy) / d[1];
+        if (!Number.isInteger(tq)) throw new Error(`_commit: non-integral line parameter ${tq}`);
+        tLo = Math.max(0, tq) - m;
+        tHi = Math.min(0, tq) + m;
+      }
+      this._applyLine(cx, cy, d[0], d[1], R, mask, tLo, tHi);
     }
     this._pushPoint(cx, cy);
     added.push(cx, cy);
@@ -498,6 +620,7 @@ export class SieveEngine {
 export function referenceRun(cfg) {
   const c = normalizeConfig(cfg);
   if (c.rMax > 96) log.warn(`referenceRun: r_max=${c.rMax} is O(R^2·k) and will take a long time`);
+  const W = c.horizonW > 0 ? c.horizonW : Infinity;
   const px = [],
     py = [];
   const cell = [0, 0];
@@ -511,12 +634,21 @@ export function referenceRun(cfg) {
     a.push(s);
   }
   const admissible = (cx, cy) => {
-    const seen = new Set();
+    const seen = new Map();
     for (let i = 0; i < px.length; i++) {
-      const d = primdir(cx - px[i], cy - py[i]);
+      const vx = cx - px[i],
+        vy = cy - py[i];
+      if (vx === 0 && vy === 0) return false;
+      if (linfIndex(vx, vy) > W) continue;
+      const d = primdir(vx, vy);
       const kk = key2(d[0], d[1]);
-      if (seen.has(kk)) return false;
-      seen.add(kk);
+      const list = seen.get(kk);
+      if (!list) {
+        seen.set(kk, [i]);
+        continue;
+      }
+      for (const j of list) if (linfIndex(px[i] - px[j], py[i] - py[j]) <= W) return false;
+      list.push(i);
     }
     return true;
   };

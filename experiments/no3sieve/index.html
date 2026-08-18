@@ -21,6 +21,10 @@
             <input id="cfg-rmax" type="number" min="0" max="8192" step="1" value="256" />
           </label>
           <label
+            >W (horizon, 0 = ∞) <span class="hint">§2A</span>
+            <input id="cfg-w" type="number" min="0" max="16384" step="1" value="0" />
+          </label>
+          <label
             >intra_ring_order
             <select id="cfg-order">
               <option value="clockwise" selected>clockwise</option>
@@ -87,16 +91,32 @@
               >“unknown” hatch (ungenerated)</span
             ></label
           >
-         <label class="check"
-           ><input id="ov-dead" type="checkbox" checked /><span
-             >I2-dead lines (rows/cols/diagonals already holding 2)</span
-           ></label
-         >
-         <p class="hint">
-           Empty 2-wide strips through the origin are <em>expected</em>: the 2×2 cluster
-           saturates rows y=0,1 and columns x=0,1, and collinearity has no distance cutoff.
-           Enable <code>paranoid</code> to assert the sieve never over-blocks (I4, both directions).
-         </p>
+          <label class="check"
+            ><input id="ov-dead" type="checkbox" checked /><span
+              >I2-dead lines (rows/cols/diagonals already holding 2) — W = ∞ only</span
+            ></label
+          >
+          <p class="hint">
+            <b>Not a bug: collinearity has no distance cutoff.</b> At the default horizon
+            <code>W = ∞</code> the four 2-wide empty strips through the origin are <em>forced</em>.
+            The greedy takes <code>(0,0),(0,1),(1,1),(1,0)</code>, which puts two points on each of
+            <code>y=0, y=1, x=0, x=1</code> (and on <code>y=x</code>, <code>x+y=1</code>). A line
+            holding two points is dead at <em>every</em> distance — collinearity is integral, not
+            metric — so each vacancy has an explicit certificate: <code>(t,0)</code> is collinear
+            with <code>(0,0),(1,0)</code> for all <code>t</code>, <code>(0,t)</code> with
+            <code>(0,0),(0,1)</code>, and so on. Hover any strip cell to see its pair and its I2
+            load.
+          </p>
+          <p class="hint">
+            If you want the constraint <em>bounded</em>, set <code>W</code> in the Engine panel:
+            triples of L∞ span <code>&gt; W</code> are then permitted, the strips refill beyond
+            <code>W</code>, and the set acquires positive density (theory.md §2A). <code>W</code> is
+            not an approximation — <code>P_W</code> equals <code>P_∞</code> cell-for-cell inside
+            <code>B(⌊W/2⌋)</code> (T2A.7), and every <code>s×s</code> window with
+            <code>s ≤ W+1</code> is fully, classically valid (C2A.3). Enable
+            <code>paranoid</code> to assert the sieve neither over- nor under-blocks at whatever
+            <code>W</code> you pick (I4, both directions).
+          </p>
         </section>
 
         <section class="panel">
@@ -129,7 +149,7 @@
         <div id="inspector" class="inspector"></div>
         <div id="help" class="help">
           drag = pan · wheel = zoom (cursor anchored) · arrows = pan · +/- = zoom · f = fit · g/d/r
-           = toggle layers · l = I2-dead lines
+          = toggle layers · l = I2-dead lines
         </div>
       </main>
     </div>

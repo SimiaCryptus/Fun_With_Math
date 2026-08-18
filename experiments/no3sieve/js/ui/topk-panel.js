@@ -106,8 +106,14 @@ export class TopKPanel {
       return;
     }
     if (!rep.ok || !bf.ok) {
-      log.error('window failed client-side verification', { rep, bf });
-      alert('refusing to export: window failed client-side verification');
+      const W = (this.ps.config && this.ps.config.horizonW) || 0;
+      const why =
+        W && w.s > W + 1
+          ? `window side ${w.s} exceeds the horizon W+1 = ${W + 1}; only s <= W+1 windows are ` +
+            `certified classically valid (theory.md C2A.3)`
+          : 'window failed client-side verification';
+      log.error(`refusing to export: ${why}`, { rep, bf });
+      alert(`refusing to export: ${why}`);
       return;
     }
     const base = `no3sieve_s${w.s}_pop${w.pop}_${w.x0}_${w.y0}`;

@@ -136,6 +136,14 @@
       "readme": "experiments/primegen/README.md",
       "launchLabel": "Open the Prime Sieve as a Stack of Orthogonal Periodic Fields lab",
       "pitch": "An interactive essay on the periodic machinery underneath the primes: each prime emits an orthogonal exclusion field, their stacked product has primorial period, and CRT independence makes density multiplicative, entropy additive, and spectral support disjoint."
+    },
+    {
+      "icon": "N3",
+      "title": "No-Three-in-Line: A Visual Theory Explorer",
+      "href": "experiments/no3sieve/index.html",
+      "readme": "experiments/no3sieve/README.md",
+      "launchLabel": "Open the No-Three-in-Line Visual Theory Explorer",
+      "pitch": "An infinite-canvas explorer for the no-three-in-line rule under deterministic greedy growth: ring-major Chebyshev order, forced empty strips, finite-horizon collinearity, density fields, top-K windows, and paranoid verification."
     }
   ],
   "essays": [],

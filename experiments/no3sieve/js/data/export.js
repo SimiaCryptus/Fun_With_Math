@@ -85,7 +85,9 @@ export function toJSON(points, cfg, extra = {}) {
     throw new TypeError('toJSON: cfg is required (it seeds config_hash)');
   const pts = [];
   for (let i = 0; i < k; i++) pts.push([points[2 * i], points[2 * i + 1]]);
-  const report = verify(points);
+  // A finite horizon means the set is W-valid, not classically valid; certify
+  // against the constraint the engine actually enforced (theory.md §2A).
+  const report = verify(points, { horizonW: cfg.horizonW || 0 });
   if (!report.ok) log.warn('toJSON: serialising a set that FAILED verification', report);
   return (
     JSON.stringify(

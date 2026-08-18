@@ -5,6 +5,10 @@
 // Monotonicity (guaranteed by the convexity split in sieve.js) is what makes the
 // bucket queue sound: no event is ever scheduled into the past.
 //
+// At a finite horizon W a ray is also *mortal*: it carries the inclusive death
+// parameter `tEnd` of the influence interval of L2A.5, past which the pair blocks
+// nothing. `tEnd = ±T_INF` is the classical (W = ∞) ray.
+//
 // Defensive posture: every value that reaches the Int32 slab is range-checked
 // (silent truncation here corrupts geometry with no visible symptom), every event
 // id is bounds-checked, and double frees / stale handles are fatal.
@@ -12,9 +16,10 @@ import { createLogger, getLevel, LEVELS } from './util/log.js';
 
 const log = createLogger('calendar');
 
-const F = 6; // px, py, dx, dy, t, s
+const F = 7; // px, py, dx, dy, t, s, tEnd
 const MAX_EVENTS = 1 << 24; // refuse *before* the allocator OOMs the tab
 const MAX_BAND = 1 << 20;
+export const T_INF = 0x3fffffff; // "no horizon" sentinel for tEnd (stays int32)
 const isI32 = (v) => typeof v === 'number' && (v | 0) === v;
 
 export class EventPool {
@@ -34,7 +39,7 @@ export class EventPool {
     this.checked = getLevel() >= LEVELS.debug;
   }
 
-  alloc(px, py, dx, dy, t, s) {
+  alloc(px, py, dx, dy, t, s, tEnd) {
     if (!isI32(px) || !isI32(py) || !isI32(dx) || !isI32(dy) || !isI32(t))
       throw new TypeError(
         `EventPool.alloc: non-int32 field (p=${px},${py} d=${dx},${dy} t=${t}) — Int32Array would truncate silently`
@@ -42,6 +47,10 @@ export class EventPool {
     if (s !== 1 && s !== -1) throw new RangeError(`EventPool.alloc: step must be ±1 (got ${s})`);
     if (dx === 0 && dy === 0)
       throw new RangeError('EventPool.alloc: zero direction defines no ray');
+    if (tEnd === undefined) tEnd = s > 0 ? T_INF : -T_INF;
+    if (!isI32(tEnd)) throw new TypeError(`EventPool.alloc: tEnd must be int32 (got ${tEnd})`);
+    if (s > 0 ? tEnd < t : tEnd > t)
+      throw new RangeError(`EventPool.alloc: dead ray (t=${t}, s=${s}, tEnd=${tEnd})`);
     let i;
     if (this.free.length) i = this.free.pop();
     else {
@@ -71,6 +80,7 @@ export class EventPool {
     b[o + 3] = dy;
     b[o + 4] = t;
     b[o + 5] = s;
+    b[o + 6] = tEnd;
     this.alive[i] = 1;
     this.live++;
     this.allocs++;
@@ -119,6 +129,10 @@ export class EventPool {
 
   s(i) {
     return this.buf[this._o(i) + 5];
+  }
+  /** Inclusive death parameter of the ray (L2A.5); ±T_INF when W = ∞. */
+  tEnd(i) {
+    return this.buf[this._o(i) + 6];
   }
 
   setT(i, t) {

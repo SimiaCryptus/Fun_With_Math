@@ -1,95 +1,78 @@
-# no3sieve — web explorer (zero build)
+# No-three-in-line: a visual theory explorer
 
-Native ES modules, no bundler, no npm, no transpiler. Two ways to run:
+I recently finished a browser-based explorer for one of those puzzles whose rules fit on an index card, but whose behaviour at scale still refuses to be pinned down. It’s called **no3sieve**, and the point of this document is to describe what it argues, what it shows, and who I think might enjoy standing in front of it — without assuming you care about modules, workers, or build pipelines.
 
-```sh
-# any static server works; a plain one is enough for the viewer + main-thread engine
-python3 -m http.server -d experiments/no3sieve/web 8080
-# -> http://localhost:8080/
-```
+## The puzzle, in one breath
 
-`file://index.html` also works: the module Worker will fail to construct and the runner automatically falls back to the
-time-sliced main-thread path (announced in the HUD as `backend calendar / main`). Semantics are identical either way —
-the parallel/worker path is an _execution strategy only_ (plan §4.5, §4.6).
+Imagine an infinite square grid. You may place a point at any grid intersection, subject to a single rule: **no three placed points may lie on the same straight line**. Rows, columns, diagonals, and every rational slope in between all count. Three points on a line and the set is invalid; two points on a line are fine, and indeed they determine exactly which other lattice cells on that line must remain empty forever.
 
-## What is implemented
+This is the classical **no-three-in-line problem**, usually stated for an n×n board: what is the largest number of points you can place? For small boards the answer is known — often 2n — but for large n the exact maximum is open. There is an easy upper bound of 2n, because a valid set can take at most two points from any row; there are constructive lower bounds around 1·n from Erdős and around 1.5·n from Hall, Jackson, Sudbery, and Wild; and there is a gap between the best known constructions and the suspected truth.
 
-| plan section                                                                                       | module                                          |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| §2.1 ring-major L∞ order, `clockwise` / `nearest_first`                                            | `js/order.js`                                   |
-| §3.2 ring mask over `S_∞(R)` (8R cells, bijective perimeter index)                                 | `js/lattice.js`                                 |
-| §3.3 line-event calendar: bucket queue + overflow heap + convexity split at `t*`                   | `js/calendar.js`, `js/sieve.js`                 |
-| §3.4 ring walk incl. the flat-face `ContainedInSide` case                                          | `SieveEngine._applyLine`                        |
-| §3.5 / §3.7 **segment closure over both `NEW(A)` families**                                        | `SieveEngine.stepRing`                          |
-| §3.6 exact `O(k)` fallback + `--paranoid`                                                          | `SieveEngine.exactCheck`                        |
-| §4.3 SAT, `max_pop(s)`, `c(s)` curve                                                               | `js/sat.js`                                     |
-| §5.2 infinite canvas, cursor-anchored zoom, aggregate LOD                                          | `js/viewport.js`, `js/renderer/canvas2d.js`     |
-| §5.4 centered `s×s` density overlay + reference contours + inspector                               | `js/renderer/canvas2d.js`, `js/ui/inspector.js` |
-| §5.5 top-K windows with >50% overlap suppression, fly-to, per-window export                        | `js/topk.js`, `js/ui/topk-panel.js`             |
-| §5.6 / §6 CSV / JSON / NDJSON / TXT grid / PNG / SVG / manifest / c(s) CSV                         | `js/data/export.js`                             |
-| §7.1–§7.4 independent verifier, brute force, differential vs reference, segment-closure regression | `js/verify.js`, `js/selftest.js`                |
+This project asks a nearby question, and I think it’s the more interesting one for interactive exploration: **what happens if you don’t search for the best arrangement, but instead grow a set outward through every cell once, taking a point whenever it is still legal?** The result is a deterministic, greedy process; we can watch it, measure it, and argue about its asymptotics without claiming it is optimal.
 
-## Correctness notes
+## The object the explorer actually builds
 
-- The metric is **L∞** everywhere (plan header erratum). There is no symbol named
-  `l0` in this tree — the ring gauge is `linfIndex(x, y)`, the integer parameter on a line is `t` (R14).
-- `outward_only` is sound **only after** the convexity split: `t ↦ ||p + t·d||_∞`
-  is convex but not monotone, so each line is split at its minimizer `t*` into two monotone rays before any mark is
-  dropped (§3.1). `convexitySplit()` finds `t*`
-  by binary search on the monotone predicate `g(t+1) >= g(t)`.
-- The **flat-face degeneracy** needs no special case in this implementation: a ray whose direction is parallel to a face
-  has `g(t) ≡ R` across the whole face, so the ring walk blanks the entire face, and a drained event that re-schedules
-  into the ring currently being drained is re-served because the bucket is a growable queue (`Calendar.takeNext`).
-- **Segment closure** is structural rather than bolted on: `stepRing` iterates
-  `points` _before_ pushing the candidate, so a candidate's lines against same-ring predecessors are created and their
-  ring-`R` marks applied immediately, in order. `selftest.js` includes the regression that must _fail_ when those
-  same-ring marks are suppressed.
-- Nothing here is a `float`: identity of a mark is `(base, d, t)` in exact integer algebra, and scheduling is exact
-  integer L∞.
+The traversal is **ring-major**, with rings defined by the **Chebyshev / L∞ norm**: the ring at radius R is the square shell of cells with `max(|x|,|y|) = R`. The origin is visited first; then the cells of ring 1 in clockwise order starting at `(0,1)`; then ring 2; and so on, potentially forever. Within a ring, the order is currently either clockwise or “nearest first”; ties are broken lexicographically, so the result is a single, reproducible sequence.
 
-## Reading a sparse picture (density falls off, arcs look empty)
+At each candidate cell the construction asks: does placing a point here create a collinear triple with any two points already placed? If yes, the cell is skipped; if no, the point is committed. There is no backtracking, no repair, and no search. That’s also exactly the definition of the reference semantics, which is the closest thing the project has to ground truth.
 
-This is the first thing everyone asks, so: **the line constraints are bounded correctly, and the emptiness is
-arithmetic, not a leak.** How to convince yourself, and what you are actually seeing:
+The ball of radius R is just a square window of side `2R+1`. This is not a coincidence; it’s the main reason the whole instrument uses L∞ rather than Euclidean rings. The classical problem lives in axis-aligned square windows, and an axis-aligned square window _is_ an L∞ ball. So the ring counter, the density overlay, and the literature’s `c(n)` curve all speak the same gauge. No resampling, no conversion, no hidden mismatch between what is built and what is reported.
 
-- **Check it, don't trust it.** `--paranoid` (the checkbox) now asserts `I4` in _both_ directions: every accepted cell
-  must be admissible **and every masked cell must be genuinely blocked**. The second half is new — previously nothing
-  could detect over-blocking. Self-test runs it to `R = 48`, and the differential
-  `calendar == reference` test (`R <= 24`, both orders) would already fail if a single spurious mark existed, since the
-  reference engine has no marking at all.
-- **Each face of `S_∞(R)` _is_ one row or one column** (`y = ±R`, `x = ±R`). By
-  `I2` a row/column holds at most 2 points ever, so a ring of `8R` cells can absorb at most 8 points, and the global row
-  bound caps `|P ∩ B_∞(R)|` at
-  `2(2R+1)` ≈ 4 points per ring. `8R − O(1)` blank cells per ring is the steady state, not a bug. The HUD's `last ring`
-  and `I2 dead` lines report exactly this:
-  once `rows`/`cols` saturate, blocking is _forced_, not chosen.
-- **The straight empty strips through the origin** are the seed cluster. With
-  `seed_points = [[0,0]]` the greedy's first four commits are
-  `(0,0),(0,1),(1,1),(1,0)` — a 2×2 block that permanently fills rows `0,1`, columns `0,1`, `y = x` and `x + y = 1`.
-  Each of those six saturated lines then legitimately kills exactly 2 cells of _every_ later ring, at fixed angular
-  positions. `seedPoints` is now actually implemented (it used to be accepted and ignored), so you can break that
-  cluster: seeds are committed in ring-major/lex order, with §3.7 closure, and a seed that is collinear with two earlier
-  points is a hard error rather than a silent skip.
-- **The empty _arcs_** are the fixed angular phase of `clockwise`: every ring starts at `(0,R)`, so the greedy always
-  takes the first free cells in the same angular order and the accepted points precess as an arm, starving the tail of
-  the order. Try `nearest_first`, and compare `c(s)` — this is precisely the
-  `intra_ring_order` sweep the plan calls for (R1), and the honest answer to
-  "does the spiral greedy have positive density?" is the project's deliverable, not an assumption.
-- `mark_mode` other than `outward_only` now throws instead of being silently ignored — a config that is quietly dropped
-  is indistinguishable from a marking bug when you are staring at an unexpectedly sparse picture.
+The flat faces of the L∞ sphere do cost something: a line can lie exactly along an entire side of a ring and blank `2R+1` cells at once. A strictly convex shape like a circle would avoid that degeneracy, but it would also lose the closed-form line intersection and the window alignment. The explorer treats that flat-face case as a first-class part of the theory, not an edge case to be ignored.
 
-## Self-test
+## Why the empty strips are not a bug
 
-Click **Self-test** (or `import { runSelfTest } from './js/selftest.js'` in the console). It checks the perimeter
-bijection exhaustively for `R <= 32`, asserts the calendar backend is _identical_ to the exact-check reference engine
-for `R <= 24`
-in both intra-ring orders, cross-checks the verifier against brute-force
-`C(k,3)`, asserts a corrupted set fails with the correct triple, asserts the segment-closure regression, and asserts
-Lemma 3.3.1's mark bound.
+The first thing everyone notices is that the default picture contains four broad, straight, empty strips passing through the origin. They look like a rendering leak; they are not. They are the arithmetic signature of the seed.
 
-## Not implemented here (deliberately)
+With the default seed at the origin, the greedy process’s first few commitments are `(0,0)`, `(0,1)`, `(1,1)`, and `(1,0)`. Those four points place two points on each of the rows `y=0` and `y=1`, two on the columns `x=0` and `x=1`, and two on the diagonals `y=x` and `x+y=1`. Once a row or column or diagonal holds two points, every other cell on that line is blocked forever — not out to some distance, but _everywhere_, because collinearity is an integral property with no cutoff. Hence the strips: a cell like `(t,0)` is blocked for every `t` by the pair `(0,0),(1,0)`. The inspector will show you the exact offending pair if you hover over any such cell.
 
-WebGL2/WebGPU marking (`S6`), `SharedArrayBuffer` worker pool, tile server + LRU tile cache, `.zip` bundles,
-scratch-layer what-if editing. The renderer is Canvas2D with aggregate LOD, which meets `S5` comfortably at the point
-counts this problem produces (`|P| = O(R)`, so `R = 4096` is only ~16k points — brute-force iteration per frame is
-cheaper than a tile pipeline, and the plan's tile machinery is only needed once a _dense_ raster layer is introduced).
+This is also why the density overlay falls off and why rings can look startlingly empty. A ring contains `8R` cells, but the row/column/diagonal budget caps a valid set inside an L∞ ball at about 4 points per ring on average; most cells are forced vacancies, not missed opportunities.
+
+If you want the constraint to have bounded reach, the explorer lets you lower a **horizon W**. That is the single most useful theoretical idea in the project.
+
+## The horizon W: making “collinear” local
+
+The classical rule forbids triples no matter how far apart their points are. But a triple whose extreme points are a billion cells apart cannot affect any window of side a thousand; no such window contains all three. So the engine optionally replaces the infinite constraint with a finite one: only triples whose entire span is at most W are forbidden.
+
+This is not an approximation. A theorem in the accompanying theory document proves that with horizon W, the constructed set agrees cell-for-cell with the infinite-horizon set everywhere inside the ball of radius `floor(W/2)`. Set `W = 2R` and you recover the classical object exactly. Set W fixed and let R grow, and you get a different, local object: each cell decides based only on points within distance W, so the far field becomes a sliding-window process with a genuine steady-state density.
+
+Why does this matter? The global run estimates the growth exponent α from a single nested family of windows, heavily correlated across radii. The finite-W run offers many essentially independent windows of the same size, so the density constant can be measured with honest error bars. It turns a vague curve into a statistic; and because the transfer between the two regimes is conjectured but not yet proven, the UI gives you a way to test it live.
+
+The price of finite W is that a row may hold at most two points _per W-window_ rather than two points ever. The set inside any `(W+1)` square is valid, but globally the set can have positive density; the robust upper bound of 2 points per row disappears and the per-ring commit count grows. The explorer’s HUD and density overlay make the difference visible.
+
+## What the UI is for
+
+I think of the page as a _research instrument_, not just a plot. It is an infinite canvas: drag to pan, wheel to zoom, cursor-anchored so the cell under the pointer stays put. The world coordinates are the lattice coordinates; panning past the generated frontier asks the engine for more rings, and ungenerated regions are hatched as “unknown,” never drawn as empty. That distinction is load-bearing for interpretation.
+
+The overlay shown by default is a **centered s×s density field**. For every cell, it asks: how many placed points lie inside the square window centered here? Then it divides by s, so the colormap is the same normalization as the literature’s `c(s) = max_pop(s)/s`, but rendered across the entire plane. Reference contours at 1.0, 1.5, and 2.0 let you see how much of the field approaches known construction constants and the absolute upper bound.
+
+On top of that:
+
+- **Top-K windows** scan for the best windows of chosen sizes with overlap suppression, so you can find and fly to exceptional neighborhoods rather than just looking at the origin.
+- **Inspector** shows exact integers for any cell: coordinates, ring index, whether it’s in the set, its density value, and if it’s blocked, which two earlier points killed it.
+- **Layer toggles** include grid, ring guides, “unknown” hatch, and lines that are already saturated with two points.
+- **Paranoid mode** checks each commit against an independent, slower oracle, in both directions: accepted cells are genuinely legal, and masked cells are genuinely blocked. Over-blocking is detectable, not assumed.
+- **Export** writes CSV, JSON, NDJSON, plain text grids, PNG, SVG, density curves, and a manifest; every exported solution is re-verified in the browser before download.
+
+The renderer aggregates at low zoom instead of point-sampling. A set of density around 2/n would otherwise vanish under naive downsampling and the picture would lie about where the points are.
+
+## What remains genuinely open
+
+The central measurement is the density exponent. The rigorous bounds place it between `2/3` and `1`; the project’s stance is not to assume where in that range the spiral-greedy set falls. It may be that the ordered greedy process is polynomially sparser than the optimum — there are precedents in greedy Sidon sets and greedy 3-AP-free sets — or it may reach linear density with a positive constant. The UI is built to make the evidence visible rather than to settle the question by assertion.
+
+A second open issue is horizontal: how does the finite-W density `c*(W)` scale as W grows? If the origin window and the far-field mean agree, the process is statistically homogeneous; if they diverge, something interesting is happening near the seed or along sector seams. The page makes that comparison practical.
+
+A third, more internal fact is good to know: the marking part of the computation is associative, commutative, and idempotent, so it can be parallelized freely; the placement part is inherently sequential. The same cell can be free when a ring is proposed, then become blocked by a point committed earlier in the same ring. Two points placed in the same ring can define a line that blocks still later cells in that same ring. That is exactly why the commit walk is ordered; it is a fold, not a filter, and the flat-face degeneracy is entangled with the earliest witness of that fact.
+
+## Who might find it useful
+
+- **Mathematics educators and students** get a concrete, interactive counterexample to the idea that “greedy is obviously maximal.” The density field and the forced strips make strategic blocking visible without any algebra.
+- **Combinatorics researchers** get certified lower-bound windows for the classical problem; every sub-window of a valid set is itself valid, so the top-K windows are immediate lower bounds for their corresponding sizes. The finite-W mode multiplies the number of useful samples.
+- **People interested in greedy processes** get a visual case study where deterministic order, local versus global constraints, and spiral geometry interact in ways that can be measured but not yet predicted from first principles.
+- **Anyone who likes generative geometry** gets a pretty, structured pattern that is only partly understood; the starved arcs and sector seams are the honest result, not a rendering artifact.
+
+## What this document is not
+
+This is not a developer README. It won’t tell you how to run the code, what modules exist, or how to write tests. Those details live elsewhere. It also is not a proof; the accompanying theory document carries the full formal apparatus, and the browser’s paranoid mode and independent verifier are the executable legs of that argument. The goal here is to describe the object itself, as clearly as I can, and to give you enough orientation to make the picture mean something.
+
+I’m looking forward to hearing whether that works; more soon, I hope.

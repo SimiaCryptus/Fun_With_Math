@@ -68,7 +68,8 @@ const opts = {
   rings: true,
   unknown: true,
   density: true,
-   dead: true,
+  dead: true,
+  horizonW: 0, // mirrored from cfg so layers/inspector can stay honest
   s: 16,
   norm: 's',
   alpha: 0.7,
@@ -207,7 +208,7 @@ bindShortcuts(window, {
   },
   toggle(k) {
     opts[k] = !opts[k];
-     const map = { grid: 'ov-grid', density: 'ov-density', rings: 'ov-rings', dead: 'ov-dead' };
+    const map = { grid: 'ov-grid', density: 'ov-density', rings: 'ov-rings', dead: 'ov-dead' };
     if (map[k]) $(map[k]).checked = opts[k];
     renderer.invalidateOverlay();
     dirty = true;
@@ -224,8 +225,13 @@ function readConfig() {
   if (!Number.isFinite(rMax) || rMax < 0)
     throw new RangeError(`R_max: "${raw}" is not a non-negative number`);
   if (rMax > 2048) log.warn(`R_max=${rMax}: expect a multi-second run and a large event pool`);
+  const wRaw = $('cfg-w').value;
+  const horizonW = Number(wRaw);
+  if (!Number.isFinite(horizonW) || horizonW < 0)
+    throw new RangeError(`W: "${wRaw}" is not a non-negative number (0 = ∞)`);
   return normalizeConfig({
     rMax,
+    horizonW: Math.round(horizonW),
     intraRingOrder: $('cfg-order').value,
     ringMetric: $('cfg-metric').value,
     paranoid: $('cfg-paranoid').checked,
@@ -253,6 +259,7 @@ function readSizes() {
 
 $('btn-run').onclick = guard('run', () => {
   cfg = readConfig();
+  opts.horizonW = cfg.horizonW;
   ringLog = [];
   opts.selection = null;
   $('export-status').textContent = '';
@@ -286,8 +293,8 @@ $('btn-verify').onclick = guard('verify', () => {
     el.textContent = 'nothing to verify';
     return;
   }
-  const v = verify(ps.points);
-  const bf = verifyBruteForce(ps.points);
+  const v = verify(ps.points, { horizonW: cfg.horizonW });
+  const bf = verifyBruteForce(ps.points, { horizonW: cfg.horizonW });
   el.className = 'status ' + (v.ok && bf.ok ? 'ok' : 'err');
   el.textContent = v.ok
     ? `CERTIFIED  k=${v.k}  R=${v.rMax}  ${v.method}  ${v.ms.toFixed(0)} ms\n` +
@@ -402,7 +409,7 @@ document.querySelectorAll('[data-export]').forEach((btn) => {
     }
     const kind = btn.dataset.export;
     const tag = `no3sieve_R${ps.rGen}_${configHash(cfg).slice(0, 8)}`;
-    const rep = verify(ps.points);
+    const rep = verify(ps.points, { horizonW: cfg.horizonW });
     if (!rep.ok) {
       st.className = 'status err';
       st.textContent = 'refusing to export: set failed verification';
@@ -472,14 +479,15 @@ function pushPermalink() {
     zoom: vp.zoom.toFixed(4),
     s: opts.s,
     rmax: cfg.rMax,
+    w: cfg.horizonW,
     order: cfg.intraRingOrder,
-     ov: [
-       opts.density && 'd',
-       opts.grid && 'g',
-       opts.rings && 'r',
-       opts.unknown && 'u',
-       opts.dead && 'x',
-     ]
+    ov: [
+      opts.density && 'd',
+      opts.grid && 'g',
+      opts.rings && 'r',
+      opts.unknown && 'u',
+      opts.dead && 'x',
+    ]
       .filter(Boolean)
       .join(''),
   });
@@ -509,13 +517,16 @@ function readPermalink() {
   vp.cy = num('cy', 0, -1e12, 1e12);
   vp.zoom = num('zoom', 12, 1 / 64, 64);
   opts.s = Math.round(num('s', 16, 3, 129));
-   const ov = p.get('ov') || 'dgrux';
+  const ov = p.get('ov') || 'dgrux';
   opts.density = ov.includes('d');
   opts.grid = ov.includes('g');
   opts.rings = ov.includes('r');
   opts.unknown = ov.includes('u');
-   opts.dead = ov.includes('x');
+  opts.dead = ov.includes('x');
   $('cfg-rmax').value = Math.round(num('rmax', 256, 0, 8192));
+  const w = Math.round(num('w', 0, 0, 16384));
+  $('cfg-w').value = w;
+  opts.horizonW = w;
   const order = p.get('order');
   if (order) {
     if (order === 'clockwise' || order === 'nearest_first') $('cfg-order').value = order;
@@ -528,7 +539,7 @@ function readPermalink() {
   $('ov-grid').checked = opts.grid;
   $('ov-rings').checked = opts.rings;
   $('ov-unknown').checked = opts.unknown;
-   $('ov-dead').checked = opts.dead;
+  $('ov-dead').checked = opts.dead;
 }
 
 // -------------------------------------------------------------------- bootstrap

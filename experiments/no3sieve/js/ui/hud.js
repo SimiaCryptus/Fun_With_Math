@@ -31,6 +31,11 @@ export class Hud {
       `zoom       ${vp.zoom.toFixed(3)} px/cell   LOD stride ${renderer.lastStride}`,
       `camera     (${vp.cx.toFixed(1)}, ${vp.cy.toFixed(1)})`,
       `ring R     ${ps.rGen}   |P| = ${ps.k}`,
+      `horizon    ${
+        opts.horizonW > 0
+          ? `W=${opts.horizonW} (local: span > W allowed)`
+          : 'W=∞ (classical: lines dead at every distance)'
+      }`,
       `I2 usage   ${(100 * density).toFixed(1)}% of 2(2R+1)`,
       // Sparse ring? These two lines say why. A ring has 8R cells but each of
       // its four faces IS one row/column, so it can absorb at most 8 points —
