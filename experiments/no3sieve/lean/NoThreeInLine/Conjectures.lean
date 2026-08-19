@@ -66,8 +66,8 @@ theorem C8_subwindow (P : Finset Pt) (hP : Valid P) (v : Pt) (s : ℕ) :
 
 /-- `c*(W) = (W+1)·δ(W)`, the finite-horizon analogue of the literature's `c(n)`. -/
 def IsCStar (cstar : ℕ → ℝ) (Pw : ℕ → Set Pt) : Prop :=
-  ∀ W, Tendsto (fun R : ℕ => ((W : ℝ) + 1) * (kOf (Pw W) R : ℝ) / ((2 * R + 1) ^ 2)) atTop
-    (𝓝 (cstar W))
+   ∀ W : ℕ, Tendsto (fun R : ℕ => ((W : ℝ) + 1) * (kOf (Pw W) R : ℝ) / ((2 * R + 1) ^ 2)) atTop
+     (𝓝 (cstar W))
 
 /-- **C9 / C2A.10 (horizon transfer) — CENTRAL CONJECTURE.**
 `c*(W) ≍ W^{α-1}`, i.e. `α = 1 + lim log c*(W)/log W` with the *same* `α`.  This is what makes the

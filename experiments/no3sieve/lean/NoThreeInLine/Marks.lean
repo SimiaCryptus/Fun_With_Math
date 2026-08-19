@@ -20,16 +20,19 @@ theorem marks_ACI :
   refine ⟨?_, ?_, ?_⟩ <;> intros <;> simp [deposit, Set.union_assoc, Set.union_comm,
     Set.union_left_comm]
 
-lemma deposit_rightCommutative : RightCommutative deposit := by
-  intro b m n
-  simp [deposit, Set.union_assoc, Set.union_comm, Set.union_left_comm]
+/-- `deposit` is right-commutative, i.e. the order of arrival of two marks is irrelevant.
+`RightCommutative` is a class, so this is registered as an instance for `List.Perm.foldl_eq`. -/
+instance deposit_rightCommutative : RightCommutative deposit := by
+   constructor
+   intro b m n
+   simp [deposit, Set.union_assoc, Set.union_comm, Set.union_left_comm]
 
 /-- Order-independence of a fold of marks: **the set of produced marks, not their arrival order,
 determines the blocked predicate.**  This is the licence for T7.5 (banding) and for arbitrary
 parallel/offloaded mark production with bit-identical results. -/
 theorem foldl_perm_eq {l l' : List (Set Pt)} (h : l.Perm l') (B : Set Pt) :
     l.foldl deposit B = l'.foldl deposit B :=
-  h.foldl_eq deposit_rightCommutative B
+   h.foldl_eq B
 
 /-- Multiplicity-independence: re-deposition is free. -/
 theorem foldl_dup_eq (B M : Set Pt) (l : List (Set Pt)) :

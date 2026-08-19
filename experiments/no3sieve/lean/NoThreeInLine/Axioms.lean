@@ -85,6 +85,7 @@ section Proved
 #print axioms opt_le_two_mul
 #print axioms maxpop_le_opt             -- §18.5 warning 2: harvest ≤ true optimum, not C4
 #print axioms maxpop_le_two_mul
+#print axioms Gset_WSaturated           -- T3.4 as a Set statement (span bound now sharp: W)
 
 
 end Proved
@@ -116,7 +117,6 @@ section Sorry
 #print axioms hist_corner_half_bulk     -- T16.3, second half, in general
 #print axioms theta_bulk_tendsto
 #print axioms langX_card_upper          -- L18.5, upper half
-#print axioms Gset_WSaturated           -- T3.4 as a Set statement (span bound still slack)
 #print axioms mf_solution_exists        -- T17.1: the finite-W root exists
 #print axioms cstar_tendsto             -- H17.2 ⇒ α = 1
 #print axioms models_differ             -- P17.3: the two fits are genuinely different models

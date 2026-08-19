@@ -217,17 +217,11 @@ theorem greedy_saturated_local {W : ℕ} (T : Traversal) (seed : Finset Pt) {c :
 theorem Gset_WSaturated {W : ℕ} (T : Traversal) (seed : Finset Pt) :
     WSaturated (W : ℕ∞) (Gset T seed (W : ℕ∞)) := by
   intro c hc
-  obtain ⟨p, hp, q, hq, hpq, hcoll, h1, h2⟩ := greedy_saturated_local T seed hc
-  refine ⟨p, hp, q, hq, hpq, hcoll, ?_, ?_, ?_⟩
-  · exact_mod_cast (by rwa [nrm_sub_comm] at h1 : nrm (c - p) ≤ W)
-  · exact_mod_cast (by rwa [nrm_sub_comm] at h2 : nrm (c - q) ≤ W)
-  · have := nrm_sub_le (p - c) (q - c)
-    have e : p - q = (p - c) - (q - c) := by abel
-    rw [e]
-    exact_mod_cast (by
-      have h3 := nrm_sub_le (p - c) (q - c)
-      omega : nrm ((p - c) - (q - c)) ≤ W + W)
-  -- NB the third bound is the weaker `2W`; see the note below.
+  -- `saturated` hands us the full `Adm W c p q`, including the pair span `‖p-q‖∞ ≤ W`
+  -- (that clause is a *field* of `Adm`, not a consequence of the other two — L2A.4).
+  have hseed : c ∉ seed := fun h => hc ((mem_Gset_iff T seed _ c).mpr (Or.inl h))
+  obtain ⟨p, hp, q, hq, hpq, hcoll, hadm, -, -⟩ := saturated T seed (W : ℕ∞) hseed hc
+  exact ⟨p, hp, q, hq, hpq, hcoll, hadm⟩
 
 /-- **T18.6 (erosion obstruction), qualitative form.**  No pattern with an empty `(2W+1)`-window
 occurs, so `s*(W) < 3W` unconditionally and "the square of related length" is genuinely `Θ(W)`. -/
