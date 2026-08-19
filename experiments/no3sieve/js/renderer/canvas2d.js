@@ -2,7 +2,7 @@
 //   unknown hatch -> density overlay -> grid -> ring guides -> points -> selection
 // LOD (§5.2): sub-pixel zoom AGGREGATES (never point-samples) — a density-2/n set
 // vanishes under naive downsampling and the picture lies.
-import { rasterize, buildSAT, centeredDensityMap } from '../sat.js';
+import { rasterize, buildSAT, centeredDensityMap, maxDensityMap } from '../sat.js';
 import { viridis } from './colormap.js';
 import { linfIndex } from '../lattice.js';
 import { createLogger } from '../util/log.js';
@@ -21,6 +21,9 @@ export class Renderer {
     this.off = document.createElement('canvas');
     this.offCtx = this.off.getContext('2d');
     if (!this.offCtx) throw new Error('Renderer: offscreen 2D context unavailable');
+    this.pointOff = document.createElement('canvas');
+    this.pointOffCtx = this.pointOff.getContext('2d');
+    if (!this.pointOffCtx) throw new Error('Renderer: point offscreen 2D context unavailable');
     this._cache = null; // memoized density raster
     this.lastFrameMs = 0;
     this.lastStride = 1;
@@ -36,7 +39,11 @@ export class Renderer {
     if (!(vp.w > 0) || !(vp.h > 0)) return; // zero-size canvas: nothing to do
     const t0 = performance.now();
     const ctx = this.ctx;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    // The canvas backing store is sized at devicePixelRatio in `resize()`.
+    // Drawing in CSS coordinates requires this transform; an identity transform
+    // here compressed the scene into the top-left corner on DPR > 1 screens.
+    const dpr = vp.dpr || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.fillStyle = '#0d1117';
     ctx.fillRect(0, 0, vp.w, vp.h);
 
@@ -69,9 +76,6 @@ export class Renderer {
     this._layer('points', () => this._drawPoints(vp, ps));
     this._layer('selection', () => {
       if (opts.selection) this._drawSelection(vp, opts.selection);
-    });
-    this._layer('hover', () => {
-      if (opts.hover) this._drawHover(vp, opts.hover);
     });
 
     this.lastFrameMs = performance.now() - t0;
@@ -196,13 +200,14 @@ export class Renderer {
       const S = buildSAT(R.grid, R.cw, R.ch);
       const sCells = Math.max(1, Math.round(s / stride));
       const D = centeredDensityMap(S, R.cw, R.ch, sCells);
+      const M = maxDensityMap(D, R.cw, R.ch, sCells);
       const denom = opts.norm === '2s' ? 2 * s : s;
       const domain = opts.norm === '2s' ? 1 : 2;
       const img = this.offCtx.createImageData(R.cw, R.ch);
       const px = img.data;
       for (let y = 0; y < R.ch; y++) {
         for (let x = 0; x < R.cw; x++) {
-          const v = D[y * R.cw + x] / denom;
+          const v = M[y * R.cw + x] / denom;
           const c = viridis(v / domain);
           // top-down image rows correspond to decreasing world y
           const o = ((R.ch - 1 - y) * R.cw + x) * 4;
@@ -215,7 +220,7 @@ export class Renderer {
       this.off.width = R.cw;
       this.off.height = R.ch;
       this.offCtx.putImageData(img, 0, 0);
-      this._cache = { sig, R, D, denom, domain, sCells };
+      this._cache = { sig, R, M, denom, domain, sCells };
     }
     const R = this._cache.R;
     const sx = vp.toScreenX(R.x0 - 0.5);
@@ -309,10 +314,12 @@ export class Renderer {
         d[o + 2] = Math.min(255, d[o + 2] + 90);
         d[o + 3] = 255;
       }
-      this.off.width = img.width;
-      this.off.height = img.height;
-      this.offCtx.putImageData(img, 0, 0);
-      this.ctx.drawImage(this.off, 0, 0);
+      // Use a dedicated canvas for point accumulation. Reusing `this.off`
+      // clobbered the cached density overlay on pointer/zoom redraws.
+      this.pointOff.width = img.width;
+      this.pointOff.height = img.height;
+      this.pointOffCtx.putImageData(img, 0, 0);
+      this.ctx.drawImage(this.pointOff, 0, 0);
     }
   }
 

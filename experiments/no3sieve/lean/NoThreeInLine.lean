@@ -7,3 +7,8 @@ import NoThreeInLine.Witness
 import NoThreeInLine.Marks
 import NoThreeInLine.Density
 import NoThreeInLine.Conjectures
+import NoThreeInLine.Field
+import NoThreeInLine.Seams
+import NoThreeInLine.MeanField
+import NoThreeInLine.Library
+import NoThreeInLine.Conjectures2

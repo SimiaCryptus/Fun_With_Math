@@ -35,6 +35,12 @@ lemma coll_swap {p q r : Pt} (h : Coll p q r) : Coll p r q := by
 
 lemma coll_rot' {p q r : Pt} (h : Coll p q r) : Coll q r p :=
   coll_rot (coll_rot h)
+/-- Collinearity is translation invariant.  Used in §18 to transport a pattern between the window
+where it occurs and the origin-anchored copy `[s]²` that the language is indexed by. -/
+lemma coll_translate (v p q r : Pt) : Coll (v + p) (v + q) (v + r) ↔ Coll p q r := by
+   unfold Coll
+   rw [show (v + q) - (v + p) = q - p by abel, show (v + r) - (v + p) = r - p by abel]
+
 
 /-- **L2.2 (direction test), in the form the engine implements.**  Three points are collinear iff the
 two direction *vectors* from one of them are parallel.  The `±` quotient of the doc is invisible here

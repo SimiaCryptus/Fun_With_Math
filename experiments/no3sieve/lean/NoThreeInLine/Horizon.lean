@@ -26,10 +26,29 @@ lemma adm_rot {W : ℕ∞} {p q r : Pt} (h : Adm W p q r) : Adm W r p q := by
 lemma adm_swap {W : ℕ∞} {p q r : Pt} (h : Adm W p q r) : Adm W p r q := by
   obtain ⟨h1, h2, h3⟩ := h
   exact ⟨h2, h1, by rwa [nrm_sub_comm] at h3⟩
+/-- Admissibility is translation invariant (companion to `coll_translate`). -/
+lemma adm_translate (W : ℕ∞) (v p q r : Pt) : Adm W (v + p) (v + q) (v + r) ↔ Adm W p q r := by
+   unfold Adm
+   rw [show (v + p) - (v + q) = p - q by abel, show (v + p) - (v + r) = p - r by abel,
+     show (v + q) - (v + r) = q - r by abel]
+
 
 /-- **D2A.1.**  `P` is `W`-valid iff it has no `W`-admissible collinear triple. -/
 def WValid (W : ℕ∞) (P : Finset Pt) : Prop :=
   ∀ p ∈ P, ∀ q ∈ P, ∀ r ∈ P, p ≠ q → p ≠ r → q ≠ r → Adm W p q r → ¬ Coll p q r
+/-- The `Set`-valued version of `W`-validity.  The far field of §15/§18 is infinite, so every
+statement about it has to be phrased for `Set Pt`; `wvalidS_coe` says nothing is lost. -/
+def WValidS (W : ℕ∞) (P : Set Pt) : Prop :=
+   ∀ p ∈ P, ∀ q ∈ P, ∀ r ∈ P, p ≠ q → p ≠ r → q ≠ r → Adm W p q r → ¬ Coll p q r
+@[simp] lemma wvalidS_coe (W : ℕ∞) (P : Finset Pt) : WValidS W (↑P : Set Pt) ↔ WValid W P := by
+   simp [WValidS, WValid]
+lemma WValidS.mono {W : ℕ∞} {P Q : Set Pt} (h : WValidS W P) (hQ : Q ⊆ P) : WValidS W Q :=
+   fun p hp q hq r hr => h p (hQ hp) q (hQ hq) r (hQ hr)
+/-- The `Set` form of the certification direction of P2A.13. -/
+lemma WValidS.horizon_mono {W W' : ℕ∞} (h : W' ≤ W) {P : Set Pt} (hP : WValidS W P) :
+     WValidS W' P :=
+   fun p hp q hq r hr h1 h2 h3 ha => hP p hp q hq r hr h1 h2 h3 (adm_mono h ha)
+
 
 /-- `W = ⊤` recovers §2 exactly. -/
 theorem wvalid_top_iff (P : Finset Pt) : WValid ⊤ P ↔ Valid P := by

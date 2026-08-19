@@ -80,6 +80,53 @@ export function centeredDensityMap(sat, cw, ch, sCells) {
   }
   return D;
 }
+/**
+* Max-over-any-window projection of the centered density map (§5.4): for each
+* cell p, M[p] = max_{q: p ∈ window(q)} D[q]. This is the density of the
+* densest s×s window intersecting that point, so the best windows naturally
+* occlude weaker ones when rendered as a heatmap.
+*
+* Implemented as a clipped separable max filter; near the raster boundary a
+* window is truncated exactly like `windowPop` truncates it.
+*/
+export function maxDensityMap(D, cw, ch, sCells) {
+  if (!Number.isInteger(sCells) || sCells < 1)
+    throw new RangeError(`maxDensityMap: sCells must be a positive integer (got ${sCells})`);
+  if (!D || D.length < cw * ch)
+    throw new RangeError(`maxDensityMap: D too small for ${cw}x${ch}`);
+  const lo = Math.floor((sCells - 1) / 2);
+  const hi = Math.ceil((sCells - 1) / 2);
+  const tmp = new Int32Array(cw * ch);
+  const M = new Int32Array(cw * ch);
+  // Horizontal: max over qx ∈ [x-hi, x+lo] (clamped to the raster).
+  for (let y = 0; y < ch; y++) {
+    const row = y * cw;
+    for (let x = 0; x < cw; x++) {
+      const left = Math.max(0, x - hi);
+      const right = Math.min(cw - 1, x + lo);
+      let m = D[row + left];
+      for (let q = left + 1; q <= right; q++) {
+        const v = D[row + q];
+        if (v > m) m = v;
+      }
+      tmp[row + x] = m;
+    }
+  }
+  // Vertical: max over qy ∈ [y-hi, y+lo] (clamped to the raster).
+  for (let x = 0; x < cw; x++) {
+    for (let y = 0; y < ch; y++) {
+      const top = Math.max(0, y - hi);
+      const bottom = Math.min(ch - 1, y + lo);
+      let m = tmp[top * cw + x];
+      for (let q = top + 1; q <= bottom; q++) {
+        const v = tmp[q * cw + x];
+        if (v > m) m = v;
+      }
+      M[y * cw + x] = m;
+    }
+  }
+  return M;
+}
 
 /** Scan all s×s placements of a raster: max population, argmax, histogram. */
 export function scanMax(sat, cw, ch, s) {

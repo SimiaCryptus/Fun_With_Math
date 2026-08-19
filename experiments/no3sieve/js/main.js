@@ -366,8 +366,8 @@ function drawLegend() {
   const max = opts.norm === '2s' ? 1 : 2;
   const conv =
     opts.s % 2
-      ? 'odd s: exact L∞ ball of radius (s−1)/2'
-      : 'even s: centre biased LOW (no symmetric definition)';
+      ? 'max s×s window intersecting each point'
+      : 'max s×s window intersecting each point (even s: centre biased LOW)';
   $('legend').innerHTML = `
         <div class="bar" style="background:${legendCss()}"></div>
         <div class="ticks"><span>0</span>
