@@ -1,0 +1,141 @@
+:root {
+  --bg: #0e1116;
+  --bg-1: #141922;
+  --bg-2: #1b2230;
+  --bg-3: #232c3d;
+  --line: #2b3547;
+  --fg: #dfe6f1;
+  --fg-dim: #93a1b8;
+  --fg-faint: #6b7a92;
+  --accent: #6aa9ff;
+  --accent-soft: #6aa9ff22;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --radius: 8px;
+  --shadow: 0 8px 24px #0008;
+
+  /* node kinds */
+  --k-axiom: #b9a7ff;
+  --k-definition: #6aa9ff;
+  --k-theory: #4fd0d8;
+  --k-model: #8f7ef2;
+  --k-conjecture: #f0b866;
+  --k-lemma: #9ad6a8;
+  --k-theorem: #59c98b;
+  --k-heuristic: #e59ad6;
+  --k-observation: #d8c85a;
+  --k-experiment: #c98a5a;
+  --k-artifact: #9aa4b2;
+  --k-open_question: #ff7a7a;
+
+  /* statuses */
+  --s-accepted: #59c98b;
+  --s-proposed: #f0b866;
+  --s-tested: #6aa9ff;
+  --s-supported: #4fd0d8;
+  --s-refuted: #ff6b6b;
+  --s-superseded: #8b95a6;
+  --s-abandoned: #6b7280;
+  --s-unknown: #b9a7ff;
+
+  /* relations */
+  --r-support: #59c98b;
+  --r-refute: #ff6b6b;
+  --r-neutral: #7f8ca3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0 0 0.4em;
+  line-height: 1.25;
+  font-weight: 620;
+}
+
+code,
+kbd,
+.mono {
+  font-family: var(--mono);
+  font-size: 0.88em;
+}
+
+code {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.05em 0.32em;
+}
+
+pre {
+  overflow: auto;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.75rem;
+}
+pre code {
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+blockquote {
+  margin: 0.4rem 0 0;
+  padding: 0.35rem 0.75rem;
+  border-left: 3px solid var(--line);
+  color: var(--fg-dim);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #2b3547;
+  border-radius: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+mjx-container[jax="CHTML"] {
+  color: #eaf1ff;
+}
+mjx-container[display="true"] {
+  margin: 0.6em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+}

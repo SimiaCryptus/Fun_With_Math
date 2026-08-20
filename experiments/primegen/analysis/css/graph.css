@@ -1,0 +1,127 @@
+.map-wrap {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+
+.map-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-1);
+  font-size: 12px;
+  color: var(--fg-faint);
+}
+
+.map-stage {
+  position: relative;
+  min-height: 0;
+  background: radial-gradient(circle at 50% 40%, #151b26, #0e1116 70%);
+}
+
+.map-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+}
+.map-svg.dragging {
+  cursor: grabbing;
+}
+
+.link {
+  stroke: var(--r-neutral);
+  stroke-opacity: 0.45;
+  stroke-width: 1.1;
+  fill: none;
+}
+.link.r-supports,
+.link.r-implies {
+  stroke: var(--r-support);
+  stroke-opacity: 0.6;
+}
+.link.r-refutes,
+.link.r-contradicts {
+  stroke: var(--r-refute);
+  stroke-opacity: 0.75;
+  stroke-dasharray: 5 3;
+}
+.link.r-tests,
+.link.r-measures,
+.link.r-motivates,
+.link.r-cites {
+  stroke-dasharray: 2 3;
+}
+.link.dim {
+  stroke-opacity: 0.12;
+}
+
+.gnode {
+  cursor: pointer;
+}
+.gnode circle {
+  fill: var(--kc, #7f8ca3);
+  stroke: #0e1116;
+  stroke-width: 1.5;
+}
+.gnode.selected circle {
+  stroke: #fff;
+  stroke-width: 2.5;
+}
+.gnode text {
+  font: 10.5px var(--sans);
+  fill: var(--fg-dim);
+  pointer-events: none;
+  paint-order: stroke;
+  stroke: #0e1116;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.gnode.selected text {
+  fill: #fff;
+}
+.gnode.dim {
+  opacity: 0.25;
+}
+
+.map-legend {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  background: #121722dd;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.65rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.7rem;
+  max-width: 320px;
+  font-size: 11px;
+  color: var(--fg-dim);
+  backdrop-filter: blur(4px);
+}
+.map-legend span {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+.map-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--kc);
+  display: inline-block;
+}
+
+.map-hint {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  font-size: 11px;
+  color: var(--fg-faint);
+  font-family: var(--mono);
+}

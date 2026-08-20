@@ -20,6 +20,25 @@
     ></script>
 
     <link rel="stylesheet" href="../../assets/css/experiments-primegen-index.css" />
+    <!-- theory browser embed: minimal, additive styling only -->
+    <style>
+      #theory .tb-frame {
+        display: block;
+        width: 100%;
+        height: min(78vh, 900px);
+        border: 0;
+        background: #0b0e14;
+      }
+      .card[data-rr-card="theory-browser"] {
+        outline: 1px solid rgba(255, 208, 96, 0.35);
+      }
+      .card[data-rr-card="theory-browser"] .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+    </style>
   </head>
   <body>
     <header class="hero">
@@ -40,6 +59,7 @@
           </p>
           <div class="actions" style="display: flex; gap: 8px; flex-wrap: wrap">
             <a class="btn primary" href="#apps">explore the views</a>
+            <a class="btn" href="#theory">browse the theory graph</a>
             <a class="btn" href="#source">read the code</a>
             <a class="btn" href="#docs">read the theory</a>
           </div>
@@ -49,6 +69,7 @@
             <span class="tag b">additive entropy</span>
             <span class="tag y">rational spectrum &#8474;/&#8484;</span>
             <span class="tag y">wheel factorization</span>
+            <span class="tag">theory graph</span>
           </div>
         </div>
         <div>
@@ -78,6 +99,39 @@
           <iframe id="frame" title="embedded view" src="about:blank"></iframe>
         </div>
       </section>
+      <!-- ============================ theory browser ============================ -->
+      <section class="block" id="theory">
+        <h2 class="sec">Theory browser</h2>
+        <div class="panel">
+          <div class="vbar">
+            <span class="name">Theory Browser</span>
+            <span class="path">analysis/theory_browser.html</span>
+            <span class="sp"></span>
+            <button class="ghost" id="tbReload" title="reload the graph">reload ↻</button>
+            <a
+              class="btn"
+              id="tbOpen"
+              href="./analysis/theory_browser.html"
+              target="_blank"
+              rel="noopener"
+              >open in new tab ↗</a
+            >
+          </div>
+          <iframe
+            id="tbFrame"
+            class="tb-frame"
+            title="Theory Browser — node graph of definitions, lemmas and open questions"
+            src="about:blank"
+            data-src="./analysis/theory_browser.html"
+            loading="lazy"
+          ></iframe>
+          <small id="tbNote"
+            >nodes · map · unresolved · corpus — served over HTTP (the browser fetches its graph
+            with <code>fetch()</code>).</small
+          >
+        </div>
+      </section>
+
       <!-- ============================ sources ============================ -->
       <section class="block" id="source">
         <h2 class="sec">Algorithm sources</h2>
@@ -127,13 +181,14 @@
           root.
         </div>
         <div>
-          <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> open a view &nbsp;·&nbsp; <kbd>Esc</kbd> close the
-          embed &nbsp;·&nbsp; <kbd>A</kbd><kbd>B</kbd><kbd>C</kbd> jump to the source of an
-          algorithm
+          <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> open a view &nbsp;·&nbsp; <kbd>4</kbd> theory browser
+          &nbsp;·&nbsp; <kbd>Esc</kbd> close the embed &nbsp;·&nbsp; <kbd>A</kbd><kbd>B</kbd
+          ><kbd>C</kbd> jump to the source of an algorithm
         </div>
       </div>
     </footer>
 
     <script src="../../assets/js/experiments-primegen-index-3.js"></script>
+    <script defer src="../../assets/js/experiments-primegen-theory.js"></script>
   </body>
 </html>

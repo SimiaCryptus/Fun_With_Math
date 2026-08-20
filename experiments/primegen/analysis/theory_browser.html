@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Theory Browser — primegen</title>
+
+    <link rel="stylesheet" href="./css/theory_browser.css" />
+
+    <!-- MathJax must be configured before it loads. -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["\\(", "\\)"],
+            ["$", "$"],
+          ],
+          displayMath: [
+            ["\\[", "\\]"],
+            ["$$", "$$"],
+          ],
+          processEscapes: true,
+          packages: { "[+]": ["ams"] },
+        },
+        options: {
+          enableMenu: false,
+          skipHtmlTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+        },
+        startup: { typeset: false },
+      };
+      function loadMathJaxFallback() {
+        const s = document.createElement("script");
+        s.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js";
+        s.async = false;
+        document.head.appendChild(s);
+      }
+      function loadMarkedFallback() {
+        const s = document.createElement("script");
+        s.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+        s.async = false;
+        document.head.appendChild(s);
+      }
+    </script>
+
+    <script defer src="/lib/marked.min.js" onerror="loadMarkedFallback()"></script>
+    <script
+      defer
+      id="MathJax-script"
+      src="/lib/mathjax/tex-mml-chtml.js"
+      onerror="loadMathJaxFallback()"
+    ></script>
+
+    <script type="module" src="./js/main.js"></script>
+  </head>
+
+  <body>
+    <header class="appbar">
+      <div class="brand">
+        <span class="brand-mark">∏</span>
+        <div>
+          <h1 id="brand-title">Theory Browser</h1>
+          <p id="brand-sub" class="brand-sub">loading graph…</p>
+        </div>
+      </div>
+
+      <nav class="tabs" id="tabs" aria-label="views">
+        <button class="tab" data-view="node" type="button">Nodes</button>
+        <button class="tab" data-view="map" type="button">Map</button>
+        <button class="tab" data-view="issues" type="button">Unresolved</button>
+        <button class="tab" data-view="corpus" type="button">Corpus</button>
+      </nav>
+
+      <div class="appbar-meta" id="appbar-meta"></div>
+    </header>
+
+    <main class="app" id="app">
+      <aside class="sidebar" id="sidebar" aria-label="filters and node list"></aside>
+      <section class="content" id="content">
+        <article class="view" id="view-node" hidden></article>
+        <div class="view view-flush" id="view-map" hidden></div>
+        <div class="view" id="view-issues" hidden></div>
+        <div class="view" id="view-corpus" hidden></div>
+      </section>
+    </main>
+
+    <noscript>
+      <p class="fatal">This browser requires JavaScript modules.</p>
+    </noscript>
+  </body>
+</html>
