@@ -1,0 +1,21 @@
+.canvas-wrapper {
+  cursor: crosshair;
+}
+canvas {
+  display: block;
+}
+#coords {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'Fira Code', Consolas, monospace;
+  min-height: 1.4em;
+  padding: 0.3rem 0 0;
+  text-align: center;
+}
+#progress {
+  height: 3px;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.1s;
+  border-radius: 2px;
+}

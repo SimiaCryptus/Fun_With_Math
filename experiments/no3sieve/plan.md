@@ -143,7 +143,7 @@ configurable but must be _convex and monotone_, and they invalidate the closed
 forms above.
 
 | `ringMetric` | gauge | ring index `R(p)`        | sphere shape            | default |
-| ------------ | ----- | ------------------------ | ----------------------- | ------- |
+| ------------ | ----- | ------------------------ | ----------------------- | ------- | --- | --- | ---------------------- | ------- |
 | `chebyshev`  | `L∞`  | `max(                    | x                       | ,       | y   | )`  | square, **flat faces** | **yes** |
 | `euclidean`  | `L2`  | `floor(sqrt(x^2 + y^2))` | circle, strictly convex | no      |
 
@@ -226,8 +226,8 @@ is exact integer L∞. Nothing in either step is approximate.
 `markMode` config:
 
 | value         | semantics                                               |
-| ------------- | ------------------------------------------------------- |
-| `outwardOnly` | mark only points with `                                 |     | point |     | _∞ >= R_current` (**default**) |
+| ------------- | ------------------------------------------------------- | --- | ----- | --- | ------------------------------- |
+| `outwardOnly` | mark only points with `                                 |     | point |     | \_∞ >= R_current` (**default**) |
 | `fullLine`    | mark every lattice point of the line inside `B_∞(rMax)` |
 
 `outwardOnly` is **not** an approximation: by `I3` the traversal never revisits a
@@ -257,7 +257,7 @@ Three components, none of which is `O(rMax^2)`:
    and next, recycled; allocated once per band, never per ring.
 3. `calendar` — the line-event structure of §3.3, the heart of the engine, held as
    a **struct-of-arrays** over typed arrays (`Int32Array` for `baseX, baseY, dX, dY,
-  t`, `Int32Array` for `nextRing`), so it is transferable to a worker and
+t`, `Int32Array` for `nextRing`), so it is transferable to a worker and
    `SharedArrayBuffer`-backable without serialization.
 
 Memory is therefore `O(|P|^2)` (calendar) `+ O(R)` (ring masks), not `O(R^2)`.
@@ -764,7 +764,7 @@ shareable and reproducible.
 ## 6. File formats
 
 | artifact          | format      | contents                                                         |
-| ----------------- | ----------- | ---------------------------------------------------------------- |
+| ----------------- | ----------- | ---------------------------------------------------------------- | --- | ------------------------ |
 | point set         | CSV         | `x,y,order_index,ring` header row, sorted by `order_index`       |
 | point set (fast)  | BIN         | `.no3`: 32-byte header + `int32[k][2]` little-endian + JSON meta |
 | run manifest      | JSON        | config, version, git sha, host, timings, `k(R)` table, hashes    |
@@ -851,12 +851,12 @@ Additional test fixtures:
 Let `k = |P|`, `R = rMax`.
 
 | stage                        | time                                      | space                  |
-| ---------------------------- | ----------------------------------------- | ---------------------- |
+| ---------------------------- | ----------------------------------------- | ---------------------- | -------------------------- | -------- | ----------------------------- | -------- | --- | --- |
 | ring traversal               | `                                         | B_∞(R)                 | = (2R+1)^2`cells,`8r`/ring | `O(R)`   |
 | line creation                | `O(k^2)` primdir + schedule               | `O(k^2)` events        |
-| calendar marking             | `<= Σ_lines (4R/                          |                        | d                          |          | _∞ + 1)` (L3.3.1), ~`O(k^2)` | —        |
+| calendar marking             | `<= Σ_lines (4R/                          |                        | d                          |          | \_∞ + 1)` (L3.3.1), ~`O(k^2)` | —        |
 | intra-ring commit correction | `O(Σ_R k · commits_R)`                    | —                      |
-| segment closure (§3.7)       | `O(Σ_R                                    | A_R                    | · (k +                     | A_R      | ))`                          | `O(      | A_R | )`  |
+| segment closure (§3.7)       | `O(Σ_R                                    | A_R                    | · (k +                     | A_R      | ))`                           | `O(      | A_R | )`  |
 | naive backend (baseline)     | `O(k^2 · R)`                              | `O(R^2)` bits          |
 | reference backend            | `O(R^2 · k)`                              | `O(k)`                 |
 | SAT build + full scan        | `O(R^2 ·                                  | sizes                  | )`                         | `O(R^2)` |
@@ -864,7 +864,7 @@ Let `k = |P|`, `R = rMax`.
 | GPU marking pass (§4.6)      | `O(marks / lanes)` + `O(R)` readback/ring | `O(band area)` texels  |
 | tile build (lod 0)           | `O(points in tile)`                       | `8 KB` / tile          |
 | density overlay (per tile)   | `O(tile area)` per invalidation           | `O(tile area + apron)` |
-| top-K tracking               | `O(R^2 ·                                  | sizes                  | · log k)` streaming        | `O(      | sizes                        | · keep)` |
+| top-K tracking               | `O(R^2 ·                                  | sizes                  | · log k)` streaming        | `O(      | sizes                         | · keep)` |
 
 **Risk:** the `O(k^2)` event store dominates memory. At `R = 4096`, if `k ≈ 2·(2R)`
 then `k ≈ 16k` points ⇒ `~1.3e8` rays. Mitigations, in order of preference:

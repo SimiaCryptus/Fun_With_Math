@@ -1,0 +1,16 @@
+canvas {
+  display: block;
+  background: #0d1117;
+}
+.canvas-wrapper {
+  position: relative;
+}
+#waveCanvas {
+  border-top: 1px solid var(--border);
+  background: #0a0e14;
+}
+.col2 {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}

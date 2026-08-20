@@ -165,7 +165,7 @@ Three features of the constants, since they are easy to misremember:
 > with `|D| = |D'| = T_k` and `D ∩ D' = ∅` for `p ≥ 3`; counting gives TP1.
 >
 > _Status: `[T]` (routine CRT); not formalised. Its algorithmic content is `Primegen.theta_eq_image`: `D` is `Θ_p` read
-> mod `P_{k+1}` and `D'` is `Θ_p − 2`._
+> mod `P_{k+1}`and`D'`is`Θ*p − 2`.*
 
 _Proof._ Tile as in F1. A tile element dies iff `p | r` or `p | r+2`. If `r = ps`, then `gcd(r, P) = 1 ⟺ gcd(s, P) = 1`
 and `gcd(r+2, P) = gcd(ps+2, P) = 1 ⟺ gcd(s + 2p̄, P) = 1` (multiply by the unit `p̄`); this is `D`. The case
@@ -316,8 +316,8 @@ The general statement needs no lucky example:
 > representatives are composite in one or both coordinates: for `p_{k+1}`-rough composites `m, m+2` the pair `(m, m+2)`
 > lies in `S_k^{(2)}`, and such pairs exist below `P_k` as soon as `p_{k+1}² < P_k`, i.e. for `k ≥ 4`.
 >
-> _Status: `[T]` given `p_{k+1}² < P_k` for `k ≥ 4` (Cor. 2.4 of `algorithm.md`); the existence count is
-> `Φ`-counting, `theory.md` T8._
+> _Status: `[T]` given `p_{k+1}² < P*k`for`k ≥ 4`(Cor. 2.4 of`algorithm.md`); the existence count is
+`Φ`-counting, `theory.md` T8.*
 
 So `S_k^{(2)}` counts _candidate_ pairs, exactly as `S_k` counts _candidate_ primes, and `T_k` is properly named
 "number of twin-candidate residue classes mod `P_k`".

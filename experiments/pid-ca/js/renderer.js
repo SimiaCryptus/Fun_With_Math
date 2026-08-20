@@ -14,41 +14,120 @@ const NEG_HIGH = [186, 92, 226]; // −min — violet
 
 /** Legacy 3-entry palette (0 / +1 / +2), retained for convenience. */
 export const STATE_COLORS = [ZERO_COLOR, POS_LOW, POS_HIGH];
-
-function lerpColor(a, b, t) {
-  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-}
-
-/** Colour for a signed state within [min, max] (§7.6). */
-export function colorForState(s, min, max) {
-  if (s === 0) return ZERO_COLOR;
-  if (s > 0) {
-    const span = Math.max(1, max - 1);
-    return lerpColor(POS_LOW, POS_HIGH, Math.min(1, (s - 1) / span));
-  }
-  const span = Math.max(1, -min - 1);
-  return lerpColor(NEG_LOW, NEG_HIGH, Math.min(1, (-s - 1) / span));
-}
-
-/** Palette indexed by (state − min). */
-export function buildStatePalette(min, max) {
-  const lo = Math.min(0, min | 0);
-  const hi = Math.max(lo, max | 0);
-  const out = [];
-  for (let s = lo; s <= hi; s++) out.push(colorForState(s, lo, hi));
-  return out;
-}
 /** Bioelectrical palette (bioelectrical.md §7): polarized / firing / refractory. */
 export const MEMBRANE_COLORS = [
   [18, 28, 52], // 0 — polarized (gate CLOSED)
   [244, 248, 255], // 1 — firing (gate OPEN)
   [168, 56, 56], // 2 — refractory
 ];
-
 const OVERLAY_MID = [16, 18, 24];
 const OVERLAY_COLD = [70, 130, 255];
 const OVERLAY_WARM = [255, 120, 40];
-const OVERLAY_ALPHA = 0.72;
+/**
+ * Every colour the renderer uses, resolved to numeric RGB. The defaults below
+ * mirror the schema defaults in config.js — a Config always overrides them.
+ */
+export const DEFAULT_THEME = {
+  background: '#05080c',
+  zero: ZERO_COLOR,
+  posLow: POS_LOW,
+  posHigh: POS_HIGH,
+  negLow: NEG_LOW,
+  negHigh: NEG_HIGH,
+  membrane: MEMBRANE_COLORS,
+  overlayMid: OVERLAY_MID,
+  overlayCold: OVERLAY_COLD,
+  overlayWarm: OVERLAY_WARM,
+  overlayAlpha: 0.72,
+  gridLine: 'rgba(255,255,255,0.07)',
+};
+/** Configuration keys that participate in the visual theme (cache key source). */
+const THEME_KEYS = [
+  'colorBackground',
+  'colorState0',
+  'colorStatePosLow',
+  'colorStatePosHigh',
+  'colorStateNegLow',
+  'colorStateNegHigh',
+  'colorPolarized',
+  'colorFiring',
+  'colorRefractory',
+  'colorOverlayMid',
+  'colorOverlayLow',
+  'colorOverlayHigh',
+  'overlayAlpha',
+  'colorGridLines',
+  'gridLineAlpha',
+];
+/** `#rrggbb` / `#rgb` → [r, g, b]; `fallback` on anything unparseable. */
+export function hexToRgb(hex, fallback = [0, 0, 0]) {
+  if (typeof hex !== 'string') return fallback;
+  let s = hex.trim().replace(/^#/, '');
+  if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return fallback;
+  const n = parseInt(s, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+/** [r, g, b] → `rgb(r,g,b)` (rounded), for DOM styling. */
+export function rgbCss(c) {
+  return 'rgb(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ')';
+}
+/** Stable cache key for the palette derived from a configuration. */
+export function themeKey(cfg) {
+  if (!cfg) return 'default';
+  let key = '';
+  for (const k of THEME_KEYS) key += String(cfg[k]) + '|';
+  return key;
+}
+/** Resolve a configuration into the numeric palette the renderer consumes. */
+export function themeFromConfig(cfg) {
+  if (!cfg) return DEFAULT_THEME;
+  const line = hexToRgb(cfg.colorGridLines, [255, 255, 255]);
+  const lineAlpha = Number.isFinite(cfg.gridLineAlpha) ? cfg.gridLineAlpha : 0.07;
+  return {
+    background:
+      typeof cfg.colorBackground === 'string' ? cfg.colorBackground : DEFAULT_THEME.background,
+    zero: hexToRgb(cfg.colorState0, ZERO_COLOR),
+    posLow: hexToRgb(cfg.colorStatePosLow, POS_LOW),
+    posHigh: hexToRgb(cfg.colorStatePosHigh, POS_HIGH),
+    negLow: hexToRgb(cfg.colorStateNegLow, NEG_LOW),
+    negHigh: hexToRgb(cfg.colorStateNegHigh, NEG_HIGH),
+    membrane: [
+      hexToRgb(cfg.colorPolarized, MEMBRANE_COLORS[0]),
+      hexToRgb(cfg.colorFiring, MEMBRANE_COLORS[1]),
+      hexToRgb(cfg.colorRefractory, MEMBRANE_COLORS[2]),
+    ],
+    overlayMid: hexToRgb(cfg.colorOverlayMid, OVERLAY_MID),
+    overlayCold: hexToRgb(cfg.colorOverlayLow, OVERLAY_COLD),
+    overlayWarm: hexToRgb(cfg.colorOverlayHigh, OVERLAY_WARM),
+    overlayAlpha: Number.isFinite(cfg.overlayAlpha) ? cfg.overlayAlpha : 0.72,
+    gridLine: 'rgba(' + line[0] + ',' + line[1] + ',' + line[2] + ',' + lineAlpha + ')',
+  };
+}
+
+function lerpColor(a, b, t) {
+  return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+}
+
+/** Colour for a signed state within [min, max] (§7.6). */
+export function colorForState(s, min, max, theme = DEFAULT_THEME) {
+  if (s === 0) return theme.zero;
+  if (s > 0) {
+    const span = Math.max(1, max - 1);
+    return lerpColor(theme.posLow, theme.posHigh, Math.min(1, (s - 1) / span));
+  }
+  const span = Math.max(1, -min - 1);
+  return lerpColor(theme.negLow, theme.negHigh, Math.min(1, (-s - 1) / span));
+}
+
+/** Palette indexed by (state − min). */
+export function buildStatePalette(min, max, theme = DEFAULT_THEME) {
+  const lo = Math.min(0, min | 0);
+  const hi = Math.max(lo, max | 0);
+  const out = [];
+  for (let s = lo; s <= hi; s++) out.push(colorForState(s, lo, hi, theme));
+  return out;
+}
 
 const MAX_CANVAS_EDGE = 4096;
 
@@ -63,13 +142,26 @@ export class Renderer {
     this.cellSize = config.get('cellSize');
     this._paletteKey = null;
     this._palette = STATE_COLORS;
+    this._themeKey = null;
+    this._theme = DEFAULT_THEME;
+  }
+  /** Cached theme; rebuilding it also invalidates the state palette. */
+  _themeFor(cfg) {
+    const key = themeKey(cfg);
+    if (this._themeKey !== key) {
+      this._themeKey = key;
+      this._theme = themeFromConfig(cfg);
+      this._paletteKey = null;
+      this.canvas.style.background = this._theme.background;
+    }
+    return this._theme;
   }
   /** Cached signed-range palette; rebuilt only when the range changes. */
-  _statePalette(min, max) {
-    const key = min + ':' + max;
+  _statePalette(min, max, theme) {
+    const key = min + ':' + max + ':' + this._themeKey;
     if (this._paletteKey !== key) {
       this._paletteKey = key;
-      this._palette = buildStatePalette(min, max);
+      this._palette = buildStatePalette(min, max, theme);
     }
     return this._palette;
   }
@@ -126,7 +218,10 @@ export class Renderer {
     const overlay = this._overlayBuffer(grid, cfg.overlay);
     const scale = Math.max(0.0001, cfg.overlayScale);
     const pid = cfg.mode === 'pid';
-    const palette = pid ? this._statePalette(cfg.stateMin, cfg.stateMax) : MEMBRANE_COLORS;
+    const theme = this._themeFor(cfg);
+    const palette = pid ? this._statePalette(cfg.stateMin, cfg.stateMax, theme) : theme.membrane;
+    const mid = theme.overlayMid;
+    const alpha = theme.overlayAlpha;
     // Signed states are stored as-is, so shift into palette space.
     const offset = pid ? -Math.min(0, cfg.stateMin | 0) : 0;
     const voltageOverlay = cfg.overlay === 'voltage';
@@ -151,13 +246,13 @@ export class Renderer {
         if (t > 1) t = 1;
         else if (t < -1) t = -1;
         const a = Math.abs(t);
-        const target = t < 0 ? OVERLAY_COLD : OVERLAY_WARM;
-        const hr = OVERLAY_MID[0] + (target[0] - OVERLAY_MID[0]) * a;
-        const hg = OVERLAY_MID[1] + (target[1] - OVERLAY_MID[1]) * a;
-        const hb = OVERLAY_MID[2] + (target[2] - OVERLAY_MID[2]) * a;
-        r = r * (1 - OVERLAY_ALPHA) + hr * OVERLAY_ALPHA;
-        g = g * (1 - OVERLAY_ALPHA) + hg * OVERLAY_ALPHA;
-        b = b * (1 - OVERLAY_ALPHA) + hb * OVERLAY_ALPHA;
+        const target = t < 0 ? theme.overlayCold : theme.overlayWarm;
+        const hr = mid[0] + (target[0] - mid[0]) * a;
+        const hg = mid[1] + (target[1] - mid[1]) * a;
+        const hb = mid[2] + (target[2] - mid[2]) * a;
+        r = r * (1 - alpha) + hr * alpha;
+        g = g * (1 - alpha) + hg * alpha;
+        b = b * (1 - alpha) + hb * alpha;
       }
 
       data[p] = r;
@@ -173,13 +268,13 @@ export class Renderer {
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.drawImage(this.offscreen, 0, 0, this.canvas.width, this.canvas.height);
 
-    if (cfg.showGridLines && cellSize >= 5) this._drawGridLines(grid, cellSize);
+    if (cfg.showGridLines && cellSize >= 5) this._drawGridLines(grid, cellSize, theme);
   }
 
-  _drawGridLines(grid, cellSize) {
+  _drawGridLines(grid, cellSize, theme) {
     const ctx = this.ctx;
     ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.strokeStyle = (theme || DEFAULT_THEME).gridLine;
     ctx.lineWidth = 1;
     ctx.beginPath();
     for (let x = 1; x < grid.width; x++) {

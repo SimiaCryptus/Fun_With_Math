@@ -18,7 +18,7 @@ The per-prime advance primitive is not an unknown quantity. It is exactly a whee
 \[ \text{NextOwnedComposite} (p, x) \;=\; p \cdot \text{NextRough}\!\big (p,\ \max (p-1, \lfloor x/p \rfloor)\big). \]
 
 What is _not_ available is an implementation that is simultaneously exact, O (1) in time and O (1) in state per prime:
-the exact wheel of \(p\) has period \(P_{<p} = e^{ (1+o (1))p}\). The architecture therefore has two realisations — an
+the exact wheel of \(p\) has period \(P\_{<p} = e^{ (1+o (1))p}\). The architecture therefore has two realisations — an
 exact one that derives its rough multipliers from other streams (Algorithm A of `paper.md` §3), and a wheeled one that
 shares a single small wheel across all primes and pays a bounded, measured amount of duplicate work (Algorithm B,
 `paper.md` §4). We formalize the generational-ring model, derive the primitive, present the consuming merge, prove it
@@ -63,7 +63,7 @@ Each prime \(p\) can be thought of as emitting a periodic field of nonprimes: th
 Smaller primes define earlier periodic fields. The combined periodic structure of primes \(p_1, p_2, \dots, p_k\) has
 period
 
-\[ \mathrm{lcm} (p_1, p_2, \dots, p_k) \;=\; P_k \;=\; \prod_{i=1}^{k} p_i , \]
+\[ \mathrm{lcm} (p*1, p_2, \dots, p_k) \;=\; P_k \;=\; \prod*{i=1}^{k} p_i , \]
 
 because the primes are distinct. The next prime is the smallest integer \(>1\) not eliminated by this combined periodic
 structure. Once it appears, it emits its own periodic field, and the ring expands.
@@ -84,13 +84,13 @@ with \(2\) and \(3\), stage \(p\) closes the window \([p^2, p'^2)\) where \(p'\)
 **Lattice recursion (primorial stages).** Alternatively, work modulo the primorials. Let \(S_k = \{ r \bmod P_k : \gcd
 (r, P_k) = 1\}\); then
 
-\[ S_{k+1} \;=\; \Big (\bigcup_{j=0}^{p-1} (S_k + jP_k)\Big) \setminus p\cdot S_k , \qquad p = p_{k+1}, \]
+\[ S*{k+1} \;=\; \Big (\bigcup*{j=0}^{p-1} (S*k + jP_k)\Big) \setminus p\cdot S_k , \qquad p = p*{k+1}, \]
 
 i.e. tile the previous lattice \(p\) times and delete one **dilated copy of it**. The deleted set is precisely the
-stream of \(p\) (§2.4), the smallest hole \(>1\) of stage \(k\) is \(p_{k+1}\), and \(|S_{k+1}| = \varphi (P_{k+1})\).
+stream of \(p\) (§2.4), the smallest hole \(>1\) of stage \(k\) is \(p*{k+1}\), and \(|S*{k+1}| = \varphi (P\_{k+1})\).
 See `fractal.md` for the worked stages.
 
-Both recursions certify primality on the same window: the holes of stage \(k\) are prime exactly on \([p_{k+1}, p_
+Both recursions certify primality on the same window: the holes of stage \(k\) are prime exactly on \([p*{k+1}, p*
 {k+1}^2)\), and are merely candidates above it. This is not a structural coincidence; it is §3.3 below, read twice.
 
 Either way, each new prime is a break in the current periodic structure and simultaneously becomes a new generator that
@@ -108,7 +108,7 @@ never re-emits a composite already claimed by a smaller prime.
 
 Explicitly (see `observation.md`, `algorithm.md` Theorem 2.1):
 
-\[ \Theta_p \;=\; p \cdot A_p, \qquad A_p = \{\, a \ge p : \gcd (a, P_{<p}) = 1 \,\} , \]
+\[ \Theta*p \;=\; p \cdot A_p, \qquad A_p = \{\, a \ge p : \gcd (a, P*{<p}) = 1 \,\} , \]
 
 the \(p\)- **rough** numbers from \(p\) up. A stream is _a prime times a wheel_.
 
@@ -159,10 +159,10 @@ supplies every multiplier it will ever need, strictly in advance.
 
 ### 3.5 The cost of the primitive, and the resulting fork
 
-Deciding \(a \in A_p\) is deciding \(\gcd (a, P_{<p}) = 1\), a function of \(a \bmod P_{<p}\) alone.
+Deciding \(a \in A*p\) is deciding \(\gcd (a, P*{<p}) = 1\), a function of \(a \bmod P\_{<p}\) alone.
 
-- **Tabulate it.** With the sorted totative list of \(P_{<p}\) precomputed, the advance is an index increment plus a
-  cycle counter: exact, orthogonal, O (1) time. But the table has \(\varphi (P_{<p}) = e^{ (1+o (1))p}\) entries — past
+- **Tabulate it.** With the sorted totative list of \(P*{<p}\) precomputed, the advance is an index increment plus a
+  cycle counter: exact, orthogonal, O (1) time. But the table has \(\varphi (P*{<p}) = e^{ (1+o (1))p}\) entries — past
   \(p \approx 29\) it exceeds \(10^9\). So this is O (1) time but _not_ O (1) state.
 - **Don't tabulate it.** Then testing roughness is trial division by the \(\pi (p)-1\) primes below \(p\), which is
   \(\Theta (\pi (p))\), not O (1); and by Jacobsthal-type bounds the gap to the next rough number can be \(\gg p \log p
@@ -175,11 +175,11 @@ Past a fixed table boundary, one of two things must happen:
 - **Algorithm A** _derives_ the rough multipliers from other streams. Exact: every composite is touched exactly once —
   the information-theoretic optimum — but the number of simultaneously live streams grows like \(N^{\theta}\), \(\theta
   \approx 0.75\), and segments cannot be started in isolation.
-- **Algorithm B** _relaxes_ the multiplier set to a single fixed wheel \(W = p_1\cdots p_w\) shared by every prime \(p >
+- **Algorithm B** _relaxes_ the multiplier set to a single fixed wheel \(W = p*1\cdots p_w\) shared by every prime \(p >
   p_w\): \(\tilde A_p = \{a \ge p : \gcd (a,W) = 1\} \supseteq A_p\). The advance becomes
   `a += step[a % W]; v = p*a` — one gather, one multiply: genuinely O (1) time with O (1) state (two words per prime),
   \(\pi (\sqrt N)\) records, unbounded operation, and O (1) random-access restart. The price is that streams now
-  over-claim slightly, so each surviving composite is claimed \(\omega_{>p_w} (m)\) times (empirically ≈ 2–2.5)
+  over-claim slightly, so each surviving composite is claimed \(\omega\*{>p_w} (m)\) times (empirically ≈ 2–2.5)
   rather than once.
 
 Algorithm B is the recommended realisation. Algorithm A is retained as the mathematically pure reference, because its
@@ -271,7 +271,7 @@ test fires exactly at \(n = p^2\), never later.
   all composites \(< n\) have been processed, so its next owned composite is exactly \(n\), giving \(\min H = n\).
 
 Uniqueness of the owner gives "exactly once" for exact streams. Under the shared-wheel relaxation the same argument
-gives correctness, with "exactly once" replaced by "at least once, and \(\omega_{>p_w} (n)\) times in total" — which is
+gives correctness, with "exactly once" replaced by "at least once, and \(\omega\_{>p_w} (n)\) times in total" — which is
 why the composite branch drains all equal keys. \(\square\)
 
 Machine-checked forms of the load-bearing steps (ownership, phase separation, causality, coverage, the queue invariant,

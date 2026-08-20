@@ -1,0 +1,86 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.sigma {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+p,
+label,
+.summary {
+  text-align: center;
+}
+.summary {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.key-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+#key {
+  list-style: none;
+  columns: 10em auto;
+}
+.summary,
+.key-wrapper {
+  text-shadow:
+    0 0 5px white,
+    -1px -1px 0 white,
+    0 -1px 0 white,
+    1px -1px 0 white,
+    1px 0 0 white,
+    1px 1px 0 white,
+    0 1px 0 white,
+    -1px 1px 0 white,
+    -1px 0 0 white;
+}
+
+ul > li {
+  white-space: nowrap;
+}
+ul > li:hover {
+  font-weight: bold;
+}
+
+#key > li > span {
+  width: 1ch;
+  height: 1ch;
+  display: inline-block;
+  margin-right: 0.25em;
+  border: 1px solid gray;
+  margin-bottom: -1px;
+}
+
+.status.active .placeholder {
+  visibility: hidden;
+}
+.status {
+  position: relative;
+}
+.status .message {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+}
+.pause-checkbox {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 0.5em;
+}

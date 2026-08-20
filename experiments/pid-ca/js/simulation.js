@@ -6,7 +6,7 @@
  * swapped atomically at the end of the step.
  */
 
-import { SCHEMA, targetAt, isTargetSpatiallyUniform } from './config.js';
+import { SCHEMA, targetAt, isTargetSpatiallyUniform, TEXT_FIELD_KEYS } from './config.js';
 import {
   Grid,
   populate,
@@ -22,7 +22,7 @@ import {
 import { pidStep } from './controller.js';
 import { expressState, expressBioelectrical } from './stateExpression.js';
 import { membraneStep, makeMembraneInput, makeMembraneOutput } from './membrane.js';
-import { forEachLineCell, rasterizeText } from './raster.js';
+import { forEachLineCell, rasterizeText, fitTextBlock, fontStack } from './raster.js';
 
 export class Simulation {
   constructor(config) {
@@ -85,8 +85,18 @@ export class Simulation {
       this.grid.clampStates(this.config.get('stateMin'), this.config.get('stateMax'));
     }
     this._refreshDerived();
-    if (structural) this.reset();
-    else this.emit('change', changed);
+    if (structural) {
+      this.reset();
+      return;
+    }
+    // Live re-rasterisation of the text target field (§3.2).
+    if (
+      this.config.get('targetMode') === 'text' &&
+      changed.some((k) => TEXT_FIELD_KEYS.includes(k))
+    ) {
+      this.renderTextField();
+    }
+    this.emit('change', changed);
   }
 
   _refreshDerived() {
@@ -113,7 +123,8 @@ export class Simulation {
     this.rng = createRng(cfg.seed);
     this.gaussian = makeGaussianSampler(this.rng);
     this.grid.clearControllerState();
-    this.ensureTargetField();
+    if (cfg.targetMode === 'text') this.renderTextField();
+    else this.ensureTargetField();
     if (cfg.mode === 'pid') {
       populate(this.grid, cfg, this.rng);
       this._seedControllerState();
@@ -148,7 +159,7 @@ export class Simulation {
     const cfg = this.config.all();
     const g = this.grid;
     const uniform = isTargetSpatiallyUniform(cfg) ? targetAt(cfg, 0, 0, 0) : null;
-    const painted = cfg.targetMode === 'painted' ? g.targetField : null;
+    const painted = this._targetBuffer(cfg);
     const gaussian = cfg.perturbInit === 'normal' ? makeGaussianSampler(this.rng) : null;
     for (let y = 0; y < g.height; y++) {
       const row = y * g.width;
@@ -199,9 +210,57 @@ export class Simulation {
     this.emit('paint', { x, y, value });
   }
   // ------------------------------------------------ painted target field T(c)
+  /** Per-cell target buffer for the field-backed modes, else null. */
+  _targetBuffer(cfg) {
+    return cfg.targetMode === 'painted' || cfg.targetMode === 'text' ? this.grid.targetField : null;
+  }
   /** Lazily initialise the field to the scalar T so it is never all-zero. */
   ensureTargetField() {
     if (!this.grid.targetInitialized) this.grid.fillTargetField(this.config.get('target'));
+  }
+  /**
+   * Rasterise the configured text block into T(c): the background is the
+   * scalar T, the glyph ink is `textFieldValue`. The block is auto-centred and
+   * auto-fitted so that the *greater* of its effective width % / height %
+   * equals `textFieldFit` percent of the grid.
+   */
+  renderTextField() {
+    const cfg = this.config.all();
+    const g = this.grid;
+    g.fillTargetField(cfg.target);
+    const text = String(cfg.textFieldText == null ? '' : cfg.textFieldText);
+    if (!text.replace(/\s/g, '')) {
+      this.emit('paint', { target: true, text: true });
+      return;
+    }
+    const frac = Math.max(0.01, Math.min(1, cfg.textFieldFit / 100));
+    const glyph = fitTextBlock(text, g.width * frac, g.height * frac, {
+      family: fontStack(cfg.textFieldFont),
+      bold: cfg.textFieldBold,
+      italic: cfg.textFieldItalic,
+      lineHeight: cfg.textFieldLineHeight,
+      align: cfg.textFieldAlign,
+    });
+    if (!glyph.width) {
+      this.emit('paint', { target: true, text: true });
+      return;
+    }
+    const x0 = Math.round((g.width - glyph.width) / 2 + (cfg.textFieldOffsetX / 100) * g.width);
+    const y0 = Math.round((g.height - glyph.height) / 2 + (cfg.textFieldOffsetY / 100) * g.height);
+    for (let gy = 0; gy < glyph.height; gy++) {
+      const row = gy * glyph.width;
+      for (let gx = 0; gx < glyph.width; gx++) {
+        if (glyph.mask[row + gx]) g.setTarget(x0 + gx, y0 + gy, cfg.textFieldValue);
+      }
+    }
+    this.textFieldMetrics = {
+      fontSize: glyph.fontSize,
+      width: glyph.width,
+      height: glyph.height,
+      widthPercent: (glyph.width / g.width) * 100,
+      heightPercent: (glyph.height / g.height) * 100,
+    };
+    this.emit('paint', { target: true, text: true });
   }
   /** Flood the whole field with a single value. */
   fillTargetField(value) {
@@ -327,7 +386,7 @@ export class Simulation {
     const rng = this.rng;
     const t = this.time;
     const uniformTarget = isTargetSpatiallyUniform(cfg) ? targetAt(cfg, 0, 0, t) : null;
-    const painted = cfg.targetMode === 'painted' ? g.targetField : null;
+    const painted = this._targetBuffer(cfg);
 
     for (let y = 0; y < g.height; y++) {
       const row = y * g.width;

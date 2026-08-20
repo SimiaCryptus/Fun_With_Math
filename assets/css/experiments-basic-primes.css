@@ -1,0 +1,66 @@
+#grid {
+  display: grid;
+  gap: 3px;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: auto;
+}
+.cell {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.5rem, 1.4vw, 0.75rem);
+  font-weight: 600;
+  font-family: 'Fira Code', Consolas, monospace;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  transition:
+    background 0.25s,
+    color 0.25s,
+    transform 0.15s;
+  cursor: default;
+}
+.cell.eliminated {
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.12);
+  text-decoration: line-through;
+}
+.cell.prime {
+  background: rgba(88, 166, 255, 0.2);
+  color: var(--accent);
+  transform: scale(1.08);
+}
+.cell.current-factor {
+  background: rgba(188, 140, 255, 0.35);
+  color: var(--accent2);
+  transform: scale(1.15);
+}
+#statsBar {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0.5rem 0;
+}
+#statsBar strong {
+  color: var(--text);
+}
+#primeList {
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  word-break: break-all;
+  line-height: 1.9;
+  max-height: 160px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}

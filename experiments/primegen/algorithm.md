@@ -11,7 +11,7 @@ dependencies), two concrete algorithms, and an honest cost model.
 ## 0. TL;DR
 
 1. **Ownership is exact.** The composites owned by prime \(p\) (i.e. those whose smallest prime factor is \(p\)) are
-   exactly \(p \cdot A_p\) where \(A_p = \{a \ge p : \gcd (a, P_{<p}) = 1\}\), the \(p\)- **rough** numbers from \(p\)
+   exactly \(p \cdot A*p\) where \(A_p = \{a \ge p : \gcd (a, P*{<p}) = 1\}\), the \(p\)- **rough** numbers from \(p\)
    up. \(A_p\) is a wheel, not a list of primes (§2.2); it is infinite, and its elements below \(p^2\) are exactly the
    primes in \([p,p^2)\) (§2.3).
 
@@ -24,13 +24,20 @@ dependencies), two concrete algorithms, and an honest cost model.
    advancement, no divisibility, no marking array — but the number of live streams grows like \(N^{\theta}\), \(\theta
    \approx 0.75\), not \(\pi (\sqrt N)\).
 
-4. **Algorithm B** (§4) pays in _duplicate touches_: fix a wheel modulus \(W = p_1\cdots p_w\), use \(W\)-coprime
+4. **Algorithm B** (§4) pays in _duplicate touches_: fix a wheel modulus \(W = p*1\cdots p_w\), use \(W\)-coprime
    multipliers instead of \(p\)-rough ones. Advancement is a genuine O (1)
    table lookup with **O (1) state per prime**, memory is \(O (\pi (\sqrt N) + W)\), and each surviving composite is
-   touched \(\omega_{>p_w} (\cdot)\lesssim 2\) times instead of once.
+   touched \(\omega*{>p_w} (\cdot)\lesssim 2\) times instead of once.
 
-5. **Recommendation:** ship Algorithm B (+ bucket queue, §5) for production; keep Algorithm A as the mathematically
-   pure, one-touch reference generator and as the object of study for the generational-ring narrative.
+5. **Algorithm C** (§4C, full specification in `min_factor.md`) re-indexes B by the **min-factor normal form**
+   \(m = p^{e}r\), \(p=\mathrm{spf}(m)\), \(e=v*p (m)\), \(r\) coprime to every prime \(\le p\): streams become \_layers*
+   \((p,e)\). Touches equal B's to within \(\Theta (N^{2/3}/\log N)\), claimant sets are strictly smaller, memory is
+   equal in the thinned form — and every rejected candidate is reported as \((\mathrm{spf}, v_p, \text{cofactor})\).
+   It is a streaming min-factor oracle, not a faster prime generator.
+
+6. **Recommendation:** ship Algorithm B (+ bucket queue, §5) for production when only primes are wanted, and Algorithm C
+   when the consumer wants factors; keep Algorithm A as the mathematically pure, one-touch reference generator and as
+   the object of study for the generational-ring narrative.
 
 ---
 
@@ -38,11 +45,11 @@ dependencies), two concrete algorithms, and an honest cost model.
 
 | symbol                                  | meaning                                                                                   |
 | --------------------------------------- | ----------------------------------------------------------------------------------------- |
-| \(p_1=2 < p_2=3 < \dots\)               | the primes; `primes[i]` is \(p_{i+1}\) in code (0-based)                                  |
+| \(p_1=2 < p_2=3 < \dots\)               | the primes; `primes[i]` is \(p\_{i+1}\) in code (0-based)                                 |
 | \(\mathrm{spf}(m)\)                     | smallest prime factor of \(m>1\)                                                          |
 | \(P(m)\)                                | **largest** prime factor of \(m>1\)                                                       |
-| \(P_{<p} = \prod_{q<p} q\)              | primorial of the primes strictly below \(p\) (\(P_{<2}=1\))                               |
-| \(R_p = \{m\ge 1 : \gcd(m,P_{<p})=1\}\) | the \(p\)-**rough** numbers: no prime factor \(< p\)                                      |
+| \(P*{<p} = \prod*{q<p} q\)              | primorial of the primes strictly below \(p\) (\(P\_{<2}=1\))                              |
+| \(R*p = \{m\ge 1 : \gcd(m,P*{<p})=1\}\) | the \(p\)-**rough** numbers: no prime factor \(< p\)                                      |
 | \(\Theta_p\)                            | the composites _owned_ by \(p\), i.e. \(\{m : m \text{ composite},\ \mathrm{spf}(m)=p\}\) |
 | \(\kappa_W = \varphi(W)/W\)             | density of \(W\)-coprime integers                                                         |
 | \(N\)                                   | generation limit (Algorithm A); Algorithm B is unbounded                                  |
@@ -58,16 +65,16 @@ upward and never revisit.
 
 > **Theorem 2.1 (multiplier set).** For every prime \(p\),
 > \[
-> \Theta_p \;=\; p \cdot A_p, \qquad A_p \;=\; R_p \cap [p,\infty)
-> \;=\; \{\, a \ge p \;:\; \gcd (a, P_{<p}) = 1 \,\}.
+> \Theta*p \;=\; p \cdot A_p, \qquad A_p \;=\; R_p \cap [p,\infty)
+> \;=\; \{\, a \ge p \;:\; \gcd (a, P*{<p}) = 1 \,\}.
 > \]
 > The map \(a \mapsto pa\) is a bijection \(A_p \to \Theta_p\), and
-> \(\{\Theta_p\}_p\) partitions the composites.
+> \(\{\Theta_p\}\_p\) partitions the composites.
 
 _Proof._ Let \(m\) be composite with \(\mathrm{spf} (m)=p\) and put \(a = m/p\). Since \(m\) is composite, \(a>1\);
-every prime factor of \(a\) divides \(m\), hence is \(\ge p\), so \(\gcd (a,P_{<p})=1\) and \(a \ge \mathrm{spf} (a) \ge
-p\). Conversely if \(a \ge p\) and \(\gcd (a,P_{<p})=1\) then \(pa\) is composite and every prime factor of \(pa\) is
-\(\ge p\), so \(\mathrm{spf} (pa)=p\). Injectivity is clear. Every composite \(m\) lies in exactly one \(\Theta_
+every prime factor of \(a\) divides \(m\), hence is \(\ge p\), so \(\gcd (a,P*{<p})=1\) and \(a \ge \mathrm{spf} (a) \ge
+p\). Conversely if \(a \ge p\) and \(\gcd (a,P*{<p})=1\) then \(pa\) is composite and every prime factor of \(pa\) is
+\(\ge p\), so \(\mathrm{spf} (pa)=p\). Injectivity is clear. Every composite \(m\) lies in exactly one \(\Theta\_
 {\mathrm{spf} (m)}\). \(\square\)
 
 This is the precise version of the "orthogonality" postulate of `generator.md` §2.4:
@@ -75,10 +82,10 @@ the streams are disjoint **by construction**, and a stream is a prime times a wh
 
 ### 2.2 \(A_p\) is a wheel, not a prime list
 
-\(\gcd (a,P_{<p})=1\) depends only on \(a \bmod P_{<p}\). Hence:
+\(\gcd (a,P*{<p})=1\) depends only on \(a \bmod P*{<p}\). Hence:
 
-> **Corollary 2.2.** \(A_p \cup \{1\}\) is periodic modulo \(P_{<p}\) with
-> \(\varphi (P_{<p}) = \prod_{q<p} (q-1)\) residues per period. It is completely determined by
+> **Corollary 2.2.** \(A*p \cup \{1\}\) is periodic modulo \(P*{<p}\) with
+> \(\varphi (P*{<p}) = \prod*{q<p} (q-1)\) residues per period. It is completely determined by
 > its intersection with \([1, P_{<p}]\), and it is **infinite**.
 
 This is the same object as the wheel of `idea.md` §2 and Pritchard's wheel: the survivors of the first \(\pi (p)-1\)
@@ -91,20 +98,20 @@ periodic exclusion fields.
 _Proof._ \(a>1\) and all prime factors of \(a\) are \(\ge p\); if \(a\) were composite it would have at least two such
 factors, so \(a \ge p^2\). \(\square\)
 
-> **Corollary 2.4.** \(A_p \cap [p, p^2) = \{\text{primes in that range}\}\). Consequently one period of \(A_p\)
-> consists of \(1\) together with primes only **iff** \(P_{<p} \le p^2\), which holds iff \(p \le 7\)
-> (\(P_{<7}=30<49\), but \(P_{<11}=210>121\)).
+> **Corollary 2.4.** \(A*p \cap [p, p^2) = \{\text{primes in that range}\}\). Consequently one period of \(A_p\)
+> consists of \(1\) together with primes only **iff** \(P*{<p} \le p^2\), which holds iff \(p \le 7\)
+> (\(P*{<7}=30<49\), but \(P*{<11}=210>121\)).
 
-First composite multiplier: \(121 = 11^2\) is \(11\)-rough and \(<210\), so \(121 \in A_{11}\) and \(11\cdot 121 =
-1331 = 11^3\) is owned by \(11\). Likewise \(143 = 11\cdot 13,\ 169,\ 187,\ 209 \in A_{11}\) — five composites among the
+First composite multiplier: \(121 = 11^2\) is \(11\)-rough and \(<210\), so \(121 \in A*{11}\) and \(11\cdot 121 =
+1331 = 11^3\) is owned by \(11\). Likewise \(143 = 11\cdot 13,\ 169,\ 187,\ 209 \in A*{11}\) — five composites among the
 \(\varphi (210)=48\) residues of one period, the remaining \(43\) being \(1\) and the \(42\) primes in \([11,199]\).
 Since a composite multiplier forces the emitted value \(\ge p^3\), the rough phase matters below \(N\) only for \(p \le
 N^{1/3}\).
 
-> **Corollary 2.5 (no forward dependency).** \(A_p\) is determined by the primes strictly
+> **Corollary 2.5 (no forward dependency).** \(A*p\) is determined by the primes strictly
 > below \(p\), all of which are known the moment \(p\) is discovered; and to emit composites
 > up to \(n\), the stream of \(p\) needs multipliers only up to \(n/p \le n/2\). Multipliers
-> are consumed in increasing order, so the lists are _streams_, never stored objects. See
+> are consumed in increasing order, so the lists are \_streams*, never stored objects. See
 > Theorem 2.8.
 
 ### 2.4 The primitive of `generator.md`, derived
@@ -154,10 +161,10 @@ underlying `generator.md` §3.4 and §4.4.
 
 ### 2.7 Why "O (1) time **and** O (1) state per prime" is not available
 
-> **Remark 2.9 (obstruction).** Deciding \(a \in R_p\) is deciding
-> \(\gcd (a, P_{<p}) = 1\). A branch-free O (1) decision procedure with no auxiliary state must
-> therefore be a function of \(a \bmod P_{<p}\); tabulating it costs \(\Theta (P_{<p})\) space,
-> and \(P_{<p} = e^{ (1+o (1))p}\). Any _stateless_ alternative amounts to trial division by the
+> **Remark 2.9 (obstruction).** Deciding \(a \in R*p\) is deciding
+> \(\gcd (a, P*{<p}) = 1\). A branch-free O (1) decision procedure with no auxiliary state must
+> therefore be a function of \(a \bmod P*{<p}\); tabulating it costs \(\Theta (P*{<p})\) space,
+> and \(P*{<p} = e^{ (1+o (1))p}\). Any \_stateless* alternative amounts to trial division by the
 > \(\pi (p)-1\) primes below \(p\) (cost \(\Theta (\pi (p))\), not O (1)). Hence a fixed-size table
 > can serve only finitely many primes, and beyond that boundary an exact orthogonal stream must
 > _derive_ its rough multipliers from other streams.
@@ -165,8 +172,32 @@ underlying `generator.md` §3.4 and §4.4.
 This is the fork in the road, and it produces exactly the two algorithms below:
 
 - **Algorithm A** derives the rough multipliers from other streams (exact, more streams).
-- **Algorithm B** replaces \(R_p\) by the tabulated wheel \(R_{p_{w+1}}\) for all \(p > p_w\) (inexact ownership,
+- **Algorithm B** replaces \(R*p\) by the tabulated wheel \(R*{p\_{w+1}}\) for all \(p > p_w\) (inexact ownership,
   bounded duplication, O (1) state per prime).
+- **Algorithm C** (§4C) does the same, but indexes the relaxed streams by \((p,e)\) rather than \(p\), i.e. it applies
+  the relaxation to the cloud \(B_p\) of §2.8 instead of to \(A_p\).
+
+### 2.8 The exponent refinement (min-factor normal form)
+
+Splitting at the smallest prime factor _repeatedly_ — taking the full \(p\)-adic valuation — refines Theorem 2.1 one
+step further. Write \(B*p = \{ r \ge 1 : q \text{ prime},\ q \mid r \Rightarrow q > p \}\) for the multiplicative monoid
+generated by the primes \(> p\); equivalently \(B_p = \{ r : \gcd (r, P*{\le p}) = 1\}\).
+
+> **Theorem 2.10 (min-factor normal form).** Every \(n>1\) is **uniquely** \(n = p^{e} r\) with \(p\) prime,
+> \(e \ge 1\), \(r \in B*p\); necessarily \(p = \mathrm{spf} (n)\), \(e = v_p (n)\), \(r = n/p^{e}\). Hence
+> \[ A_p = (B_p\setminus\{1\}) \uplus \biguplus*{e\ge1} p^{e} B*p, \qquad
+> \Theta_p = \Big (\biguplus*{e\ge1} p^{e} B*p\Big)\setminus\{p\}. \]
+> \_Proof.* Existence with \(p=\mathrm{spf} (n)\), \(e=v*p (n)\): then \(p\nmid r\) and every prime factor of \(r\) divides
+> \(n\), hence is \(>p\). Uniqueness: in any such factorisation \(p\) divides \(n\) and all other prime factors exceed
+> \(p\), so \(p=\mathrm{spf} (n)\); and \(p\nmid r\) forces \(e=v_p (n)\). \(\square\)
+> **Proposition 2.11 (cone recursion).** \(B_p = \{1\} \uplus \biguplus*{q>p} q\cdot B*q\). The multiplier cloud of
+> \(p\) is generated by the clouds of the \_larger* primes; no residue system modulo \(P*{\le p}\) is constructed.
+> **Lemma 2.12 (strict phase separation).** If \(r\in B_p\) and \(1<r< (p+1)^2\) then \(r\) is prime. Hence a composite
+> multiplier in layer \((p,e)\) forces the emitted value \(\ge p^{e+2}\), so layer \(e\) has a rough phase below \(N\)
+> only for \(p \le N^{1/ (e+2)}\).
+> Two warnings. Theorem 2.10 does not change the partition — summing the layers re-assembles \(p\cdot A_p = \Theta_p\) —
+> and it does not evade Remark 2.9: deciding \(r \in B_p\) is deciding \(\gcd (r,P*{\le p})=1\), the same obstruction with
+> \(P*{\le p}\) for \(P*{<p}\). What it changes is the index, and with it the output; see §4C.
 
 ---
 
@@ -174,22 +205,22 @@ This is the fork in the road, and it produces exactly the two algorithms below:
 
 ### 3.1 The idea: recurse on the multiplier, not on divisibility
 
-Iterating Theorem 2.1 on the multiplier gives, for any composite \(m\), the canonical factorisation \[ m = q_1 q_2
-\cdots q_{r-1} \cdot q_r, \qquad q_1 \le q_2 \le \cdots \le q_r,\ r \ge 2 . \] Split off the **largest** factor: with
+Iterating Theorem 2.1 on the multiplier gives, for any composite \(m\), the canonical factorisation \[ m = q*1 q_2
+\cdots q*{r-1} \cdot q_r, \qquad q_1 \le q_2 \le \cdots \le q_r,\ r \ge 2 . \] Split off the **largest** factor: with
 \(b = m/P (m)\) and \(q = P (m)\) we get \(m = bq\), \(b \ge 2\), \(P (b) \le q\). The pair \( (b,q)\) is uniquely
 determined by \(m\), and conversely every pair \( (b,q)\) with \(b\ge 2\), \(q\) prime, \(P (b)\le q\) yields a distinct
 composite. Hence:
 
 > **Theorem 3.1 (stream tree).** For \(b \ge 2\) define the **stream**
 > \[
-> \Sigma_b \;=\; \{\, b\cdot q \;:\; q \text{ prime},\ q \ge P (b) \,\}.
+> \Sigma*b \;=\; \{\, b\cdot q \;:\; q \text{ prime},\ q \ge P (b) \,\}.
 > \]
-> Then \(\{\Sigma_b\}_{b\ge 2}\) is a partition of the composites, each \(\Sigma_b\) is
+> Then \(\{\Sigma_b\}*{b\ge 2}\) is a partition of the composites, each \(\Sigma_b\) is
 > increasing, and its successor operation is "advance one index in the prime array".
 
-Relation to §2: \(\Sigma_b\) with \(b=p\) prime is the "prime phase" of \(\Theta_p\) (Lemma 2.7); the composite bases
+Relation to §2: \(\Sigma*b\) with \(b=p\) prime is the "prime phase" of \(\Theta_p\) (Lemma 2.7); the composite bases
 \(b\) are precisely the delegates that supply the rough, composite multipliers. Equivalently \[ \Theta_p = p\cdot\{q
-\text{ prime}, q \ge p\} \;\uplus\; \biguplus_{p' \ge p} p\cdot\Theta_{p'}, \] which is Theorem 3.1 read from the small
+\text{ prime}, q \ge p\} \;\uplus\; \biguplus*{p' \ge p} p\cdot\Theta\_{p'}, \] which is Theorem 3.1 read from the small
 end. Orthogonality is preserved exactly.
 
 ### 3.2 Lazy creation (keeping the queue small)
@@ -198,12 +229,12 @@ The base \(b' = bq\) of a child stream must be _created_ by the time its first e
 Creating children eagerly (one per emitted composite)
 costs \(\Theta (N)\) memory. Instead each stream carries **two** cursors:
 
-- an **emit cursor** \(c\): next output \(b\cdot p_{c}\);
-- a **spawn cursor** \(s\): next child \(b\cdot p_{s}\), triggered at value \(b\cdot p_s^2\).
+- an **emit cursor** \(c\): next output \(b\cdot p\_{c}\);
+- a **spawn cursor** \(s\): next child \(b\cdot p\_{s}\), triggered at value \(b\cdot p_s^2\).
 
-Because \(p_s^2 > p_s\), spawn triggers always lie beyond the corresponding emission, and both cursors advance
-monotonically. A spawn trigger is itself the first element of the new child stream, so _the trigger event consumes a
-composite_ — no work is wasted.
+Because \(p*s^2 > p_s\), spawn triggers always lie beyond the corresponding emission, and both cursors advance
+monotonically. A spawn trigger is itself the first element of the new child stream, so \_the trigger event consumes a
+composite* — no work is wasted.
 
 ### 3.3 Data structures
 
@@ -254,13 +285,13 @@ Note what is absent: no marking array, no divisibility test, no square roots, no
 > an `EMIT` record already in \(Q\) (if \(q > P (b)\) or \(b\) is prime), or by the `SPAWN`
 > record of \(b/P (b)\) (if \(b\) is composite and \(q = P (b)\)).
 
-_Proof of I1._ Records are pushed with keys \(b\,p_{j}\) or \(b\,p_{s}^2\) that strictly exceed the popped key, and
+_Proof of I1._ Records are pushed with keys \(b\,p*{j}\) or \(b\,p*{s}^2\) that strictly exceed the popped key, and
 prime-discovery pushes \(n^2, n^3 > n\). \(\square\)
 
 _Proof of I2 (sketch, by induction on \(n\))._ Root streams: when \(p\) is emitted, `EMIT`
 \( (p^2,p,\mathrm{idx} (p))\) is inserted and its cursor subsequently visits every prime \(\ge p\), producing all \(pq,\
 q\ge p\). Composite bases: a base \(b'=bq\) is created exactly at the trigger \(bq^2 = b'q\), which is the \(q\)-element
-of \(\Sigma_{b'}\); the child's emit cursor then starts at \(q\)'s successor, so \(\Sigma_{b'}\) is produced without gap
+of \(\Sigma*{b'}\); the child's emit cursor then starts at \(q\)'s successor, so \(\Sigma*{b'}\) is produced without gap
 or repetition. The parent's spawn cursor visits every \(s \ge \mathrm{idx} (P (b))\), so every legal base \(b\cdot p_s\)
 is created. Uniqueness of \( (b,q)\) (Theorem 3.1) gives "exactly once". \(\square\)
 
@@ -274,8 +305,8 @@ composites, by I2's "exactly once". \(\square\)
 > **Theorem 3.5 (causality, Algorithm A).** Every array access `primes[j]` performed while
 > processing \(n\) satisfies `primes[j] < n`, hence is legal.
 
-_Proof._ In the `EMIT` branch \(p_{k} = v/b \le v/2\) so \(p_{k+1} < 2p_k \le v = n\) by Bertrand. In the `SPAWN` branch
-\(p_k^2 = v/b \le v/2\), so \(p_{k+1} < 2p_k \le 2\sqrt{v/2} = \sqrt{2v} < v\) for \(v \ge 8\); the smallest spawn
+_Proof._ In the `EMIT` branch \(p*{k} = v/b \le v/2\) so \(p*{k+1} < 2p*k \le v = n\) by Bertrand. In the `SPAWN` branch
+\(p_k^2 = v/b \le v/2\), so \(p*{k+1} < 2p_k \le 2\sqrt{v/2} = \sqrt{2v} < v\) for \(v \ge 8\); the smallest spawn
 trigger is \(8\). \(\square\)
 
 ### 3.6 Worked trace (\(N = 50\))
@@ -316,8 +347,8 @@ All 34 composites in \([4,50]\) are consumed exactly once; the 15 primes are emi
 
 ### 3.8 Variant A+wheel
 
-Combine with §4: fix \(W=p_1\cdots p_w\), emit \(p_1..p_w\) directly, step \(n\) over \(W\)-coprime candidates only, and
-build bases only from primes \(> p_w\). Streams then require \(b\) to be \(p_{w+1}\)-rough, which removes the smooth
+Combine with §4: fix \(W=p*1\cdots p_w\), emit \(p_1..p_w\) directly, step \(n\) over \(W\)-coprime candidates only, and
+build bases only from primes \(> p_w\). Streams then require \(b\) to be \(p*{w+1}\)-rough, which removes the smooth
 bases that dominate \(S (N)\); the reduction is large (empirically an order of magnitude at \(w=6\)) though we do not
 attempt a sharp exponent. One-touch behaviour is preserved for all \(W\)-coprime composites.
 
@@ -330,7 +361,7 @@ attempt a sharp exponent. One-touch behaviour is preserved for all \(W\)-coprime
 Fix \(w\) and \(W = p_1\cdots p_w\) (e.g. \(w=6\), \(W=30030\), \(\kappa_W = 0.1918\); or \(w=7\), \(W=510510\),
 \(\kappa_W=0.1795\)). Then:
 
-- Candidates \(n\) run over \(W\)-coprime integers only; the streams of \(p_1..p_w\) are _structurally absent_ (their
+- Candidates \(n\) run over \(W\)-coprime integers only; the streams of \(p*1..p_w\) are \_structurally absent* (their
   composites are never candidates). This is `idea.md`'s wheel as a data structure.
 - For \(p > p_w\), replace the exact multiplier set \(A_p = R_p\cap[p,\infty)\) by the tabulated relaxation \(\tilde
   A_p = \{a \ge p : \gcd (a,W)=1\}\supseteq A_p\). Stream of \(p\): \(p\cdot\tilde A_p\), starting at \(p^2\).
@@ -346,7 +377,7 @@ next_coprime(x)    = x + step[x mod W]      # strictly greater
 next_coprime_ge(x) = x + gte[x mod W]       # greater or equal (used for segment restart)
 ```
 
-Both tables are built in one backward pass over \([0,W)\); the first \(W\)-coprime integer \(>1\) is \(p_{w+1}\).
+Both tables are built in one backward pass over \([0,W)\); the first \(W\)-coprime integer \(>1\) is \(p\_{w+1}\).
 
 ### 4.3 Pseudocode (unbounded stream)
 
@@ -399,11 +430,11 @@ are composite (divisible by some \(p_i\), \(i\le w\)) as long as \(n > p_w\). \(
 
 ### 4.5 Duplicate accounting (the honest cost of the relaxation)
 
-A \(W\)-coprime composite \(m\) is popped once for every prime factor \(p\) of \(m\) with \(p_w < p \le \sqrt m\) — i.e.
-\(\omega_{>p_w} (m)\) times, minus one if the largest prime factor exceeds \(\sqrt m\). Total queue operations up to
+A \(W\)-coprime composite \(m\) is popped once for every prime factor \(p\) of \(m\) with \(p*w < p \le \sqrt m\) — i.e.
+\(\omega*{>p*w} (m)\) times, minus one if the largest prime factor exceeds \(\sqrt m\). Total queue operations up to
 \(N\):
-\[ \mathrm{ops} (N) \;=\; \sum_{p_w < p \le \sqrt N} \#\{a\ W\text{-coprime}: p \le a \le N/p\} \;\approx\; \kappa_W\, N
-\sum_{p_w<p\le\sqrt N}\frac1p \;=\; \kappa_W\, N\big (\ln\ln\sqrt N - \ln\ln p_w + o (1)\big). \] For \(w=6\)
+\[ \mathrm{ops} (N) \;=\; \sum*{p*w < p \le \sqrt N} \#\{a\ W\text{-coprime}: p \le a \le N/p\} \;\approx\; \kappa_W\, N
+\sum*{p_w<p\le\sqrt N}\frac1p \;=\; \kappa_W\, N\big (\ln\ln\sqrt N - \ln\ln p_w + o (1)\big). \] For \(w=6\)
 (\(p_w=13\)) and \(N=10^{12}\): \(\kappa_W = 0.1918\), \(\ln\ln\sqrt{N}\approx 3.32\), \(\ln\ln 13 \approx 0.94\), so
 \(\mathrm{ops} \approx 0.46\,N\) — versus the one-touch ideal \(\kappa_W N - \pi (N) \approx 0.19\,N\). **Roughly a
 factor \(2.4\) more touches than Algorithm A, in exchange for \(\pi (\sqrt N)=78\,498\) records instead of \(\sim
@@ -419,8 +450,115 @@ Increasing \(w\) reduces both \(\kappa_W\) and the \(\ln\ln\) span, at the cost 
   segment. At \(N=10^{18}\): \(\pi (10^9)\approx 5.08\times10^7\) records.
 - **Random-access restart (parallelism):** for a segment beginning at \(X\), the state of stream \(p\) is recomputed in
   O (1):
-  \(a_0 = \max\big (p,\ \texttt{next\_coprime\_ge} (\lceil X/p\rceil)\big)\), value \(p a_0\). Segments are therefore
+  \(a_0 = \max\big (p,\ \texttt{next_coprime_ge} (\lceil X/p\rceil)\big)\), value \(p a_0\). Segments are therefore
   independent and the generator parallelises exactly like a segmented sieve — a property Algorithm A lacks.
+
+## 4C. Algorithm C — min-factor exponent-spine generator
+
+Algorithm C is Algorithm B re-indexed by Theorem 2.10. Full specification, proofs, cost derivations and open problems:
+`min_factor.md`; executable reference: `primes_C` in §6.
+
+### 4C.1 Design
+
+Same wheel, same candidate scan, same deferred activation. For \(p>p_w\) relax the exact cloud \(B_p\) to
+\[ \tilde B_p \;=\; \{1\} \cup \{\, r \ge p \;:\; \gcd (r,W)=1,\ p \nmid r \,\} \;\supseteq\; B_p , \]
+and let **layer** \((p,e)\) be the stream \(p^{e}\tilde B_p\) minus the single non-composite element \(p\) (the case
+\(e=1, r=1\)). Both retained constraints are load-bearing: \(r \ge p\) stops a layer claiming numbers whose smallest
+factor is \(r\); \(p \nmid r\) keeps the layers of one prime disjoint (drop it and \(p^k\) is claimed \(k\) times — the
+naive reading, and the expensive one). Heads:
+\[ \mathrm{head} (p,e) = p^{e}\ (e\ge2), \qquad \mathrm{head} (p,1) = p\cdot r_1 (p),\quad
+r_1 (p) = \min (\tilde B_p \setminus\{1\}) > p, \]
+so every head is \(\ge p^2\) and activation still fires exactly at \(n=p^2\).
+**Advancement.** A record carries a skip cursor \(mp\), a multiple of \(p\) with \(mp \ge r\):
+
+```
+next_adm(p, r, mp):
+     r := r + step[r mod W]
+     loop:
+         while mp < r: mp := mp + p
+         if mp = r: r := r + step[r mod W]
+         else: return (r, mp)
+```
+
+Over a layer running to \(X\) the wheel takes \(\approx \kappa_W X/p^{e}\) steps and \(mp\) takes \(\le X/p^{e+1}\)
+increments; the ratio \(1/ (\kappa_W p) < 1\) for every \(p > p_w \ge 13\), so this is O (1) amortised with a small
+constant. A record is \((p,\ p^{e},\ e,\ r,\ mp)\): four words plus a byte.
+
+### 4C.2 Pseudocode
+
+```
+C():                                   # unbounded
+   emit p_1 … p_w
+   primes := [] ; Q := empty ; act := 0 ; n := p_{w+1}
+   loop forever:
+       while act < len(primes) and primes[act]^2 <= n:
+           p := primes[act] ; act := act + 1
+           (r1, mp1) := next_adm(p, p, p)
+           push (p*p,  p, p*p, 2, 1,  p  )          # spine head: the pure power p^2
+           push (p*r1, p, p,   1, r1, mp1)          # layer-1 cloud head
+       if Q empty or min_key(Q) > n:
+           emit n ; primes.append(n)
+       else:
+           owner := ⊥
+           while Q nonempty and min_key(Q) = n:     # drain all claimants
+               (v, p, pe, e, r, mp) := pop_min(Q)
+               owner := min(owner, (p, e, r))       # by p — Lemma 4C.4
+               if r = 1:                            # n = p^e, a pure power
+                   push (pe*p, p, pe*p, e+1, 1, p)          # extend the spine
+                   (r1, mp1) := next_adm(p, p, p)
+                   push (pe*r1, p, pe, e, r1, mp1)          # open this layer's cloud
+               else:
+                   (r, mp) := next_adm(p, r, mp)
+                   push (pe*r, p, pe, e, r, mp)
+           report(n, owner)                         # (spf, valuation, cofactor)
+       n := next_coprime(n)
+```
+
+A layer is opened by the pop of its own spine element, so no global \(N\) decides how many layers a prime gets.
+
+### 4C.3 Correctness
+
+> **Lemma 4C.1 (coverage).** Every \(W\)-coprime composite \(m\) is a value of layer \((p,e)\) with
+> \(p=\mathrm{spf} (m)\), \(e=v*p (m)\). \_Proof:* \(p>p*w\); \(r=m/p^{e}\) is \(W\)-coprime, \(p\nmid r\), and either
+> \(r=1\) or all its prime factors exceed \(p\), so \(r>p\); \(m\) composite gives \((e,r)\ne (1,1)\). \(\square\)
+> **Lemma 4C.2 (soundness / no early claims).** Every key is a \(W\)-coprime composite, is \(\ge n\), and is \(\ge p^2\)
+> for its owning prime.
+> **Theorem 4C.3.** `C()` emits exactly the primes, in increasing order, forever; a \(W\)-coprime candidate \(n\) is
+> prime iff no key equals \(n\).
+> **Lemma 4C.4 (min-factor oracle).** The drained claimant with the smallest \(p\) carries
+> \((\mathrm{spf} (n),\ v_p (n),\ n/p^{v_p})\). \_Proof:* every claimant's \(p\) divides \(n\), hence is
+> \(\ge \mathrm{spf} (n)\), and \(\mathrm{spf} (n)\) claims by 4C.1; the exponent is exact because \(p\nmid r\).
+
+### 4C.4 Duplicate accounting and cost
+
+> **Lemma 4C.5.** \(\mathrm{claimants}_C (m) = \{ (p, v_p (m)) : p\mid m,\ (m=p^{v_p (m)}\ \text{or}\ m/p^{v_p (m)}\ge
+> p)\}\), one layer per claiming prime, and \(\mathrm{claimants}\_C (m) \subseteq \mathrm{claimants}*B (m) = \{p\mid m :
+> p^2\le m\}\). Smallest strict witness at \(W=30\): \(847 = 7\cdot11^2\) is claimed twice by B (\(7\cdot121\),
+> \(11\cdot77\)) and once by C (layer \((7,1)\), \(r=121\)).
+> Per prime, \(\sum*{e\ge1}\#\{r\in\tilde B_p : p^{e}r\le N\} \approx \kappa_W N (1-1/p)\sum_{e\ge1}p^{-e} = \kappa*W N/p\)
+> — exactly Algorithm B's figure, since the layers only partition the multiples B handles in one stream. The difference is
+> the discarded tail \(r<p\), paid once per layer instead of once per prime:
+> \[ \mathrm{ops}\_C (N) = \kappa_W N\big (\ln\ln\sqrt N - \ln\ln p_w + o (1)\big) \;-\; \Theta\!\big (N^{2/3}/\log N\big). \]
+> At \(N=10^{12}\), \(w=6\), that gap is \(\approx 10^{-4}N\) against \(\mathrm{ops}\_B\approx0.46N\): **Algorithm C is not
+> a faster prime generator.**
+> **Memory.** Uniform form: \(\sum*{p\le\sqrt n} (1+\lfloor\log*p n\rfloor) = 2\pi (\sqrt n)+O (n^{1/3})\) records.
+> \_Thinned spine:* handle \(n=p^2\) inline at activation (the activation event already knows \(n=p^2\cdot1\)) and gate the
+> rest of the spine on a second activation cursor over primes with \(p^3\le n\); then records \(= (1+o (1))\pi (\sqrt n)\),
+> i.e. \(\approx 78\,500 + 5\cdot10^{3}\) at \(N=10^{12}\). This is the form to ship.
+> **Restart.** Layer by layer: \(r_0 = \max\big (r_1 (p),\ \texttt{adm_ge} (p,\lceil X/p^{e}\rceil)\big)\), where
+> `adm_ge` advances `next_coprime_ge` past multiples of \(p\) in at most \(\lceil g_W/p\rceil+1\) wheel steps
+> (\(g_W=34\) at \(W=30030\)). Total \(O (\pi (\sqrt X)+X^{1/3})\); segments stay independent, so C parallelises exactly
+> like B.
+
+### 4C.5 What C is for
+
+Not touches — output. Every rejected candidate is reported in min-factor normal form, hence streaming \(\omega\),
+\(\Omega\), \(\mu\), radical and squarefree tests; prime powers for free (the spine records _are_ the prime powers, in
+order); smooth/rough enumeration by layer selection rather than by test. Algorithm B recovers \(\mathrm{spf}\) (its
+minimum claimant, since \(\mathrm{spf} (m)^2\le m\)) but not the valuation or the cofactor; Algorithm A gives the
+_largest_ prime factor, the harder end to iterate on. See `min_factor.md` §8, and §10 there for the honest ledger.
+
+---
 
 ---
 
@@ -516,6 +654,55 @@ def primes_B(w=6):
                 a += step[a % W]
                 heapq.heappush(Q, (p * a, p, a))
         n += step[n % W]
+# ---------- Algorithm C: min-factor exponent-spine generator ---------------
+def next_adm(r, mp, p, W, step):
+     """Least admissible multiplier > r: W-coprime and not divisible by p.
+        `mp` is a multiple of p with mp >= r (skip cursor); returns (r', mp')."""
+     r += step[r % W]
+     while True:
+         while mp < r:
+             mp += p
+         if mp == r:
+             r += step[r % W]
+         else:
+             return r, mp
+def primes_C(w=6, report=None):
+     """Unbounded prime generator via the min-factor normal form m = p^e * r
+        (Theorem 2.10). Records are (value, p, p^e, e, r, mp); a layer's cloud is
+        opened by the pop of its own spine element, so no limit N is needed.
+        If `report` is supplied it is called as report(m, p, e, r) for every
+        W-coprime composite m, with p = spf(m), e = v_p(m), r = m / p^e."""
+     small = [2, 3, 5, 7, 11, 13, 17, 19][:w]
+     W, step, gte = build_wheel(small)
+     for p in small:
+         yield p
+     primes, Q, act = [], [], 0
+     n = 1 + step[1]  # = p_{w+1}
+     while True:
+         while act < len(primes) and primes[act] * primes[act] <= n:
+             p = primes[act]; act += 1
+             r1, mp1 = next_adm(p, p, p, W, step)  # least admissible > p
+             heapq.heappush(Q, (p * p, p, p * p, 2, 1, p))  # spine head p^2
+             heapq.heappush(Q, (p * r1, p, p, 1, r1, mp1))  # layer-1 cloud head
+         if not Q or Q[0][0] > n:
+             primes.append(n)
+             yield n
+         else:
+             owner = None
+             while Q and Q[0][0] == n:
+                 v, p, pe, e, r, mp = heapq.heappop(Q)
+                 if owner is None or p < owner[0]:
+                     owner = (p, e, r)  # Lemma 4C.4: min claimant is spf
+                 if r == 1:  # n = p^e, a pure power
+                     heapq.heappush(Q, (pe * p, p, pe * p, e + 1, 1, p))
+                     r1, mp1 = next_adm(p, p, p, W, step)
+                     heapq.heappush(Q, (pe * r1, p, pe, e, r1, mp1))
+                 else:
+                     r, mp = next_adm(r, mp, p, W, step)
+                     heapq.heappush(Q, (pe * r, p, pe, e, r, mp))
+             if report is not None:
+                 report(n, *owner)
+         n += step[n % W]
 
 
 # ---------- Algorithm A: exact one-touch orthogonal generator ---------------
@@ -567,6 +754,8 @@ def primes_A(limit, stats=False):
     return out
 
 
+
+
 # ---------- validation ------------------------------------------------------
 
 def sieve_ref(limit):
@@ -587,6 +776,18 @@ if __name__ == "__main__":
     g = primes_B()
     b = [next(g) for _ in range(len(ref))]
     assert b == ref, "Algorithm B mismatch"
+     g = primes_C()
+     c = [next(g) for _ in range(len(ref))]
+     assert c == ref, "Algorithm C mismatch"
+     # Algorithm C also streams (spf, valuation, cofactor) for every composite it rejects.
+     seen = {}
+     gc = primes_C(report=lambda m, p, e, r: seen.setdefault(m, (p, e, r)))
+     while next(gc) < 2000:
+         pass
+     for m, (p, e, r) in seen.items():
+         assert p == min(f for f in range(2, m + 1) if m % f == 0), (m, p)
+         assert m == p ** e * r and r % p, (m, p, e, r)
+     assert (847 in seen) and seen[847] == (7, 1, 121), "min-factor form of 7*11^2"
     print("ok", st)
 ```
 
@@ -598,21 +799,23 @@ to fit \(\theta\) rather than trusting the heuristic exponent.
 
 ## 7. Comparison
 
-| method                                       | touches / time                                                                            | working memory           | array over range             | segment-parallel |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------ | ---------------------------- | ---------------- |
-| Trial division extension (`generator.md` §1) | \(\Theta(N\pi(\sqrt N))\)                                                                 | \(O(\pi(\sqrt N))\)      | no                           | yes              |
-| Eratosthenes, segmented                      | \(O(N\log\log N)\)                                                                        | \(O(\sqrt N + \Delta)\)  | yes (segment)                | yes              |
-| Pritchard wheel sieve                        | \(O(N/\log\log N)\)                                                                       | \(O(\sqrt N)\)           | yes                          | partly           |
-| Atkin                                        | \(O(N/\log\log N)\)                                                                       | \(O(\sqrt N + \Delta)\)  | yes                          | yes              |
-| O'Neill priority-queue sieve                 | \(O(N\log N\log\log N)\)                                                                  | \(O(\pi(\sqrt N))\)      | no                           | no               |
-| **Algorithm A**                              | \(N-\pi(N)\) touches (**optimal**), \(\times\log S\) or \(O(1)\) bucketed                 | \(S(N)\approx N^{0.75}\) | no                           | no               |
-| **Algorithm B**                              | \(\kappa_W N(\ln\ln\sqrt N-\ln\ln p_w)\), \(\times\log\pi(\sqrt N)\) or \(O(1)\) bucketed | \(O(\pi(\sqrt N)+W)\)    | no (heap) / segment (bucket) | **yes**          |
+| method                                       | touches / time                                                                            | working memory                        | array over range             | segment-parallel |
+| -------------------------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------- | ---------------------------- | ---------------- |
+| Trial division extension (`generator.md` §1) | \(\Theta(N\pi(\sqrt N))\)                                                                 | \(O(\pi(\sqrt N))\)                   | no                           | yes              |
+| Eratosthenes, segmented                      | \(O(N\log\log N)\)                                                                        | \(O(\sqrt N + \Delta)\)               | yes (segment)                | yes              |
+| Pritchard wheel sieve                        | \(O(N/\log\log N)\)                                                                       | \(O(\sqrt N)\)                        | yes                          | partly           |
+| Atkin                                        | \(O(N/\log\log N)\)                                                                       | \(O(\sqrt N + \Delta)\)               | yes                          | yes              |
+| O'Neill priority-queue sieve                 | \(O(N\log N\log\log N)\)                                                                  | \(O(\pi(\sqrt N))\)                   | no                           | no               |
+| **Algorithm A**                              | \(N-\pi(N)\) touches (**optimal**), \(\times\log S\) or \(O(1)\) bucketed                 | \(S(N)\approx N^{0.75}\)              | no                           | no               |
+| **Algorithm B**                              | \(\kappa_W N(\ln\ln\sqrt N-\ln\ln p_w)\), \(\times\log\pi(\sqrt N)\) or \(O(1)\) bucketed | \(O(\pi(\sqrt N)+W)\)                 | no (heap) / segment (bucket) | **yes**          |
+| **Algorithm C**                              | \(\mathrm{ops}\_B(N)-\Theta(N^{2/3}/\log N)\), same leading term                          | \(O(\pi(\sqrt N)+W)\), 4-word records | no (heap) / segment (bucket) | **yes**          |
 
 Reading: Algorithm A is the unique member of this table that touches each composite exactly once _and_ uses no
 range-proportional array — that is the real content of the
 `generator.md` architecture. Algorithm B is the practical instantiation: it keeps the \(\pi (\sqrt N)\) memory and O (1)
 per-prime state, at a small constant factor of redundant touches, and it is the only version that supports independent
-segment restart.
+segment restart. Algorithm C sits on top of B at the same cost and adds the min-factor normal form of every rejected
+candidate; it should be chosen for what it _emits_, never for its touch count (§4C.4).
 
 ---
 
@@ -626,18 +829,23 @@ segment restart.
    _single_ record (Algorithm A); under the wheel relaxation it drains all records equal to \(n\) (Algorithm B). Its
    complexity statement is the one restated in §3.7/§4.6: heap size \(\pi (\sqrt N)\) under deferred activation, never
    \(\pi (N)\), since only primes \(\le\sqrt N\) own a composite \(\le N\).
-3. **`observation.md` (multiplier sets).** The multiplier set is \(A_p\), the \(p\)-rough numbers from \(p\) up: a
-   wheel, infinite, periodic mod \(P_{<p}\) with \(\varphi (P_{<p})\) residues per period. Its elements below \(p^2\)
+3. **`observation.md` (multiplier sets).** The multiplier set is \(A*p\), the \(p\)-rough numbers from \(p\) up: a
+   wheel, infinite, periodic mod \(P*{<p}\) with \(\varphi (P\_{<p})\) residues per period. Its elements below \(p^2\)
    are exactly the primes in \([p,p^2)\) (Lemma 2.3), which is why one period is "1 plus primes" precisely for \(p \le
    7\) (Cor. 2.4). Multipliers are consumed in increasing order and the one needed at scan position \(n\) is \(\le n/2\)
    (Theorem 2.8), so nothing is stored and nothing is retroactively extended.
 4. **`idea.md` (wheels and spectra).** Both algorithms here are, structurally, the wheel of `idea.md` §2.3 made
    incremental: Algorithm B materialises the first \(w\) exclusion fields as a table and the remaining ones as
    lazily-advanced pointers, so the doubly-exponential primorial blow-up noted in `idea.md` §8.5 never occurs.
-5. **`fractal.md` (lattice reading).** The set deleted by the lattice recursion \(S_{k+1} = (p\text{ tilings of } S_k)
+5. **`fractal.md` (lattice reading).** The set deleted by the lattice recursion \(S\_{k+1} = (p\text{ tilings of } S_k)
    \setminus p\cdot S_k\) is exactly \(\Theta_p = p\cdot A_p\) (Theorem 2.1). Algorithm A follows that recursion to full
    depth; Algorithm B truncates it at depth \(w\), and the duplicate factor of §4.5 is precisely the truncation error.
-6. **`theory.md` (inventory).** Statement-by-statement status, dependency graph and prior art for everything above.
+6. **`min_factor.md` (Algorithm C).** The exponent refinement of Theorem 2.1: \(\Theta*p = \bigl(\biguplus*{e\ge1}
+   p^{e}B*p\bigr)\setminus\{p\}\) (Theorem 2.10), the cone recursion \(B_p=\{1\}\uplus\biguplus*{q>p}q B_q\)
+   (Prop. 2.11), the wheeled layers of §4C, the claimant identity of Lemma 4C.5, the thinned spine, and the streaming
+   min-factor oracle. On the lattice this says the deleted copy \(p\cdot S_k\) is itself geometric, at ratios
+   \(p^{-e}\), and that the whole system is graph-directed with the primes as nodes.
+7. **`theory.md` (inventory).** Statement-by-statement status, dependency graph and prior art for everything above.
 
 ---
 
@@ -645,10 +853,15 @@ segment restart.
 
 1. Sharp asymptotics for \(S (N) = \#\{b\ge2 : b\,P (b)\le N\}\) — the memory of Algorithm A. Measure with
    `primes_A(..., stats=True)` and compare with the Dickman saddle estimate.
-2. Same question for the wheeled variant A+wheel (bases restricted to \(p_{w+1}\)-rough), where the smooth bases that
+2. Same question for the wheeled variant A+wheel (bases restricted to \(p\_{w+1}\)-rough), where the smooth bases that
    dominate \(S (N)\) are suppressed. Is the exponent driven below \(1/2\)?
 3. Optimal \(w\) as a function of \(N\) and cache size for Algorithm B, trading \(\kappa_W\) and the \(\ln\ln\) span
    against the \(\Theta (W)\) table.
 4. A hybrid: run Algorithm A's exact streams for \(p \le N^{1/3}\) (where composite rough multipliers actually occur)
    and Algorithm B's index-increment prime phase for \(N^{1/3} < p \le \sqrt N\) (Lemma 2.7 guarantees the latter needs
    nothing else). This should get one-touch behaviour with much smaller \(S (N)\); the accounting is not yet done.
+5. Measure \(\mathrm{ops}\_C\) against \(\mathrm{ops}\_B\) at \(N = 10^{8}\dots10^{12}\) and fit the claimed
+   \(\Theta (N^{2/3}/\log N)\) gap of §4C.4; instrument `primes_C` and `primes_B` with pop counters. Also measure the
+   thinned-spine record count against \(\pi (\sqrt N)\).
+6. Exponent-spine Algorithm A: index A's bases as \(b = p^{e}b'\) and run-length encode the spine. Does that suppress
+   the smooth bases that dominate \(S (N)\), as the wheel of §3.8 does? (`min_factor.md` §11, item 4.)

@@ -54,31 +54,7 @@
     <script src="js/marked.min.js" defer></script>
 
     <!-- MathJax configuration: must appear before the MathJax loader script -->
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [
-            ['$', '$'],
-            ['\\(', '\\)'],
-          ],
-          displayMath: [
-            ['$$', '$$'],
-            ['\\[', '\\]'],
-          ],
-          processEscapes: true,
-          processEnvironments: true,
-        },
-        options: {
-          // Do NOT skip 'code' globally — formula blocks use <code> tags.
-          // We still skip the standard noise tags.
-          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-        },
-        startup: {
-          // Don't typeset the whole page on load; we'll call it manually.
-          typeset: false,
-        },
-      };
-    </script>
+    <script src="../assets/js/glossary-index.js"></script>
     <script
       async
       id="MathJax-script"
@@ -86,18 +62,6 @@
     ></script>
     <!-- Mermaid: load after DOM so initialize() is called reliably -->
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js" defer></script>
-    <script defer>
-      // Initialize Mermaid in manual mode once the script has loaded.
-      // Using defer keeps execution order: mermaid script → this block.
-      document.addEventListener('DOMContentLoaded', function () {
-        if (window.mermaid) {
-          window.mermaid.initialize({
-            startOnLoad: false,
-            theme: 'dark',
-            securityLevel: 'loose',
-          });
-        }
-      });
-    </script>
+    <script src="../assets/js/glossary-index-2.js" defer></script>
   </body>
 </html>

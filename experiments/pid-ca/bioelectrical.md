@@ -94,9 +94,9 @@ Per timestep, `V` is advanced by three additive contributions plus optional stim
 
 dV = leak + coupling + release + stimulus
 
-leak = k_leak * (V_rest - V)
-coupling = k_coupling * Σ_{n ∈ N(c)} (V_n - V)
-release = (gate == OPEN) ? k_release * (V_release - V) : 0
+leak = k*leak * (V*rest - V)
+coupling = k_coupling * Σ\_{n ∈ N(c)} (V_n - V)
+release = (gate == OPEN) ? k_release \* (V_release - V) : 0
 stimulus = externally injected current for painted / clamped cells (default 0)
 
 V' = clamp(V + dV, V_min, V_max)
@@ -193,7 +193,7 @@ for each cell c, reading only snapshot values:
     4. EXPRESS
        displayState[c] = expressBioelectrical(V_next, gate_next)   // §7
 
-commit all *_next buffers atomically
+commit all \*\_next buffers atomically
 
 Two ordering decisions are load-bearing and must be honoured by any implementation:
 
@@ -270,9 +270,9 @@ Two integration modes are specified, selectable by configuration:
    regulator_, replacing the fixed `k_leak` term. The controlled variable becomes the membrane potential
    itself rather than the active-neighbour count:
 
-   e_t = V_target - V_t
-   u_t = Kp*e_t + I_t + Kd*(e_t - e_{t-1})
-   leak := u_t // replaces k_leak * (V_rest - V)
+   e*t = V_target - V_t
+   u_t = Kp*e_t + I_t + Kd*(e_t - e*{t-1})
+   leak := u_t // replaces k_leak \* (V_rest - V)
 
 This is a genuinely interesting configuration: the integral term becomes an **adaptation / accommodation**
 mechanism (a cell chronically held off-target slowly re-tunes its own resting drive), and the derivative

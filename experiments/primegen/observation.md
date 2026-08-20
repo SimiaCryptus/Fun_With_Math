@@ -12,21 +12,21 @@ set \(A_N\) of one prime \(N\), and the orthogonal composite stream it generates
 
 The **orthogonal stream** of a prime \(N\) is \(N\) times a multiplier set:
 
-\[ \Theta_N \;=\; N \cdot A_N, \qquad A_N \;=\; \{\, a \ge N \;:\; \gcd (a, P_{<N}) = 1 \,\}, \qquad P_{<N} \;=\; \prod_
+\[ \Theta*N \;=\; N \cdot A_N, \qquad A_N \;=\; \{\, a \ge N \;:\; \gcd (a, P*{<N}) = 1 \,\}, \qquad P*{<N} \;=\; \prod*
 {p \text{ prime},\ p < N} p , \]
 
-with the empty-product convention \(P_{<2} = 1\).
+with the empty-product convention \(P\_{<2} = 1\).
 
-The elements of \(A_N\) are the **\(N\)-rough** numbers from \(N\) up: integers with no prime factor below \(N\).
-Equivalently \(A_N \cup \{1\}\) is one period of a **wheel** of modulus \(P_{<N}\), namely the reduced residue system
-mod \(P_{<N}\), lifted periodically to \(\mathbb{Z}\).
+The elements of \(A*N\) are the **\(N\)-rough** numbers from \(N\) up: integers with no prime factor below \(N\).
+Equivalently \(A_N \cup \{1\}\) is one period of a **wheel** of modulus \(P*{<N}\), namely the reduced residue system
+mod \(P\_{<N}\), lifted periodically to \(\mathbb{Z}\).
 
 In the compact notation used throughout the companion documents,
 
-\[ N * \{1,\ N,\ \ldots,\ M\}, \]
+\[ N \* \{1,\ N,\ \ldots,\ M\}, \]
 
-the braces denote one period of the wheel: the number \(1\), then \(N\) itself, then every further totative of \(P_{<
-N}\) up to the largest one \(M < P_{<N}\). The multiplier \(1\) generates the residue class of \(N\) itself and is
+the braces denote one period of the wheel: the number \(1\), then \(N\) itself, then every further totative of \(P*{<
+N}\) up to the largest one \(M < P*{<N}\). The multiplier \(1\) generates the residue class of \(N\) itself and is
 dropped when the object is used as a stream of _composites_; the stream proper begins at \(a = N\), i.e. at \(N^2\).
 
 ---
@@ -39,10 +39,10 @@ Let \(N\) be prime.
 > \(a \mapsto N a\) is a bijection \(A_N \to \Theta_N\).
 
 _Proof._ If \(m\) is composite with \(\operatorname{spf} (m) = N\) and \(a = m/N\), then \(a > 1\) and every prime
-factor of \(a\) is \(\ge N\), so \(\gcd (a, P_{<N}) = 1\) and \(a \ge N\). Conversely if \(a \ge N\) and \(\gcd (a,P_{<
+factor of \(a\) is \(\ge N\), so \(\gcd (a, P*{<N}) = 1\) and \(a \ge N\). Conversely if \(a \ge N\) and \(\gcd (a,P*{<
 N}) = 1\) then \(Na\) is composite and every prime factor of \(Na\) is \(\ge N\). ∎
 
-Because every composite has exactly one smallest prime factor, the streams \(\{\Theta_p\}_p\) are pairwise disjoint and
+Because every composite has exactly one smallest prime factor, the streams \(\{\Theta_p\}\_p\) are pairwise disjoint and
 together cover all composites. That is the orthogonality the whole architecture rests on (`paper.md` Claim O1,
 `algorithm.md` Theorem 2.1).
 
@@ -52,19 +52,19 @@ together cover all composites. That is the orthogonality the whole architecture 
 
 ## 2. \(A_N\) is a wheel
 
-Membership \(\gcd (a, P_{<N}) = 1\) depends only on \(a \bmod P_{<N}\). Hence:
+Membership \(\gcd (a, P*{<N}) = 1\) depends only on \(a \bmod P*{<N}\). Hence:
 
-- \(A_N \cup \{1\}\) is periodic modulo \(P_{<N}\);
-- one period contains \(\varphi (P_{<N}) = \prod_{p<N} (p-1)\) residues;
+- \(A*N \cup \{1\}\) is periodic modulo \(P*{<N}\);
+- one period contains \(\varphi (P*{<N}) = \prod*{p<N} (p-1)\) residues;
 - \(A_N\) is **infinite**, and the finite list above is one period, not the whole set;
 - the least element of one period above \(1\) is \(N\) itself, so no special case is needed to "insert \(N\)": any \(1 <
   t < N\) coprime to every prime \(< N\) would satisfy \(\operatorname{spf} (t) \ge N > t\), which is impossible.
 
 The full stream is the periodic extension
 
-\[ \Theta_N \;=\; \{\, N\, (t + jP_{<N}) \;:\; t \in A_N \cap [1, P_{<N}],\ j \ge 0,\ t + jP_{<N} \ge N \,\}, \]
+\[ \Theta*N \;=\; \{\, N\, (t + jP*{<N}) \;:\; t \in A*N \cap [1, P*{<N}],\ j \ge 0,\ t + jP\_{<N} \ge N \,\}, \]
 
-a union of \(\varphi (P_{<N})\) arithmetic progressions of common difference \(N \cdot P_{<N}\).
+a union of \(\varphi (P*{<N})\) arithmetic progressions of common difference \(N \cdot P*{<N}\).
 
 ---
 
@@ -81,12 +81,12 @@ So the multipliers split into two phases:
   is a single index increment into the already-known prime array;
 - the **rough phase** \([N^2, \infty)\), where composite multipliers appear: \(N^2\), \(N\cdot N'\), \(N'^2\), …
 
-> **Coincidence window.** One period of \(A_N\) consists of \(1\) together with primes only **iff**
-> \(P_{<N} \le N^2\), i.e. iff \(N \le 7\) (\(P_{<7} = 30 < 49\), but \(P_{<11} = 210 > 121\)).
+> **Coincidence window.** One period of \(A*N\) consists of \(1\) together with primes only **iff**
+> \(P*{<N} \le N^2\), i.e. iff \(N \le 7\) (\(P*{<7} = 30 < 49\), but \(P*{<11} = 210 > 121\)).
 
 This is why the compact prime-list description of one period is exact for \(N \in \{2,3,5,7\}\) and becomes a
 description of the _prime phase only_ from \(N = 11\) on. The first composite multiplier anywhere is \(121 = 11^2\),
-which yields \(11 \cdot 121 = 1331 = 11^3 \in \Theta_{11}\).
+which yields \(11 \cdot 121 = 1331 = 11^3 \in \Theta\_{11}\).
 
 Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is reachable below a bound \(X\) only for
 \(N \le X^{1/3}\); for larger primes the stream is a pure prime-index walk.
@@ -97,7 +97,7 @@ Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is 
 
 ### \(N = 2\)
 
-- \(P_{<2} = 1\), \(\varphi (1) = 1\): the wheel is trivial, every integer is a spoke.
+- \(P\_{<2} = 1\), \(\varphi (1) = 1\): the wheel is trivial, every integer is a spoke.
 - \(A_2 = \{2,3,4,5,\ldots\}\).
 - \(\Theta_2 = 2 \cdot A_2 = \{4, 6, 8, 10, \ldots\}\) — the even composites.
 - Prime phase \([2,4)\): \(2, 3\). First composite multiplier: \(4 = 2^2\).
@@ -108,7 +108,7 @@ Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is 
 
 ### \(N = 3\)
 
-- \(P_{<3} = 2\), spokes \(\{1\}\), \(\varphi (2) = 1\).
+- \(P\_{<3} = 2\), spokes \(\{1\}\), \(\varphi (2) = 1\).
 - \(A_3 = \{3, 5, 7, 9, 11, \ldots\}\) — the odd numbers from 3 up.
 - \(\Theta_3 = \{9, 15, 21, 27, 33, \ldots\}\).
 - Prime phase \([3,9)\): \(3,5,7\). First composite multiplier: \(9 = 3^2\).
@@ -119,7 +119,7 @@ Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is 
 
 ### \(N = 5\)
 
-- \(P_{<5} = 6\), spokes \(\{1,5\}\), \(\varphi (6) = 2\).
+- \(P\_{<5} = 6\), spokes \(\{1,5\}\), \(\varphi (6) = 2\).
 - \(A_5 = \{5, 7, 11, 13, 17, 19, 23, 25, 29, \ldots\}\).
 - \(\Theta_5 = \{25, 35, 55, 65, 85, 95, 115, 125, 145, \ldots\}\).
 - Prime phase \([5,25)\): \(5,7,11,13,17,19,23\). First composite multiplier: \(25\).
@@ -130,7 +130,7 @@ Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is 
 
 ### \(N = 7\)
 
-- \(P_{<7} = 30\), spokes \(\{1,7,11,13,17,19,23,29\}\), \(\varphi (30) = 8\).
+- \(P\_{<7} = 30\), spokes \(\{1,7,11,13,17,19,23,29\}\), \(\varphi (30) = 8\).
 - \(A_7 = \{7,11,13,17,19,23,29,31,37,41,43,47,49,\ldots\}\).
 - \(\Theta_7 = \{49, 77, 91, 119, 133, 161, 203, 217, \ldots\}\).
 - Prime phase \([7,49)\): all primes. First composite multiplier: \(49\).
@@ -141,18 +141,18 @@ Since a composite multiplier of \(N\) forces \(Na \ge N^3\), the rough phase is 
 ```
 
 \(N = 7\) is the last prime for which one full period of the multiplier set is "1 plus primes"
-(\(P_{<7} = 30 \le 49 = 7^2\)).
+(\(P\_{<7} = 30 \le 49 = 7^2\)).
 
 ### \(N = 11\)
 
-- \(P_{<11} = 210\), \(\varphi (210) = 48\).
-- One period of \(A_{11} \cup \{1\}\) is
+- \(P\_{<11} = 210\), \(\varphi (210) = 48\).
+- One period of \(A\_{11} \cup \{1\}\) is
 
   \[ \{1\} \;\cup\; \{\text{the } 42 \text{ primes in } [11,199]\} \;\cup\; \{121,\ 143,\ 169,\ 187,\ 209\}, \]
 
   since \(48 = 1 + 42 + 5\). The five composite totatives are \(11^2,\ 11\cdot13,\ 13^2,\ 11\cdot17,\ 11\cdot19\).
 
-- \(\Theta_{11} = \{121, 143, 187, 209, 253, 319, 341, \ldots\}\), and further out \(11 \cdot 121 = 1331 = 11^3\), \(11
+- \(\Theta\_{11} = \{121, 143, 187, 209, 253, 319, 341, \ldots\}\), and further out \(11 \cdot 121 = 1331 = 11^3\), \(11
   \cdot 143 = 1573\), …
 - Prime phase \([11,121)\): all primes. First composite multiplier: \(121\).
 
@@ -163,7 +163,7 @@ and the prime list part company.
 
 ## 5. Causality: there is no forward dependence
 
-The multiplier set of \(N\) is determined by the primes **strictly below \(N\)** — through \(P_{<N}\) — all of which are
+The multiplier set of \(N\) is determined by the primes **strictly below \(N\)** — through \(P\_{<N}\) — all of which are
 known at the moment \(N\) is discovered. Nothing about \(A_N\) requires knowledge of primes larger than \(N\).
 
 Concretely, the multipliers are consumed in increasing order, and the multiplier needed to emit a composite at scan
@@ -193,7 +193,7 @@ stream(p):
         a := next_rough(p, a)     # least a' > a with gcd(a', P_{<p}) = 1
 ```
 
-The only nontrivial operation is `next_rough`, i.e. the successor on the wheel of modulus \(P_{<p}\):
+The only nontrivial operation is `next_rough`, i.e. the successor on the wheel of modulus \(P\_{<p}\):
 
 - **prime phase** (`a < p*p`): `next_rough` is the next prime after `a` — one index increment into the prime array, O
   (1) with no arithmetic;
@@ -202,7 +202,7 @@ The only nontrivial operation is `next_rough`, i.e. the successor on the wheel o
   giving O (1) time and O (1) state per prime at the cost of a bounded number of duplicate claims (Algorithm B,
   `paper.md` §4).
 
-Tabulating the exact wheel per prime is not an option: it has \(\varphi (P_{<p}) = e^{ (1+o (1))p}\) entries
+Tabulating the exact wheel per prime is not an option: it has \(\varphi (P\_{<p}) = e^{ (1+o (1))p}\) entries
 (`theory.md` T30). That constraint, and nothing else, is what forces the two-algorithm fork.
 
 ---
@@ -214,6 +214,6 @@ Tabulating the exact wheel per prime is not an option: it has \(\varphi (P_{<p})
 | `paper.md` §2.2, `algorithm.md` §2 | the multiplier set of the stream owned by \(N\)                                         |
 | `idea.md` §2                       | the survivors of the first \(\pi(N)-1\) periodic exclusion fields                       |
 | `fractal.md` §2                    | the stage-\(k\) lattice \(S_k\) whose dilate \(N\cdot S_k\) is deleted at stage \(k+1\) |
-| `theory.md` T15/T18                | the newly-killed residue classes of \(N\); the totatives of \(P_{<N}\)                  |
+| `theory.md` T15/T18                | the newly-killed residue classes of \(N\); the totatives of \(P\_{<N}\)                 |
 
 One object, four vocabularies. The deletion set of the lattice recursion _is_ \(\Theta_N = N \cdot A_N\).

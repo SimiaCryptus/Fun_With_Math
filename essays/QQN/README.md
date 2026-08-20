@@ -3,8 +3,7 @@
 📄 **[Read the Academic Paper (PDF)](paper.pdf)** — the complete mathematical foundation and theoretical
 analysis, for those who want the full derivation.
 
-http://dx.doi.org/10.13140/RG.2.2.15200.19206
----
+## http://dx.doi.org/10.13140/RG.2.2.15200.19206
 
 ## 🚀 Implementations
 

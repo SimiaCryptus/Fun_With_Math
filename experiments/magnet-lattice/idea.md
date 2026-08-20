@@ -75,7 +75,7 @@ Plan:
 - Discrete Lagrangian `L_d(θ_k, θ_{k+1}, h)` using a midpoint or trapezoidal
   quadrature.
 - Discrete Euler–Lagrange (DEL) equations define the update:
-  D2 L_d(θ_{k-1}, θ_k) + D1 L_d(θ_k, θ_{k+1}) = 0
+  D2 L*d(θ*{k-1}, θ*k) + D1 L_d(θ_k, θ*{k+1}) = 0
 - Solve the implicit step for `θ_{k+1}` with Newton iteration (analytic
   Jacobian of the torque field; see §3.3).
 - Equivalent leapfrog/Störmer–Verlet fallback available for validation.
@@ -226,7 +226,7 @@ experiments/magnet-lattice/
 - **integrator**: advances state; owns Newton solver using physics Jacobian.
 - **analysis**: minimizer + generalized eigen-solver → modes & matrix.
 - **linalg**: LU solve, symmetric eigen (Jacobi rotation) — small N.
-- **ui/***: no physics; render + emit events only.
+- **ui/\***: no physics; render + emit events only.
 - **io**: versioned schema, validation, error reporting.
 
 ---

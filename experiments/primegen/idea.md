@@ -48,8 +48,8 @@ than one might expect — is this:
 
 Once this is stated precisely, three things happen almost for free:
 
-1. **Density becomes multiplicative.** The fraction of survivors after incorporating \(p_k\) is the previous fraction
-   scaled by \( (1 - 1/p_k)\). This is not new — it is the Mertens product — but the _mechanism_ by which it happens
+1. **Density becomes multiplicative.** The fraction of survivors after incorporating \(p*k\) is the previous fraction
+   scaled by \( (1 - 1/p_k)\). This is not new — it is the Mertens product — but the \_mechanism* by which it happens
    becomes transparent: each new periodic field removes a fixed proportion of whatever remains, independent of the fine
    structure of what remains.
 
@@ -90,7 +90,7 @@ of \(p\) classes total.
 
 Given the first \(k\) primes \(p_1, \ldots, p_k\), the naive combined sieve is the pointwise product
 
-\[ S_k (n) = \prod_{i=1}^{k} M_{p_i} (n). \]
+\[ S*k (n) = \prod*{i=1}^{k} M\_{p_i} (n). \]
 
 Because the \(p_i\) are pairwise coprime, \(S_k\) is periodic with period
 
@@ -100,18 +100,18 @@ This is the first structural fact worth pausing on: _the sieve is always exactly
 a period that grows as the primorial of the primes incorporated so far. There is no asymptotic approximation here —
 within one block of length \(L_k\), the pattern of survivors repeats exactly forever.
 
-Now consider what is genuinely _new_ when we move from stage \(k-1\) to stage \(k\), i.e. when we incorporate \(p_k\).
-The mask \(M_{p_k}\), taken in isolation, kills every \(n \equiv 0 \pmod{p_k}\). But many of those positions are already
-dead — killed by some smaller prime. The _new_ contribution of \(p_k\) is only the set of positions that \(p_k\) kills
+Now consider what is genuinely _new_ when we move from stage \(k-1\) to stage \(k\), i.e. when we incorporate \(p*k\).
+The mask \(M*{p*k}\), taken in isolation, kills every \(n \equiv 0 \pmod{p_k}\). But many of those positions are already
+dead — killed by some smaller prime. The \_new* contribution of \(p_k\) is only the set of positions that \(p_k\) kills
 for the first time:
 
 \[ C_k = \left\{ n \in [1, L_k] : n \equiv 0 \pmod{p_k},\ \ n \not\equiv 0 \pmod{p_i} \text{ for all } i < k
 \right\}. \]
 
-This is the sense in which \(p_k\)'s contribution is **orthogonal** to the lesser primes: \(C_k\) is disjoint, by
+This is the sense in which \(p*k\)'s contribution is **orthogonal** to the lesser primes: \(C_k\) is disjoint, by
 construction, from the union of all earlier kill-sets. It is still a perfectly periodic set — periodic with period
-\(L_k\) — it is simply a _longer-period_ pattern than \(p_k\)'s raw period-\(p_k\) mask, because it has been filtered
-through the residues already excluded by \(p_1, \ldots, p_{k-1}\).
+\(L_k\) — it is simply a \_longer-period* pattern than \(p*k\)'s raw period-\(p_k\) mask, because it has been filtered
+through the residues already excluded by \(p_1, \ldots, p*{k-1}\).
 
 ### 2.3 Algorithmic restatement
 
@@ -120,18 +120,18 @@ every step:
 
 1. Initialize \(P = [\,]\), \(L_0 = 1\), and a trivial pattern (everything alive) on \([1, L_0]\).
 2. For each new prime \(p_k\) (found as the smallest surviving integer greater than 1 at the current stage):
-   - Set \(L_k = L_{k-1} \cdot p_k\).
-   - Lift the current pattern from period \(L_{k-1}\) to period \(L_k\) by repetition (\(p_k\) copies).
-   - Kill every position \(n \in [1, L_k]\) with \(n \equiv 0 \pmod {p_k}\) that is _still alive_ under the lifted
+   - Set \(L*k = L*{k-1} \cdot p_k\).
+   - Lift the current pattern from period \(L\_{k-1}\) to period \(L_k\) by repetition (\(p_k\) copies).
+   - Kill every position \(n \in [1, L_k]\) with \(n \equiv 0 \pmod {p*k}\) that is \_still alive* under the lifted
      pattern. This is exactly \(C_k\).
 3. The survivors greater than 1 in \([1, L_k]\), once the sieve has been carried out to a sufficient bound, are
    precisely the primes.
 
 This is nothing more than the sieve of Eratosthenes — but re-expressed so that periodicity and orthogonality are
 load-bearing, explicit structural claims rather than incidental procedural facts. Two companion readings of this same
-recursion are worth naming. Algorithmically, the set killed for the first time by \(p_k\) is exactly the composite
-stream \(\Theta_{p_k} = p_k \cdot A_{p_k}\) owned by \(p_k\) (`observation.md`, `paper.md` §2.2), which is what the
-generator advances one pointer at a time instead of materialising. Geometrically, step 2 is the lattice recursion \(S_
+recursion are worth naming. Algorithmically, the set killed for the first time by \(p*k\) is exactly the composite
+stream \(\Theta*{p*k} = p_k \cdot A*{p*k}\) owned by \(p_k\) (`observation.md`, `paper.md` §2.2), which is what the
+generator advances one pointer at a time instead of materialising. Geometrically, step 2 is the lattice recursion \(S*
 {k+1} = (p\text{ tilings of } S_k) \setminus p\cdot S_k\) of `fractal.md`: the deleted set is an affine copy of the
 previous stage.
 
@@ -143,10 +143,10 @@ primes,
 \[ \mathbb{Z}/L_k\mathbb{Z} \;\cong\; \mathbb{Z}/p_1\mathbb{Z} \times \mathbb{Z}/p_2\mathbb{Z} \times \cdots \times
 \mathbb{Z}/p_k\mathbb{Z}. \]
 
-Every residue \(n \bmod L_k\) corresponds to a unique tuple of residues \( (n \bmod p_1, \ldots, n \bmod p_k)\). The
-mask \(M_{p_i}\) depends _only_ on the \(i\)-th coordinate of this tuple. So the global sieve pattern
+Every residue \(n \bmod L*k\) corresponds to a unique tuple of residues \( (n \bmod p_1, \ldots, n \bmod p_k)\). The
+mask \(M*{p*i}\) depends \_only* on the \(i\)-th coordinate of this tuple. So the global sieve pattern
 
-\[ S_k (n) = \prod_{i=1}^k M_{p_i} (n)
+\[ S*k (n) = \prod*{i=1}^k M\_{p_i} (n)
 \]
 
 is literally a product of functions, each depending on a single, independent CRT coordinate. This single fact is the
@@ -160,12 +160,12 @@ functions on a product space, not a monolithic pattern.
 
 The density of survivors in \([1, L_k]\) is immediate from the product structure:
 
-\[ \rho_k = \frac{\#\{n \in [1, L_k] : S_k (n) = 1\}}{L_k} = \prod_{i=1}^{k} \left (1 - \frac{1}{p_i}\right). \]
+\[ \rho*k = \frac{\#\{n \in [1, L_k] : S_k (n) = 1\}}{L_k} = \prod*{i=1}^{k} \left (1 - \frac{1}{p_i}\right). \]
 
 This is the classical Mertens product (itself a refinement of Legendre's sieve). What the orthogonal-fields framing adds
 is not a new formula but a new _reading_ of the formula: density updates locally and multiplicatively,
 
-\[ \rho_k = \rho_{k-1} \left (1 - \frac{1}{p_k}\right), \]
+\[ \rho*k = \rho*{k-1} \left (1 - \frac{1}{p_k}\right), \]
 
 because each new prime removes a fixed fraction of _whatever survives so far_, regardless of the internal structure of
 the survivor set. This is exactly the "attenuation" picture: each periodic field is an independent filter, and
@@ -188,29 +188,29 @@ For a single coordinate \(\mathbb{Z}/p\mathbb{Z}\), the "alive/dead" split induc
 Because the \(k\) coordinates are independent under the CRT, the **joint entropy** of the \(k\) per-prime alive/dead
 indicators is exactly additive:
 
-\[ H_{\text{joint}} (k) = \sum_{i=1}^{k} H (p_i). \]
+\[ H*{\text{joint}} (k) = \sum*{i=1}^{k} H (p_i). \]
 
 This is the quantity that the earlier informal statement "entropy becomes additive" refers to. It is not the entropy of
 the single binary output \(S_k (n)\). That output entropy is
 
-\[ H_{\text{out}} (k) = -\rho_k\log\rho_k - (1-\rho_k)\log (1-\rho_k), \]
+\[ H\_{\text{out}} (k) = -\rho_k\log\rho_k - (1-\rho_k)\log (1-\rho_k), \]
 
 and because \(\rho_k \to 0\) for large \(k\), this tends to zero. The sieve pattern does not become "more random" in the
 sense of its one-bit output; rather, it becomes increasingly imbalanced (almost all positions are dead), so the output
 bit is increasingly predictable.
 
-Additionally, the measure of the underlying residue \(n\) itself corresponds to \(\log L_k\) bits (or \(L_k\)
-equiprobable states). This is a separate information-theoretic measure and should not be confused with either \(H_
-{\text{joint}}\) or \(H_{\text{out}}\). Finally, the descriptive (Kolmogorov) complexity of the pattern is yet another
+Additionally, the measure of the underlying residue \(n\) itself corresponds to \(\log L*k\) bits (or \(L_k\)
+equiprobable states). This is a separate information-theoretic measure and should not be confused with either \(H*
+{\text{joint}}\) or \(H\_{\text{out}}\). Finally, the descriptive (Kolmogorov) complexity of the pattern is yet another
 currency: the per-prime product representation is compact, but reconstructing any particular position still requires
 knowing the residue coordinates, which we discuss in Section 8.5.
 
 Two derived quantities are worth naming:
 
 - **Entropy density** (joint entropy per integer over the period):
-  \[ h_k = \frac{H_{\text{joint}} (k)}{L_k} = \frac{1}{L_k}\sum_{i=1}^{k} H (p_i). \] Since \(L_k\) grows
-  super-exponentially (as a primorial) while \(H_{\text{joint}} (k)\) grows only linearly in \(k\) (and each term
-  shrinks like \(\log p_i / p_i\)), \(h_k \to 0\) rapidly. The sieve pattern becomes overwhelmingly _structured_ — low
+  \[ h*k = \frac{H*{\text{joint}} (k)}{L*k} = \frac{1}{L_k}\sum*{i=1}^{k} H (p*i). \] Since \(L_k\) grows
+  super-exponentially (as a primorial) while \(H*{\text{joint}} (k)\) grows only linearly in \(k\) (and each term
+  shrinks like \(\log p*i / p_i\)), \(h_k \to 0\) rapidly. The sieve pattern becomes overwhelmingly \_structured* — low
   joint entropy per position — relative to its period, even though the absolute amount of joint entropy keeps growing.
 
 - **Marginal entropy contribution** of the \(k\)-th prime:
@@ -232,12 +232,12 @@ disjoint at all frequencies; they all share the zero (DC) frequency. The precise
 
 Since \(M_p\) is periodic (lifted to period \(L_k\)), it has a finite discrete Fourier expansion:
 
-\[ M_p (n) = \sum_{m=0}^{L_k - 1} c_{p,m}\, e^{2\pi i m n / L_k}. \]
+\[ M*p (n) = \sum*{m=0}^{L*k - 1} c*{p,m}\, e^{2\pi i m n / L_k}. \]
 
-Each per-prime mask \(M_p\) has average value \( (p-1)/p\), so its coefficient at \(m=0\) is \(c_{p,0} = (p-1)/p\). Thus
+Each per-prime mask \(M*p\) has average value \( (p-1)/p\), so its coefficient at \(m=0\) is \(c*{p,0} = (p-1)/p\). Thus
 every prime contributes to the same DC term, and no disjointness is possible there.
 
-For \(m \neq 0\), however, the support of \(c_{p,m}\) is precisely the set of frequencies that are multiples of
+For \(m \neq 0\), however, the support of \(c\_{p,m}\) is precisely the set of frequencies that are multiples of
 \(L_k/p\) but not multiples of \(L_k\) — i.e., the harmonics of the prime's native period, excluding the DC component.
 Because the \(p_i\) are distinct primes, these nonzero supports are disjoint: a frequency \(m\) that is a nonzero
 multiple of \(L_k/p_i\) cannot also be a nonzero multiple of \(L_k/p_j\) for \(i \neq j\). This is the frequency-domain
@@ -247,7 +247,7 @@ expression of orthogonality: **disjoint nonzero spectral support**, not merely d
 
 The combined sieve is
 
-\[ S_k (n) = \prod_{i=1}^{k} M_{p_i} (n) = \prod_{i=1}^{k}\left (\sum_{m} c_{p_i,m}\, e^{2\pi i m n/L_k}\right). \]
+\[ S*k (n) = \prod*{i=1}^{k} M*{p_i} (n) = \prod*{i=1}^{k}\left (\sum*{m} c*{p_i,m}\, e^{2\pi i m n/L_k}\right). \]
 
 Because multiplication in position space corresponds to **convolution** in frequency space, the coefficients of \(S_k\)
 are not obtained by simply summing per-prime coefficients. Instead, they arise from the convolution of the individual
@@ -256,9 +256,9 @@ coefficient sequences. The clean statement uses the CRT-dual indexing: rather th
 via the isomorphism \(\widehat{\mathbb{Z}/L_k\mathbb{Z}} \cong \widehat{\mathbb{Z}/p_1\mathbb{Z}} \times \cdots \times
 \widehat{\mathbb{Z}/p_k\mathbb{Z}}\). Then
 
-\[ C_{ (m_1,\ldots,m_k)} = \prod_{i=1}^k \hat M_{p_i} (m_i), \]
+\[ C*{ (m_1,\ldots,m_k)} = \prod*{i=1}^k \hat M\_{p_i} (m_i), \]
 
-where \(\hat M_{p_i}\) is the discrete Fourier transform of \(M_{p_i}\) on \(\mathbb{Z}/p_i\mathbb{Z}\). This
+where \(\hat M*{p_i}\) is the discrete Fourier transform of \(M*{p_i}\) on \(\mathbb{Z}/p_i\mathbb{Z}\). This
 factorization is exact, and it is the precise sense in which distinct primes contribute distinct harmonics.
 
 Under this dual indexing, the support of each prime's nonzero coefficients appears only in coordinates where \(m_i \neq
@@ -385,7 +385,7 @@ unresolved arithmetic of long gaps.
 
 **8.3 Density as attenuation; entropy as information flow.** The multiplicative density recursion and additive
 joint-entropy decomposition give two independent, exactly computable "flows" indexed by the sequence of primes. Studying
-the joint behavior of \(\rho_k\) (density) and \(H_{\text{joint}} (k)\) (entropy) as \(k \to \infty\) — e.g., the rate
+the joint behavior of \(\rho*k\) (density) and \(H*{\text{joint}} (k)\) (entropy) as \(k \to \infty\) — e.g., the rate
 at which entropy density \(h_k\) collapses to zero relative to the rate at which \(\rho_k\) decays via Mertens — offers
 a concrete, fully computable toy model of "structure vs. randomness" trade-offs, potentially useful pedagogically or as
 a sandbox for information-theoretic heuristics about prime distribution.

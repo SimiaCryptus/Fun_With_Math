@@ -23,14 +23,14 @@ Let \(P_k = p_1 p_2 \cdots p_k\) be the \(k\)-th primorial and
 S_k = { r mod P_k : gcd(r, P_k) = 1 }
 ```
 
-the **stage-\(k\) lattice**: the residues surviving the first \(k\) periodic exclusion fields. Concretely \(S_k\) is the
-wheel of `paper.md` §4.2 at modulus \(W = P_k\), and \(|S_k| = \varphi (P_k) = \prod_{i\le k} (p_i - 1)\), density
+the **stage-\(k\) lattice**: the residues surviving the first \(k\) periodic exclusion fields. Concretely \(S*k\) is the
+wheel of `paper.md` §4.2 at modulus \(W = P_k\), and \(|S_k| = \varphi (P_k) = \prod*{i\le k} (p_i - 1)\), density
 
 ```
 κ_k = φ(P_k)/P_k = ∏_{i≤k} (1 − 1/p_i)  ~  e^{−γ} / log p_k        (Mertens)
 ```
 
-The **holes** of stage \(k\) are the integers \(> 1\) lying in \(S_k\) lifted to ℤ. The smallest of them is \(p_
+The **holes** of stage \(k\) are the integers \(> 1\) lying in \(S*k\) lifted to ℤ. The smallest of them is \(p*
 {k+1}\) — the lattice names its own successor. That is the self-hosting property (`paper.md`, Claim C1) seen from the
 outside.
 
@@ -38,7 +38,7 @@ outside.
 
 ## 2. The recursion is exact, and the deleted set is a scaled copy
 
-> **Claim F1 (lattice recursion).** For every \(k \ge 0\), with \(p = p_{k+1}\),
+> **Claim F1 (lattice recursion).** For every \(k \ge 0\), with \(p = p\_{k+1}\),
 >
 > ```
 > S_{k+1}  =  ( ⋃_{j=0}^{p−1} (S_k + j·P_k) )   \   p·S_k        (all mod P_{k+1} = p·P_k)
@@ -46,19 +46,19 @@ outside.
 >
 > i.e. tile the previous lattice \(p\) times, then delete one dilated copy of it.
 >
-> _Proof sketch._ Residues mod \(P_{k+1}\) coprime to \(P_k\) are exactly the \(p\) translates of \(S_k\). Among them,
+> _Proof sketch._ Residues mod \(P*{k+1}\) coprime to \(P_k\) are exactly the \(p\) translates of \(S_k\). Among them,
 > those divisible by \(p\) are exactly \(p\cdot (\text{residues mod } P_k \text{ coprime to } P_k) = p\cdot S_k\), and
-> since \(\gcd (p, P_k)=1\) this dilation is injective mod \(P_{k+1}\). Counting: \(p\varphi (P_k) − \varphi (P_k) =
-> \varphi (P_{k+1})\). ∎ _(routine; write out)_
+> since \(\gcd (p, P_k)=1\) this dilation is injective mod \(P*{k+1}\). Counting: \(p\varphi (P*k) − \varphi (P_k) =
+> \varphi (P*{k+1})\). ∎ _(routine; write out)_
 
 Two things deserve emphasis.
 
-1. **The deletion set is not arbitrary.** \(p\cdot S_k\) is the stage-\(k\) lattice itself, dilated by \(p\). This is
-   precisely the ownership statement \(\Theta_p = p\cdot A_p\) of `paper.md` §2.2, read modulo \(P_{k+1}\): _the stream
+1. **The deletion set is not arbitrary.** \(p\cdot S*k\) is the stage-\(k\) lattice itself, dilated by \(p\). This is
+   precisely the ownership statement \(\Theta_p = p\cdot A_p\) of `paper.md` §2.2, read modulo \(P*{k+1}\): _the stream
    of \(p\) is the previous lattice scaled by \(p\)._ The stream decomposition and the fractal decomposition are the
    same theorem.
-2. **The construction is a Moran construction** with \(N_{k+1} = p_{k+1}-1\) children per parent interval and
-   contraction ratio \(1/p_{k+1}\) — a Cantor set with a _non-constant, unbounded_ ratio sequence. Zooming happens by
+2. **The construction is a Moran construction** with \(N*{k+1} = p*{k+1}-1\) children per parent interval and
+   contraction ratio \(1/p*{k+1}\) — a Cantor set with a \_non-constant, unbounded* ratio sequence. Zooming happens by
    primorials, i.e. doubly exponentially, not by a fixed factor.
 
 ### Worked stages
@@ -95,7 +95,7 @@ verdict applies to the primes themselves as a subset of ℝ — gaps are conject
 dimension_. Anyone reaching for a dimension estimate as evidence is measuring the wrong invariant. The right invariants
 are:
 
-- the deletion ratios \(1/p_{k+1}\) (exact, known),
+- the deletion ratios \(1/p\_{k+1}\) (exact, known),
 - the survivor density \(\kappa_k\) (exact, Mertens),
 - and the **Buchstab oscillation** \(\omega (u)\) governing how many stage-\(k\) holes below \(x\) survive as primes
   (`paper.md`, Claim O3) — this is where the genuinely non-trivial fluctuation lives.
@@ -106,20 +106,20 @@ are:
 
 The slogan says _"those holes become the next primes."_ Exactly one window of that is true.
 
-> **Claim F3 (phase separation, = `paper.md` Claim O2).** Let \(p = p_{k+1}\). Every hole \(h\) of stage \(k\) with
-> \(p \le h < p^2\) is prime. Every hole \(\ge p^2\) is merely a _candidate_: \(p^2, p\cdot p_{k+2}, p_{k+2}^2,\dots\)
+> **Claim F3 (phase separation, = `paper.md` Claim O2).** Let \(p = p*{k+1}\). Every hole \(h\) of stage \(k\) with
+> \(p \le h < p^2\) is prime. Every hole \(\ge p^2\) is merely a \_candidate*: \(p^2, p\cdot p*{k+2}, p*{k+2}^2,\dots\)
 > are holes and are composite.
 
 Consequently:
 
 - **Stage \(k\) certifies primes only up to \(p\_{k+1}^2 - 1\).** Below that bound, holes and primes coincide and the
   recursion is a complete prime generator. Above it, the lattice is an _over-approximation_ and further stages are
-  required. This is the "generational" content: stage \(k\) closes the window \([p_k^2, p_{k+1}^2)\).
-- **The first failure is small and explicit.** \(121 = 11^2 \in S_4\) (it is coprime to \(210\)) and \(121 < P_4 =
-  210\), so the mod-210 lattice has a composite hole inside its first period. For \(k \le 3\) it does not: \(P_k \le p_
-  {k+1}^2\) holds iff \(p_{k+1} \le 7\).
-- **The recursion is not exactly self-similar under any fixed ratio.** \(S_{k+1}\) is a union of affine copies of
-  \(S_k\) _minus_ a copy, and the ratio changes at every stage. There is no scaling map \(x \mapsto \lambda x\) fixing
+  required. This is the "generational" content: stage \(k\) closes the window \([p*k^2, p*{k+1}^2)\).
+- **The first failure is small and explicit.** \(121 = 11^2 \in S*4\) (it is coprime to \(210\)) and \(121 < P_4 =
+  210\), so the mod-210 lattice has a composite hole inside its first period. For \(k \le 3\) it does not: \(P_k \le p*
+  {k+1}^2\) holds iff \(p\_{k+1} \le 7\).
+- **The recursion is not exactly self-similar under any fixed ratio.** \(S*{k+1}\) is a union of affine copies of
+  \(S_k\) \_minus* a copy, and the ratio changes at every stage. There is no scaling map \(x \mapsto \lambda x\) fixing
   the limit object. Claims of log-periodicity in prime statistics should therefore be treated as _hypotheses to
   measure_, not consequences of F1. **Status: open, and easy to fool yourself about.**
 
@@ -129,36 +129,36 @@ Consequently:
 
 The A/B fork of `paper.md` is exactly a choice of how far to follow the recursion of Claim F1.
 
-|                                 | follows F1                                                      | consequence                                                                                                                                                                                                                        |
-| ------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Algorithm A** (`paper.md` §3) | to every stage, exactly                                         | deletion sets stay disjoint (\(p\cdot S_k\) for distinct \(p\) never collide because each is indexed by smallest prime factor) ⇒ **one touch per composite**; but the number of live affine copies grows like \(N^{0.75}\)         |
-| **Algorithm B** (`paper.md` §4) | to stage \(w\) only, then reuses \(S_w\) for _all_ later primes | every prime \(p > p_w\) deletes \(p\cdot S_w \supseteq p\cdot S_{k(p)}\) — an over-large copy ⇒ deletion sets overlap, each composite claimed \(\omega_{>p_w}(m)\) times (≈2–2.5), but state collapses to \(\pi(\sqrt N)\) records |
+|                                 | follows F1                                                       | consequence                                                                                                                                                                                                                         |
+| ------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Algorithm A** (`paper.md` §3) | to every stage, exactly                                          | deletion sets stay disjoint (\(p\cdot S_k\) for distinct \(p\) never collide because each is indexed by smallest prime factor) ⇒ **one touch per composite**; but the number of live affine copies grows like \(N^{0.75}\)          |
+| **Algorithm B** (`paper.md` §4) | to stage \(w\) only, then reuses \(S*w\) for \_all* later primes | every prime \(p > p*w\) deletes \(p\cdot S_w \supseteq p\cdot S*{k(p)}\) — an over-large copy ⇒ deletion sets overlap, each composite claimed \(\omega\_{>p_w}(m)\) times (≈2–2.5), but state collapses to \(\pi(\sqrt N)\) records |
 
 In fractal language: **Algorithm B truncates the self-similar refinement at a fixed depth and then applies the
-depth-\(w\) template at every subsequent scale.** The duplicate-touch factor \(\ln\ln\sqrt N - \ln\ln p_w\) of
-`paper.md` §4.5 _is_ the accumulated error of that truncation, and its \(\ln\ln\) growth is the quantitative statement
+depth-\(w\) template at every subsequent scale.** The duplicate-touch factor \(\ln\ln\sqrt N - \ln\ln p*w\) of
+`paper.md` §4.5 \_is* the accumulated error of that truncation, and its \(\ln\ln\) growth is the quantitative statement
 that the lattice refines very slowly — which is exactly Mertens again.
 
 Likewise, Conjecture X1 (`paper.md` §2.4) has a clean fractal statement: **you cannot tabulate stage \(k\) in
-\(\mathrm{poly} (k)\) space**, because stage \(k\) has period \(P_k = e^{ (1+o (1))p_k}\). The fractal is cheap to
-_generate_ and expensive to _store_, which is why the generator streams it instead.
+\(\mathrm{poly} (k)\) space**, because stage \(k\) has period \(P*k = e^{ (1+o (1))p_k}\). The fractal is cheap to
+\_generate* and expensive to _store_, which is why the generator streams it instead.
 
 ---
 
 ## 6. Summary
 
-- The recursion \(S_{k+1} = (\text{p tilings of } S_k) \setminus p\cdot S_k\) is **exact** (Claim F1), and the deleted
+- The recursion \(S\_{k+1} = (\text{p tilings of } S_k) \setminus p\cdot S_k\) is **exact** (Claim F1), and the deleted
   set is an affine copy of the previous stage — a genuine Moran/IFS construction.
-- That construction is the ownership partition \(\Theta_p = p\cdot A_p\); _the fractal and the stream decomposition are
-  one object._
+- That construction is the ownership partition \(\Theta*p = p\cdot A_p\); \_the fractal and the stream decomposition are
+  one object.*
 - It has measure zero and dimension one (Claim F2): dimension is the wrong invariant. Density \(\kappa_k\), deletion
   ratios \(1/p_k\), and Buchstab \(\omega\) are the right ones.
-- "Holes are the next primes" is exactly true on \([p_{k+1}, p_{k+1}^2)\) and false above it, first at \(121\) (Claim
+- "Holes are the next primes" is exactly true on \([p*{k+1}, p*{k+1}^2)\) and false above it, first at \(121\) (Claim
   F3). That window is the generational structure, and it is what makes the generator self-hosting.
 - Algorithm A follows the recursion to full depth (one touch, many streams); Algorithm B truncates it at depth \(w\)
   (bounded duplication, \(\pi (\sqrt N)\) streams). The duplication factor is the truncation error, and it is only
   \(\ln\ln\).
 
-**Open.** Sharp form of the \(\varphi (P_k)\)-to-\(\pi\) transfer in the window \([p_{k+1}, p_{k+1}^2)\); whether any
+**Open.** Sharp form of the \(\varphi (P*k)\)-to-\(\pi\) transfer in the window \([p*{k+1}, p\_{k+1}^2)\); whether any
 genuine log-periodicity survives the non-constant ratios of §4; and whether the Moran picture predicts the empirical \(S
 (N) \approx N^{0.75}\) of `paper.md` Conjecture A4. Measure before trusting any of these.

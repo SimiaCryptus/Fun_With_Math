@@ -299,7 +299,7 @@ consistent with the compiler signature shown in §8, rather than leaving the two
 Each DSL constraint/projection statement contributes one term:
 
 | DSL statement                   | Objective term                                           |
-| ------------------------------- | -------------------------------------------------------- |
+| ------------------------------- | -------------------------------------------------------- | -------------- | ------ |
 | `contrast(a, b, lightness > t)` | `max(0, t - (L(a) - L(b)))²` (or symmetric)              |
 | `similar(a, b, hue < t)`        | `max(0,                                                  | H(a) - H(b)    | - t)²` |
 | `balance(equal_chroma)`         | variance of chroma across referenced set                 |

@@ -116,6 +116,7 @@ shared budget is the mechanism behind the capacity discussion in §9.5.
 `W`-window_, not 2 points ever, so `k(R) ≤ 2(2R+1)` becomes `k_W(R) = Θ(R²)` (T2A.10) and `|A_R| ≤ 8` becomes
 `|A_R| = Θ(δ(W)·R)`. Every later section that leans on `|A_R| ≤ 8` (§7.5, T7.7, §9.3) is therefore a `W = ∞`
 statement; §7.6 and §8.8 re-derive the finite-`W` versions.
+
 ---
 
 ## 2A. The horizon `W`: local validity, and why it is the real parameter
@@ -616,7 +617,7 @@ prediction flips depending on its value — which is precisely why it must be me
 With `α = 1` (`k = Θ(R)`), and using T7.2 (`Θ(1)` per mark) and H8.2:
 
 | level               | time                       | live memory    | working set / ring            | unbounded?    |
-| ------------------- | -------------------------- | -------------- | ----------------------------- | ------------- |
+| ------------------- | -------------------------- | -------------- | ----------------------------- | ------------- | ------ | --- |
 | A0 oracle           | `Θ(                        | B(R)           | ·k) = Θ(R³)`                  | `Θ(k) = Θ(R)` | `Θ(R)` | yes |
 | A1 window sieve     | `Θ(R² + k² log R) = Θ̃(R²)` | `Θ(R²)` bits   | `Θ(R²)` bits                  | **no**        |
 | A1′ per-ring rescan | `Θ(k²R) = Θ(R³)`           | `Θ(R)`         | `Θ(R)`                        | yes           |

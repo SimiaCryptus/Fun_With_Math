@@ -23,9 +23,29 @@ export const EXPRESSIONS = [
 export const ACTIVE_PREDICATES = ['gt0', 'nonzero', 'ge2', 'lt0', 'eqMax', 'eqMin'];
 export const NEIGHBOR_METRICS = ['count', 'sum'];
 export const INITIAL_CONDITIONS = ['random', 'center', 'singleCell', 'stripes', 'empty'];
-export const TARGET_MODES = ['constant', 'gradientX', 'radial', 'oscillating', 'painted'];
+export const TARGET_MODES = ['constant', 'gradientX', 'radial', 'oscillating', 'painted', 'text'];
 export const OVERLAYS = ['none', 'u', 'integral', 'error', 'voltage', 'target'];
 export const TARGET_TOOLS = ['brush', 'line', 'rect', 'text'];
+export const TEXT_FONTS = ['sans', 'serif', 'mono'];
+export const TEXT_ALIGNS = ['left', 'center', 'right'];
+/**
+ * Keys whose change requires re-rasterising the text target field.
+ * (`target` is the background/paper value of the field.)
+ */
+export const TEXT_FIELD_KEYS = [
+  'targetMode',
+  'target',
+  'textFieldText',
+  'textFieldFit',
+  'textFieldValue',
+  'textFieldFont',
+  'textFieldBold',
+  'textFieldItalic',
+  'textFieldLineHeight',
+  'textFieldAlign',
+  'textFieldOffsetX',
+  'textFieldOffsetY',
+];
 
 // ---- bioelectrical membrane domain (bioelectrical.md §5, §6.3) ------------
 export const MODES = ['pid', 'membrane-only', 'pid-homeostat'];
@@ -51,6 +71,7 @@ export const GROUPS = [
   'Painting',
   'Playback',
   'Display',
+  'Colours',
 ];
 
 const isExpr =
@@ -196,8 +217,9 @@ export const SCHEMA = {
       radial: 'Radial field',
       oscillating: 'Time-oscillating',
       painted: 'Painted field T(c)',
+      text: 'Text field T(c) (auto-fit)',
     },
-    hint: 'Painted mode reads the per-cell target field drawn with the target paint tools.',
+    hint: 'Painted mode reads the field drawn with the target paint tools; text mode rasterises a centred, auto-fitted text block into it.',
   },
   target: {
     group: 'Target',
@@ -207,7 +229,7 @@ export const SCHEMA = {
     max: 24,
     step: 0.05,
     default: 4,
-    hint: 'Also the "erase" value and the fill value for the painted target field.',
+    hint: 'Also the "erase"/fill value for the painted field and the background (paper) value of the text field.',
   },
   targetAmplitude: {
     group: 'Target',
@@ -231,6 +253,101 @@ export const SCHEMA = {
     step: 1,
     default: 160,
     visible: (cfg) => cfg.targetMode === 'oscillating',
+  },
+  // ------------------------------------------------- text target field T(c)
+  textFieldText: {
+    group: 'Target',
+    label: 'Text (newlines allowed)',
+    type: 'textarea',
+    rows: 3,
+    default: 'PID\nCA',
+    visible: (cfg) => cfg.targetMode === 'text',
+    hint: 'Multi-line: press Enter for a new line. Rendered centred and auto-fitted into the grid.',
+  },
+  textFieldFit: {
+    group: 'Target',
+    label: 'Auto-fit max (% of grid)',
+    type: 'float',
+    min: 5,
+    max: 100,
+    step: 1,
+    default: 80,
+    visible: (cfg) => cfg.targetMode === 'text',
+    hint: 'Constrains the greater of the effective render width % or height %: max(w/W, h/H) = this value.',
+  },
+  textFieldValue: {
+    group: 'Target',
+    label: 'Text T value (ink)',
+    type: 'float',
+    min: -24,
+    max: 24,
+    step: 0.05,
+    default: 6,
+    visible: (cfg) => cfg.targetMode === 'text',
+    hint: 'T inside the glyphs; everywhere else the field holds the scalar T above.',
+  },
+  textFieldFont: {
+    group: 'Target',
+    label: 'Text font',
+    type: 'enum',
+    options: TEXT_FONTS,
+    default: 'sans',
+    optionLabels: { sans: 'Sans-serif', serif: 'Serif', mono: 'Monospace' },
+    visible: (cfg) => cfg.targetMode === 'text',
+  },
+  textFieldBold: {
+    group: 'Target',
+    label: 'Bold glyphs',
+    type: 'bool',
+    default: true,
+    visible: (cfg) => cfg.targetMode === 'text',
+  },
+  textFieldItalic: {
+    group: 'Target',
+    label: 'Italic glyphs',
+    type: 'bool',
+    default: false,
+    visible: (cfg) => cfg.targetMode === 'text',
+  },
+  textFieldLineHeight: {
+    group: 'Target',
+    label: 'Line height (× font size)',
+    type: 'float',
+    min: 0.6,
+    max: 3,
+    step: 0.05,
+    default: 1.1,
+    visible: (cfg) => cfg.targetMode === 'text',
+  },
+  textFieldAlign: {
+    group: 'Target',
+    label: 'Line alignment',
+    type: 'enum',
+    options: TEXT_ALIGNS,
+    default: 'center',
+    optionLabels: { left: 'Left', center: 'Centre', right: 'Right' },
+    visible: (cfg) => cfg.targetMode === 'text',
+    hint: 'The block as a whole is always centred on the grid.',
+  },
+  textFieldOffsetX: {
+    group: 'Target',
+    label: 'Offset X (% of width)',
+    type: 'float',
+    min: -50,
+    max: 50,
+    step: 0.5,
+    default: 0,
+    visible: (cfg) => cfg.targetMode === 'text',
+  },
+  textFieldOffsetY: {
+    group: 'Target',
+    label: 'Offset Y (% of height)',
+    type: 'float',
+    min: -50,
+    max: 50,
+    step: 0.5,
+    default: 0,
+    visible: (cfg) => cfg.targetMode === 'text',
   },
 
   // --------------------------------------------------------------- pid gains
@@ -843,9 +960,222 @@ export const SCHEMA = {
     type: 'bool',
     default: false,
   },
+  // ----------------------------------------------------------------- colours
+  // Every visual constant of renderer.js is a configuration key, so a palette
+  // travels with share links, presets and embedded widgets like any other
+  // parameter (§7.6, §7.8).
+  colorBackground: {
+    group: 'Colours',
+    label: 'Canvas background',
+    type: 'color',
+    default: '#05080c',
+    hint: 'Behind the cells; also used by the embedded widget frame.',
+  },
+  colorState0: {
+    group: 'Colours',
+    label: 'State 0 (neutral)',
+    type: 'color',
+    default: '#10151c',
+    visible: isPid,
+  },
+  colorStatePosLow: {
+    group: 'Colours',
+    label: 'State +1',
+    type: 'color',
+    default: '#4ec9b0',
+    visible: isPid,
+  },
+  colorStatePosHigh: {
+    group: 'Colours',
+    label: 'State +max',
+    type: 'color',
+    default: '#f0a24a',
+    visible: (cfg) => isPid(cfg) && cfg.stateMax > 1,
+    hint: 'Positive states are interpolated between +1 and +max.',
+  },
+  colorStateNegLow: {
+    group: 'Colours',
+    label: 'State −1',
+    type: 'color',
+    default: '#5684e0',
+    visible: (cfg) => isPid(cfg) && cfg.stateMin < 0,
+  },
+  colorStateNegHigh: {
+    group: 'Colours',
+    label: 'State −min',
+    type: 'color',
+    default: '#ba5ce2',
+    visible: (cfg) => isPid(cfg) && cfg.stateMin < -1,
+  },
+  colorPolarized: {
+    group: 'Colours',
+    label: 'Polarized (gate closed)',
+    type: 'color',
+    default: '#121c34',
+    visible: isMembrane,
+  },
+  colorFiring: {
+    group: 'Colours',
+    label: 'Firing (gate open)',
+    type: 'color',
+    default: '#f4f8ff',
+    visible: isMembrane,
+  },
+  colorRefractory: {
+    group: 'Colours',
+    label: 'Refractory',
+    type: 'color',
+    default: '#a83838',
+    visible: isMembrane,
+  },
+  colorOverlayMid: {
+    group: 'Colours',
+    label: 'Overlay zero',
+    type: 'color',
+    default: '#101218',
+    visible: (cfg) => cfg.overlay !== 'none',
+  },
+  colorOverlayLow: {
+    group: 'Colours',
+    label: 'Overlay negative',
+    type: 'color',
+    default: '#4682ff',
+    visible: (cfg) => cfg.overlay !== 'none',
+  },
+  colorOverlayHigh: {
+    group: 'Colours',
+    label: 'Overlay positive',
+    type: 'color',
+    default: '#ff7828',
+    visible: (cfg) => cfg.overlay !== 'none',
+  },
+  overlayAlpha: {
+    group: 'Colours',
+    label: 'Overlay opacity',
+    type: 'float',
+    min: 0,
+    max: 1,
+    step: 0.01,
+    default: 0.72,
+    visible: (cfg) => cfg.overlay !== 'none',
+  },
+  colorGridLines: {
+    group: 'Colours',
+    label: 'Grid line colour',
+    type: 'color',
+    default: '#ffffff',
+    visible: (cfg) => cfg.showGridLines,
+  },
+  gridLineAlpha: {
+    group: 'Colours',
+    label: 'Grid line opacity',
+    type: 'float',
+    min: 0,
+    max: 1,
+    step: 0.01,
+    default: 0.07,
+    visible: (cfg) => cfg.showGridLines,
+  },
 };
 
 export const CONFIG_KEYS = Object.keys(SCHEMA);
+/** Keys belonging to the Colours group (palette import/export helpers). */
+export const COLOR_KEYS = CONFIG_KEYS.filter((k) => SCHEMA[k].group === 'Colours');
+/** @returns {object} the default value of every colour key. */
+export function defaultColors() {
+  const out = {};
+  for (const key of COLOR_KEYS) out[key] = SCHEMA[key].default;
+  return out;
+}
+/** Ready-made palettes; `colors` is applied over `defaultColors()`. */
+export const COLOR_PRESETS = [
+  { name: 'Default (teal / amber)', colors: {} },
+  {
+    name: 'Monochrome',
+    colors: {
+      colorBackground: '#000000',
+      colorState0: '#0a0c0f',
+      colorStatePosLow: '#8f98a6',
+      colorStatePosHigh: '#ffffff',
+      colorStateNegLow: '#3a4250',
+      colorStateNegHigh: '#161a20',
+      colorPolarized: '#0a0c0f',
+      colorFiring: '#ffffff',
+      colorRefractory: '#555c68',
+      colorOverlayMid: '#0d0f12',
+      colorOverlayLow: '#5a6472',
+      colorOverlayHigh: '#e6ecf5',
+    },
+  },
+  {
+    name: 'Ember',
+    colors: {
+      colorBackground: '#0a0503',
+      colorState0: '#1a0f08',
+      colorStatePosLow: '#ff6b2c',
+      colorStatePosHigh: '#ffe08a',
+      colorStateNegLow: '#7a2f12',
+      colorStateNegHigh: '#3a1206',
+      colorPolarized: '#1a0f08',
+      colorFiring: '#fff3d0',
+      colorRefractory: '#8c2b16',
+      colorOverlayMid: '#140b06',
+      colorOverlayLow: '#8a4a1f',
+      colorOverlayHigh: '#ffd25a',
+    },
+  },
+  {
+    name: 'Ice',
+    colors: {
+      colorBackground: '#03080f',
+      colorState0: '#0a1420',
+      colorStatePosLow: '#4fc3f7',
+      colorStatePosHigh: '#e3f6ff',
+      colorStateNegLow: '#1f5f8b',
+      colorStateNegHigh: '#0d2b45',
+      colorPolarized: '#0a1420',
+      colorFiring: '#eaf8ff',
+      colorRefractory: '#2f6f9e',
+      colorOverlayMid: '#0a121c',
+      colorOverlayLow: '#2f6f9e',
+      colorOverlayHigh: '#bfe9ff',
+    },
+  },
+  {
+    name: 'Botanical',
+    colors: {
+      colorBackground: '#050a06',
+      colorState0: '#0d1710',
+      colorStatePosLow: '#7bd88f',
+      colorStatePosHigh: '#e8f7b0',
+      colorStateNegLow: '#3a6b53',
+      colorStateNegHigh: '#16301f',
+      colorPolarized: '#0d1710',
+      colorFiring: '#f2ffe0',
+      colorRefractory: '#5d7a3a',
+      colorOverlayMid: '#0b140d',
+      colorOverlayLow: '#3f7f6a',
+      colorOverlayHigh: '#d6f07a',
+    },
+  },
+  {
+    name: 'Paper (light)',
+    colors: {
+      colorBackground: '#f6f3ec',
+      colorState0: '#f2eee5',
+      colorStatePosLow: '#2d6a5a',
+      colorStatePosHigh: '#b4531f',
+      colorStateNegLow: '#2f4f8a',
+      colorStateNegHigh: '#6a2f8a',
+      colorPolarized: '#eae5da',
+      colorFiring: '#1b1a17',
+      colorRefractory: '#b06a6a',
+      colorOverlayMid: '#f2eee5',
+      colorOverlayLow: '#2f4f8a',
+      colorOverlayHigh: '#b4531f',
+    },
+  },
+];
 
 /** @returns {object} a fresh configuration containing every schema default. */
 export function defaultConfig() {
@@ -858,6 +1188,17 @@ function clamp(v, lo, hi) {
   if (typeof lo === 'number' && v < lo) return lo;
   if (typeof hi === 'number' && v > hi) return hi;
   return v;
+}
+/**
+ * Coerce a colour to canonical `#rrggbb`. Accepts `#rgb`, `rgb`, `rrggbb`.
+ * @returns {string|null} the normalised colour, or `fallback` when unparseable.
+ */
+export function normalizeHexColor(value, fallback = null) {
+  if (typeof value !== 'string') return fallback;
+  let s = value.trim().replace(/^#/, '');
+  if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return fallback;
+  return '#' + s.toLowerCase();
 }
 
 /**
@@ -884,7 +1225,8 @@ export function validateConfig(raw) {
     const spec = SCHEMA[key];
     let value = source[key];
     // Text parameters legitimately accept the empty string.
-    if (value === undefined || value === null || (value === '' && spec.type !== 'text')) continue;
+    const isTextual = spec.type === 'text' || spec.type === 'textarea';
+    if (value === undefined || value === null || (value === '' && !isTextual)) continue;
 
     switch (spec.type) {
       case 'int': {
@@ -909,8 +1251,18 @@ export function validateConfig(raw) {
         config[key] = value === 'false' ? false : Boolean(value);
         break;
       case 'text':
+      case 'textarea':
         config[key] = String(value);
         break;
+      case 'color': {
+        const hex = normalizeHexColor(value, null);
+        if (!hex) {
+          errors.push(key + ': "' + value + '" is not a #rrggbb colour');
+          break;
+        }
+        config[key] = hex;
+        break;
+      }
       case 'mask':
         config[key] = String(value).replace(/[^01]/g, '');
         break;
@@ -1017,8 +1369,10 @@ export function targetAt(cfg, x, y, t) {
         cfg.targetAmplitude * Math.sin((2 * Math.PI * t) / Math.max(2, cfg.targetPeriod))
       );
     // 'painted' is resolved per-cell from grid.targetField in simulation.js;
-    // the scalar T is the fallback / erase value.
+    // 'text' is rasterised into the same buffer. In both cases the scalar T is
+    // the fallback / background value.
     case 'painted':
+    case 'text':
     case 'constant':
     default:
       return cfg.target;

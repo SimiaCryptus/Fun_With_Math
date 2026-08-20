@@ -213,6 +213,18 @@ canvas {
 .ctl-num {
   width: 78px;
 }
+input[type='color'] {
+  width: 36px;
+  height: 26px;
+  padding: 1px 2px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  cursor: pointer;
+}
+.ctl-color {
+  flex: 0 0 auto;
+}
 
 .ctl-hint {
   font-size: 11px;

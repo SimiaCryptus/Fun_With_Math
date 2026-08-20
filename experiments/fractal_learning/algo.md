@@ -239,12 +239,12 @@ tape can be large. Mitigations:
 
 Let $S = \binom{K+M-1}{M-1}$ be the orbit size.
 
-| Stage | Time | Space |
+| Stage                            | Time                    | Space                   |
 | -------------------------------- | ----------------------- | ----------------------- | ---------------------- | ---------- |
-| Binary powers $U_{k,r}$ | $O(M \log K \cdot d^3)$ | $O(M \log K \cdot d^2)$ |
-| DP over multisets (maps, §3.1) | $O(M\, S \cdot d^3)$ | $O(M\, S \cdot d^2)$ |
-| DP over multisets (points, §3.2) | $O(M\, S \cdot d^2)$ | $O(M\, S \cdot d)$ |
-| Chamfer loss vs $                | \mathcal{Q}             | =Q$ | $O(S \cdot Q \cdot d)$ | $O(S + Q)$ |
+| Binary powers $U_{k,r}$          | $O(M \log K \cdot d^3)$ | $O(M \log K \cdot d^2)$ |
+| DP over multisets (maps, §3.1)   | $O(M\, S \cdot d^3)$    | $O(M\, S \cdot d^2)$    |
+| DP over multisets (points, §3.2) | $O(M\, S \cdot d^2)$    | $O(M\, S \cdot d)$      |
+| Chamfer loss vs $                | \mathcal{Q}             | =Q$                     | $O(S \cdot Q \cdot d)$ | $O(S + Q)$ |
 
 Compared with the naive "compose each word from scratch" approach
 ($O(S \cdot M \log K \cdot d^3)$), the DP saves a factor of

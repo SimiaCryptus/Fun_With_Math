@@ -5,8 +5,15 @@
  * needs no UI code: declare it in SCHEMA and it appears here.
  */
 
-import { SCHEMA, GROUPS, toHashString } from './config.js';
-import { MEMBRANE_COLORS, buildStatePalette } from './renderer.js';
+import {
+  SCHEMA,
+  GROUPS,
+  toHashString,
+  diffFromDefaults,
+  COLOR_PRESETS,
+  defaultColors,
+} from './config.js';
+import { themeFromConfig, buildStatePalette, rgbCss } from './renderer.js';
 import { normalizeMask } from './grid.js';
 
 function el(tag, cls, text) {
@@ -171,6 +178,7 @@ export class UI {
     this.panel.textContent = '';
     this.sections.clear();
     this.panel.appendChild(this._buildPresetSection());
+    this.panel.appendChild(this._buildEmbedSection());
 
     for (const group of GROUPS) {
       const keys = Object.keys(SCHEMA).filter((k) => SCHEMA[k].group === group);
@@ -180,6 +188,8 @@ export class UI {
       const body = el('div', 'group-body');
       for (const key of keys) body.appendChild(this._buildControl(key, SCHEMA[key]));
       if (group === 'Painting') body.appendChild(this._buildTargetFieldTools());
+      if (group === 'Target') body.appendChild(this._buildTextFieldTools());
+      if (group === 'Colours') body.appendChild(this._buildColorTools());
       section.append(header, body);
       this._makeCollapsible(section, header);
       this.sections.set(group, section);
@@ -213,6 +223,55 @@ export class UI {
     this._toggleTargetOverlayBtn = show;
     row.append(fillT, fillValue, clearT, use, show);
     this._targetToolsRow = row;
+    return row;
+  }
+  /** Actions for the text-driven target field (§3.2). */
+  _buildTextFieldTools() {
+    const row = el('div', 'row');
+    const rerender = el('button', null, 'Re-render text');
+    rerender.title = 'Rasterise the text block into T(c) again';
+    rerender.addEventListener('click', () => this.sim.renderTextField());
+    const show = el('button', null, 'Show T overlay');
+    show.addEventListener('click', () => {
+      const isTarget = this.config.get('overlay') === 'target';
+      this.config.set('overlay', isTarget ? 'none' : 'target');
+    });
+    this._textOverlayBtn = show;
+    const freeze = el('button', null, 'Freeze as painted');
+    freeze.title = 'Keep the rendered glyphs but switch to the painted field so you can edit them';
+    freeze.addEventListener('click', () =>
+      this.config.patch({ targetMode: 'painted', paintLayer: 'target' })
+    );
+    const info = el('span', 'hint', '');
+    this._textInfo = info;
+    row.append(rerender, show, freeze, info);
+    this._textToolsRow = row;
+    return row;
+  }
+  /**
+   * Palette presets + reset. Colours are ordinary config keys, so whatever is
+   * applied here also travels in share links and in the embed snippet (§7.8).
+   */
+  _buildColorTools() {
+    const row = el('div', 'row');
+    const select = el('select');
+    select.style.flex = '1 1 150px';
+    select.style.width = 'auto';
+    COLOR_PRESETS.forEach((preset, index) => {
+      const option = el('option');
+      option.value = String(index);
+      option.textContent = preset.name;
+      select.appendChild(option);
+    });
+    const apply = el('button', null, 'Apply palette');
+    apply.addEventListener('click', () => {
+      const preset = COLOR_PRESETS[Number(select.value)];
+      if (!preset) return;
+      this.config.patch({ ...defaultColors(), ...preset.colors });
+    });
+    const reset = el('button', null, 'Reset colours');
+    reset.addEventListener('click', () => this.config.patch(defaultColors()));
+    row.append(select, apply, reset);
     return row;
   }
   /** Wire a group header to toggle a `.collapsed` class on its section (§9). */
@@ -322,6 +381,178 @@ export class UI {
 
     section.append(header, body);
     this._makeCollapsible(section, header);
+    return section;
+  }
+  // ---------------------------------------------------------- embed widget
+  /** Absolute URL of the embeddable module, resolved against this module. */
+  _embedModuleUrl() {
+    try {
+      return new URL('./embed.js', import.meta.url).href;
+    } catch (err) {
+      return './js/embed.js';
+    }
+  }
+  /**
+   * Snippet generator (§7.8): emits a copy-pasteable `<div data-pidca>` +
+   * `<script type="module">` pair carrying the current configuration diff.
+   */
+  embedSnippet() {
+    const o = this._embedOpts;
+    const cfg = diffFromDefaults(this.config.toJSON());
+    if (o.cellSize > 0) cfg.cellSize = o.cellSize;
+    // Escape '<' so a stray "</script>" inside e.g. targetText cannot break out.
+    const json = JSON.stringify(cfg).replace(/</g, '\\u003c');
+    const attrs = [
+      'data-pidca',
+      'data-pidca-controls="' + o.controls + '"',
+      'data-pidca-autoplay="' + o.autoplay + '"',
+      'data-pidca-lazy="' + o.lazy + '"',
+      'data-pidca-interactive="' + o.interactive + '"',
+      'data-pidca-status="' + o.status + '"',
+    ].join(' ');
+    return [
+      '<!-- PID-regulated cellular automaton — embedded widget -->',
+      '<div ' + attrs + '>',
+      '  <script type="application/json" data-pidca-config>' + json + '<\/script>',
+      '</div>',
+      '<script type="module" src="' + this._embedModuleUrl() + '"><\/script>',
+    ].join('\n');
+  }
+  _refreshEmbedSnippet() {
+    if (this._embedSnippetBox) this._embedSnippetBox.value = this.embedSnippet();
+  }
+  /** Open a throwaway page containing only the generated snippet. */
+  _openEmbedPreview() {
+    const doc =
+      '<!doctype html><html><head><meta charset="utf-8">' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+      '<title>PID-CA embed preview</title></head>' +
+      '<body style="background:#0b0f14;color:#d8e2ef;margin:0;padding:24px;' +
+      'font:14px/1.5 ui-sans-serif,system-ui,sans-serif">' +
+      '<h1 style="font-size:16px">Embedded widget preview</h1>' +
+      this.embedSnippet() +
+      '</body></html>';
+    const url = URL.createObjectURL(new Blob([doc], { type: 'text/html' }));
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+  _buildEmbedSection() {
+    const section = el('section', 'group');
+    const header = el('h2', null, 'Embed widget');
+    const body = el('div', 'group-body');
+    body.appendChild(
+      el(
+        'p',
+        'hint',
+        'Renders the current configuration on any page — no build step, just an ES module. ' +
+          'The snippet updates automatically as you change parameters.'
+      )
+    );
+    const opts = (this._embedOpts = {
+      controls: 'minimal',
+      autoplay: true,
+      lazy: true,
+      interactive: false,
+      status: false,
+      cellSize: 0,
+    });
+    const ctlRow = (labelText, node, hint) => {
+      const row = el('div', 'ctl');
+      row.appendChild(el('label', 'ctl-label', labelText));
+      const field = el('div', 'ctl-field');
+      field.appendChild(node);
+      row.appendChild(field);
+      if (hint) row.appendChild(el('div', 'ctl-hint', hint));
+      return row;
+    };
+    const controlsSel = el('select');
+    for (const [value, label] of [
+      ['none', 'No controls (display only)'],
+      ['minimal', 'Play / step'],
+      ['full', 'Full (play, step, reset, clear, speed)'],
+    ]) {
+      const option = el('option');
+      option.value = value;
+      option.textContent = label;
+      controlsSel.appendChild(option);
+    }
+    controlsSel.value = opts.controls;
+    controlsSel.addEventListener('change', () => {
+      opts.controls = controlsSel.value;
+      this._refreshEmbedSnippet();
+    });
+    body.appendChild(ctlRow('Controls', controlsSel));
+    const checkbox = (key, labelText, hint) => {
+      const box = el('input');
+      box.type = 'checkbox';
+      box.checked = opts[key];
+      box.addEventListener('change', () => {
+        opts[key] = box.checked;
+        this._refreshEmbedSnippet();
+      });
+      return ctlRow(labelText, box, hint);
+    };
+    body.append(
+      checkbox('autoplay', 'Autoplay'),
+      checkbox('lazy', 'Start when scrolled into view'),
+      checkbox('interactive', 'Allow painting'),
+      checkbox('status', 'Show status read-out')
+    );
+    const cellNum = el('input', 'ctl-num');
+    cellNum.type = 'number';
+    cellNum.min = 0;
+    cellNum.max = 24;
+    cellNum.step = 1;
+    cellNum.value = '0';
+    cellNum.addEventListener('change', () => {
+      const n = Math.round(Number(cellNum.value) || 0);
+      opts.cellSize = Math.max(0, Math.min(24, n));
+      cellNum.value = String(opts.cellSize);
+      this._refreshEmbedSnippet();
+    });
+    body.appendChild(ctlRow('Cell size override (px)', cellNum, '0 = use the value above.'));
+    const textarea = el('textarea');
+    textarea.rows = 9;
+    textarea.spellcheck = false;
+    this._embedSnippetBox = textarea;
+    body.appendChild(textarea);
+    const row = el('div', 'row');
+    const copyBtn = el('button', 'primary', 'Copy snippet');
+    copyBtn.addEventListener('click', async () => {
+      this._refreshEmbedSnippet();
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+        copyBtn.textContent = 'Copied!';
+      } catch (err) {
+        textarea.select();
+        copyBtn.textContent = 'Select + copy';
+      }
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy snippet';
+      }, 1400);
+    });
+    const previewBtn = el('button', null, 'Preview in new tab');
+    previewBtn.title = 'Opens a blank page containing only the generated snippet';
+    previewBtn.addEventListener('click', () => this._openEmbedPreview());
+    const urlBtn = el('button', null, 'Copy module URL');
+    urlBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(this._embedModuleUrl());
+        urlBtn.textContent = 'Copied!';
+      } catch (err) {
+        urlBtn.textContent = this._embedModuleUrl();
+      }
+      setTimeout(() => {
+        urlBtn.textContent = 'Copy module URL';
+      }, 1400);
+    });
+    row.append(copyBtn, previewBtn, urlBtn);
+    body.appendChild(row);
+    section.append(header, body);
+    this._makeCollapsible(section, header);
+    section.classList.add('collapsed');
+    header.setAttribute('aria-expanded', 'false');
+    this._refreshEmbedSnippet();
     return section;
   }
 
@@ -456,6 +687,35 @@ export class UI {
         const s = v == null ? '' : String(v);
         if (input.value !== s) input.value = s;
       };
+    } else if (spec.type === 'color') {
+      // Native swatch + editable hex, so palettes can be pasted in.
+      const swatch = el('input', 'ctl-color');
+      swatch.type = 'color';
+      swatch.id = 'ctl-' + key;
+      swatch.addEventListener('input', () => this._push(key, swatch.value));
+      const hex = el('input', 'ctl-num');
+      hex.type = 'text';
+      hex.spellcheck = false;
+      hex.addEventListener('change', () => this._push(key, hex.value));
+      field.append(swatch, hex);
+      setValue = (v) => {
+        const s = String(v || '#000000');
+        if (swatch.value !== s) swatch.value = s;
+        if (document.activeElement !== hex && hex.value !== s) hex.value = s;
+      };
+    } else if (spec.type === 'textarea') {
+      // Multi-line text (newlines are part of the value and are shared/embedded).
+      const area = el('textarea', 'ctl-textarea');
+      area.id = 'ctl-' + key;
+      area.rows = spec.rows || 3;
+      area.spellcheck = false;
+      area.style.width = '100%';
+      area.addEventListener('input', () => this._push(key, area.value));
+      field.appendChild(area);
+      setValue = (v) => {
+        const s = v == null ? '' : String(v);
+        if (area.value !== s) area.value = s;
+      };
     } else {
       const range = el('input', 'ctl-range');
       range.type = 'range';
@@ -507,6 +767,9 @@ export class UI {
   syncFromConfig() {
     const cfg = this.config.all();
     if (this._statusMode !== cfg.mode) this._buildStatus(cfg.mode);
+    // Chrome around the canvas follows the configured background colour.
+    const wrap = this.canvas.parentElement;
+    if (wrap) wrap.style.background = cfg.colorBackground;
     this._applying = true;
     for (const [key, control] of this.controls) {
       control.setValue(cfg[key]);
@@ -524,6 +787,30 @@ export class UI {
       this._toggleTargetOverlayBtn.textContent =
         cfg.overlay === 'target' ? 'Hide T overlay' : 'Show T overlay';
     }
+    if (this._textToolsRow) {
+      this._textToolsRow.hidden = !(cfg.mode === 'pid' && cfg.targetMode === 'text');
+    }
+    if (this._textOverlayBtn) {
+      this._textOverlayBtn.textContent =
+        cfg.overlay === 'target' ? 'Hide T overlay' : 'Show T overlay';
+    }
+    if (this._textInfo) {
+      const m = this.sim.textFieldMetrics;
+      this._textInfo.textContent =
+        cfg.targetMode === 'text' && m
+          ? m.fontSize +
+            'px · ' +
+            m.width +
+            '×' +
+            m.height +
+            ' cells (' +
+            m.widthPercent.toFixed(0) +
+            '% × ' +
+            m.heightPercent.toFixed(0) +
+            '%)'
+          : '';
+    }
+    this._refreshEmbedSnippet();
     this._renderLegend();
     this.updateStatus();
   }
@@ -542,22 +829,22 @@ export class UI {
     if (!root) return;
     root.textContent = '';
 
-    const rgb = (c) =>
-      'rgb(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ')';
+    const theme = themeFromConfig(cfg);
+    const rgb = rgbCss;
 
     if (cfg.mode !== 'pid') {
       const names = ['polarized (gate closed)', 'firing (gate open)', 'refractory'];
       for (let s = 0; s < 3; s++) {
         const item = el('div', 'legend-item');
         const swatch = el('span', 'swatch');
-        swatch.style.background = rgb(MEMBRANE_COLORS[s]);
+        swatch.style.background = rgb(theme.membrane[s]);
         item.append(swatch, el('span', null, names[s]));
         root.appendChild(item);
       }
     } else {
       const min = Math.min(0, cfg.stateMin | 0);
       const max = Math.max(min, cfg.stateMax | 0);
-      const palette = buildStatePalette(min, max);
+      const palette = buildStatePalette(min, max, theme);
       const count = max - min + 1;
       const semantic = cfg.expression === 'semantic' && min === 0 && max >= 2;
       const nameOf = (s) => {
@@ -608,7 +895,16 @@ export class UI {
               ' (blue below, red above), ±' +
               cfg.overlayScale
             : 'overlay: ' + cfg.overlay + ' (blue −, red +), ±' + cfg.overlayScale;
-      item.append(el('span', 'swatch ramp'), el('span', null, label));
+      const ramp = el('span', 'swatch ramp');
+      ramp.style.background =
+        'linear-gradient(90deg,' +
+        rgb(theme.overlayCold) +
+        ',' +
+        rgb(theme.overlayMid) +
+        ',' +
+        rgb(theme.overlayWarm) +
+        ')';
+      item.append(ramp, el('span', null, label));
       root.appendChild(item);
     }
   }

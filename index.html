@@ -65,31 +65,7 @@
     <link rel="stylesheet" href="css/home-nav.css" />
     <script src="js/marked.min.js"></script>
     <!-- MathJax configuration must be set before the library loads -->
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [
-            ['$', '$'],
-            ['\\(', '\\)'],
-          ],
-          displayMath: [
-            ['$$', '$$'],
-            ['\\[', '\\]'],
-          ],
-          processEscapes: true,
-          processEnvironments: true,
-        },
-        options: {
-          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-          ignoreHtmlClass: 'tex2jax_ignore',
-          processHtmlClass: 'tex2jax_process',
-        },
-        svg: { fontCache: 'global' },
-        startup: {
-          typeset: false,
-        },
-      };
-    </script>
+    <script src="assets/js/index.js"></script>
     <script
       id="MathJax-script"
       async
@@ -231,10 +207,43 @@
         <span class="hero-badge-dot"></span>
         Interactive experiments · runs entirely in the browser
       </div>
-      <h1 class="hero-title">
-        <span class="hero-title-line">Mathematical</span>
-        <span class="hero-title-line hero-title-accent">Explorations</span>
-      </h1>
+
+      <div
+        data-pidca
+        data-pidca-controls="none"
+        data-pidca-autoplay="true"
+        data-pidca-lazy="true"
+        data-pidca-interactive="false"
+        data-pidca-status="false"
+      >
+        <script type="application/json" data-pidca-config>
+          {
+            "gridWidth": 332,
+            "gridHeight": 113,
+            "boundary": "fixed",
+            "radius": 2,
+            "neighborMetric": "sum",
+            "targetMode": "text",
+            "target": 0,
+            "textFieldText": "MATHEMATICAL\nEXPLORATIONS",
+            "textFieldFit": 95,
+            "textFieldValue": 4.2,
+            "kp": -0.22,
+            "ki": 0.01,
+            "kd": -0.27,
+            "integralMin": -5,
+            "integralMax": 5,
+            "stateMin": -1,
+            "seed": 544851,
+            "vRest": -43.5,
+            "vThreshold": -43.5,
+            "vClose": -62,
+            "kCoupling": 0.042
+          }
+        </script>
+      </div>
+      <script type="module" src="experiments/pid-ca/js/embed.js"></script>
+
       <p class="hero-lede">
         A collection of original interactive experiments in geometry, number theory, and dynamical
         systems; each lab is a small piece of in-browser mathematical research, not a textbook
@@ -243,66 +252,11 @@
         leverage to close the loops and publish; the questions, the intuitions, and the results are
         human.
       </p>
-      <p class="hero-tagline">
-        <span class="quote-mark">“</span>What happens when you poke a rigid structure with a single
-        irrational?<span class="quote-mark">”</span>
-      </p>
       <div class="hero-scroll" aria-hidden="true">
         <span class="hero-scroll-line"></span>
         <span class="hero-scroll-text">scroll</span>
       </div>
     </section>
-
-    <div class="intro-panel">
-      <div class="intro-panel-glow" aria-hidden="true"></div>
-      <h2>Start Here</h2>
-      <p>
-        Most of the labs below share a single recurring question:
-        <strong
-          >what happens to a clean algebraic or geometric structure when you introduce one carefully
-          chosen twist?</strong
-        >
-        A single irrational coordinate; a single symmetry edge wired into a diffusion graph; a
-        single causal direction imposed on a knot. It turns out that these small, deliberate
-        perturbations produce surprisingly rich behavior — and that watching the behavior emerge is
-        often more instructive than the answer itself.
-      </p>
-      <p>Three loose themes run through the featured labs:</p>
-      <ul class="theme-list">
-        <li>
-          <strong>Algebraic structure → emergent geometry.</strong>
-          <em>Pentagon Lattice</em> and <em>Irrational Lattice</em> both start with a number field
-          and watch geometry crystallize out of it; the field you put in — not the picture — turns
-          out to be the real invariant, yielding fractional dimension, aperiodic moiré, and
-          spinor-like holonomy.
-        </li>
-        <li>
-          <strong>Dynamics on symmetric or causal substrates.</strong>
-          <em>Space-Color Symmetry</em> and <em>Layered CA</em> wire symmetry orbits or substrate
-          colors directly into the dynamics; the result is diffusion that flows along a quotient
-          manifold, or a three-layer feedback loop between crawling agents and a Conway-Life host.
-        </li>
-        <li>
-          <strong>New metrics on familiar objects.</strong>
-          <em>Geometric Entropy</em> recasts the classical Erdős distinct-distance problem as a
-          continuous entropy optimization; <em>Spacelike Knots</em> equips a knot with a Minkowski
-          metric, so that every crossing becomes a causal inversion.
-        </li>
-      </ul>
-      <p class="intro-panel-footnote">
-        If you only have a few minutes, open
-        <strong>Pentagon Lattice Geometry</strong> or <strong>Spacelike Knots</strong>; they're the
-        most self-contained, the most novel, and the easiest to play with cold.
-      </p>
-      <p class="intro-panel-footnote">
-        <strong>A note on provenance:</strong> none of this is generated insight. Each lab grew from
-        a question I'd carried for years — sometimes decades — that simply never had the tooling to
-        be finished and shared at a level of effort that made sense. AI-assisted exploration
-        provided that leverage; it helped close the loops, build the visualizations, and handle the
-        publishing. The mathematics, the intuitions, and the judgment about what was worth chasing
-        are mine.
-      </p>
-    </div>
 
     <p class="section-title" id="featured">
       <span class="section-title-num">01</span>

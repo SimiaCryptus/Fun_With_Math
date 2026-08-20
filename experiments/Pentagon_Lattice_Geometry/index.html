@@ -346,41 +346,9 @@
     <script src="main.js" type="module"></script>
     <script src="marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <script>
-      // Initialize Mermaid in manual mode; we'll call mermaid.run() ourselves
-      // after each markdown render so dynamically-injected diagrams get drawn.
-      if (window.mermaid) {
-        window.mermaid.initialize({
-          startOnLoad: false,
-          theme: 'dark',
-          securityLevel: 'loose',
-        });
-      }
-    </script>
+    <script src="../../assets/js/experiments-pentagon_lattice_geometry-index.js"></script>
     <!-- MathJax configuration: must appear before the MathJax script -->
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [
-            ['$', '$'],
-            ['\\(', '\\)'],
-          ],
-          displayMath: [
-            ['$$', '$$'],
-            ['\\[', '\\]'],
-          ],
-          processEscapes: true,
-          processEnvironments: true,
-        },
-        options: {
-          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
-        },
-        startup: {
-          // Don't typeset the whole page on load; we'll call it manually.
-          typeset: false,
-        },
-      };
-    </script>
+    <script src="../../assets/js/experiments-pentagon_lattice_geometry-index-2.js"></script>
     <script
       async
       id="MathJax-script"

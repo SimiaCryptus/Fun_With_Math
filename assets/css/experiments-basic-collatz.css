@@ -1,0 +1,53 @@
+canvas {
+  display: block;
+  background: #0d1117;
+}
+#resultBox {
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  word-break: break-all;
+  line-height: 1.9;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+#statsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  padding: 0.5rem 0;
+}
+#statsRow strong {
+  color: var(--text);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+th,
+td {
+  text-align: right;
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+td:first-child,
+th:first-child {
+  text-align: left;
+}
+tr:hover td {
+  background: rgba(88, 166, 255, 0.05);
+}
+.peak-row td {
+  color: var(--accent2);
+}
