@@ -39,7 +39,7 @@ import {
   toPathRef,
   uniqueId,
   validateEntryFile,
-} from '../manifest/schema.ts';
+} from './manifest_schema.ts';
 
 /* ---------------------------------------------------------------- args */
 

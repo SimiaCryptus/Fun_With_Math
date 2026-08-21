@@ -12,7 +12,8 @@
  * Constants
  * ------------------------------------------------------------------ */
 
-export const MANIFEST_VERSION = 1 as const;
+/** Bumped to 2 when entries gained the autodiscovered `repo` block. */
+export const MANIFEST_VERSION = 2 as const;
 
 /** Filename of the per-directory sidecar written by `split-manifest`. */
 export const ENTRY_FILENAME = 'entry.json';
@@ -83,6 +84,7 @@ export const ENTRY_KEY_ORDER: readonly string[] = [
   'pitch',
   'tags',
   'hidden',
+   'repo',
 ];
 
 /** Key order used when regenerating the legacy manifests. */
@@ -95,6 +97,18 @@ export const LEGACY_KEY_ORDER: readonly string[] = [
   'subtitle',
   'launchLabel',
   'pitch',
+];
+/** Canonical key order inside an entry's `repo` block. */
+export const REPO_KEY_ORDER: readonly string[] = [
+   'url',
+   'remote',
+   'host',
+   'slug',
+   'path',
+   'subpath',
+   'commit',
+   'branch',
+   'submodule',
 ];
 
 /* ------------------------------------------------------------------ *
@@ -111,6 +125,52 @@ export const LEGACY_KEY_ORDER: readonly string[] = [
  * `resolvePathRef()` collapses all three into a root-relative path.
  */
 export type PathRef = string;
+/**
+  * Where an entry's source actually lives in version control.
+  *
+  * Autodiscovered by `build-manifest` from `.gitmodules` + `git submodule
+  * status`; anything written explicitly into an `entry.json` overrides the
+  * discovered value field-by-field.
+  */
+export interface RepoInfo {
+   /** Canonical browse URL, e.g. `https://github.com/user/project`. */
+   url?: string;
+   /** Raw remote as configured, when it differs from `url` (ssh, relative…). */
+   remote?: string;
+   /** Host inferred from `url`, e.g. `github.com`. */
+   host?: string;
+   /** Path within the host, e.g. `user/project`. */
+   slug?: string;
+   /** Root-relative checkout path (`''` = this repository). */
+   path?: string;
+   /** Path of the entry *inside* that repository (`''` = repo root). */
+   subpath?: string;
+   /** Pinned commit — the submodule gitlink, not a moving branch head. */
+   commit?: string;
+   /** Tracked branch, when `.gitmodules` declares one. */
+   branch?: string;
+   /** True when the checkout is a submodule of the outer repository. */
+   submodule?: boolean;
+}
+/** One `[submodule "…"]` stanza of a `.gitmodules` file. */
+export interface GitModule {
+   name: string;
+   /** Root-relative checkout path. */
+   path: string;
+   /** Raw `url =` value; may be relative (`../other.git`). */
+   url: string;
+   /** `branch =` value; `.` means "track the superproject's branch". */
+   branch?: string;
+}
+/** One line of `git submodule status`. */
+export interface SubmoduleStatus {
+   /** `' '` in sync, `'-'` uninitialized, `'+'` moved, `'U'` conflicted. */
+   state: ' ' | '-' | '+' | 'U';
+   commit: string;
+   path: string;
+   /** Ref shown in parentheses, with a leading `heads/` stripped. */
+   ref?: string;
+}
 
 /** The on-disk shape of a per-directory `entry.json`. */
 export interface EntryFile {
@@ -134,6 +194,11 @@ export interface EntryFile {
   tags?: string[];
   /** Excluded from the published manifest when true. */
   hidden?: boolean;
+   /**
+    * Optional override for repository discovery. A bare string is treated as
+    * the remote URL; an object overrides individual {@link RepoInfo} fields.
+    */
+   repo?: RepoInfo | string;
 }
 
 /** An entry after resolution, as it appears in the unified manifest. */
@@ -144,6 +209,8 @@ export interface ManifestEntry extends EntryFile {
   dir: string;
   /** Root-relative path of the sidecar it came from. */
   source: string;
+   /** Resolved repository provenance (always an object here, never a string). */
+   repo?: RepoInfo;
 }
 
 export interface UnifiedManifest {
@@ -253,6 +320,169 @@ export function resolveEntryPaths<T extends EntryFile>(entry: T, dir: string): T
   if (entry.video !== undefined) out.video = resolvePathRef(dir, entry.video);
   return out;
 }
+/* ------------------------------------------------------------------ *
+  * Git repository discovery (pure string helpers, no `node:` imports)
+  * ------------------------------------------------------------------ */
+/** Turn any remote spelling into a canonical, browsable https URL. */
+export function normalizeGitUrl(remote: string): string {
+   const raw = (remote ?? '').trim();
+   if (!raw) return '';
+   // Plain filesystem remotes are left alone: there is nothing to browse.
+   if (raw.startsWith('/') || raw.startsWith('.') || /^file:\/\//i.test(raw)) {
+     return raw.replace(/\/+$/, '');
+   }
+   let url = raw;
+   // scp-like shorthand: git@host:owner/name.git
+   const scp = /^(?:[^@\s/]+@)?([^\s:/]+):([^\s].*)$/.exec(url);
+   if (scp && !url.includes('://')) url = `https://${scp[1]}/${scp[2]}`;
+   url = url.replace(/^(?:ssh|git|git\+ssh|git\+https):\/\//i, 'https://');
+   url = url.replace(/^(https?:\/\/)[^/@]+@/i, '$1'); // drop embedded credentials
+   url = url.replace(/\/+$/, '').replace(/\.git$/i, '');
+   return url;
+}
+/** Resolve a relative submodule url (`../x.git`) against the outer remote. */
+export function resolveGitUrl(base: string, ref: string): string {
+   if (!/^\.{1,2}\//.test(ref)) return ref;
+   const b = normalizeGitUrl(base);
+   if (!b) return ref;
+   const m = /^([a-z][a-z0-9+.\-]*:\/\/[^/]+)(\/.*)?$/i.exec(b);
+   if (!m) return normalizePosix(`${b}/${ref}`);
+   const joined = normalizePosix(`${m[2] ?? '/'}/${ref}`);
+   return `${m[1]}${joined.startsWith('/') ? joined : `/${joined}`}`;
+}
+export function repoHost(url: string): string {
+   return /^[a-z][a-z0-9+.\-]*:\/\/([^/]+)/i.exec(url)?.[1] ?? '';
+}
+/** `https://github.com/user/project` → `user/project` (nested groups kept). */
+export function repoSlug(url: string): string {
+   const m = /^[a-z][a-z0-9+.\-]*:\/\/[^/]+\/(.+)$/i.exec(url);
+   if (!m) return '';
+   return m[1].replace(/^\/+|\/+$/g, '').replace(/\.git$/i, '');
+}
+/** Parse a `.gitmodules` file. Unknown sections and comments are ignored. */
+export function parseGitmodules(text: string): GitModule[] {
+   const out: GitModule[] = [];
+   let cur: Partial<GitModule> | null = null;
+   const commit = () => {
+     if (cur?.path) out.push({ name: cur.name || cur.path, path: cur.path, url: cur.url ?? '', branch: cur.branch });
+     cur = null;
+   };
+   for (const line of (text ?? '').split(/\r?\n/)) {
+     const trimmed = line.trim();
+     if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith(';')) continue;
+     if (trimmed.startsWith('[')) {
+       commit();
+       const section = /^\[submodule\s+"?([^"\]]*)"?\]$/i.exec(trimmed);
+       if (section) cur = { name: section[1] };
+       continue;
+     }
+     if (!cur) continue;
+     const kv = /^([A-Za-z0-9_-]+)\s*=\s*(.*)$/.exec(trimmed);
+     if (!kv) continue;
+     const key = kv[1].toLowerCase();
+     const value = kv[2].trim().replace(/^"|"$/g, '');
+     if (key === 'path') cur.path = normalizePosix(value.replace(/^\.\//, ''));
+     else if (key === 'url') cur.url = value;
+     else if (key === 'branch') cur.branch = value;
+   }
+   commit();
+   return out;
+}
+/**
+  * Parse `git submodule status` output (the same shape as `submodules.txt`):
+  * `" <sha> <path> (heads/main)"`, optionally prefixed with `-`, `+` or `U`.
+  */
+export function parseSubmoduleStatus(text: string): SubmoduleStatus[] {
+   const out: SubmoduleStatus[] = [];
+   for (const line of (text ?? '').split(/\r?\n/)) {
+     if (!line.trim()) continue;
+     const m = /^([-+U ]?)\s*([0-9a-f]{7,40})\s+(\S+)(?:\s+\((.*)\))?\s*$/i.exec(line);
+     if (!m) continue;
+     out.push({
+       state: ((m[1] || ' ') as SubmoduleStatus['state']),
+       commit: m[2],
+       path: normalizePosix(m[3]),
+       ref: m[4]?.replace(/^heads\//, ''),
+     });
+   }
+   return out;
+}
+/** Longest checkout path in `paths` that contains `dir`, or `null`. */
+export function matchRepoPath(dir: string, paths: readonly string[]): string | null {
+   const target = normalizePosix(dir);
+   let best: string | null = null;
+   for (const candidate of paths) {
+     const p = normalizePosix(candidate);
+     if (!p) continue;
+     if (target === p || target.startsWith(`${p}/`)) {
+       if (!best || p.length > best.length) best = p;
+     }
+   }
+   return best;
+}
+/** `relativeUnder('games', 'games/wordsearch')` → `'wordsearch'`. */
+export function relativeUnder(base: string, target: string): string {
+   const b = normalizePosix(base);
+   const t = normalizePosix(target);
+   if (!b) return t;
+   if (t === b) return '';
+   return t.startsWith(`${b}/`) ? t.slice(b.length + 1) : t;
+}
+/** Build a normalized, key-ordered {@link RepoInfo}, dropping empty fields. */
+export function makeRepoInfo(input: {
+   /** Remote as configured; may be scp-like or relative to `base`. */
+   remote?: string;
+   /** Outer remote, used to resolve relative submodule urls. */
+   base?: string;
+   path?: string;
+   subpath?: string;
+   commit?: string;
+   branch?: string;
+   submodule?: boolean;
+}): RepoInfo {
+   const remote = (input.remote ?? '').trim();
+   const absolute = remote ? resolveGitUrl(input.base ?? '', remote) : '';
+   const url = absolute ? normalizeGitUrl(absolute) : '';
+   const info: Record<string, unknown> = {};
+   if (url) info.url = url;
+   if (remote && remote !== url) info.remote = remote;
+   if (url) {
+     const host = repoHost(url);
+     const slug = repoSlug(url);
+     if (host) info.host = host;
+     if (slug) info.slug = slug;
+   }
+   if (input.path) info.path = normalizePosix(input.path);
+   if (input.subpath) info.subpath = normalizePosix(input.subpath);
+   if (input.commit) info.commit = input.commit;
+   if (input.branch) info.branch = input.branch;
+   if (input.submodule) info.submodule = true;
+   return orderKeys(info, REPO_KEY_ORDER) as RepoInfo;
+}
+/** Coerce the `repo` field of an `entry.json` into a {@link RepoInfo}. */
+export function normalizeRepoRef(value: RepoInfo | string | undefined): RepoInfo | undefined {
+   if (!value) return undefined;
+   if (typeof value === 'string') return value.trim() ? makeRepoInfo({ remote: value }) : undefined;
+   return orderKeys({ ...value } as Record<string, unknown>, REPO_KEY_ORDER) as RepoInfo;
+}
+/** Explicit (hand-authored) fields win over discovered ones. */
+export function mergeRepoInfo(explicit?: RepoInfo, discovered?: RepoInfo): RepoInfo | undefined {
+   if (!explicit && !discovered) return undefined;
+   const merged: Record<string, unknown> = { ...(discovered ?? {}) };
+   for (const [key, value] of Object.entries(explicit ?? {})) {
+     if (value !== undefined && value !== '') merged[key] = value;
+   }
+   return Object.keys(merged).length ? (orderKeys(merged, REPO_KEY_ORDER) as RepoInfo) : undefined;
+}
+/** Best-effort "view this entry's source" link. */
+export function repoBrowseUrl(repo?: RepoInfo, subpath?: string): string {
+   if (!repo?.url) return '';
+   const rel = normalizePosix(subpath ?? repo.subpath ?? '');
+   if (!rel) return repo.url;
+   const ref = repo.commit || repo.branch || 'HEAD';
+   const verb = /bitbucket/i.test(repo.host ?? '') ? 'src' : 'tree';
+   return `${repo.url}/${verb}/${ref}/${rel}`;
+}
 
 /* ------------------------------------------------------------------ *
  * Identity
@@ -325,6 +555,29 @@ export function compareEntries(a: ManifestEntry, b: ManifestEntry): number {
 
 const REQUIRED_STRINGS = ['id', 'icon', 'title', 'href'] as const;
 const OPTIONAL_STRINGS = ['section', 'subtitle', 'readme', 'video', 'launchLabel', 'pitch'] as const;
+/** Structural validation of an entry's `repo` override. */
+export function validateRepoRef(value: unknown, at: (msg: string) => string): string[] {
+   if (typeof value === 'string') {
+     return value.trim() ? [] : [at('"repo" must be a non-empty remote URL when given as a string')];
+   }
+   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+     return [at('"repo" must be a remote URL string or an object')];
+   }
+   const errors: string[] = [];
+   const r = value as Record<string, unknown>;
+   for (const key of REPO_KEY_ORDER) {
+     if (key === 'submodule') continue;
+     if (r[key] !== undefined && typeof r[key] !== 'string') {
+       errors.push(at(`"repo.${key}" must be a string when present`));
+     }
+   }
+   if (r.submodule !== undefined && typeof r.submodule !== 'boolean') {
+     errors.push(at('"repo.submodule" must be a boolean when present'));
+   }
+   const unknown = Object.keys(r).filter((k) => !REPO_KEY_ORDER.includes(k) && !isMetaKey(k));
+   if (unknown.length) errors.push(at(`unknown repo field(s): ${unknown.join(', ')}`));
+   return errors;
+}
 
 /** Structural validation. Returns a list of human-readable problems. */
 export function validateEntryFile(raw: unknown, source = '<memory>'): string[] {
@@ -364,6 +617,7 @@ export function validateEntryFile(raw: unknown, source = '<memory>'): string[] {
    if (typeof e.href === 'string' && (e.href.trim() === '/' || e.href.trim() === '.')) {
      errors.push(at('"href" must point at a file, not a bare directory root'));
    }
+    if (e.repo !== undefined) errors.push(...validateRepoRef(e.repo, at));
    const unknown = Object.keys(e).filter((k) => !ENTRY_KEY_ORDER.includes(k) && !isMetaKey(k));
   if (unknown.length) errors.push(at(`unknown field(s): ${unknown.join(', ')}`));
 
@@ -385,7 +639,8 @@ export function serializeJson(value: unknown): string {
 /** Strip the manifest-only bookkeeping fields for legacy consumers. */
 export function toLegacyEntry(entry: ManifestEntry): Record<string, unknown> {
   const resolved = resolveEntryPaths(entry, entry.dir);
-  const { id, category, section, order, dir, source, hidden, tags, ...rest } = resolved as ManifestEntry;
-  void id; void category; void section; void order; void dir; void source; void hidden; void tags;
+   const { id, category, section, order, dir, source, hidden, tags, repo, ...rest } =
+     resolved as ManifestEntry;
+   void id; void category; void section; void order; void dir; void source; void hidden; void tags; void repo;
   return orderKeys(rest as Record<string, unknown>, LEGACY_KEY_ORDER);
 }
