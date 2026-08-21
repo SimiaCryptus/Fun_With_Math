@@ -90,3 +90,7 @@
 	path = experiments/static-secrets
 	url = https://github.com/Simiacryptus/static-secrets.git
 	branch = main
+[submodule "experiments/symmetry_simple"]
+	path = experiments/symmetry_simple
+	url = https://github.com/Simiacryptus/symmetry-simple.git
+	branch = main
