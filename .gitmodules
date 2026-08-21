@@ -14,3 +14,7 @@
 	path = essays/QQN-Visuals
 	url = https://github.com/Simiacryptus/qqn-visuals.git
 	branch = main
+[submodule "essays/RCC"]
+	path = essays/RCC
+	url = https://github.com/Simiacryptus/rcc.git
+	branch = main
