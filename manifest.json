@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-21T15:47:37.977Z",
+  "generatedAt": "2026-08-21T18:52:14.841Z",
   "counts": {
     "lab": 18,
     "game": 6,
@@ -20,17 +20,14 @@
       "launchLabel": "Open the Pentagonal Lattice Geometry lab",
       "pitch": "A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy — a discrete model where a single loop requires two passes to return to identity.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/pentagon-lattice-geometry",
-        "remote": "https://github.com/Simiacryptus/pentagon-lattice-geometry.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/pentagon-lattice-geometry",
-        "path": "experiments/Pentagon_Lattice_Geometry",
-        "commit": "f286d1f0672be767034f2c63a21f105f2340ad5e",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "quadratics/Pentagon_Lattice_Geometry"
       },
-      "dir": "experiments/Pentagon_Lattice_Geometry",
-      "source": "experiments/Pentagon_Lattice_Geometry/entry.json"
+      "dir": "quadratics/Pentagon_Lattice_Geometry",
+      "source": "quadratics/Pentagon_Lattice_Geometry/entry.json"
     },
     {
       "id": "geometric-entropy",
@@ -44,17 +41,14 @@
       "video": "/videos/Geometric_Entropy.mp4",
       "pitch": "A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize the Shannon entropy of their pairwise-distance distribution.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/geometric-entropy",
-        "remote": "https://github.com/Simiacryptus/geometric-entropy.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/geometric-entropy",
-        "path": "experiments/geometric-entropy",
-        "commit": "8921435c865da4d3241beba13ed735863343cfeb",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "physics/geometric-entropy"
       },
-      "dir": "experiments/geometric-entropy",
-      "source": "experiments/geometric-entropy/entry.json"
+      "dir": "physics/geometric-entropy",
+      "source": "physics/geometric-entropy/entry.json"
     },
     {
       "id": "pid-ca",
@@ -69,17 +63,14 @@
       "launchLabel": "Open the PID-Regulated Cellular Automaton lab",
       "pitch": "A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor count against a target and computes proportional, integral, and derivative terms to decide its next state. The result is a rule family with local memory (integral windup), local anticipation (derivative), and tunable dynamical regimes — under-damped ripples, critically-damped blobs, over-damped glassy creep — all from the same control-theoretic mechanism.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/pid-ca",
-        "remote": "https://github.com/Simiacryptus/pid-ca.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/pid-ca",
-        "path": "experiments/pid-ca",
-        "commit": "fd40369a3bdbd6122efeb2fe5e7a9c3c7083b025",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "ca/pid-ca"
       },
-      "dir": "experiments/pid-ca",
-      "source": "experiments/pid-ca/entry.json"
+      "dir": "ca/pid-ca",
+      "source": "ca/pid-ca/entry.json"
     },
     {
       "id": "layered-ca",
@@ -93,17 +84,14 @@
       "video": "/videos/Binary_Coded_Layered_Autonoma.mp4",
       "pitch": "Langton's ants write a colored substrate that gates where Conway's Life is allowed to live. Three feedback layers — ants → substrate → life → substrate → ants — produce highways, colonies, and fractal boundaries. For a playable take on Conway's Life and 50+ other rulesets, see the sister site <a href=\"https://aol.cognotik.com/\" target=\"_blank\" rel=\"noopener\">The Arcade of Life ↗</a>.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/layered-ca",
-        "remote": "https://github.com/Simiacryptus/layered-ca.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/layered-ca",
-        "path": "experiments/layered_ca",
-        "commit": "b0973e3a6e73fad8d713ff486602e0be0c9f0c87",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "ca/layered_ca"
       },
-      "dir": "experiments/layered_ca",
-      "source": "experiments/layered_ca/entry.json"
+      "dir": "ca/layered_ca",
+      "source": "ca/layered_ca/entry.json"
     },
     {
       "id": "spacelike-knots",
@@ -117,17 +105,14 @@
       "video": "/videos/Spacelike_Knots.mp4",
       "pitch": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/spacelike-knots",
-        "remote": "https://github.com/Simiacryptus/spacelike-knots.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/spacelike-knots",
-        "path": "experiments/spacelike-knots",
-        "commit": "8d3fb0d0476947b79191d5ca176727951ade7f18",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "physics/spacelike-knots"
       },
-      "dir": "experiments/spacelike-knots",
-      "source": "experiments/spacelike-knots/entry.json"
+      "dir": "physics/spacelike-knots",
+      "source": "physics/spacelike-knots/entry.json"
     },
     {
       "id": "symmetry-simple",
@@ -141,17 +126,14 @@
       "video": "/videos/Symmetry_Diffusion.mp4",
       "pitch": "A pixel canvas where symmetry doesn't just mirror your strokes — it rewires the diffusion graph. Heat flows along symmetry orbits, producing kaleidoscope dynamics on a quotient-like manifold.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/symmetry-simple",
-        "remote": "https://github.com/Simiacryptus/symmetry-simple.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/symmetry-simple",
-        "path": "experiments/symmetry_simple",
-        "commit": "c3fdc5292f8abfc5feb096feef03a7159071b360",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "physics/symmetry_simple"
       },
-      "dir": "experiments/symmetry_simple",
-      "source": "experiments/symmetry_simple/entry.json"
+      "dir": "physics/symmetry_simple",
+      "source": "physics/symmetry_simple/entry.json"
     },
     {
       "id": "irrational-lattice",
@@ -165,17 +147,14 @@
       "video": "/videos/Irrational_Lattice.mp4",
       "pitch": "A new primitive: deterministic, algebraic “colored noise” for lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a nearest-lattice map — provably aperiodic, spectrally tunable, integer-arithmetic clean.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/irrational-lattice",
-        "remote": "https://github.com/Simiacryptus/irrational-lattice.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/irrational-lattice",
-        "path": "experiments/irrational_lattice",
-        "commit": "3516c3eb6f84066c23c36e25ddba94b734dc25f3",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "quadratics/irrational_lattice"
       },
-      "dir": "experiments/irrational_lattice",
-      "source": "experiments/irrational_lattice/entry.json"
+      "dir": "quadratics/irrational_lattice",
+      "source": "quadratics/irrational_lattice/entry.json"
     },
     {
       "id": "gravity",
@@ -190,17 +169,14 @@
       "launchLabel": "Open the Relativistic 2-Body Gravity lab",
       "pitch": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/gravity",
-        "remote": "https://github.com/Simiacryptus/gravity.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/gravity",
-        "path": "experiments/gravity",
-        "commit": "6dd5c6388c4440149b3c98d44a247ff02d75894d",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "physics/gravity"
       },
-      "dir": "experiments/gravity",
-      "source": "experiments/gravity/entry.json"
+      "dir": "physics/gravity",
+      "source": "physics/gravity/entry.json"
     },
     {
       "id": "markov-analysis",
@@ -214,17 +190,14 @@
       "launchLabel": "Open the Bidirectional Markov Text Analyzer lab",
       "pitch": "Build a language model from your own corpus, then watch another text light up token-by-token by how <em>surprising</em> it is. Forward and backward order-n Markov models are merged into a single surprise heatmap, with click-to-replace predictions, add-k smoothing, backoff, and live perplexity.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/markov-analysis",
-        "remote": "https://github.com/Simiacryptus/markov-analysis.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/markov-analysis",
-        "path": "experiments/markov-analysis",
-        "commit": "0ad5eae7c9814fa97087045d31b137265e4afabd",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "ca/markov-analysis"
       },
-      "dir": "experiments/markov-analysis",
-      "source": "experiments/markov-analysis/entry.json"
+      "dir": "ca/markov-analysis",
+      "source": "ca/markov-analysis/entry.json"
     },
     {
       "id": "mesh",
@@ -238,17 +211,14 @@
       "launchLabel": "Open the Constrained Mesh Enclosure Lab",
       "pitch": "A deformable surface mesh flows downhill on geometric fitness functionals (area, volume, edge-length entropy, angular regularity, Laplacian smoothness) while an exact continuous collision-detection pipeline guarantees it never intrudes into an inner keep-out volume — a differentiable shrink-wrap where every gradient step is clipped at the moment of contact.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/mesh",
-        "remote": "https://github.com/Simiacryptus/mesh.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/mesh",
-        "path": "experiments/mesh",
-        "commit": "64cd551ced71a6655759d028d8c1cdd279d76531",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "physics/mesh"
       },
-      "dir": "experiments/mesh",
-      "source": "experiments/mesh/entry.json"
+      "dir": "physics/mesh",
+      "source": "physics/mesh/entry.json"
     },
     {
       "id": "static-secrets",
@@ -261,17 +231,14 @@
       "readme": "README.md",
       "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/static-secrets",
-        "remote": "https://github.com/Simiacryptus/static-secrets.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/static-secrets",
-        "path": "experiments/static-secrets",
-        "commit": "fae395825f50c6b6d05f4cdc7795424f6ddba6ca",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "tools/static-secrets"
       },
-      "dir": "experiments/static-secrets",
-      "source": "experiments/static-secrets/entry.json"
+      "dir": "tools/static-secrets",
+      "source": "tools/static-secrets/entry.json"
     },
     {
       "id": "primegen",
@@ -285,17 +252,14 @@
       "launchLabel": "Open the Prime Sieve as a Stack of Orthogonal Periodic Fields lab",
       "pitch": "An interactive essay on the periodic machinery underneath the primes: each prime emits an orthogonal exclusion field, their stacked product has primorial period, and CRT independence makes density multiplicative, entropy additive, and spectral support disjoint.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/primegen",
-        "remote": "https://github.com/Simiacryptus/primegen.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/primegen",
-        "path": "experiments/primegen",
-        "commit": "1c49da579c7d8488ff090f693de25338e26d6551",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "numbers/primegen"
       },
-      "dir": "experiments/primegen",
-      "source": "experiments/primegen/entry.json"
+      "dir": "numbers/primegen",
+      "source": "numbers/primegen/entry.json"
     },
     {
       "id": "nam-calculator",
@@ -309,17 +273,14 @@
       "launchLabel": "Open the nam interactive calculator",
       "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/nam-calculator",
-        "remote": "https://github.com/Simiacryptus/nam-calculator.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/nam-calculator",
-        "path": "experiments/nam-calculator",
-        "commit": "e6c9ca7e4f4453dea8fec090e68b661bdc87077e",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "numbers/nam-calculator"
       },
-      "dir": "experiments/nam-calculator",
-      "source": "experiments/nam-calculator/entry.json"
+      "dir": "numbers/nam-calculator",
+      "source": "numbers/nam-calculator/entry.json"
     },
     {
       "id": "fractal-learning",
@@ -356,17 +317,14 @@
       "launchLabel": "Open the Optimization Mechanics Visualizer lab",
       "pitch": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/optimization-mechanics",
-        "remote": "https://github.com/Simiacryptus/optimization-mechanics.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/optimization-mechanics",
-        "path": "experiments/optimization-mechanics",
-        "commit": "1b978cf4451c62ae97de382fe48d579b525c4dfb",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "optimization/optimization-mechanics"
       },
-      "dir": "experiments/optimization-mechanics",
-      "source": "experiments/optimization-mechanics/entry.json"
+      "dir": "optimization/optimization-mechanics",
+      "source": "optimization/optimization-mechanics/entry.json"
     },
     {
       "id": "chromatic",
@@ -380,17 +338,14 @@
       "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
       "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/chromatic",
-        "remote": "https://github.com/Simiacryptus/chromatic.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/chromatic",
-        "path": "experiments/chromatic",
-        "commit": "7bddd29f43f0766c94e6ce64e136f2d503683bc8",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "tools/chromatic"
       },
-      "dir": "experiments/chromatic",
-      "source": "experiments/chromatic/entry.json"
+      "dir": "tools/chromatic",
+      "source": "tools/chromatic/entry.json"
     },
     {
       "id": "no3sieve",
@@ -598,17 +553,14 @@
       "readme": "README.md",
       "pitch": "A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/qqn",
-        "remote": "https://github.com/Simiacryptus/qqn.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/qqn",
-        "path": "essays/QQN",
-        "commit": "b81deaa3bf2de228e40d4a419b4cd96e65f0a223",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "optimization/QQN"
       },
-      "dir": "essays/QQN",
-      "source": "essays/QQN/entry.json"
+      "dir": "optimization/QQN",
+      "source": "optimization/QQN/entry.json"
     },
     {
       "id": "qqn-visuals",
@@ -622,17 +574,14 @@
       "readme": "README.md",
       "pitch": "An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from \"which direction should I move?\" into \"where on this curve should I stop?\" — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of classical methods (gradient descent, momentum, L-BFGS, trust regions, OWL-QN) into points in one configuration space. <em>Built to make the geometry something you can feel, not just read.</em>",
       "repo": {
-        "url": "https://github.com/Simiacryptus/qqn-visuals",
-        "remote": "https://github.com/Simiacryptus/qqn-visuals.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/qqn-visuals",
-        "path": "essays/QQN-Visuals",
-        "commit": "cd7fc216629293b4738c35b6b9556071aacd7d33",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "optimization/QQN-Visuals"
       },
-      "dir": "essays/QQN-Visuals",
-      "source": "essays/QQN-Visuals/entry.json"
+      "dir": "optimization/QQN-Visuals",
+      "source": "optimization/QQN-Visuals/entry.json"
     },
     {
       "id": "rcc",
@@ -646,17 +595,14 @@
       "readme": "README.md",
       "pitch": "The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central separation algebraic irrationals vs. π and e. <em>It fixes the vocabulary the other two essays invoke.</em>",
       "repo": {
-        "url": "https://github.com/Simiacryptus/rcc",
-        "remote": "https://github.com/Simiacryptus/rcc.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/rcc",
-        "path": "essays/RCC",
-        "commit": "430c27d8ad8554f67c33ad8482de42cca32bf9fc",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "numbers/RCC"
       },
-      "dir": "essays/RCC",
-      "source": "essays/RCC/entry.json"
+      "dir": "numbers/RCC",
+      "source": "numbers/RCC/entry.json"
     },
     {
       "id": "pi-rcc",
@@ -670,17 +616,14 @@
       "readme": "README.md",
       "pitch": "A cubic-convergent iteration for π whose outer recurrence is <em>not</em> hypergeometric — it falls outside RCC's classified class, yet still attains optimal RC₁ cost. Develops derivative engineering and the tower of continua (ℚ → algebraic → analytic → elliptic/modular → periods). <em>Where RCC defines the cost classes, PI_RCC shows their boundary is permeable.</em>",
       "repo": {
-        "url": "https://github.com/Simiacryptus/pi-rcc",
-        "remote": "https://github.com/Simiacryptus/pi-rcc.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/pi-rcc",
-        "path": "essays/PI_RCC",
-        "commit": "3b2a9fb5b3b530b61338cbe8110190907a28f1b0",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "numbers/PI_RCC"
       },
-      "dir": "essays/PI_RCC",
-      "source": "essays/PI_RCC/entry.json"
+      "dir": "numbers/PI_RCC",
+      "source": "numbers/PI_RCC/entry.json"
     },
     {
       "id": "nam",
@@ -694,17 +637,14 @@
       "readme": "README.md",
       "pitch": "A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC's cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality. <em>Where RCC measures and PI_RCC engineers, NAM builds the machine that runs them all.</em>",
       "repo": {
-        "url": "https://github.com/Simiacryptus/nam",
-        "remote": "https://github.com/Simiacryptus/nam.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/nam",
-        "path": "essays/NAM",
-        "commit": "a175bd2960149d9e63073bd6019266b1065e0afe",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "numbers/NAM"
       },
-      "dir": "essays/NAM",
-      "source": "essays/NAM/entry.json"
+      "dir": "numbers/NAM",
+      "source": "numbers/NAM/entry.json"
     },
     {
       "id": "tel",
@@ -717,17 +657,14 @@
       "readme": "README.md",
       "pitch": "",
       "repo": {
-        "url": "https://github.com/Simiacryptus/tel",
-        "remote": "https://github.com/Simiacryptus/tel.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/tel",
-        "path": "essays/TEL",
-        "commit": "7d247d6770566144ea3f0faedf073e5280da4c5d",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "numbers/TEL"
       },
-      "dir": "essays/TEL",
-      "source": "essays/TEL/entry.json"
+      "dir": "numbers/TEL",
+      "source": "numbers/TEL/entry.json"
     }
   ]
 }

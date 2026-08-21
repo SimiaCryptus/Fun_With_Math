@@ -11,56 +11,59 @@
  *
  * Flags:
  *   --root=<path>   repository root (default: parent of scripts/)
+*   --roots=<a,b,c>    comma-separated scan roots (default: entire repo)
+*   --scan-roots-only  restrict the walk to SCAN_ROOTS from manifest_schema
+*   --max-depth=<n>    recursion limit per root (default: SCAN_MAX_DEPTH + 1)
  *   --out=<file>    output path (default: manifest.json)
  *   --legacy        also regenerate labs.json / games.json / essays.json
  *   --include-hidden  keep entries marked `"hidden": true`
  *   --no-verify     skip on-disk existence checks for href/readme/video
-  *   --no-git        skip git/submodule repository discovery
-  *   --git-remote=<name>       remote used for repo URLs (default: origin)
-  *   --submodule-status=<file> fallback for `git submodule status` output
-  *                             (default: submodules.txt)
-  *   --pin-head      also record the outer repo's HEAD commit/branch
+ *   --no-git        skip git/submodule repository discovery
+ *   --git-remote=<name>       remote used for repo URLs (default: origin)
+ *   --submodule-status=<file> fallback for `git submodule status` output
+ *                             (default: submodules.txt)
+ *   --pin-head      also record the outer repo's HEAD commit/branch
  *   --check         write nothing; exit 1 if any output would change
  *   --quiet         only print the summary
  */
 
-import { promises as fs } from 'node:fs';
+import {promises as fs} from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
-import { execFile } from 'node:child_process';
-import { promisify } from 'node:util';
+import {fileURLToPath} from 'node:url';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 
 import {
-  ENTRY_FILENAME,
-  ENTRY_KEY_ORDER,
-  LEGACY_SOURCES,
-  MANIFEST_FILENAME,
-  MANIFEST_VERSION,
-  SCAN_IGNORE,
-  SCAN_MAX_DEPTH,
-  SCAN_ROOTS,
-  type Category,
-  type EntryFile,
-  type ManifestEntry,
-   type RepoInfo,
-   type SubmoduleStatus,
-  type UnifiedManifest,
-  isExternal,
-  joinPosix,
-   makeRepoInfo,
-   matchRepoPath,
-   mergeRepoInfo,
-   normalizeRepoRef,
-  orderKeys,
-   parseGitmodules,
-   parseSubmoduleStatus,
-   relativeUnder,
-  resolveEntryPaths,
-  serializeJson,
-  toLegacyEntry,
-  compareEntries,
-  validateEntryFile,
+    type Category,
+    compareEntries,
+    ENTRY_FILENAME,
+    ENTRY_KEY_ORDER,
+    type EntryFile,
+    isExternal,
+    joinPosix,
+    LEGACY_SOURCES,
+    makeRepoInfo,
+    MANIFEST_FILENAME,
+    MANIFEST_VERSION,
+    type ManifestEntry,
+    matchRepoPath,
+    mergeRepoInfo,
+    normalizeRepoRef,
+    orderKeys,
+    parseGitmodules,
+    parseSubmoduleStatus,
+    relativeUnder,
+    type RepoInfo,
+    resolveEntryPaths,
+    SCAN_IGNORE,
+    SCAN_MAX_DEPTH,
+    SCAN_ROOTS,
+    serializeJson,
+    type SubmoduleStatus,
+    toLegacyEntry,
+    type UnifiedManifest,
+    validateEntryFile,
 } from './manifest_schema.ts';
 
 /* ---------------------------------------------------------------- args */
@@ -68,11 +71,29 @@ import {
 const argv = process.argv.slice(2);
 const flag = (name: string) => argv.includes(`--${name}`);
 const opt = (name: string, fallback: string) =>
-  argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3) ?? fallback;
+    argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3) ?? fallback;
+const listOpt = (name: string): string[] | null => {
+     const raw = argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
+     if (raw === undefined) return null;
+     return raw
+         .split(',')
+         .map((s) => s.trim().replace(/^\.\/+/, '').replace(/\/+$/, ''))
+         .filter((s) => s.length > 0);
+};
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(opt('root', path.join(HERE, '..')));
 const OUT = opt('out', MANIFEST_FILENAME);
+// `''` means "start at the repository root and walk everything". Sidecars live
+// wherever the submodule happens to be checked out (tools/, physics/, ca/, …),
+// so a fixed SCAN_ROOTS list silently drops entries as soon as a new top-level
+// directory appears. Opt back into the old behaviour with --scan-roots-only.
+const ROOTS = listOpt('roots') ?? (flag('scan-roots-only') ? [...SCAN_ROOTS] : ['']);
+// depth is counted relative to each scan root, so walking from '' costs one
+// extra level compared to walking from 'games'.
+const MAX_DEPTH = Number.isFinite(Number(opt('max-depth', '')))
+     ? Number(opt('max-depth', String(SCAN_MAX_DEPTH + 1)))
+     : SCAN_MAX_DEPTH + 1;
 const WRITE_LEGACY = flag('legacy');
 const INCLUDE_HIDDEN = flag('include-hidden');
 const VERIFY = !flag('no-verify');
@@ -83,213 +104,263 @@ const PIN_HEAD = flag('pin-head');
 const CHECK = flag('check');
 const QUIET = flag('quiet');
 
-const log = (...a: unknown[]) => { if (!QUIET) console.log(...a); };
+const log = (...a: unknown[]) => {
+    if (!QUIET) console.log(...a);
+};
 
 /* --------------------------------------------------------------- walk */
+// Full-tree scanning means we must be defensive about build/vendor junk that
+// SCAN_IGNORE may not have needed to list back when only labs/ and games/ were
+// walked.
+const IGNORED_DIRS = new Set<string>([
+     ...SCAN_IGNORE,
+     'node_modules',
+     'dist',
+     'build',
+     'out',
+     'target',
+     'vendor',
+     'coverage',
+     '__pycache__',
+     'venv',
+     'site-packages',
+]);
+
 
 async function* findEntryFiles(relDir: string, depth = 0): AsyncGenerator<string> {
-  if (depth > SCAN_MAX_DEPTH) return;
-  let dirents;
-  try {
-    dirents = await fs.readdir(path.join(ROOT, relDir), { withFileTypes: true });
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') return;
-    throw err;
-  }
-  for (const dirent of dirents) {
-    if (dirent.name.startsWith('.') && dirent.name !== ENTRY_FILENAME) continue;
-    const rel = joinPosix(relDir, dirent.name);
-    if (dirent.isDirectory()) {
-      if (SCAN_IGNORE.includes(dirent.name)) continue;
-      yield* findEntryFiles(rel, depth + 1);
-    } else if (dirent.isFile() && dirent.name === ENTRY_FILENAME) {
-      yield rel;
+     if (depth > MAX_DEPTH) return;
+    let dirents;
+    try {
+        dirents = await fs.readdir(path.join(ROOT, relDir), {withFileTypes: true});
+    } catch (err) {
+        if ((err as NodeJS.ErrnoException).code === 'ENOENT') return;
+        throw err;
     }
-  }
+    for (const dirent of dirents) {
+        if (dirent.name.startsWith('.') && dirent.name !== ENTRY_FILENAME) continue;
+         // joinPosix('', x) is not guaranteed to be x — handle the root case here.
+         const rel = relDir ? joinPosix(relDir, dirent.name) : dirent.name;
+        if (dirent.isDirectory()) {
+             if (IGNORED_DIRS.has(dirent.name)) continue;
+            yield* findEntryFiles(rel, depth + 1);
+        } else if (dirent.isFile() && dirent.name === ENTRY_FILENAME) {
+            yield rel;
+        }
+    }
 }
 
 async function exists(rel: string): Promise<boolean> {
-  try { await fs.access(path.join(ROOT, rel)); return true; } catch { return false; }
+    try {
+        await fs.access(path.join(ROOT, rel));
+        return true;
+    } catch {
+        return false;
+    }
 }
+
 /* ---------------------------------------------------------------- git */
 const execFileAsync = promisify(execFile);
+
 interface DiscoveredRepo {
-   path: string;
-   state: SubmoduleStatus['state'];
-   info: RepoInfo;
+    path: string;
+    state: SubmoduleStatus['state'];
+    info: RepoInfo;
 }
+
 interface GitContext {
-   root?: RepoInfo;
-   submodules: DiscoveredRepo[];
+    root?: RepoInfo;
+    submodules: DiscoveredRepo[];
 }
+
 async function git(...args: string[]): Promise<string | null> {
-   try {
-     const { stdout } = await execFileAsync('git', args, { cwd: ROOT, maxBuffer: 32 * 1024 * 1024 });
-     return stdout;
-   } catch {
-     return null; // git missing, not a repo, or command unsupported
-   }
+    try {
+        const {stdout} = await execFileAsync('git', args, {cwd: ROOT, maxBuffer: 32 * 1024 * 1024});
+        return stdout;
+    } catch {
+        return null; // git missing, not a repo, or command unsupported
+    }
 }
+
 async function readIfPresent(rel: string): Promise<string | null> {
-   try { return await fs.readFile(path.join(ROOT, rel), 'utf8'); } catch { return null; }
+    try {
+        return await fs.readFile(path.join(ROOT, rel), 'utf8');
+    } catch {
+        return null;
+    }
 }
+
 /**
-  * Discover the outer repository plus every submodule checkout.
-  *
-  * Only *stable* facts are recorded — remote URL, checkout path, and the pinned
-  * submodule gitlink. The outer repo's own HEAD is deliberately omitted because
-  * it changes on every commit, which would leave `--check` permanently stale;
-  * pass `--pin-head` when you really want it.
-  *
-  * Works without git installed too: `.gitmodules` plus a committed
-  * `submodules.txt` (`--submodule-status=`) is enough.
-  */
+ * Discover the outer repository plus every submodule checkout.
+ *
+ * Only *stable* facts are recorded — remote URL, checkout path, and the pinned
+ * submodule gitlink. The outer repo's own HEAD is deliberately omitted because
+ * it changes on every commit, which would leave `--check` permanently stale;
+ * pass `--pin-head` when you really want it.
+ *
+ * Works without git installed too: `.gitmodules` plus a committed
+ * `submodules.txt` (`--submodule-status=`) is enough.
+ */
 async function loadGitContext(): Promise<GitContext> {
-   if (!GIT) return { submodules: [] };
-   const remote = (await git('config', '--get', `remote.${GIT_REMOTE}.url`))?.trim() ?? '';
-   const headCommit = PIN_HEAD ? ((await git('rev-parse', 'HEAD'))?.trim() ?? '') : '';
-   const rawBranch = PIN_HEAD ? ((await git('rev-parse', '--abbrev-ref', 'HEAD'))?.trim() ?? '') : '';
-   const headBranch = rawBranch === 'HEAD' ? '' : rawBranch;
-   const root =
-     remote || headCommit
-       ? makeRepoInfo({ remote, commit: headCommit, branch: headBranch })
-       : undefined;
-   const modules = parseGitmodules((await readIfPresent('.gitmodules')) ?? '');
-   const statusText =
-     (await git('submodule', 'status', '--recursive')) ?? (await readIfPresent(STATUS_FILE)) ?? '';
-   const status = new Map(parseSubmoduleStatus(statusText).map((s) => [s.path, s]));
-   const submodules: DiscoveredRepo[] = [];
-   for (const mod of modules) {
-     const st = status.get(mod.path);
-     status.delete(mod.path);
-     submodules.push({
-       path: mod.path,
-       // Without any status source we cannot judge initialization: assume fine.
-       state: st?.state ?? (statusText ? '-' : ' '),
-       info: makeRepoInfo({
-         remote: mod.url,
-         base: remote,
-         path: mod.path,
-         commit: st?.commit,
-         // `branch = .` means "track the superproject's branch".
-         branch: mod.branch === '.' ? headBranch : mod.branch,
-         submodule: true,
-       }),
-     });
-   }
-   // Checkouts git knows about that `.gitmodules` does not (nested or stale).
-   for (const st of status.values()) {
-     submodules.push({
-       path: st.path,
-       state: st.state,
-       info: makeRepoInfo({ path: st.path, commit: st.commit, submodule: true }),
-     });
-   }
-   submodules.sort((a, b) => a.path.localeCompare(b.path));
-   if (!root && !submodules.length) log('  note     no git metadata found; entries will have no repo');
-   else log(`  git      ${submodules.length} submodule(s)${root?.url ? ` under ${root.url}` : ''}`);
-   return { root, submodules };
+    if (!GIT) return {submodules: []};
+    const remote = (await git('config', '--get', `remote.${GIT_REMOTE}.url`))?.trim() ?? '';
+    const headCommit = PIN_HEAD ? ((await git('rev-parse', 'HEAD'))?.trim() ?? '') : '';
+    const rawBranch = PIN_HEAD ? ((await git('rev-parse', '--abbrev-ref', 'HEAD'))?.trim() ?? '') : '';
+    const headBranch = rawBranch === 'HEAD' ? '' : rawBranch;
+    const root =
+        remote || headCommit
+            ? makeRepoInfo({remote, commit: headCommit, branch: headBranch})
+            : undefined;
+    const modules = parseGitmodules((await readIfPresent('.gitmodules')) ?? '');
+    const statusText =
+        (await git('submodule', 'status', '--recursive')) ?? (await readIfPresent(STATUS_FILE)) ?? '';
+    const status = new Map(parseSubmoduleStatus(statusText).map((s) => [s.path, s]));
+    const submodules: DiscoveredRepo[] = [];
+    for (const mod of modules) {
+        const st = status.get(mod.path);
+        status.delete(mod.path);
+        submodules.push({
+            path: mod.path,
+            // Without any status source we cannot judge initialization: assume fine.
+            state: st?.state ?? (statusText ? '-' : ' '),
+            info: makeRepoInfo({
+                remote: mod.url,
+                base: remote,
+                path: mod.path,
+                commit: st?.commit,
+                // `branch = .` means "track the superproject's branch".
+                branch: mod.branch === '.' ? headBranch : mod.branch,
+                submodule: true,
+            }),
+        });
+    }
+    // Checkouts git knows about that `.gitmodules` does not (nested or stale).
+    for (const st of status.values()) {
+        submodules.push({
+            path: st.path,
+            state: st.state,
+            info: makeRepoInfo({path: st.path, commit: st.commit, submodule: true}),
+        });
+    }
+    submodules.sort((a, b) => a.path.localeCompare(b.path));
+    if (!root && !submodules.length) log('  note     no git metadata found; entries will have no repo');
+    else log(`  git      ${submodules.length} submodule(s)${root?.url ? ` under ${root.url}` : ''}`);
+    return {root, submodules};
 }
+
 /** Which repository owns `dir`? Longest matching submodule wins, else the root. */
 function repoForDir(
-   dir: string,
-   ctx: GitContext,
-   source: string,
-   warnings: string[],
-   warned: Set<string>,
+    dir: string,
+    ctx: GitContext,
+    source: string,
+    warnings: string[],
+    warned: Set<string>,
 ): RepoInfo | undefined {
-   const match = matchRepoPath(dir, ctx.submodules.map((s) => s.path));
-   if (match) {
-     const sub = ctx.submodules.find((s) => s.path === match)!;
-     if (sub.state === '-' && !warned.has(sub.path)) {
-       warned.add(sub.path);
-       warnings.push(`${source}: submodule "${sub.path}" is not initialized — commit pin may be stale`);
-     }
-     const rel = relativeUnder(sub.path, dir);
-     return mergeRepoInfo(rel ? { subpath: rel } : undefined, sub.info);
-   }
-   if (!ctx.root) return undefined;
-   return mergeRepoInfo(dir ? { subpath: dir } : undefined, ctx.root);
+    const match = matchRepoPath(dir, ctx.submodules.map((s) => s.path));
+    if (match) {
+        const sub = ctx.submodules.find((s) => s.path === match)!;
+        if (sub.state === '-' && !warned.has(sub.path)) {
+            warned.add(sub.path);
+            warnings.push(`${source}: submodule "${sub.path}" is not initialized — commit pin may be stale`);
+        }
+        const rel = relativeUnder(sub.path, dir);
+        return mergeRepoInfo(rel ? {subpath: rel} : undefined, sub.info);
+    }
+    if (!ctx.root) return undefined;
+    return mergeRepoInfo(dir ? {subpath: dir} : undefined, ctx.root);
 }
 
 /* --------------------------------------------------------------- load */
 
 interface LoadResult {
-  entries: ManifestEntry[];
-  errors: string[];
-  warnings: string[];
+    entries: ManifestEntry[];
+    errors: string[];
+    warnings: string[];
 }
 
 async function loadEntries(gitContext: GitContext): Promise<LoadResult> {
-  const entries: ManifestEntry[] = [];
-  const errors: string[] = [];
-  const warnings: string[] = [];
-  const seenIds = new Map<string, string>();
-   const warnedRepos = new Set<string>();
+    const entries: ManifestEntry[] = [];
+    const errors: string[] = [];
+    const warnings: string[] = [];
+    const seenIds = new Map<string, string>();
+    const warnedRepos = new Set<string>();
 
-  const sources: string[] = [];
-  for (const root of SCAN_ROOTS) for await (const rel of findEntryFiles(root)) sources.push(rel);
-  sources.sort();
-
-  for (const source of sources) {
-    let raw: unknown;
-    try {
-      raw = JSON.parse(await fs.readFile(path.join(ROOT, source), 'utf8'));
-    } catch (err) {
-      errors.push(`${source}: invalid JSON — ${(err as Error).message}`);
-      continue;
-    }
-
-    const problems = validateEntryFile(raw, source);
-    if (problems.length) { errors.push(...problems); continue; }
-
-    const file = raw as EntryFile;
-    const dir = path.posix.dirname(source);
-    const category = file.category as Category;
-    const legacy = LEGACY_SOURCES.find((s) => s.category === category);
-
-    const previous = seenIds.get(file.id);
-    if (previous) { errors.push(`${source}: duplicate id "${file.id}" (also in ${previous})`); continue; }
-    seenIds.set(file.id, source);
-
-    if (file.hidden && !INCLUDE_HIDDEN) { log(`  hidden   ${source}`); continue; }
-     // Autodiscovered provenance; anything hand-written in the sidecar wins.
-     const repo = mergeRepoInfo(
-       normalizeRepoRef(file.repo),
-       repoForDir(dir, gitContext, source, warnings, warnedRepos),
+     // Set (not array) so overlapping --roots= values cannot double-count a file.
+     const discovered = new Set<string>();
+     for (const root of ROOTS) for await (const rel of findEntryFiles(root)) discovered.add(rel);
+     const sources = [...discovered].sort();
+     log(
+         `  scan     ${sources.length} ${ENTRY_FILENAME} file(s) under ` +
+         `${ROOTS.map((r) => r || '.').join(', ')} (max depth ${MAX_DEPTH})`,
      );
 
+    for (const source of sources) {
+        let raw: unknown;
+        try {
+            raw = JSON.parse(await fs.readFile(path.join(ROOT, source), 'utf8'));
+        } catch (err) {
+            errors.push(`${source}: invalid JSON — ${(err as Error).message}`);
+            continue;
+        }
 
-    const entry: ManifestEntry = orderKeys(
-      {
-        ...file,
-        section: file.section ?? legacy?.defaultSection ?? category,
-        order: file.order ?? Number.MAX_SAFE_INTEGER,
-         repo,
-        dir,
-        source,
-      } as unknown as Record<string, unknown>,
-      [...ENTRY_KEY_ORDER, 'dir', 'source'],
-    ) as unknown as ManifestEntry;
+        const problems = validateEntryFile(raw, source);
+        if (problems.length) {
+            errors.push(...problems);
+            continue;
+        }
 
-    if (VERIFY) {
-      const resolved = resolveEntryPaths(entry, dir);
-      for (const [field, value] of Object.entries({
-        href: resolved.href,
-        readme: resolved.readme,
-        video: resolved.video,
-      })) {
-        if (!value || isExternal(value)) continue;
-        const [clean] = value.split(/[?#]/);
-        if (!(await exists(clean))) warnings.push(`${source}: ${field} points at missing file "${clean}"`);
-      }
+        const file = raw as EntryFile;
+        const dir = path.posix.dirname(source);
+        const category = file.category as Category;
+        const legacy = LEGACY_SOURCES.find((s) => s.category === category);
+
+        const previous = seenIds.get(file.id);
+        if (previous) {
+            errors.push(`${source}: duplicate id "${file.id}" (also in ${previous})`);
+            continue;
+        }
+        seenIds.set(file.id, source);
+
+        if (file.hidden && !INCLUDE_HIDDEN) {
+            log(`  hidden   ${source}`);
+            continue;
+        }
+        // Autodiscovered provenance; anything hand-written in the sidecar wins.
+        const repo = mergeRepoInfo(
+            normalizeRepoRef(file.repo),
+            repoForDir(dir, gitContext, source, warnings, warnedRepos),
+        );
+
+
+        const entry: ManifestEntry = orderKeys(
+            {
+                ...file,
+                section: file.section ?? legacy?.defaultSection ?? category,
+                order: file.order ?? Number.MAX_SAFE_INTEGER,
+                repo,
+                dir,
+                source,
+            } as unknown as Record<string, unknown>,
+            [...ENTRY_KEY_ORDER, 'dir', 'source'],
+        ) as unknown as ManifestEntry;
+
+        if (VERIFY) {
+            const resolved = resolveEntryPaths(entry, dir);
+            for (const [field, value] of Object.entries({
+                href: resolved.href,
+                readme: resolved.readme,
+                video: resolved.video,
+            })) {
+                if (!value || isExternal(value)) continue;
+                const [clean] = value.split(/[?#]/);
+                if (!(await exists(clean))) warnings.push(`${source}: ${field} points at missing file "${clean}"`);
+            }
+        }
+
+        entries.push(entry);
     }
 
-    entries.push(entry);
-  }
-
-  entries.sort(compareEntries);
-  return { entries, errors, warnings };
+    entries.sort(compareEntries);
+    return {entries, errors, warnings};
 }
 
 /* -------------------------------------------------------------- write */
@@ -297,95 +368,105 @@ async function loadEntries(gitContext: GitContext): Promise<LoadResult> {
 const outputs = new Map<string, string>();
 
 function queue(rel: string, contents: string): void {
-  outputs.set(rel, contents);
+    outputs.set(rel, contents);
 }
 
 async function flush(): Promise<boolean> {
-  let drift = false;
-  for (const [rel, contents] of outputs) {
-    const absolute = path.join(ROOT, rel);
-    let current: string | null = null;
-    try { current = await fs.readFile(absolute, 'utf8'); } catch { /* new file */ }
+    let drift = false;
+    for (const [rel, contents] of outputs) {
+        const absolute = path.join(ROOT, rel);
+        let current: string | null = null;
+        try {
+            current = await fs.readFile(absolute, 'utf8');
+        } catch { /* new file */
+        }
 
-    if (current === contents) { log(`  ok       ${rel}`); continue; }
-    drift = true;
-    if (CHECK) { console.error(`  DRIFT    ${rel}`); continue; }
+        if (current === contents) {
+            log(`  ok       ${rel}`);
+            continue;
+        }
+        drift = true;
+        if (CHECK) {
+            console.error(`  DRIFT    ${rel}`);
+            continue;
+        }
 
-    await fs.mkdir(path.dirname(absolute), { recursive: true });
-    await fs.writeFile(absolute, contents, 'utf8');
-    log(`  ${current === null ? 'create' : 'update'}   ${rel}`);
-  }
-  return drift;
+        await fs.mkdir(path.dirname(absolute), {recursive: true});
+        await fs.writeFile(absolute, contents, 'utf8');
+        log(`  ${current === null ? 'create' : 'update'}   ${rel}`);
+    }
+    return drift;
 }
 
 /* ---------------------------------------------------------------- main */
 
 async function main(): Promise<void> {
-   const gitContext = await loadGitContext();
-   const { entries, errors, warnings } = await loadEntries(gitContext);
+    const gitContext = await loadGitContext();
+    const {entries, errors, warnings} = await loadEntries(gitContext);
 
-  if (errors.length) {
-    console.error('build-manifest: validation failed\n');
-    for (const e of errors) console.error(`  x ${e}`);
-    process.exitCode = 1;
-    return;
-  }
-
-  const counts: Record<string, number> = {};
-  for (const e of entries) counts[e.category] = (counts[e.category] ?? 0) + 1;
-
-  const manifest: UnifiedManifest = {
-    version: MANIFEST_VERSION,
-    // Deterministic output: reuse the previous timestamp when nothing else moved.
-    generatedAt: new Date().toISOString(),
-    counts,
-    entries,
-  };
-
-  // Keep `generatedAt` stable unless the payload actually changed, so `--check`
-  // and repeated builds do not create noisy diffs.
-  const previous = await fs.readFile(path.join(ROOT, OUT), 'utf8').catch(() => null);
-  if (previous) {
-    try {
-      const old = JSON.parse(previous) as UnifiedManifest;
-      const sameBody =
-        JSON.stringify({ ...old, generatedAt: '' }) === JSON.stringify({ ...manifest, generatedAt: '' });
-      if (sameBody && typeof old.generatedAt === 'string') manifest.generatedAt = old.generatedAt;
-    } catch { /* regenerate wholesale */ }
-  }
-
-  queue(OUT, serializeJson(manifest));
-
-  if (WRITE_LEGACY) {
-    for (const source of LEGACY_SOURCES) {
-      const doc: Record<string, unknown[]> = {};
-      for (const section of source.sections) doc[section] = [];
-      for (const entry of entries.filter((e) => e.category === source.category)) {
-        (doc[entry.section] ??= []).push(toLegacyEntry(entry));
-      }
-      queue(source.file, serializeJson(doc));
+    if (errors.length) {
+        console.error('build-manifest: validation failed\n');
+        for (const e of errors) console.error(`  x ${e}`);
+        process.exitCode = 1;
+        return;
     }
-  }
 
-  const drift = await flush();
+    const counts: Record<string, number> = {};
+    for (const e of entries) counts[e.category] = (counts[e.category] ?? 0) + 1;
 
-  if (warnings.length) {
-    console.warn('\nwarnings:');
-    for (const w of warnings) console.warn(`  ! ${w}`);
-  }
+    const manifest: UnifiedManifest = {
+        version: MANIFEST_VERSION,
+        // Deterministic output: reuse the previous timestamp when nothing else moved.
+        generatedAt: new Date().toISOString(),
+        counts,
+        entries,
+    };
 
-  const summary = Object.entries(counts).map(([k, v]) => `${v} ${k}${v === 1 ? '' : 's'}`).join(', ');
-   const repos = new Set(entries.map((e) => e.repo?.url || e.repo?.path).filter(Boolean));
-   const repoNote = GIT ? ` across ${repos.size} repo${repos.size === 1 ? '' : 's'}` : '';
-   console.log(`\nbuild-manifest: ${entries.length} entries (${summary})${repoNote} → ${OUT}`);
+    // Keep `generatedAt` stable unless the payload actually changed, so `--check`
+    // and repeated builds do not create noisy diffs.
+    const previous = await fs.readFile(path.join(ROOT, OUT), 'utf8').catch(() => null);
+    if (previous) {
+        try {
+            const old = JSON.parse(previous) as UnifiedManifest;
+            const sameBody =
+                JSON.stringify({...old, generatedAt: ''}) === JSON.stringify({...manifest, generatedAt: ''});
+            if (sameBody && typeof old.generatedAt === 'string') manifest.generatedAt = old.generatedAt;
+        } catch { /* regenerate wholesale */
+        }
+    }
 
-  if (CHECK && drift) {
-    console.error('build-manifest --check: output is stale, re-run without --check');
-    process.exitCode = 1;
-  }
+    queue(OUT, serializeJson(manifest));
+
+    if (WRITE_LEGACY) {
+        for (const source of LEGACY_SOURCES) {
+            const doc: Record<string, unknown[]> = {};
+            for (const section of source.sections) doc[section] = [];
+            for (const entry of entries.filter((e) => e.category === source.category)) {
+                (doc[entry.section] ??= []).push(toLegacyEntry(entry));
+            }
+            queue(source.file, serializeJson(doc));
+        }
+    }
+
+    const drift = await flush();
+
+    if (warnings.length) {
+        console.warn('\nwarnings:');
+        for (const w of warnings) console.warn(`  ! ${w}`);
+    }
+
+    const summary = Object.entries(counts).map(([k, v]) => `${v} ${k}${v === 1 ? '' : 's'}`).join(', ');
+    const repos = new Set(entries.map((e) => e.repo?.url || e.repo?.path).filter(Boolean));
+    const repoNote = GIT ? ` across ${repos.size} repo${repos.size === 1 ? '' : 's'}` : '';
+    console.log(`\nbuild-manifest: ${entries.length} entries (${summary})${repoNote} → ${OUT}`);
+
+    if (CHECK && drift) {
+        console.error('build-manifest --check: output is stale, re-run without --check');
+        process.exitCode = 1;
+    }
 }
 
 main().catch((err) => {
-  console.error(`build-manifest failed: ${(err as Error).message}`);
-  process.exitCode = 1;
+    console.error(`build-manifest failed: ${(err as Error).message}`);
+    process.exitCode = 1;
 });

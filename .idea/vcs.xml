@@ -2,36 +2,36 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/essays/NAM" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/essays/PI_RCC" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/essays/QQN" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/essays/QQN-Visuals" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/essays/RCC" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/essays/TEL" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ca/layered_ca" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ca/markov-analysis" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ca/pid-ca" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/3inline" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/Pentagon_Lattice_Geometry" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/chromatic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal_learning" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/geometric-entropy" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/gravity" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/irrational_lattice" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/layered_ca" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/markov-analysis" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/mesh" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/nam-calculator" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/no3sieve" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/optimization-mechanics" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/pid-ca" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/primegen" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/spacelike-knots" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/static-secrets" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/symmetry_simple" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/arcade-of-life" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/arithmatic-dynamics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/number-crush" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/stereo-tac-toe" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/vocal-parkour" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/wordsearch" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/numbers/NAM" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/numbers/PI_RCC" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/numbers/RCC" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/numbers/TEL" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/numbers/nam-calculator" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/numbers/primegen" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/optimization/QQN" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/optimization/QQN-Visuals" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/optimization/optimization-mechanics" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/physics/geometric-entropy" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/physics/gravity" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/physics/mesh" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/physics/spacelike-knots" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/physics/symmetry_simple" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/quadratics/Pentagon_Lattice_Geometry" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/quadratics/irrational_lattice" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tools/chromatic" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tools/static-secrets" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../Pentagon_Lattice_Geometry" vcs="Git" />
   </component>
 </project>

@@ -1,96 +1,380 @@
 <!doctype html>
-  <html lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
     <meta name="author" content="SimiaCryptus" />
-    
-    <meta name="description" content="A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC&#39;s cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…" />
+
+    <meta
+      name="description"
+      content="A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC&#39;s cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…"
+    />
     <title>NAM — Numbers as Machines — Mathematical Explorations</title>
-    <link rel="canonical" href="https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html" />
+    <link
+      rel="canonical"
+      href="https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html"
+    />
     <meta name="theme-color" content="#0a0a14" />
     <meta name="color-scheme" content="dark light" />
     <link rel="icon" type="image/png" href="../../icon.png" />
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Mathematical Explorations" />
     <meta property="og:title" content="NAM — Numbers as Machines — Mathematical Explorations" />
-    <meta property="og:description" content="A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC&#39;s cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…" />
-    <meta property="og:url" content="https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html" />
+    <meta
+      property="og:description"
+      content="A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC&#39;s cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…"
+    />
+    <meta
+      property="og:url"
+      content="https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html"
+    />
     <meta property="og:image" content="https://math.cognotik.com/og-image.png" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="NAM — Numbers as Machines — Mathematical Explorations" />
-    <meta name="twitter:description" content="A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC&#39;s cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…" />
+    <meta
+      name="twitter:description"
+      content="A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC&#39;s cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…"
+    />
     <meta name="twitter:image" content="https://math.cognotik.com/og-image.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-  :root{--bg:#0a0a14;--panel:#12121f;--ink:#e8e8f0;--muted:#a0a0b8;--accent:#7aa2ff;--accent2:#b78aff;--border:#23233a}
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;font-size:17px}
-  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-  .arrow{font-size:.9em}
-  nav{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,20,.82);backdrop-filter:blur(8px);z-index:10}
-  nav .brand{display:flex;align-items:center;gap:.5rem;font-weight:700}
-  nav .brand-glyph{font-size:1.3rem;color:var(--accent2)}
-  nav .spacer{flex:1}
-  nav .nav-link{color:var(--muted);font-size:.95rem}
-  main{max-width:820px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
-  .crumbs{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
-  .crumbs a{color:var(--muted)}
-  .page-head{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
-  .page-icon{width:54px;height:54px;flex:none;border-radius:14px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.05rem;background:linear-gradient(135deg,#1c2440,#2a1c40);border:1px solid var(--border);color:var(--accent)}
-  h1{font-family:'Fraunces',serif;font-weight:800;font-size:2.1rem;line-height:1.1;margin:0}
-  .subtitle{color:var(--muted);margin:.4rem 0 1.5rem}
-  .cta{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a14;font-weight:700;padding:.7rem 1.2rem;border-radius:10px;margin:0 .6rem 1.5rem 0}
-  .cta:hover{text-decoration:none;filter:brightness(1.08)}
-  .cta.ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
-  .media{margin:1.5rem 0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#000}
-  .media video{display:block;width:100%;height:auto}
-  article{font-size:1.02rem}
-  article h1,article h2,article h3,article h4{font-family:'Fraunces',serif;line-height:1.2;margin-top:2rem}
-  article h2{font-size:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
-  article h3{font-size:1.2rem}
-  article code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:#1a1a2a;padding:.15em .4em;border-radius:5px}
-  article pre{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;overflow:auto}
-  article pre code{background:none;padding:0}
-  article img{max-width:100%;height:auto;border-radius:10px}
-  article blockquote{border-left:3px solid var(--accent2);margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:var(--muted)}
-  article table{border-collapse:collapse;width:100%;margin:1rem 0}
-  article th,article td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left}
-  .mermaid{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;margin:1rem 0}
-  .related{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.5rem}
-  .related h2{font-family:'Fraunces',serif;font-size:1.2rem}
-  .related ul{list-style:none;padding:0;display:grid;gap:.4rem}
-  footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.9rem}
-  .footer-mark{font-size:1.6rem;color:var(--accent2);margin-top:1rem}
-  .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.5rem}
-  .hub-card{display:block;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
-  .hub-card:hover{border-color:var(--accent);text-decoration:none}
-  .hub-card h3{margin:.2rem 0 .4rem;font-family:'Fraunces',serif}
-  .hub-card p{margin:0;color:var(--muted);font-size:.92rem}
-  .badge{display:inline-block;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--accent2);border:1px solid var(--border);border-radius:999px;padding:.15rem .6rem;margin-bottom:.5rem}
-  </style>
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"NAM — Numbers as Machines","description":"A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC's cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…","url":"https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html","inLanguage":"en","author":{"@type":"Person","name":"SimiaCryptus"},"publisher":{"@type":"Organization","name":"Mathematical Explorations","url":"https://math.cognotik.com/"},"mainEntityOfPage":"https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Mathematical Explorations","item":"https://math.cognotik.com/"},{"@type":"ListItem","position":2,"name":"NAM — Numbers as Machines","item":"https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html"}]}]}</script>
-    
+      :root {
+        --bg: #0a0a14;
+        --panel: #12121f;
+        --ink: #e8e8f0;
+        --muted: #a0a0b8;
+        --accent: #7aa2ff;
+        --accent2: #b78aff;
+        --border: #23233a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', system-ui, sans-serif;
+        line-height: 1.65;
+        font-size: 17px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .arrow {
+        font-size: 0.9em;
+      }
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: rgba(10, 10, 20, 0.82);
+        backdrop-filter: blur(8px);
+        z-index: 10;
+      }
+      nav .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+      }
+      nav .brand-glyph {
+        font-size: 1.3rem;
+        color: var(--accent2);
+      }
+      nav .spacer {
+        flex: 1;
+      }
+      nav .nav-link {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      main {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 5rem;
+      }
+      .crumbs {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+      }
+      .crumbs a {
+        color: var(--muted);
+      }
+      .page-head {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .page-icon {
+        width: 54px;
+        height: 54px;
+        flex: none;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        font-size: 1.05rem;
+        background: linear-gradient(135deg, #1c2440, #2a1c40);
+        border: 1px solid var(--border);
+        color: var(--accent);
+      }
+      h1 {
+        font-family: 'Fraunces', serif;
+        font-weight: 800;
+        font-size: 2.1rem;
+        line-height: 1.1;
+        margin: 0;
+      }
+      .subtitle {
+        color: var(--muted);
+        margin: 0.4rem 0 1.5rem;
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #0a0a14;
+        font-weight: 700;
+        padding: 0.7rem 1.2rem;
+        border-radius: 10px;
+        margin: 0 0.6rem 1.5rem 0;
+      }
+      .cta:hover {
+        text-decoration: none;
+        filter: brightness(1.08);
+      }
+      .cta.ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--ink);
+      }
+      .media {
+        margin: 1.5rem 0;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #000;
+      }
+      .media video {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      article {
+        font-size: 1.02rem;
+      }
+      article h1,
+      article h2,
+      article h3,
+      article h4 {
+        font-family: 'Fraunces', serif;
+        line-height: 1.2;
+        margin-top: 2rem;
+      }
+      article h2 {
+        font-size: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.3rem;
+      }
+      article h3 {
+        font-size: 1.2rem;
+      }
+      article code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9em;
+        background: #1a1a2a;
+        padding: 0.15em 0.4em;
+        border-radius: 5px;
+      }
+      article pre {
+        background: #0d0d18;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        overflow: auto;
+      }
+      article pre code {
+        background: none;
+        padding: 0;
+      }
+      article img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      article blockquote {
+        border-left: 3px solid var(--accent2);
+        margin: 1rem 0;
+        padding: 0.2rem 0 0.2rem 1rem;
+        color: var(--muted);
+      }
+      article table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      article th,
+      article td {
+        border: 1px solid var(--border);
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+      }
+      .mermaid {
+        background: #0d0d18;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .related {
+        margin-top: 3rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+      }
+      .related h2 {
+        font-family: 'Fraunces', serif;
+        font-size: 1.2rem;
+      }
+      .related ul {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: 0.4rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .footer-mark {
+        font-size: 1.6rem;
+        color: var(--accent2);
+        margin-top: 1rem;
+      }
+      .hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .hub-card {
+        display: block;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem;
+      }
+      .hub-card:hover {
+        border-color: var(--accent);
+        text-decoration: none;
+      }
+      .hub-card h3 {
+        margin: 0.2rem 0 0.4rem;
+        font-family: 'Fraunces', serif;
+      }
+      .hub-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        margin-bottom: 0.5rem;
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Article",
+            "headline": "NAM — Numbers as Machines",
+            "description": "A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC's cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality.…",
+            "url": "https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html",
+            "inLanguage": "en",
+            "author": { "@type": "Person", "name": "SimiaCryptus" },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Mathematical Explorations",
+              "url": "https://math.cognotik.com/"
+            },
+            "mainEntityOfPage": "https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Mathematical Explorations",
+                "item": "https://math.cognotik.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "NAM — Numbers as Machines",
+                "item": "https://math.cognotik.com/companion/nam-numbers-as-machines-2/index.html"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
-  <nav>
+    <nav>
       <a class="brand" href="../../index.html">
         <span class="brand-glyph">∑</span>
         <span>Mathematical Explorations</span>
       </a>
       <span class="spacer"></span>
       <a class="nav-link" href="../../index.html">Interactive home <span class="arrow">↗</span></a>
-      <a class="nav-link" href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub <span class="arrow">↗</span></a>
+      <a
+        class="nav-link"
+        href="https://github.com/SimiaCryptus/Fun_With_Math"
+        target="_blank"
+        rel="noopener"
+        >GitHub <span class="arrow">↗</span></a
+      >
     </nav>
     <main>
       <div class="crumbs">
-        <a href="../../index.html">Home</a> ›
-        <a href="../index.html">Companion pages</a> ›
+        <a href="../../index.html">Home</a> › <a href="../index.html">Companion pages</a> ›
         <span>NAM — Numbers as Machines</span>
       </div>
       <div class="page-head">
@@ -100,188 +384,275 @@
           <p class="subtitle">Trilogy III · the executable substrate</p>
         </div>
       </div>
-      <p class="subtitle">A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC's cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality. <em>Where RCC measures and PI_RCC engineers, NAM builds the machine that runs them all.</em></p>
-      <p>
-        <a class="cta" href="../../essays/NAM/index.html">Open the interactive lab <span class="arrow">→</span></a>
-        
+      <p class="subtitle">
+        A generator-based numerics library where every number is a forkable, deterministic nano-VM
+        emitting an infinite digit stream. RCC's cost classes resurface here as generator
+        state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest
+        interval account of equality.
+        <em>Where RCC measures and PI_RCC engineers, NAM builds the machine that runs them all.</em>
       </p>
-      
-      <article><h1>Numbers as Machines</h1>
-<h2>An Essay on Treating Every Number as a Tiny, Running Program</h2>
-<p>Most of us learned numbers as <em>things</em>. A number is a value — something you write
-down, store in a box, and pull out when you need it. Three is three; π is a
-slightly awkward three-point-one-four-something that we round off and move on.
-This essay proposes a different way of seeing them, and it is not a metaphor: what
-if every number were instead a small, deterministic <em>machine</em> — a program that,
-when you ask it, hands you its next digit, and then the next, forever?</p>
-<p>That single shift in perspective turns out to be surprisingly productive. It
-reframes arithmetic, precision, randomness, and even the philosophy of what a
-number <em>is</em> — and it does so in a way that maps cleanly onto how computers
-actually work. This document is a tour of that idea: the theory, a little of the
-background it rests on, why it is genuinely interesting, and who might get
-something out of it.</p>
-<hr>
-<h2>The Core Idea</h2>
-<p>The whole framework balances on one tiny contract:</p>
-<pre><code>step : State → (digit, State)
+      <p>
+        <a class="cta" href="../../essays/NAM/index.html"
+          >Open the interactive lab <span class="arrow">→</span></a
+        >
+      </p>
+
+      <article>
+        <h1>Numbers as Machines</h1>
+        <h2>An Essay on Treating Every Number as a Tiny, Running Program</h2>
+        <p>
+          Most of us learned numbers as <em>things</em>. A number is a value — something you write
+          down, store in a box, and pull out when you need it. Three is three; π is a slightly
+          awkward three-point-one-four-something that we round off and move on. This essay proposes
+          a different way of seeing them, and it is not a metaphor: what if every number were
+          instead a small, deterministic <em>machine</em> — a program that, when you ask it, hands
+          you its next digit, and then the next, forever?
+        </p>
+        <p>
+          That single shift in perspective turns out to be surprisingly productive. It reframes
+          arithmetic, precision, randomness, and even the philosophy of what a number <em>is</em> —
+          and it does so in a way that maps cleanly onto how computers actually work. This document
+          is a tour of that idea: the theory, a little of the background it rests on, why it is
+          genuinely interesting, and who might get something out of it.
+        </p>
+        <hr />
+        <h2>The Core Idea</h2>
+        <p>The whole framework balances on one tiny contract:</p>
+        <pre><code>step : State → (digit, State)
 </code></pre>
-<p>In plain terms: a number is anything that, given its current internal state, can
-produce its next digit and tell you what state to be in next. That&#39;s it. A number
-is a machine you can <em>step</em>. You pull digits out one at a time, exactly as many as
-you need, and no more.</p>
-<p>From this one primitive, everything else is built as a combination of machines.
-Vectors are machines arranged over numbers; matrices are machines arranged over
-vectors; the nesting is uniform all the way up. Arithmetic becomes <em>composition</em> —
-adding two numbers means wiring their two machines together into a new one that
-emits the sum&#39;s digits. It turns out that this is not just a cute reframing; it is
-the same mathematical structure (a &quot;final coalgebra for the digit-stream functor,&quot;
-if you want the formal name) that mathematicians have used for decades to reason
-about infinite streams. The novelty here is not the underlying mathematics — it is
-the <em>unified interface</em>, where a humble fraction and a transcendental constant like
-π speak exactly the same protocol.</p>
-<h3>The &quot;UI&quot;: How You&#39;d Actually Touch It</h3>
-<p>Because a number is a running machine rather than a stored value, the way you
-interact with it has a distinct feel. A few gestures capture the spirit:</p>
-<ul>
-<li><strong>Pull digits on demand.</strong> You ask for fifty digits, you get fifty; you never
-&quot;run out of precision,&quot; because precision is generated, not pre-stored.</li>
-<li><strong>Fork a number.</strong> You can clone a number&#39;s machine mid-computation and explore
-two continuations in parallel — useful for comparison, speculative arithmetic,
-and metrics.</li>
-<li><strong>Change the base without changing the number.</strong> The base (decimal, hex, binary)
-is treated as a <em>codec</em> — a lens you look through — not part of the number
-itself. Swap the lens; the underlying machine is untouched.</li>
-<li><strong>Skip ahead, when you can.</strong> For certain numbers under certain lenses, you can
-jump directly to the billionth digit without computing the first billion — the
-famous trick behind the BBP formula for π in base 16.</li>
-<li><strong>Compare honestly.</strong> You can ask &quot;is x definitely less than y?&quot; or &quot;do these
-agree to twenty digits?&quot; — but you cannot ask &quot;are these exactly equal?&quot; and get
-an honest yes. More on why below.</li>
-</ul>
-<hr>
-<h2>A Little Background</h2>
-<p>None of the ingredients here are new, and the essay is refreshingly candid about
-that. The idea of a number as an unfolding process has deep roots: Cauchy
-sequences, Turing&#39;s 1936 computable reals, coinductive stream arithmetic, the
-p-adic numbers, and working exact-real-arithmetic systems like iRRAM all
-instantiate parts of this picture. What this project contributes is the
-<em>synthesis</em> — one protocol, one honest accounting of costs, and a clean separation
-between a number and the base you happen to read it in.</p>
-<p>The framing also comes with a companion body of critical analysis (perspectives
-from mathematics, software engineering, and hardware, plus a long Socratic
-dialogue) that stress-tests the claims and, importantly, marks where the idea
-reaches its limits rather than papering over them. That honesty is part of what
-makes the whole thing trustworthy.</p>
-<hr>
-<h2>Why It Is Interesting</h2>
-<p>Several consequences fall out of the &quot;numbers are machines&quot; stance that are worth
-dwelling on, because they are where the idea earns its keep.</p>
-<h3>1. Addition is secretly hard — and there&#39;s a fix.</h3>
-<p>Here is a puzzle that most people never notice: what is the first digit of
-<code>0.4999... + 0.5000...</code>? You <em>cannot</em> know it from any finite amount of looking,
-because a carry from arbitrarily deep in the expansion could ripple all the way up
-and flip everything. Standard digit-by-digit addition simply stalls. The classical
-fix — a <em>signed-digit</em> (redundant) representation, where digits can be negative —
-makes addition local again, and the machine can commit to digits with bounded
-look-ahead. It&#39;s a lovely example of a &quot;bug&quot; in our everyday notation that only
-becomes visible when you try to make it <em>run</em>.</p>
-<h3>2. Some numbers are cleaner than others.</h3>
-<p>The p-adic numbers — an alternate number system beloved by number theorists — turn
-out to be <em>easier</em> machines than the ordinary reals. Their digits commit
-<em>locally</em>: you can compute low-order digits from a finite handful of terms, with no
-&quot;tail oracle&quot; and no anxious interval-narrowing. The reals, by contrast, sometimes
-have to approximate their way to a digit. Seeing this asymmetry so starkly is one
-of the framework&#39;s quiet pleasures.</p>
-<h3>3. Complexity gets a memory-shaped ruler.</h3>
-<p>In this model, the &quot;hardness&quot; of a number is the <em>size of its machine&#39;s state</em> —
-how many coupled registers it needs to keep straight. Rationals need essentially
-one; quadratic irrationals like √2 need two; π and e seem to need a few more; and
-genuinely random-looking streams need state that grows without bound. This gives a
-concrete, implementation-level hierarchy of numerical complexity. The essay is
-admirably careful to call this a <em>conjecture</em> — an upper witness rather than a
-proven floor — but it is a compelling way to make &quot;some numbers are more
-complicated than others&quot; precise.
-This state-size hierarchy is a close cousin of the <em>cost</em> hierarchy developed in
-the companion essay <strong>Rational Certificate Complexity (RCC)</strong>, which ranks
-numbers not by how much <em>state</em> their machine carries but by how many <em>bits</em> its
-certificates cost as you demand more precision. Both essays reach the same
-verdict from different angles: algebraic irrationals like √2 are genuinely
-cheaper — smaller state, optimal bit-cost — than the classical series-engines for
-π. And both are made tangible in the <strong><code>nam</code> interactive lab</strong>, where you can
-watch these machines emit digits, fork, and refuse to lie about equality.</p>
-<h3>4. Randomness might just be hidden determinism.</h3>
-<p>If every number is a deterministic machine, then &quot;random&quot; numbers are simply
-numbers whose <em>generator is inaccessible</em> — hidden behind a one-way function
-(cryptography) or provably uncomputable (Chaitin&#39;s Ω). To someone reading the
-digit stream, all three cases look identical. The essay offers this as a <em>working
-stance</em>, not a settled truth — it openly flags that it conflates distinct
-philosophical categories — but it is a genuinely thought-provoking way to organize
-the zoo of &quot;unpredictable&quot; numbers.</p>
-<h3>5. Equality becomes honestly undecidable.</h3>
-<p>Perhaps the most philosophically bracing consequence: once a number is a
-non-halting machine, asking &quot;are these two numbers <em>exactly</em> equal?&quot; becomes
-undecidable in general (this is Rice&#39;s theorem, made operational). The system
-refuses to lie about it — it offers &quot;less than,&quot; &quot;agrees to N digits,&quot; and
-&quot;indistinguishable so far,&quot; but never a false claim of exact equality. There is a
-Futurama joke the essay leans on here: you can always <em>translate</em> the problem, but
-only into a language where the thing you actually wanted has become harder. That&#39;s
-the honest bill for the elegance.
-This principled refusal to fabricate an answer is exactly what the <strong><code>nam</code>
-interactive calculator</strong> puts on screen: a candid three-way verdict and a
-<code>pending (null)</code> where a digit genuinely cannot be established. The theory here
-and the calculator there are two faces of the same commitment to honest
-computation.</p>
-<hr>
-<h2>Who Might Find This Useful</h2>
-<p>This is an <em>architecture and ideas</em> piece more than a shipping product, so its
-audience is correspondingly broad:</p>
-<ul>
-<li><strong>Curious technically-minded readers</strong> who enjoy a good &quot;what if we looked at
-this completely differently?&quot; essay and want their assumptions about numbers
-gently upended.</li>
-<li><strong>Mathematicians and computer scientists</strong> interested in computable analysis,
-coalgebra, p-adics, or the theory of exact real arithmetic — who will recognize
-the roots and may enjoy the unifying framing.</li>
-<li><strong>Numerics and systems practitioners</strong> frustrated by the fragmentation of
-exact-arithmetic tools (MPFR, iRRAM, mpmath living in separate worlds), who will
-appreciate the argument for a single composable protocol.</li>
-<li><strong>Philosophers of mathematics</strong>, for whom the undecidability of equality and the
-&quot;randomness as encrypted determinism&quot; stance are live, unresolved test cases —
-the accompanying dialogue treats these with real seriousness.</li>
-<li><strong>Educators</strong>, who may find the &quot;numbers are little machines&quot; framing a
-surprisingly effective intuition pump for teaching carries, precision, and the
-limits of computation.</li>
-</ul>
-<hr>
-<h2>What to Take Away</h2>
-<p>The honest verdict — and the essay works hard to be honest — is that &quot;numbers as
-machines&quot; is not a wholesale replacement for the classical idea of a number so much
-as a <em>computational elaboration</em> of it. It makes the procedural content of numbers
-explicit: the cost of each digit, the locality (or non-locality) of arithmetic, the
-cheapness or expense of forking, and the precise point at which questions like &quot;are
-these equal?&quot; stop having computable answers.</p>
-<p>That last point is worth sitting with. By pushing the computational view of numbers
-as far as it will go and finding undecidability waiting at the core, the framework
-delivers a genuinely interesting <em>negative</em> result: the abstract, timeless
-conception of numbers keeps re-emerging whenever we try to eliminate it. Which is,
-perhaps, the most reassuring thing a radical reframing could tell us.</p>
-<p>Enjoy the tour — and if any of these threads pull at you, the deeper essay and its
-critical companions are where the real fun begins.</p>
-</article>
+        <p>
+          In plain terms: a number is anything that, given its current internal state, can produce
+          its next digit and tell you what state to be in next. That&#39;s it. A number is a machine
+          you can <em>step</em>. You pull digits out one at a time, exactly as many as you need, and
+          no more.
+        </p>
+        <p>
+          From this one primitive, everything else is built as a combination of machines. Vectors
+          are machines arranged over numbers; matrices are machines arranged over vectors; the
+          nesting is uniform all the way up. Arithmetic becomes <em>composition</em> — adding two
+          numbers means wiring their two machines together into a new one that emits the sum&#39;s
+          digits. It turns out that this is not just a cute reframing; it is the same mathematical
+          structure (a &quot;final coalgebra for the digit-stream functor,&quot; if you want the
+          formal name) that mathematicians have used for decades to reason about infinite streams.
+          The novelty here is not the underlying mathematics — it is the <em>unified interface</em>,
+          where a humble fraction and a transcendental constant like π speak exactly the same
+          protocol.
+        </p>
+        <h3>The &quot;UI&quot;: How You&#39;d Actually Touch It</h3>
+        <p>
+          Because a number is a running machine rather than a stored value, the way you interact
+          with it has a distinct feel. A few gestures capture the spirit:
+        </p>
+        <ul>
+          <li>
+            <strong>Pull digits on demand.</strong> You ask for fifty digits, you get fifty; you
+            never &quot;run out of precision,&quot; because precision is generated, not pre-stored.
+          </li>
+          <li>
+            <strong>Fork a number.</strong> You can clone a number&#39;s machine mid-computation and
+            explore two continuations in parallel — useful for comparison, speculative arithmetic,
+            and metrics.
+          </li>
+          <li>
+            <strong>Change the base without changing the number.</strong> The base (decimal, hex,
+            binary) is treated as a <em>codec</em> — a lens you look through — not part of the
+            number itself. Swap the lens; the underlying machine is untouched.
+          </li>
+          <li>
+            <strong>Skip ahead, when you can.</strong> For certain numbers under certain lenses, you
+            can jump directly to the billionth digit without computing the first billion — the
+            famous trick behind the BBP formula for π in base 16.
+          </li>
+          <li>
+            <strong>Compare honestly.</strong> You can ask &quot;is x definitely less than y?&quot;
+            or &quot;do these agree to twenty digits?&quot; — but you cannot ask &quot;are these
+            exactly equal?&quot; and get an honest yes. More on why below.
+          </li>
+        </ul>
+        <hr />
+        <h2>A Little Background</h2>
+        <p>
+          None of the ingredients here are new, and the essay is refreshingly candid about that. The
+          idea of a number as an unfolding process has deep roots: Cauchy sequences, Turing&#39;s
+          1936 computable reals, coinductive stream arithmetic, the p-adic numbers, and working
+          exact-real-arithmetic systems like iRRAM all instantiate parts of this picture. What this
+          project contributes is the <em>synthesis</em> — one protocol, one honest accounting of
+          costs, and a clean separation between a number and the base you happen to read it in.
+        </p>
+        <p>
+          The framing also comes with a companion body of critical analysis (perspectives from
+          mathematics, software engineering, and hardware, plus a long Socratic dialogue) that
+          stress-tests the claims and, importantly, marks where the idea reaches its limits rather
+          than papering over them. That honesty is part of what makes the whole thing trustworthy.
+        </p>
+        <hr />
+        <h2>Why It Is Interesting</h2>
+        <p>
+          Several consequences fall out of the &quot;numbers are machines&quot; stance that are
+          worth dwelling on, because they are where the idea earns its keep.
+        </p>
+        <h3>1. Addition is secretly hard — and there&#39;s a fix.</h3>
+        <p>
+          Here is a puzzle that most people never notice: what is the first digit of
+          <code>0.4999... + 0.5000...</code>? You <em>cannot</em> know it from any finite amount of
+          looking, because a carry from arbitrarily deep in the expansion could ripple all the way
+          up and flip everything. Standard digit-by-digit addition simply stalls. The classical fix
+          — a <em>signed-digit</em> (redundant) representation, where digits can be negative — makes
+          addition local again, and the machine can commit to digits with bounded look-ahead.
+          It&#39;s a lovely example of a &quot;bug&quot; in our everyday notation that only becomes
+          visible when you try to make it <em>run</em>.
+        </p>
+        <h3>2. Some numbers are cleaner than others.</h3>
+        <p>
+          The p-adic numbers — an alternate number system beloved by number theorists — turn out to
+          be <em>easier</em> machines than the ordinary reals. Their digits commit <em>locally</em>:
+          you can compute low-order digits from a finite handful of terms, with no &quot;tail
+          oracle&quot; and no anxious interval-narrowing. The reals, by contrast, sometimes have to
+          approximate their way to a digit. Seeing this asymmetry so starkly is one of the
+          framework&#39;s quiet pleasures.
+        </p>
+        <h3>3. Complexity gets a memory-shaped ruler.</h3>
+        <p>
+          In this model, the &quot;hardness&quot; of a number is the
+          <em>size of its machine&#39;s state</em> — how many coupled registers it needs to keep
+          straight. Rationals need essentially one; quadratic irrationals like √2 need two; π and e
+          seem to need a few more; and genuinely random-looking streams need state that grows
+          without bound. This gives a concrete, implementation-level hierarchy of numerical
+          complexity. The essay is admirably careful to call this a <em>conjecture</em> — an upper
+          witness rather than a proven floor — but it is a compelling way to make &quot;some numbers
+          are more complicated than others&quot; precise. This state-size hierarchy is a close
+          cousin of the <em>cost</em> hierarchy developed in the companion essay
+          <strong>Rational Certificate Complexity (RCC)</strong>, which ranks numbers not by how
+          much <em>state</em> their machine carries but by how many <em>bits</em> its certificates
+          cost as you demand more precision. Both essays reach the same verdict from different
+          angles: algebraic irrationals like √2 are genuinely cheaper — smaller state, optimal
+          bit-cost — than the classical series-engines for π. And both are made tangible in the
+          <strong><code>nam</code> interactive lab</strong>, where you can watch these machines emit
+          digits, fork, and refuse to lie about equality.
+        </p>
+        <h3>4. Randomness might just be hidden determinism.</h3>
+        <p>
+          If every number is a deterministic machine, then &quot;random&quot; numbers are simply
+          numbers whose <em>generator is inaccessible</em> — hidden behind a one-way function
+          (cryptography) or provably uncomputable (Chaitin&#39;s Ω). To someone reading the digit
+          stream, all three cases look identical. The essay offers this as a
+          <em>working stance</em>, not a settled truth — it openly flags that it conflates distinct
+          philosophical categories — but it is a genuinely thought-provoking way to organize the zoo
+          of &quot;unpredictable&quot; numbers.
+        </p>
+        <h3>5. Equality becomes honestly undecidable.</h3>
+        <p>
+          Perhaps the most philosophically bracing consequence: once a number is a non-halting
+          machine, asking &quot;are these two numbers <em>exactly</em> equal?&quot; becomes
+          undecidable in general (this is Rice&#39;s theorem, made operational). The system refuses
+          to lie about it — it offers &quot;less than,&quot; &quot;agrees to N digits,&quot; and
+          &quot;indistinguishable so far,&quot; but never a false claim of exact equality. There is
+          a Futurama joke the essay leans on here: you can always <em>translate</em> the problem,
+          but only into a language where the thing you actually wanted has become harder. That&#39;s
+          the honest bill for the elegance. This principled refusal to fabricate an answer is
+          exactly what the <strong><code>nam</code> interactive calculator</strong> puts on screen:
+          a candid three-way verdict and a <code>pending (null)</code> where a digit genuinely
+          cannot be established. The theory here and the calculator there are two faces of the same
+          commitment to honest computation.
+        </p>
+        <hr />
+        <h2>Who Might Find This Useful</h2>
+        <p>
+          This is an <em>architecture and ideas</em> piece more than a shipping product, so its
+          audience is correspondingly broad:
+        </p>
+        <ul>
+          <li>
+            <strong>Curious technically-minded readers</strong> who enjoy a good &quot;what if we
+            looked at this completely differently?&quot; essay and want their assumptions about
+            numbers gently upended.
+          </li>
+          <li>
+            <strong>Mathematicians and computer scientists</strong> interested in computable
+            analysis, coalgebra, p-adics, or the theory of exact real arithmetic — who will
+            recognize the roots and may enjoy the unifying framing.
+          </li>
+          <li>
+            <strong>Numerics and systems practitioners</strong> frustrated by the fragmentation of
+            exact-arithmetic tools (MPFR, iRRAM, mpmath living in separate worlds), who will
+            appreciate the argument for a single composable protocol.
+          </li>
+          <li>
+            <strong>Philosophers of mathematics</strong>, for whom the undecidability of equality
+            and the &quot;randomness as encrypted determinism&quot; stance are live, unresolved test
+            cases — the accompanying dialogue treats these with real seriousness.
+          </li>
+          <li>
+            <strong>Educators</strong>, who may find the &quot;numbers are little machines&quot;
+            framing a surprisingly effective intuition pump for teaching carries, precision, and the
+            limits of computation.
+          </li>
+        </ul>
+        <hr />
+        <h2>What to Take Away</h2>
+        <p>
+          The honest verdict — and the essay works hard to be honest — is that &quot;numbers as
+          machines&quot; is not a wholesale replacement for the classical idea of a number so much
+          as a <em>computational elaboration</em> of it. It makes the procedural content of numbers
+          explicit: the cost of each digit, the locality (or non-locality) of arithmetic, the
+          cheapness or expense of forking, and the precise point at which questions like &quot;are
+          these equal?&quot; stop having computable answers.
+        </p>
+        <p>
+          That last point is worth sitting with. By pushing the computational view of numbers as far
+          as it will go and finding undecidability waiting at the core, the framework delivers a
+          genuinely interesting <em>negative</em> result: the abstract, timeless conception of
+          numbers keeps re-emerging whenever we try to eliminate it. Which is, perhaps, the most
+          reassuring thing a radical reframing could tell us.
+        </p>
+        <p>
+          Enjoy the tour — and if any of these threads pull at you, the deeper essay and its
+          critical companions are where the real fun begins.
+        </p>
+      </article>
       <section class="related">
         <h2>More from Mathematical Explorations</h2>
         <ul>
-          <li><a href="../quadratic-quasi-newton/index.html">Quadratic Quasi-Newton</a> — A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS.</li>
-<li><a href="../which-direction-where-on-the-curve/index.html">Which Direction? → Where on the Curve?</a> — An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization…</li>
-<li><a href="../rcc-rational-certificate-complexity/index.html">RCC — Rational Certificate Complexity</a> — The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures…</li>
-<li><a href="../pi-rcc-the-simplest-increment-x-sin-x/index.html">PI_RCC — The Simplest Increment: x + sin(x)</a> — A cubic-convergent iteration for π whose outer recurrence is not hypergeometric — it falls outside RCC&#39;s…</li>
-<li><a href="../the-extension-ladder-one-way-to-watch-number-systems-grow/index.html">The Extension Ladder: One Way to Watch Number Systems Grow</a></li>
+          <li>
+            <a href="../quadratic-quasi-newton/index.html">Quadratic Quasi-Newton</a> — A new
+            optimization algorithm for smooth functions that interpolates between gradient descent
+            and L-BFGS.
+          </li>
+          <li>
+            <a href="../which-direction-where-on-the-curve/index.html"
+              >Which Direction? → Where on the Curve?</a
+            >
+            — An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer.
+            Reframes optimization…
+          </li>
+          <li>
+            <a href="../rcc-rational-certificate-complexity/index.html"
+              >RCC — Rational Certificate Complexity</a
+            >
+            — The foundation of the trilogy. Treats every convergence sequence as a rational
+            certificate engine, measures…
+          </li>
+          <li>
+            <a href="../pi-rcc-the-simplest-increment-x-sin-x/index.html"
+              >PI_RCC — The Simplest Increment: x + sin(x)</a
+            >
+            — A cubic-convergent iteration for π whose outer recurrence is not hypergeometric — it
+            falls outside RCC&#39;s…
+          </li>
+          <li>
+            <a href="../the-extension-ladder-one-way-to-watch-number-systems-grow/index.html"
+              >The Extension Ladder: One Way to Watch Number Systems Grow</a
+            >
+          </li>
         </ul>
       </section>
     </main>
     <footer>
-      <p>Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive experiments in geometry, number theory, and dynamical systems.</p>
+      <p>
+        Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive
+        experiments in geometry, number theory, and dynamical systems.
+      </p>
       <p class="footer-mark">∑</p>
     </footer>
   </body>
-  </html>
+</html>

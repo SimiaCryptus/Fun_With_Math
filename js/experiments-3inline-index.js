@@ -1,4 +1,4 @@
-import { NoThreeInLine } from './js/no-three-in-line.js';
+import { NoThreeInLine } from './no-three-in-line.js';
 
 const els = {
   loading: document.getElementById('loading'),

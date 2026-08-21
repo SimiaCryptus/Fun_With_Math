@@ -1,96 +1,386 @@
 <!doctype html>
-  <html lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
     <meta name="author" content="SimiaCryptus" />
-    
-    <meta name="description" content="The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…" />
+
+    <meta
+      name="description"
+      content="The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…"
+    />
     <title>RCC — Rational Certificate Complexity — Mathematical Explorations</title>
-    <link rel="canonical" href="https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html" />
+    <link
+      rel="canonical"
+      href="https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html"
+    />
     <meta name="theme-color" content="#0a0a14" />
     <meta name="color-scheme" content="dark light" />
     <link rel="icon" type="image/png" href="../../icon.png" />
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Mathematical Explorations" />
-    <meta property="og:title" content="RCC — Rational Certificate Complexity — Mathematical Explorations" />
-    <meta property="og:description" content="The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…" />
-    <meta property="og:url" content="https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html" />
+    <meta
+      property="og:title"
+      content="RCC — Rational Certificate Complexity — Mathematical Explorations"
+    />
+    <meta
+      property="og:description"
+      content="The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…"
+    />
+    <meta
+      property="og:url"
+      content="https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html"
+    />
     <meta property="og:image" content="https://math.cognotik.com/og-image.png" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="RCC — Rational Certificate Complexity — Mathematical Explorations" />
-    <meta name="twitter:description" content="The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…" />
+    <meta
+      name="twitter:title"
+      content="RCC — Rational Certificate Complexity — Mathematical Explorations"
+    />
+    <meta
+      name="twitter:description"
+      content="The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…"
+    />
     <meta name="twitter:image" content="https://math.cognotik.com/og-image.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-  :root{--bg:#0a0a14;--panel:#12121f;--ink:#e8e8f0;--muted:#a0a0b8;--accent:#7aa2ff;--accent2:#b78aff;--border:#23233a}
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;font-size:17px}
-  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-  .arrow{font-size:.9em}
-  nav{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,20,.82);backdrop-filter:blur(8px);z-index:10}
-  nav .brand{display:flex;align-items:center;gap:.5rem;font-weight:700}
-  nav .brand-glyph{font-size:1.3rem;color:var(--accent2)}
-  nav .spacer{flex:1}
-  nav .nav-link{color:var(--muted);font-size:.95rem}
-  main{max-width:820px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
-  .crumbs{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
-  .crumbs a{color:var(--muted)}
-  .page-head{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
-  .page-icon{width:54px;height:54px;flex:none;border-radius:14px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.05rem;background:linear-gradient(135deg,#1c2440,#2a1c40);border:1px solid var(--border);color:var(--accent)}
-  h1{font-family:'Fraunces',serif;font-weight:800;font-size:2.1rem;line-height:1.1;margin:0}
-  .subtitle{color:var(--muted);margin:.4rem 0 1.5rem}
-  .cta{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a14;font-weight:700;padding:.7rem 1.2rem;border-radius:10px;margin:0 .6rem 1.5rem 0}
-  .cta:hover{text-decoration:none;filter:brightness(1.08)}
-  .cta.ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
-  .media{margin:1.5rem 0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#000}
-  .media video{display:block;width:100%;height:auto}
-  article{font-size:1.02rem}
-  article h1,article h2,article h3,article h4{font-family:'Fraunces',serif;line-height:1.2;margin-top:2rem}
-  article h2{font-size:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
-  article h3{font-size:1.2rem}
-  article code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:#1a1a2a;padding:.15em .4em;border-radius:5px}
-  article pre{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;overflow:auto}
-  article pre code{background:none;padding:0}
-  article img{max-width:100%;height:auto;border-radius:10px}
-  article blockquote{border-left:3px solid var(--accent2);margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:var(--muted)}
-  article table{border-collapse:collapse;width:100%;margin:1rem 0}
-  article th,article td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left}
-  .mermaid{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;margin:1rem 0}
-  .related{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.5rem}
-  .related h2{font-family:'Fraunces',serif;font-size:1.2rem}
-  .related ul{list-style:none;padding:0;display:grid;gap:.4rem}
-  footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.9rem}
-  .footer-mark{font-size:1.6rem;color:var(--accent2);margin-top:1rem}
-  .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.5rem}
-  .hub-card{display:block;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
-  .hub-card:hover{border-color:var(--accent);text-decoration:none}
-  .hub-card h3{margin:.2rem 0 .4rem;font-family:'Fraunces',serif}
-  .hub-card p{margin:0;color:var(--muted);font-size:.92rem}
-  .badge{display:inline-block;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--accent2);border:1px solid var(--border);border-radius:999px;padding:.15rem .6rem;margin-bottom:.5rem}
-  </style>
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"RCC — Rational Certificate Complexity","description":"The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…","url":"https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html","inLanguage":"en","author":{"@type":"Person","name":"SimiaCryptus"},"publisher":{"@type":"Organization","name":"Mathematical Explorations","url":"https://math.cognotik.com/"},"mainEntityOfPage":"https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Mathematical Explorations","item":"https://math.cognotik.com/"},{"@type":"ListItem","position":2,"name":"RCC — Rational Certificate Complexity","item":"https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html"}]}]}</script>
-    
+      :root {
+        --bg: #0a0a14;
+        --panel: #12121f;
+        --ink: #e8e8f0;
+        --muted: #a0a0b8;
+        --accent: #7aa2ff;
+        --accent2: #b78aff;
+        --border: #23233a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', system-ui, sans-serif;
+        line-height: 1.65;
+        font-size: 17px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .arrow {
+        font-size: 0.9em;
+      }
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: rgba(10, 10, 20, 0.82);
+        backdrop-filter: blur(8px);
+        z-index: 10;
+      }
+      nav .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+      }
+      nav .brand-glyph {
+        font-size: 1.3rem;
+        color: var(--accent2);
+      }
+      nav .spacer {
+        flex: 1;
+      }
+      nav .nav-link {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      main {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 5rem;
+      }
+      .crumbs {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+      }
+      .crumbs a {
+        color: var(--muted);
+      }
+      .page-head {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .page-icon {
+        width: 54px;
+        height: 54px;
+        flex: none;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        font-size: 1.05rem;
+        background: linear-gradient(135deg, #1c2440, #2a1c40);
+        border: 1px solid var(--border);
+        color: var(--accent);
+      }
+      h1 {
+        font-family: 'Fraunces', serif;
+        font-weight: 800;
+        font-size: 2.1rem;
+        line-height: 1.1;
+        margin: 0;
+      }
+      .subtitle {
+        color: var(--muted);
+        margin: 0.4rem 0 1.5rem;
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #0a0a14;
+        font-weight: 700;
+        padding: 0.7rem 1.2rem;
+        border-radius: 10px;
+        margin: 0 0.6rem 1.5rem 0;
+      }
+      .cta:hover {
+        text-decoration: none;
+        filter: brightness(1.08);
+      }
+      .cta.ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--ink);
+      }
+      .media {
+        margin: 1.5rem 0;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #000;
+      }
+      .media video {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      article {
+        font-size: 1.02rem;
+      }
+      article h1,
+      article h2,
+      article h3,
+      article h4 {
+        font-family: 'Fraunces', serif;
+        line-height: 1.2;
+        margin-top: 2rem;
+      }
+      article h2 {
+        font-size: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.3rem;
+      }
+      article h3 {
+        font-size: 1.2rem;
+      }
+      article code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9em;
+        background: #1a1a2a;
+        padding: 0.15em 0.4em;
+        border-radius: 5px;
+      }
+      article pre {
+        background: #0d0d18;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        overflow: auto;
+      }
+      article pre code {
+        background: none;
+        padding: 0;
+      }
+      article img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      article blockquote {
+        border-left: 3px solid var(--accent2);
+        margin: 1rem 0;
+        padding: 0.2rem 0 0.2rem 1rem;
+        color: var(--muted);
+      }
+      article table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      article th,
+      article td {
+        border: 1px solid var(--border);
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+      }
+      .mermaid {
+        background: #0d0d18;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .related {
+        margin-top: 3rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+      }
+      .related h2 {
+        font-family: 'Fraunces', serif;
+        font-size: 1.2rem;
+      }
+      .related ul {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: 0.4rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .footer-mark {
+        font-size: 1.6rem;
+        color: var(--accent2);
+        margin-top: 1rem;
+      }
+      .hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .hub-card {
+        display: block;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem;
+      }
+      .hub-card:hover {
+        border-color: var(--accent);
+        text-decoration: none;
+      }
+      .hub-card h3 {
+        margin: 0.2rem 0 0.4rem;
+        font-family: 'Fraunces', serif;
+      }
+      .hub-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        margin-bottom: 0.5rem;
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Article",
+            "headline": "RCC — Rational Certificate Complexity",
+            "description": "The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central…",
+            "url": "https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html",
+            "inLanguage": "en",
+            "author": { "@type": "Person", "name": "SimiaCryptus" },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Mathematical Explorations",
+              "url": "https://math.cognotik.com/"
+            },
+            "mainEntityOfPage": "https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Mathematical Explorations",
+                "item": "https://math.cognotik.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "RCC — Rational Certificate Complexity",
+                "item": "https://math.cognotik.com/companion/rcc-rational-certificate-complexity/index.html"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
-  <nav>
+    <nav>
       <a class="brand" href="../../index.html">
         <span class="brand-glyph">∑</span>
         <span>Mathematical Explorations</span>
       </a>
       <span class="spacer"></span>
       <a class="nav-link" href="../../index.html">Interactive home <span class="arrow">↗</span></a>
-      <a class="nav-link" href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub <span class="arrow">↗</span></a>
+      <a
+        class="nav-link"
+        href="https://github.com/SimiaCryptus/Fun_With_Math"
+        target="_blank"
+        rel="noopener"
+        >GitHub <span class="arrow">↗</span></a
+      >
     </nav>
     <main>
       <div class="crumbs">
-        <a href="../../index.html">Home</a> ›
-        <a href="../index.html">Companion pages</a> ›
+        <a href="../../index.html">Home</a> › <a href="../index.html">Companion pages</a> ›
         <span>RCC — Rational Certificate Complexity</span>
       </div>
       <div class="page-head">
@@ -100,219 +390,322 @@
           <p class="subtitle">Trilogy I · the foundational vocabulary</p>
         </div>
       </div>
-      <p class="subtitle">The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound, and the central separation algebraic irrationals vs. π and e. <em>It fixes the vocabulary the other two essays invoke.</em></p>
-      <p>
-        <a class="cta" href="../../essays/RCC/index.html">Open the interactive lab <span class="arrow">→</span></a>
-        
+      <p class="subtitle">
+        The foundation of the trilogy. Treats every convergence sequence as a rational certificate
+        engine, measures its bit-length versus demanded tolerance ε, and stratifies constants into
+        cost classes (RC₁/RC₂/RC₃). Establishes the regularity condition, a Θ(log 1/ε) lower bound,
+        and the central separation algebraic irrationals vs. π and e.
+        <em>It fixes the vocabulary the other two essays invoke.</em>
       </p>
-      
-      <article><h1>Rational Certificate Complexity: A Field Guide for the Curious</h1>
-<blockquote>
-<p><strong>What this is.</strong> A way of ranking mathematical constants — π, e, √2, and their
-cousins — not by how mysterious they seem, but by how expensive they are to
-pin down. This document is written for the curious reader, not the compiler;
-you will not need to install anything, and there is no code below. If you have
-ever wondered whether π is &quot;really&quot; harder than √2, this is a guided tour of one
-surprisingly sharp way to make that question precise.</p>
-</blockquote>
-<hr>
-<h2>The Core Idea, in Plain Terms</h2>
-<p>Every method for approximating an irrational number is, at heart, a little factory
-that stamps out fractions. Feed it patience — more terms, more iterations — and it
-hands you back a better fraction: 3/1, then 22/7, then 333/106, and so on toward π.
-We call each such factory a <strong>rational certificate engine</strong>, and the fraction it
-produces at any given moment is a <em>certificate</em>: a finite, checkable, honest-to-goodness
-piece of arithmetic that says &quot;the answer is at least this close.&quot;</p>
-<p>The framework asks a deceptively simple question. If you demand an answer accurate to
-within some tolerance ε, two costs come due:</p>
-<ol>
-<li><strong>How many steps</strong> must the factory run? (The classical question.)</li>
-<li><strong>How big are the fractions</strong> it produces — how many bits to write down the top and
-bottom? (The question almost everyone forgets to ask.)</li>
-</ol>
-<p>That second cost turns out to be the interesting one. It is measurable, it is
-falsifiable, and — this is the headline — it sees distinctions that the first cost is
-completely blind to.</p>
-<hr>
-<h2>A Little Background</h2>
-<p>The pieces of this story are old and scattered. Numerical analysts have studied
-convergence rates for centuries; number theorists study the &quot;height&quot; of rational
-approximations; complexity theorists (the Ko–Friedman school) ask whether a real number
-can be computed quickly at all. What is unusual here is the <em>synthesis</em>: fix one specific
-engine, truncate it, and watch the bit-length of the resulting fraction grow as you
-tighten the tolerance. That single, concrete measurement — bit-length versus tolerance —
-becomes the number&#39;s <strong>rational certificate complexity</strong>.
-This framework is a natural companion to the <strong>Numbers as Machines (NAM)</strong> essay, which
-ranks numbers by the <em>size of their machine&#39;s state</em>; RCC instead ranks them by the <em>bit
-cost of their certificates</em>. The two hierarchies agree on the headline — algebraic
-irrationals like √2 are genuinely cheap, while the classical series for π are not — and
-both find their concrete home in the <strong><code>nam</code> interactive lab</strong>, where the honest cost of
-each digit is put on the screen.</p>
-<p>There is an information-theoretic floor underneath all of this. To specify any number to
-within ε, you need at least log₂(1/ε) bits — that is simply how much information the
-answer contains. An engine that spends only about that many bits is doing the best any
-method possibly could; it is <em>optimal</em> in a provable, no-cleverness-can-beat-it sense.</p>
-<hr>
-<h2>The Result That Makes It Worth Reading</h2>
-<p>Sort the classical engines by this cost and a clean hierarchy falls out:</p>
-<table>
-<thead>
-<tr>
-<th>Engine</th>
-<th>Steps needed</th>
-<th>Bits needed</th>
-<th>Verdict</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Binomial series for √k</td>
-<td>logarithmic</td>
-<td><strong>logarithmic</strong></td>
-<td>optimal (the best tier)</td>
-</tr>
-<tr>
-<td>Gregory–Leibniz for π</td>
-<td>~1/ε</td>
-<td>~1/ε</td>
-<td>polynomial</td>
-</tr>
-<tr>
-<td>Nilakantha for π</td>
-<td>~1/√ε</td>
-<td>~1/√ε</td>
-<td>polynomial</td>
-</tr>
-<tr>
-<td>Wallis product for π</td>
-<td>~1/ε</td>
-<td>(1/ε)·log(1/ε)</td>
-<td>polynomial, but <em>worse</em></td>
-</tr>
-</tbody></table>
-<p>Two things here are genuinely surprising.</p>
-<p>First, the natural engine for √2 lands squarely on the information-theoretic floor. The
-simplest, most naïve construction for an algebraic irrational is already optimal; you
-cannot do better, and you did not need to be clever to get there.</p>
-<p>Second — and this is the part I find delightful — the Wallis product and the
-Gregory–Leibniz series need <em>roughly the same number of steps</em>, yet Wallis is
-meaningfully more expensive in bits. It quietly hauls around a heavier and heavier
-denominator. Classical convergence analysis, which counts only steps, cannot see this
-difference at all. The moment you account for the size of the fraction being produced, it
-snaps into focus. That is the whole pitch for the framework in a single example: it
-surfaces a real, load-bearing distinction that the standard tools render invisible.</p>
-<p>A word of honest caution, because the essay itself is careful about this. It is tempting
-to conclude &quot;π is harder than √2, full stop.&quot; That overstates the case. The framework
-classifies <em>engines</em>, not constants in some absolute sense; sophisticated algorithms (the
-arithmetic–geometric mean, Ramanujan-style series) can compute π at the same optimal cost
-as √2. What the framework genuinely establishes is narrower and sharper: among the
-<em>natural, series-shaped</em> engines — the ones whose consecutive terms have a clean rational
-ratio, a decidable property the framework calls <em>hypergeometric</em> — algebraic irrationals
-reach the optimum while the classical π-series do not. That is weaker than a metaphysical
-verdict about π, but far stronger than &quot;some series for π is slow.&quot;</p>
-<hr>
-<h2>The Companion Tool and Its &quot;UI&quot;</h2>
-<p>A framework that produces measurable curves invites a natural companion: a script that
-actually <em>runs the factories</em>, records what they produce, and checks the hand-derived
-predictions against real data. The interface here is not buttons and windows; it is a
-<strong>reporting contract</strong> — a structured verdict table that the experiment emits.</p>
-<p>Think of it as an instrument panel rather than an application. For each engine, the tool
-reports a single honest row:</p>
-<ul>
-<li>the engine&#39;s name,</li>
-<li>whether it is hypergeometric (yes/no),</li>
-<li>the measured step-count class,</li>
-<li>the measured bit-length class,</li>
-<li>the predicted complexity tier, and</li>
-<li>an <strong>agreement verdict</strong> — does the data match the theory?</li>
-</ul>
-<p>The design philosophy is worth stating plainly, because it is unusual: <strong>disagreement is
-the interesting output.</strong> Where measured cost diverges from predicted cost, the tool does
-not paper over it — it flags it as the headline. A discrepancy is treated as informative
-rather than embarrassing; it points either to hidden structure in the constant or to a gap
-in the analysis. The experiment is built to be <em>falsifiable</em>, and the report is where that
-falsifiability lives.</p>
-<p>Underneath, a few principles keep the instrument trustworthy:</p>
-<ul>
-<li><strong>Exact arithmetic on the certificate path.</strong> No floating point is allowed anywhere near
-the fractions themselves; approximation is the thing being measured, so it must never
-sneak into the measurement. Floats appear only at the very end, for fitting curves.</li>
-<li><strong>A single, auditable definition of &quot;bits.&quot;</strong> Everything routes through one function so
-the metric cannot quietly drift.</li>
-<li><strong>A tolerance ladder.</strong> The tool sweeps ε across a geometric range (a tenth, a hundredth,
-a thousandth, …) and records the cost at each rung, producing the curve rather than a
-single anecdote.</li>
-<li><strong>An asymptotic fitter as judge.</strong> Given the measured points, it asks which growth law —
-logarithmic, polynomial, or worse — best explains the data, and that fit <em>is</em> the verdict.</li>
-</ul>
-<p>The output is also exported as plain, machine-readable tables (CSV/JSON), so the stratified
-constants can serve as a benchmark suite for other numerical algorithms down the line.</p>
-<hr>
-<h2>Why It Is Interesting</h2>
-<p>A few reasons this holds up beyond novelty:</p>
-<ul>
-<li><strong>It makes an abstract argument measurable.</strong> The separation between &quot;easy&quot; algebraic
-numbers and &quot;hard&quot; transcendental ones is usually argued in the abstract. Here it becomes
-a curve you can plot, fit, and check.</li>
-<li><strong>It rewards a metric everyone overlooks.</strong> Bit-length — the actual cost of storing,
-sending, and computing with a fraction — turns out to be the discriminating variable.
-The Wallis-versus-Leibniz surprise is the proof of concept.</li>
-<li><strong>It stays honest about its own limits.</strong> The framework openly acknowledges that one of
-its key steps leans on deep number theory (the Prime Number Theorem), and that it
-classifies engines rather than constants. It trades metaphysical ambition for
-operational precision — and says so.</li>
-<li><strong>It reframes an old philosophical worry.</strong> Rather than resting the whole edifice on the
-uncountable continuum of &quot;all real numbers,&quot; it treats a number, for its own purposes, as
-<em>an engine together with its cost profile</em>. That is a modest, computational stance, and
-the project is refreshingly candid that it relocates rather than eliminates the deeper
-questions.</li>
-</ul>
-<hr>
-<h2>Who Might Find This Useful</h2>
-<ul>
-<li><strong>The mathematically curious reader</strong> who has met π and √2 and wondered, in a way that
-never quite resolved, whether one is &quot;really&quot; harder than the other. This gives you a
-precise, defensible answer — along with an honest account of what that answer does and
-does not settle.</li>
-<li><strong>Students and educators.</strong> The gap between &quot;how fast does it converge?&quot; and &quot;how big are
-the numbers?&quot; is a beautiful teaching moment, and the Wallis product makes it concrete.</li>
-<li><strong>Numerical algorithm builders.</strong> Constants sorted by certificate cost form a ready-made
-benchmark: if your PSLQ, lattice-reduction, or continued-fraction method beats the
-predicted difficulty, you have found either hidden structure or a genuinely clever method.
-Either way, that is a result.</li>
-<li><strong>Philosophers of mathematics and computation</strong>, who will find the framework&#39;s central
-claim — that a &quot;number&quot; can be treated as an engine plus its cost — a clean, stress-tested
-case study in what is gained and lost by trading ontology for operation.</li>
-</ul>
-<hr>
-<h2>The Takeaway</h2>
-<p>The structure of the series is the structure of the cost. That is the whole thesis, and it
-is more literal than it sounds: the way a factory is built determines, precisely and
-measurably, how expensive its output is to write down. Some constants come with cheap,
-optimal factories built right in. Others, under their most natural machinery, do not — and
-the bill comes due in bits.
-For a single, vivid instance of a factory that lands squarely in the optimal
-(logarithmic) tier, see the companion essay <strong>The Simplest Increment</strong>, which analyzes the
-startlingly compact cubic-convergence engine <code>x → x + sin(x)</code> for π. And for the broader
-story of <em>where</em> constants like π come from in the first place — the ladder of number
-systems that forces each new constant into existence — see <strong>The Extension Ladder</strong>.</p>
-<p>It is a small, sharp idea, and I find it more satisfying the longer I sit with it. Enjoy
-the tour, and if you come away arguing with one of the verdicts in that table — good. The
-framework was built to be argued with.</p>
-</article>
+      <p>
+        <a class="cta" href="../../essays/RCC/index.html"
+          >Open the interactive lab <span class="arrow">→</span></a
+        >
+      </p>
+
+      <article>
+        <h1>Rational Certificate Complexity: A Field Guide for the Curious</h1>
+        <blockquote>
+          <p>
+            <strong>What this is.</strong> A way of ranking mathematical constants — π, e, √2, and
+            their cousins — not by how mysterious they seem, but by how expensive they are to pin
+            down. This document is written for the curious reader, not the compiler; you will not
+            need to install anything, and there is no code below. If you have ever wondered whether
+            π is &quot;really&quot; harder than √2, this is a guided tour of one surprisingly sharp
+            way to make that question precise.
+          </p>
+        </blockquote>
+        <hr />
+        <h2>The Core Idea, in Plain Terms</h2>
+        <p>
+          Every method for approximating an irrational number is, at heart, a little factory that
+          stamps out fractions. Feed it patience — more terms, more iterations — and it hands you
+          back a better fraction: 3/1, then 22/7, then 333/106, and so on toward π. We call each
+          such factory a <strong>rational certificate engine</strong>, and the fraction it produces
+          at any given moment is a <em>certificate</em>: a finite, checkable, honest-to-goodness
+          piece of arithmetic that says &quot;the answer is at least this close.&quot;
+        </p>
+        <p>
+          The framework asks a deceptively simple question. If you demand an answer accurate to
+          within some tolerance ε, two costs come due:
+        </p>
+        <ol>
+          <li><strong>How many steps</strong> must the factory run? (The classical question.)</li>
+          <li>
+            <strong>How big are the fractions</strong> it produces — how many bits to write down the
+            top and bottom? (The question almost everyone forgets to ask.)
+          </li>
+        </ol>
+        <p>
+          That second cost turns out to be the interesting one. It is measurable, it is falsifiable,
+          and — this is the headline — it sees distinctions that the first cost is completely blind
+          to.
+        </p>
+        <hr />
+        <h2>A Little Background</h2>
+        <p>
+          The pieces of this story are old and scattered. Numerical analysts have studied
+          convergence rates for centuries; number theorists study the &quot;height&quot; of rational
+          approximations; complexity theorists (the Ko–Friedman school) ask whether a real number
+          can be computed quickly at all. What is unusual here is the <em>synthesis</em>: fix one
+          specific engine, truncate it, and watch the bit-length of the resulting fraction grow as
+          you tighten the tolerance. That single, concrete measurement — bit-length versus tolerance
+          — becomes the number&#39;s <strong>rational certificate complexity</strong>. This
+          framework is a natural companion to the <strong>Numbers as Machines (NAM)</strong> essay,
+          which ranks numbers by the <em>size of their machine&#39;s state</em>; RCC instead ranks
+          them by the <em>bit cost of their certificates</em>. The two hierarchies agree on the
+          headline — algebraic irrationals like √2 are genuinely cheap, while the classical series
+          for π are not — and both find their concrete home in the
+          <strong><code>nam</code> interactive lab</strong>, where the honest cost of each digit is
+          put on the screen.
+        </p>
+        <p>
+          There is an information-theoretic floor underneath all of this. To specify any number to
+          within ε, you need at least log₂(1/ε) bits — that is simply how much information the
+          answer contains. An engine that spends only about that many bits is doing the best any
+          method possibly could; it is <em>optimal</em> in a provable, no-cleverness-can-beat-it
+          sense.
+        </p>
+        <hr />
+        <h2>The Result That Makes It Worth Reading</h2>
+        <p>Sort the classical engines by this cost and a clean hierarchy falls out:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Engine</th>
+              <th>Steps needed</th>
+              <th>Bits needed</th>
+              <th>Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Binomial series for √k</td>
+              <td>logarithmic</td>
+              <td><strong>logarithmic</strong></td>
+              <td>optimal (the best tier)</td>
+            </tr>
+            <tr>
+              <td>Gregory–Leibniz for π</td>
+              <td>~1/ε</td>
+              <td>~1/ε</td>
+              <td>polynomial</td>
+            </tr>
+            <tr>
+              <td>Nilakantha for π</td>
+              <td>~1/√ε</td>
+              <td>~1/√ε</td>
+              <td>polynomial</td>
+            </tr>
+            <tr>
+              <td>Wallis product for π</td>
+              <td>~1/ε</td>
+              <td>(1/ε)·log(1/ε)</td>
+              <td>polynomial, but <em>worse</em></td>
+            </tr>
+          </tbody>
+        </table>
+        <p>Two things here are genuinely surprising.</p>
+        <p>
+          First, the natural engine for √2 lands squarely on the information-theoretic floor. The
+          simplest, most naïve construction for an algebraic irrational is already optimal; you
+          cannot do better, and you did not need to be clever to get there.
+        </p>
+        <p>
+          Second — and this is the part I find delightful — the Wallis product and the
+          Gregory–Leibniz series need <em>roughly the same number of steps</em>, yet Wallis is
+          meaningfully more expensive in bits. It quietly hauls around a heavier and heavier
+          denominator. Classical convergence analysis, which counts only steps, cannot see this
+          difference at all. The moment you account for the size of the fraction being produced, it
+          snaps into focus. That is the whole pitch for the framework in a single example: it
+          surfaces a real, load-bearing distinction that the standard tools render invisible.
+        </p>
+        <p>
+          A word of honest caution, because the essay itself is careful about this. It is tempting
+          to conclude &quot;π is harder than √2, full stop.&quot; That overstates the case. The
+          framework classifies <em>engines</em>, not constants in some absolute sense; sophisticated
+          algorithms (the arithmetic–geometric mean, Ramanujan-style series) can compute π at the
+          same optimal cost as √2. What the framework genuinely establishes is narrower and sharper:
+          among the <em>natural, series-shaped</em> engines — the ones whose consecutive terms have
+          a clean rational ratio, a decidable property the framework calls <em>hypergeometric</em> —
+          algebraic irrationals reach the optimum while the classical π-series do not. That is
+          weaker than a metaphysical verdict about π, but far stronger than &quot;some series for π
+          is slow.&quot;
+        </p>
+        <hr />
+        <h2>The Companion Tool and Its &quot;UI&quot;</h2>
+        <p>
+          A framework that produces measurable curves invites a natural companion: a script that
+          actually <em>runs the factories</em>, records what they produce, and checks the
+          hand-derived predictions against real data. The interface here is not buttons and windows;
+          it is a <strong>reporting contract</strong> — a structured verdict table that the
+          experiment emits.
+        </p>
+        <p>
+          Think of it as an instrument panel rather than an application. For each engine, the tool
+          reports a single honest row:
+        </p>
+        <ul>
+          <li>the engine&#39;s name,</li>
+          <li>whether it is hypergeometric (yes/no),</li>
+          <li>the measured step-count class,</li>
+          <li>the measured bit-length class,</li>
+          <li>the predicted complexity tier, and</li>
+          <li>an <strong>agreement verdict</strong> — does the data match the theory?</li>
+        </ul>
+        <p>
+          The design philosophy is worth stating plainly, because it is unusual:
+          <strong>disagreement is the interesting output.</strong> Where measured cost diverges from
+          predicted cost, the tool does not paper over it — it flags it as the headline. A
+          discrepancy is treated as informative rather than embarrassing; it points either to hidden
+          structure in the constant or to a gap in the analysis. The experiment is built to be
+          <em>falsifiable</em>, and the report is where that falsifiability lives.
+        </p>
+        <p>Underneath, a few principles keep the instrument trustworthy:</p>
+        <ul>
+          <li>
+            <strong>Exact arithmetic on the certificate path.</strong> No floating point is allowed
+            anywhere near the fractions themselves; approximation is the thing being measured, so it
+            must never sneak into the measurement. Floats appear only at the very end, for fitting
+            curves.
+          </li>
+          <li>
+            <strong>A single, auditable definition of &quot;bits.&quot;</strong> Everything routes
+            through one function so the metric cannot quietly drift.
+          </li>
+          <li>
+            <strong>A tolerance ladder.</strong> The tool sweeps ε across a geometric range (a
+            tenth, a hundredth, a thousandth, …) and records the cost at each rung, producing the
+            curve rather than a single anecdote.
+          </li>
+          <li>
+            <strong>An asymptotic fitter as judge.</strong> Given the measured points, it asks which
+            growth law — logarithmic, polynomial, or worse — best explains the data, and that fit
+            <em>is</em> the verdict.
+          </li>
+        </ul>
+        <p>
+          The output is also exported as plain, machine-readable tables (CSV/JSON), so the
+          stratified constants can serve as a benchmark suite for other numerical algorithms down
+          the line.
+        </p>
+        <hr />
+        <h2>Why It Is Interesting</h2>
+        <p>A few reasons this holds up beyond novelty:</p>
+        <ul>
+          <li>
+            <strong>It makes an abstract argument measurable.</strong> The separation between
+            &quot;easy&quot; algebraic numbers and &quot;hard&quot; transcendental ones is usually
+            argued in the abstract. Here it becomes a curve you can plot, fit, and check.
+          </li>
+          <li>
+            <strong>It rewards a metric everyone overlooks.</strong> Bit-length — the actual cost of
+            storing, sending, and computing with a fraction — turns out to be the discriminating
+            variable. The Wallis-versus-Leibniz surprise is the proof of concept.
+          </li>
+          <li>
+            <strong>It stays honest about its own limits.</strong> The framework openly acknowledges
+            that one of its key steps leans on deep number theory (the Prime Number Theorem), and
+            that it classifies engines rather than constants. It trades metaphysical ambition for
+            operational precision — and says so.
+          </li>
+          <li>
+            <strong>It reframes an old philosophical worry.</strong> Rather than resting the whole
+            edifice on the uncountable continuum of &quot;all real numbers,&quot; it treats a
+            number, for its own purposes, as <em>an engine together with its cost profile</em>. That
+            is a modest, computational stance, and the project is refreshingly candid that it
+            relocates rather than eliminates the deeper questions.
+          </li>
+        </ul>
+        <hr />
+        <h2>Who Might Find This Useful</h2>
+        <ul>
+          <li>
+            <strong>The mathematically curious reader</strong> who has met π and √2 and wondered, in
+            a way that never quite resolved, whether one is &quot;really&quot; harder than the
+            other. This gives you a precise, defensible answer — along with an honest account of
+            what that answer does and does not settle.
+          </li>
+          <li>
+            <strong>Students and educators.</strong> The gap between &quot;how fast does it
+            converge?&quot; and &quot;how big are the numbers?&quot; is a beautiful teaching moment,
+            and the Wallis product makes it concrete.
+          </li>
+          <li>
+            <strong>Numerical algorithm builders.</strong> Constants sorted by certificate cost form
+            a ready-made benchmark: if your PSLQ, lattice-reduction, or continued-fraction method
+            beats the predicted difficulty, you have found either hidden structure or a genuinely
+            clever method. Either way, that is a result.
+          </li>
+          <li>
+            <strong>Philosophers of mathematics and computation</strong>, who will find the
+            framework&#39;s central claim — that a &quot;number&quot; can be treated as an engine
+            plus its cost — a clean, stress-tested case study in what is gained and lost by trading
+            ontology for operation.
+          </li>
+        </ul>
+        <hr />
+        <h2>The Takeaway</h2>
+        <p>
+          The structure of the series is the structure of the cost. That is the whole thesis, and it
+          is more literal than it sounds: the way a factory is built determines, precisely and
+          measurably, how expensive its output is to write down. Some constants come with cheap,
+          optimal factories built right in. Others, under their most natural machinery, do not — and
+          the bill comes due in bits. For a single, vivid instance of a factory that lands squarely
+          in the optimal (logarithmic) tier, see the companion essay
+          <strong>The Simplest Increment</strong>, which analyzes the startlingly compact
+          cubic-convergence engine <code>x → x + sin(x)</code> for π. And for the broader story of
+          <em>where</em> constants like π come from in the first place — the ladder of number
+          systems that forces each new constant into existence — see
+          <strong>The Extension Ladder</strong>.
+        </p>
+        <p>
+          It is a small, sharp idea, and I find it more satisfying the longer I sit with it. Enjoy
+          the tour, and if you come away arguing with one of the verdicts in that table — good. The
+          framework was built to be argued with.
+        </p>
+      </article>
       <section class="related">
         <h2>More from Mathematical Explorations</h2>
         <ul>
-          <li><a href="../quadratic-quasi-newton/index.html">Quadratic Quasi-Newton</a> — A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS.</li>
-<li><a href="../which-direction-where-on-the-curve/index.html">Which Direction? → Where on the Curve?</a> — An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization…</li>
-<li><a href="../pi-rcc-the-simplest-increment-x-sin-x/index.html">PI_RCC — The Simplest Increment: x + sin(x)</a> — A cubic-convergent iteration for π whose outer recurrence is not hypergeometric — it falls outside RCC&#39;s…</li>
-<li><a href="../nam-numbers-as-machines-2/index.html">NAM — Numbers as Machines</a> — A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an…</li>
-<li><a href="../the-extension-ladder-one-way-to-watch-number-systems-grow/index.html">The Extension Ladder: One Way to Watch Number Systems Grow</a></li>
+          <li>
+            <a href="../quadratic-quasi-newton/index.html">Quadratic Quasi-Newton</a> — A new
+            optimization algorithm for smooth functions that interpolates between gradient descent
+            and L-BFGS.
+          </li>
+          <li>
+            <a href="../which-direction-where-on-the-curve/index.html"
+              >Which Direction? → Where on the Curve?</a
+            >
+            — An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer.
+            Reframes optimization…
+          </li>
+          <li>
+            <a href="../pi-rcc-the-simplest-increment-x-sin-x/index.html"
+              >PI_RCC — The Simplest Increment: x + sin(x)</a
+            >
+            — A cubic-convergent iteration for π whose outer recurrence is not hypergeometric — it
+            falls outside RCC&#39;s…
+          </li>
+          <li>
+            <a href="../nam-numbers-as-machines-2/index.html">NAM — Numbers as Machines</a> — A
+            generator-based numerics library where every number is a forkable, deterministic nano-VM
+            emitting an…
+          </li>
+          <li>
+            <a href="../the-extension-ladder-one-way-to-watch-number-systems-grow/index.html"
+              >The Extension Ladder: One Way to Watch Number Systems Grow</a
+            >
+          </li>
         </ul>
       </section>
     </main>
     <footer>
-      <p>Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive experiments in geometry, number theory, and dynamical systems.</p>
+      <p>
+        Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive
+        experiments in geometry, number theory, and dynamical systems.
+      </p>
       <p class="footer-mark">∑</p>
     </footer>
   </body>
-  </html>
+</html>

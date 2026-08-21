@@ -1,239 +1,599 @@
 <!doctype html>
-  <html lang="en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
     <meta name="author" content="SimiaCryptus" />
-    
-    <meta name="description" content="A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as &#39;pending (null)&#39; rather than a comfortable lie." />
+
+    <meta
+      name="description"
+      content="A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as &#39;pending (null)&#39; rather than a comfortable lie."
+    />
     <title>nam — Numbers as Machines — Mathematical Explorations</title>
-    <link rel="canonical" href="https://math.cognotik.com/companion/nam-numbers-as-machines/index.html" />
+    <link
+      rel="canonical"
+      href="https://math.cognotik.com/companion/nam-numbers-as-machines/index.html"
+    />
     <meta name="theme-color" content="#0a0a14" />
     <meta name="color-scheme" content="dark light" />
     <link rel="icon" type="image/png" href="../../icon.png" />
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Mathematical Explorations" />
     <meta property="og:title" content="nam — Numbers as Machines — Mathematical Explorations" />
-    <meta property="og:description" content="A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as &#39;pending (null)&#39; rather than a comfortable lie." />
-    <meta property="og:url" content="https://math.cognotik.com/companion/nam-numbers-as-machines/index.html" />
+    <meta
+      property="og:description"
+      content="A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as &#39;pending (null)&#39; rather than a comfortable lie."
+    />
+    <meta
+      property="og:url"
+      content="https://math.cognotik.com/companion/nam-numbers-as-machines/index.html"
+    />
     <meta property="og:image" content="https://math.cognotik.com/og-image.png" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="nam — Numbers as Machines — Mathematical Explorations" />
-    <meta name="twitter:description" content="A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as &#39;pending (null)&#39; rather than a comfortable lie." />
+    <meta
+      name="twitter:description"
+      content="A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as &#39;pending (null)&#39; rather than a comfortable lie."
+    />
     <meta name="twitter:image" content="https://math.cognotik.com/og-image.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-  :root{--bg:#0a0a14;--panel:#12121f;--ink:#e8e8f0;--muted:#a0a0b8;--accent:#7aa2ff;--accent2:#b78aff;--border:#23233a}
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;font-size:17px}
-  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-  .arrow{font-size:.9em}
-  nav{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,20,.82);backdrop-filter:blur(8px);z-index:10}
-  nav .brand{display:flex;align-items:center;gap:.5rem;font-weight:700}
-  nav .brand-glyph{font-size:1.3rem;color:var(--accent2)}
-  nav .spacer{flex:1}
-  nav .nav-link{color:var(--muted);font-size:.95rem}
-  main{max-width:820px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
-  .crumbs{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
-  .crumbs a{color:var(--muted)}
-  .page-head{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
-  .page-icon{width:54px;height:54px;flex:none;border-radius:14px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.05rem;background:linear-gradient(135deg,#1c2440,#2a1c40);border:1px solid var(--border);color:var(--accent)}
-  h1{font-family:'Fraunces',serif;font-weight:800;font-size:2.1rem;line-height:1.1;margin:0}
-  .subtitle{color:var(--muted);margin:.4rem 0 1.5rem}
-  .cta{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a14;font-weight:700;padding:.7rem 1.2rem;border-radius:10px;margin:0 .6rem 1.5rem 0}
-  .cta:hover{text-decoration:none;filter:brightness(1.08)}
-  .cta.ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
-  .media{margin:1.5rem 0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#000}
-  .media video{display:block;width:100%;height:auto}
-  article{font-size:1.02rem}
-  article h1,article h2,article h3,article h4{font-family:'Fraunces',serif;line-height:1.2;margin-top:2rem}
-  article h2{font-size:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
-  article h3{font-size:1.2rem}
-  article code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:#1a1a2a;padding:.15em .4em;border-radius:5px}
-  article pre{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;overflow:auto}
-  article pre code{background:none;padding:0}
-  article img{max-width:100%;height:auto;border-radius:10px}
-  article blockquote{border-left:3px solid var(--accent2);margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:var(--muted)}
-  article table{border-collapse:collapse;width:100%;margin:1rem 0}
-  article th,article td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left}
-  .mermaid{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;margin:1rem 0}
-  .related{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.5rem}
-  .related h2{font-family:'Fraunces',serif;font-size:1.2rem}
-  .related ul{list-style:none;padding:0;display:grid;gap:.4rem}
-  footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.9rem}
-  .footer-mark{font-size:1.6rem;color:var(--accent2);margin-top:1rem}
-  .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.5rem}
-  .hub-card{display:block;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
-  .hub-card:hover{border-color:var(--accent);text-decoration:none}
-  .hub-card h3{margin:.2rem 0 .4rem;font-family:'Fraunces',serif}
-  .hub-card p{margin:0;color:var(--muted);font-size:.92rem}
-  .badge{display:inline-block;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--accent2);border:1px solid var(--border);border-radius:999px;padding:.15rem .6rem;margin-bottom:.5rem}
-  </style>
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"nam — Numbers as Machines","description":"A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie.","url":"https://math.cognotik.com/companion/nam-numbers-as-machines/index.html","inLanguage":"en","author":{"@type":"Person","name":"SimiaCryptus"},"publisher":{"@type":"Organization","name":"Mathematical Explorations","url":"https://math.cognotik.com/"},"mainEntityOfPage":"https://math.cognotik.com/companion/nam-numbers-as-machines/index.html"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Mathematical Explorations","item":"https://math.cognotik.com/"},{"@type":"ListItem","position":2,"name":"nam — Numbers as Machines","item":"https://math.cognotik.com/companion/nam-numbers-as-machines/index.html"}]}]}</script>
-    
+      :root {
+        --bg: #0a0a14;
+        --panel: #12121f;
+        --ink: #e8e8f0;
+        --muted: #a0a0b8;
+        --accent: #7aa2ff;
+        --accent2: #b78aff;
+        --border: #23233a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', system-ui, sans-serif;
+        line-height: 1.65;
+        font-size: 17px;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .arrow {
+        font-size: 0.9em;
+      }
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: rgba(10, 10, 20, 0.82);
+        backdrop-filter: blur(8px);
+        z-index: 10;
+      }
+      nav .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 700;
+      }
+      nav .brand-glyph {
+        font-size: 1.3rem;
+        color: var(--accent2);
+      }
+      nav .spacer {
+        flex: 1;
+      }
+      nav .nav-link {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      main {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 5rem;
+      }
+      .crumbs {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+      }
+      .crumbs a {
+        color: var(--muted);
+      }
+      .page-head {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .page-icon {
+        width: 54px;
+        height: 54px;
+        flex: none;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-family: 'JetBrains Mono', monospace;
+        font-weight: 600;
+        font-size: 1.05rem;
+        background: linear-gradient(135deg, #1c2440, #2a1c40);
+        border: 1px solid var(--border);
+        color: var(--accent);
+      }
+      h1 {
+        font-family: 'Fraunces', serif;
+        font-weight: 800;
+        font-size: 2.1rem;
+        line-height: 1.1;
+        margin: 0;
+      }
+      .subtitle {
+        color: var(--muted);
+        margin: 0.4rem 0 1.5rem;
+      }
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        color: #0a0a14;
+        font-weight: 700;
+        padding: 0.7rem 1.2rem;
+        border-radius: 10px;
+        margin: 0 0.6rem 1.5rem 0;
+      }
+      .cta:hover {
+        text-decoration: none;
+        filter: brightness(1.08);
+      }
+      .cta.ghost {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--ink);
+      }
+      .media {
+        margin: 1.5rem 0;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #000;
+      }
+      .media video {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      article {
+        font-size: 1.02rem;
+      }
+      article h1,
+      article h2,
+      article h3,
+      article h4 {
+        font-family: 'Fraunces', serif;
+        line-height: 1.2;
+        margin-top: 2rem;
+      }
+      article h2 {
+        font-size: 1.5rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 0.3rem;
+      }
+      article h3 {
+        font-size: 1.2rem;
+      }
+      article code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9em;
+        background: #1a1a2a;
+        padding: 0.15em 0.4em;
+        border-radius: 5px;
+      }
+      article pre {
+        background: #0d0d18;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        overflow: auto;
+      }
+      article pre code {
+        background: none;
+        padding: 0;
+      }
+      article img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+      }
+      article blockquote {
+        border-left: 3px solid var(--accent2);
+        margin: 1rem 0;
+        padding: 0.2rem 0 0.2rem 1rem;
+        color: var(--muted);
+      }
+      article table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1rem 0;
+      }
+      article th,
+      article td {
+        border: 1px solid var(--border);
+        padding: 0.5rem 0.7rem;
+        text-align: left;
+      }
+      .mermaid {
+        background: #0d0d18;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1rem 0;
+      }
+      .related {
+        margin-top: 3rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+      }
+      .related h2 {
+        font-family: 'Fraunces', serif;
+        font-size: 1.2rem;
+      }
+      .related ul {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: 0.4rem;
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem 1.5rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .footer-mark {
+        font-size: 1.6rem;
+        color: var(--accent2);
+        margin-top: 1rem;
+      }
+      .hub-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      .hub-card {
+        display: block;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem;
+      }
+      .hub-card:hover {
+        border-color: var(--accent);
+        text-decoration: none;
+      }
+      .hub-card h3 {
+        margin: 0.2rem 0 0.4rem;
+        font-family: 'Fraunces', serif;
+      }
+      .hub-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+        margin-bottom: 0.5rem;
+      }
+    </style>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "TechArticle",
+            "headline": "nam — Numbers as Machines",
+            "description": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie.",
+            "url": "https://math.cognotik.com/companion/nam-numbers-as-machines/index.html",
+            "inLanguage": "en",
+            "author": { "@type": "Person", "name": "SimiaCryptus" },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Mathematical Explorations",
+              "url": "https://math.cognotik.com/"
+            },
+            "mainEntityOfPage": "https://math.cognotik.com/companion/nam-numbers-as-machines/index.html"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Mathematical Explorations",
+                "item": "https://math.cognotik.com/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "nam — Numbers as Machines",
+                "item": "https://math.cognotik.com/companion/nam-numbers-as-machines/index.html"
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
-  <nav>
+    <nav>
       <a class="brand" href="../../index.html">
         <span class="brand-glyph">∑</span>
         <span>Mathematical Explorations</span>
       </a>
       <span class="spacer"></span>
       <a class="nav-link" href="../../index.html">Interactive home <span class="arrow">↗</span></a>
-      <a class="nav-link" href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub <span class="arrow">↗</span></a>
+      <a
+        class="nav-link"
+        href="https://github.com/SimiaCryptus/Fun_With_Math"
+        target="_blank"
+        rel="noopener"
+        >GitHub <span class="arrow">↗</span></a
+      >
     </nav>
     <main>
       <div class="crumbs">
-        <a href="../../index.html">Home</a> ›
-        <a href="../index.html">Companion pages</a> ›
+        <a href="../../index.html">Home</a> › <a href="../index.html">Companion pages</a> ›
         <span>nam — Numbers as Machines</span>
       </div>
       <div class="page-head">
         <div class="page-icon" aria-hidden="true">NM</div>
         <div>
           <h1>nam — Numbers as Machines</h1>
-          
         </div>
       </div>
-      <p class="subtitle">A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie.</p>
-      <p>
-        <a class="cta" href="../../experiments/nam-calculator/index.html">Open the interactive lab <span class="arrow">→</span></a>
-        
+      <p class="subtitle">
+        A calculator where every number is a deterministic, forkable virtual machine emitting an
+        infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by
+        tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie.
       </p>
-      
-      <article><h1>nam — the interactive numbers-as-machines lab</h1>
-<p>An interactive lab that treats every number not as a value sitting in a register, but as a tiny, living machine.</p>
-<hr>
-<h2>The idea in a nutshell</h2>
-<p>We usually think of a number as a thing you <em>have</em>: a quantity written down,
-stored, and read back. <strong>Numbers as Machines (<code>nam</code>)</strong> flips that intuition
-on its head. Here, a number is a little program — a deterministic machine
-that, when you ask it politely, hands you one more digit; ask again, and it
-hands you the next; and so on, forever, on demand.</p>
-<p>That sounds like a small philosophical distinction, but it turns out to
-change almost everything downstream. If a number is a machine that emits
-digits, then all the familiar operations become <em>combinators</em> — ways of
-wiring machines together:</p>
-<ul>
-<li><strong>Changing base</strong> (from decimal to binary, say) isn&#39;t creating a new
-number; it&#39;s just looking at the <em>same</em> machine through a different lens.
-The base is a codec, not a property of the number itself.</li>
-<li><strong>Copying a number</strong> (&quot;forking&quot;) has an honest, visible cost. Some numbers
-are cheap to duplicate; others carry growing internal machinery that must
-be copied carefully. The lab always tells you which.</li>
-<li><strong>Comparing two numbers</strong> becomes surprisingly subtle — and this is the
-heart of the whole thing.</li>
-</ul>
-<hr>
-<h2>Why comparison is the interesting part</h2>
-<p>Here is the catch that makes this project worth your attention. If a number
-is an endless stream of digits, then asking &quot;are these two numbers equal?&quot;
-means asking &quot;will these two streams <em>ever</em> disagree, all the way to
-infinity?&quot; And in general, you cannot know. You can watch a hundred digits
-agree, a thousand, a million — and still the very next digit might differ.</p>
-<p>Most software, faced with this, quietly fakes an answer. This lab refuses.
-Instead of pretending, it gives you an honest, three-way verdict: <em>less</em>,
-<em>greater</em>, or <strong>&quot;indistinguishable so far — I cannot prove it either way.&quot;</strong>
-When a digit genuinely cannot be established, the screen shows a candid
-<code>pending (null)</code> rather than a fabricated value.</p>
-<p>I find this genuinely delightful. The machinery <em>could</em> keep streaming
-digits forever, but it will not claim a definite answer it cannot actually
-justify. It&#39;s a small act of intellectual honesty baked into arithmetic
-itself.</p>
-<hr>
-<h2>What the lab looks like</h2>
-<p>The lab is a browser-based calculator (with a matching text console for
-people who prefer typing). It&#39;s built to make the abstract ideas above
-tangible and clickable. The screen is organized into a few coordinated
-parts:</p>
-<ul>
-<li><strong>A display</strong> that shows your most recent result, which base it&#39;s being
-viewed in, and how expensive it would be to copy.</li>
-<li><strong>A keypad</strong> for one-tap operations on whichever number you&#39;re focused on.</li>
-<li><strong>Panels</strong> for building new numbers (fractions, square roots, famous
-constants like π and <em>e</em>), inspecting them, comparing them, and doing
-arithmetic.</li>
-<li><strong>A console</strong> where every operation can also be typed as a short command —
-anything you can click, you can type, and vice versa.</li>
-<li><strong>Registers</strong>: named slots holding your numbers, like variables on a
-graphing calculator. A special slot named <code>_</code> always holds your last
-result.</li>
-</ul>
-<p>Crucially, the calculator never lies about cost or certainty. Copying is
-tagged with its price; comparison is three-way; and unprovable digits are
-shown as honest blanks. Every screen carries the same promise: <em>nothing the
-calculator shows you is a comfortable lie.</em></p>
-<hr>
-<h2>A little background</h2>
-<p>Classical numerics stores a number as a value in a register and moves on.
-That&#39;s efficient and it&#39;s usually what you want. But it hides something:
-many numbers — π, <em>e</em>, the square root of two, one-third written out in full
-— are <em>infinite</em> objects that we only ever approximate. <code>nam</code> takes those
-infinite objects seriously by representing them as processes rather than
-snapshots.</p>
-<p>This lineage runs through ideas in computable analysis and exact real
-arithmetic — the notion that a real number can be <em>the recipe that produces
-it</em>. What this lab adds is a hands-on, visual surface for playing with those
-recipes, watching their costs, and confronting the honest limits of what can
-be decided. The companion essay (<code>THEORY.md</code>) goes deeper into the design
-philosophy; a reference map (<code>LIBRARY.md</code>) documents the underlying engine
-for the curious.</p>
-<hr>
-<h2>Why it&#39;s interesting</h2>
-<p>A few things make this more than a novelty, at least to my eye:</p>
-<ol>
-<li><strong>It makes an abstract truth concrete.</strong> The undecidability of equality
-is usually a footnote in a logic course. Here you can <em>watch</em> it: two
-numbers that agree for thirty digits, with the lab steadfastly declining
-to call them equal.</li>
-<li><strong>It surfaces hidden costs.</strong> We rarely think about what it <em>costs</em> to
-copy or fast-forward a number. The lab annotates these, turning invisible
-trade-offs into something you can see and reason about.</li>
-<li><strong>It models honesty.</strong> In an era where software confidently asserts
-answers it hasn&#39;t earned, there&#39;s something refreshing about a calculator
-that says &quot;I don&#39;t know, and here&#39;s exactly why.&quot;</li>
-</ol>
-<hr>
-<h2>Who might find it useful</h2>
-<ul>
-<li><strong>The mathematically curious</strong> — anyone who has wondered what it means for
-a number to be &quot;infinite,&quot; and wants to poke at the idea directly.</li>
-<li><strong>Students and educators</strong> — it&#39;s a vivid teaching aid for topics like
-computability, exact real arithmetic, base conversion, and the difference
-between &quot;unknown&quot; and &quot;false.&quot;</li>
-<li><strong>Working technologists</strong> thinking about honesty in computation — how to
-represent uncertainty faithfully rather than papering over it.</li>
-<li><strong>The simply playful</strong> — you can open it and start clicking; the good
-ideas reveal themselves as you go.</li>
-</ul>
-<p>You&#39;ll need to open it through a small local web server rather than by
-double-clicking the file, since the underlying engine loads as a web module
-— but once it&#39;s up, everything happens right in the browser.</p>
-<hr>
-<p>I built this as much to think clearly about honest computation as to have
-something fun to click on, and it delivered on both counts more than I
-expected. Open it, poke at the boundaries, and watch it refuse to lie to
-you. I&#39;m looking forward to hearing what you find. Enjoy!</p>
-</article>
+      <p>
+        <a class="cta" href="../../experiments/nam-calculator/index.html"
+          >Open the interactive lab <span class="arrow">→</span></a
+        >
+      </p>
+
+      <article>
+        <h1>nam — the interactive numbers-as-machines lab</h1>
+        <p>
+          An interactive lab that treats every number not as a value sitting in a register, but as a
+          tiny, living machine.
+        </p>
+        <hr />
+        <h2>The idea in a nutshell</h2>
+        <p>
+          We usually think of a number as a thing you <em>have</em>: a quantity written down,
+          stored, and read back. <strong>Numbers as Machines (<code>nam</code>)</strong> flips that
+          intuition on its head. Here, a number is a little program — a deterministic machine that,
+          when you ask it politely, hands you one more digit; ask again, and it hands you the next;
+          and so on, forever, on demand.
+        </p>
+        <p>
+          That sounds like a small philosophical distinction, but it turns out to change almost
+          everything downstream. If a number is a machine that emits digits, then all the familiar
+          operations become <em>combinators</em> — ways of wiring machines together:
+        </p>
+        <ul>
+          <li>
+            <strong>Changing base</strong> (from decimal to binary, say) isn&#39;t creating a new
+            number; it&#39;s just looking at the <em>same</em> machine through a different lens. The
+            base is a codec, not a property of the number itself.
+          </li>
+          <li>
+            <strong>Copying a number</strong> (&quot;forking&quot;) has an honest, visible cost.
+            Some numbers are cheap to duplicate; others carry growing internal machinery that must
+            be copied carefully. The lab always tells you which.
+          </li>
+          <li>
+            <strong>Comparing two numbers</strong> becomes surprisingly subtle — and this is the
+            heart of the whole thing.
+          </li>
+        </ul>
+        <hr />
+        <h2>Why comparison is the interesting part</h2>
+        <p>
+          Here is the catch that makes this project worth your attention. If a number is an endless
+          stream of digits, then asking &quot;are these two numbers equal?&quot; means asking
+          &quot;will these two streams <em>ever</em> disagree, all the way to infinity?&quot; And in
+          general, you cannot know. You can watch a hundred digits agree, a thousand, a million —
+          and still the very next digit might differ.
+        </p>
+        <p>
+          Most software, faced with this, quietly fakes an answer. This lab refuses. Instead of
+          pretending, it gives you an honest, three-way verdict: <em>less</em>, <em>greater</em>, or
+          <strong>&quot;indistinguishable so far — I cannot prove it either way.&quot;</strong>
+          When a digit genuinely cannot be established, the screen shows a candid
+          <code>pending (null)</code> rather than a fabricated value.
+        </p>
+        <p>
+          I find this genuinely delightful. The machinery <em>could</em> keep streaming digits
+          forever, but it will not claim a definite answer it cannot actually justify. It&#39;s a
+          small act of intellectual honesty baked into arithmetic itself.
+        </p>
+        <hr />
+        <h2>What the lab looks like</h2>
+        <p>
+          The lab is a browser-based calculator (with a matching text console for people who prefer
+          typing). It&#39;s built to make the abstract ideas above tangible and clickable. The
+          screen is organized into a few coordinated parts:
+        </p>
+        <ul>
+          <li>
+            <strong>A display</strong> that shows your most recent result, which base it&#39;s being
+            viewed in, and how expensive it would be to copy.
+          </li>
+          <li>
+            <strong>A keypad</strong> for one-tap operations on whichever number you&#39;re focused
+            on.
+          </li>
+          <li>
+            <strong>Panels</strong> for building new numbers (fractions, square roots, famous
+            constants like π and <em>e</em>), inspecting them, comparing them, and doing arithmetic.
+          </li>
+          <li>
+            <strong>A console</strong> where every operation can also be typed as a short command —
+            anything you can click, you can type, and vice versa.
+          </li>
+          <li>
+            <strong>Registers</strong>: named slots holding your numbers, like variables on a
+            graphing calculator. A special slot named <code>_</code> always holds your last result.
+          </li>
+        </ul>
+        <p>
+          Crucially, the calculator never lies about cost or certainty. Copying is tagged with its
+          price; comparison is three-way; and unprovable digits are shown as honest blanks. Every
+          screen carries the same promise:
+          <em>nothing the calculator shows you is a comfortable lie.</em>
+        </p>
+        <hr />
+        <h2>A little background</h2>
+        <p>
+          Classical numerics stores a number as a value in a register and moves on. That&#39;s
+          efficient and it&#39;s usually what you want. But it hides something: many numbers — π,
+          <em>e</em>, the square root of two, one-third written out in full — are
+          <em>infinite</em> objects that we only ever approximate. <code>nam</code> takes those
+          infinite objects seriously by representing them as processes rather than snapshots.
+        </p>
+        <p>
+          This lineage runs through ideas in computable analysis and exact real arithmetic — the
+          notion that a real number can be <em>the recipe that produces it</em>. What this lab adds
+          is a hands-on, visual surface for playing with those recipes, watching their costs, and
+          confronting the honest limits of what can be decided. The companion essay
+          (<code>THEORY.md</code>) goes deeper into the design philosophy; a reference map
+          (<code>LIBRARY.md</code>) documents the underlying engine for the curious.
+        </p>
+        <hr />
+        <h2>Why it&#39;s interesting</h2>
+        <p>A few things make this more than a novelty, at least to my eye:</p>
+        <ol>
+          <li>
+            <strong>It makes an abstract truth concrete.</strong> The undecidability of equality is
+            usually a footnote in a logic course. Here you can <em>watch</em> it: two numbers that
+            agree for thirty digits, with the lab steadfastly declining to call them equal.
+          </li>
+          <li>
+            <strong>It surfaces hidden costs.</strong> We rarely think about what it
+            <em>costs</em> to copy or fast-forward a number. The lab annotates these, turning
+            invisible trade-offs into something you can see and reason about.
+          </li>
+          <li>
+            <strong>It models honesty.</strong> In an era where software confidently asserts answers
+            it hasn&#39;t earned, there&#39;s something refreshing about a calculator that says
+            &quot;I don&#39;t know, and here&#39;s exactly why.&quot;
+          </li>
+        </ol>
+        <hr />
+        <h2>Who might find it useful</h2>
+        <ul>
+          <li>
+            <strong>The mathematically curious</strong> — anyone who has wondered what it means for
+            a number to be &quot;infinite,&quot; and wants to poke at the idea directly.
+          </li>
+          <li>
+            <strong>Students and educators</strong> — it&#39;s a vivid teaching aid for topics like
+            computability, exact real arithmetic, base conversion, and the difference between
+            &quot;unknown&quot; and &quot;false.&quot;
+          </li>
+          <li>
+            <strong>Working technologists</strong> thinking about honesty in computation — how to
+            represent uncertainty faithfully rather than papering over it.
+          </li>
+          <li>
+            <strong>The simply playful</strong> — you can open it and start clicking; the good ideas
+            reveal themselves as you go.
+          </li>
+        </ul>
+        <p>
+          You&#39;ll need to open it through a small local web server rather than by double-clicking
+          the file, since the underlying engine loads as a web module — but once it&#39;s up,
+          everything happens right in the browser.
+        </p>
+        <hr />
+        <p>
+          I built this as much to think clearly about honest computation as to have something fun to
+          click on, and it delivered on both counts more than I expected. Open it, poke at the
+          boundaries, and watch it refuse to lie to you. I&#39;m looking forward to hearing what you
+          find. Enjoy!
+        </p>
+      </article>
       <section class="related">
         <h2>More from Mathematical Explorations</h2>
         <ul>
-          <li><a href="../pentagonal-lattice-geometry/index.html">Pentagonal Lattice Geometry</a> — A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37)…</li>
-<li><a href="../geometric-entropy/index.html">Geometric Entropy</a> — A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize…</li>
-<li><a href="../pid-regulated-cellular-automaton/index.html">PID-Regulated Cellular Automaton</a> — A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor…</li>
-<li><a href="../layered-cellular-automata/index.html">Layered Cellular Automata</a> — Langton&#39;s ants write a colored substrate that gates where Conway&#39;s Life is allowed to live. Three feedback…</li>
-<li><a href="../spacelike-knots/index.html">Spacelike Knots</a> — A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix…</li>
+          <li>
+            <a href="../pentagonal-lattice-geometry/index.html">Pentagonal Lattice Geometry</a> — A
+            multi-sheeted covering construction in which the regular pentagon develops fractional
+            dimension (d ≈ 2.37)…
+          </li>
+          <li>
+            <a href="../geometric-entropy/index.html">Geometric Entropy</a> — A continuous analogue
+            of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize…
+          </li>
+          <li>
+            <a href="../pid-regulated-cellular-automaton/index.html"
+              >PID-Regulated Cellular Automaton</a
+            >
+            — A cellular automaton whose update rule is a per-cell PID controller: each cell
+            measures its active-neighbor…
+          </li>
+          <li>
+            <a href="../layered-cellular-automata/index.html">Layered Cellular Automata</a> —
+            Langton&#39;s ants write a colored substrate that gates where Conway&#39;s Life is
+            allowed to live. Three feedback…
+          </li>
+          <li>
+            <a href="../spacelike-knots/index.html">Spacelike Knots</a> — A knot equipped with a
+            Minkowski metric, turning crossings into causal inversions. The distance matrix…
+          </li>
         </ul>
       </section>
     </main>
     <footer>
-      <p>Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive experiments in geometry, number theory, and dynamical systems.</p>
+      <p>
+        Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive
+        experiments in geometry, number theory, and dynamical systems.
+      </p>
       <p class="footer-mark">∑</p>
     </footer>
   </body>
-  </html>
+</html>
