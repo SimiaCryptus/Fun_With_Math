@@ -1,0 +1,4 @@
+[submodule "essays/NAM"]
+	path = essays/NAM
+	url = https://github.com/Simiacryptus/nam.git
+	branch = main
