@@ -74,3 +74,7 @@
 	path = experiments/optimization-mechanics
 	url = https://github.com/Simiacryptus/optimization-mechanics.git
 	branch = main
+[submodule "experiments/pid-ca"]
+	path = experiments/pid-ca
+	url = https://github.com/Simiacryptus/pid-ca.git
+	branch = main
