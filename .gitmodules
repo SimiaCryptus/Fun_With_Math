@@ -114,3 +114,7 @@
 	path = games/vocal-parkour
 	url = https://github.com/Simiacryptus/vocal-parkour.git
 	branch = main
+[submodule "games/wordsearch"]
+	path = games/wordsearch
+	url = https://github.com/Simiacryptus/wordsearch.git
+	branch = main
