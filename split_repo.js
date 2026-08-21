@@ -113,24 +113,66 @@ function parseArgs(argv) {
       return v;
     };
     switch (a) {
-      case '--org': o.org = next(); break;
-      case '--prefix': o.prefix = next(); break;
-      case '--visibility': o.visibility = next(); break;
-      case '--branch': o.branch = next(); break;
-      case '--only': o.only.push(normPath(next())); break;
-      case '--skip': o.skip.push(normPath(next())); break;
-      case '--tool': o.tool = next(); break;
-      case '--ssh': o.ssh = true; break;
-      case '--no-create': o.create = false; break;
-      case '--no-push': o.push = false; o.create = false; o.keepTemp = true; break;
-      case '--no-submodule': o.submodule = false; break;
-      case '--keep-temp': o.keepTemp = true; break;
-      case '--resume': o.resume = true; break;
-      case '--dirty-ok': o.dirtyOk = true; break;
-      case '--list': o.list = true; break;
-      case '--dry-run': case '-n': o.dryRun = true; break;
-      case '--verbose': case '-v': o.verbose = true; break;
-      case '--help': case '-h': usage(); process.exit(0); break;
+      case '--org':
+        o.org = next();
+        break;
+      case '--prefix':
+        o.prefix = next();
+        break;
+      case '--visibility':
+        o.visibility = next();
+        break;
+      case '--branch':
+        o.branch = next();
+        break;
+      case '--only':
+        o.only.push(normPath(next()));
+        break;
+      case '--skip':
+        o.skip.push(normPath(next()));
+        break;
+      case '--tool':
+        o.tool = next();
+        break;
+      case '--ssh':
+        o.ssh = true;
+        break;
+      case '--no-create':
+        o.create = false;
+        break;
+      case '--no-push':
+        o.push = false;
+        o.create = false;
+        o.keepTemp = true;
+        break;
+      case '--no-submodule':
+        o.submodule = false;
+        break;
+      case '--keep-temp':
+        o.keepTemp = true;
+        break;
+      case '--resume':
+        o.resume = true;
+        break;
+      case '--dirty-ok':
+        o.dirtyOk = true;
+        break;
+      case '--list':
+        o.list = true;
+        break;
+      case '--dry-run':
+      case '-n':
+        o.dryRun = true;
+        break;
+      case '--verbose':
+      case '-v':
+        o.verbose = true;
+        break;
+      case '--help':
+      case '-h':
+        usage();
+        process.exit(0);
+        break;
       default:
         if (a.startsWith('-')) fatal(`Unknown option: ${a}`);
         o.only.push(normPath(a));
@@ -143,7 +185,8 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  const header = fs.readFileSync(new URL(import.meta.url), 'utf8')
+  const header = fs
+    .readFileSync(new URL(import.meta.url), 'utf8')
     .split('\n')
     .slice(2)
     .filter((l) => l.startsWith(' *'))
@@ -192,7 +235,7 @@ function run(cmd, args, opts = {}) {
   if (res.error && check) throw new Error(`${cmd}: ${res.error.message}`);
   if (check && res.status !== 0) {
     throw new Error(
-      `${cmd} ${args.join(' ')} failed (exit ${res.status})\n${indent(stderr || stdout)}`,
+      `${cmd} ${args.join(' ')} failed (exit ${res.status})\n${indent(stderr || stdout)}`
     );
   }
   return { status: res.status ?? 1, stdout: stdout.trim(), stderr: stderr.trim() };
@@ -209,10 +252,13 @@ function mutate(cmd, args, opts = {}) {
 
 const git = (args, opts) => run('git', args, opts);
 const gitM = (args, opts) => mutate('git', args, opts);
-const indent = (s) => s.split('\n').map((l) => `      ${l}`).join('\n');
+const indent = (s) =>
+  s
+    .split('\n')
+    .map((l) => `      ${l}`)
+    .join('\n');
 const normPath = (p) => p.replace(/\\/g, '/').replace(/^\.\//, '').replace(/\/+$/, '');
-const has = (bin, args = ['--version']) =>
-  spawnSync(bin, args, { stdio: 'ignore' }).status === 0;
+const has = (bin, args = ['--version']) => spawnSync(bin, args, { stdio: 'ignore' }).status === 0;
 
 // ---------------------------------------------------------------------------
 // repo discovery
@@ -291,11 +337,10 @@ function buildPlan(dirs) {
     p.url = OPTS.ssh
       ? `git@github.com:${OPTS.org}/${name}.git`
       : `https://github.com/${OPTS.org}/${name}.git`;
-    p.description =
-      (p.entry.description || p.entry.blurb || p.entry.summary || p.entry.title || '')
-        .toString()
-        .replace(/\s+/g, ' ')
-        .slice(0, 340);
+    p.description = (p.entry.description || p.entry.blurb || p.entry.summary || p.entry.title || '')
+      .toString()
+      .replace(/\s+/g, ' ')
+      .slice(0, 340);
   }
   return plan;
 }
@@ -360,7 +405,10 @@ function saveState(state) {
 function extract(mod, work, tool) {
   fs.mkdirSync(path.dirname(work), { recursive: true });
   if (tool === 'filter-repo') {
-    mutate('git', ['clone', '--no-hardlinks', '--no-tags', ROOT, work], { cwd: ROOT, stream: true });
+    mutate('git', ['clone', '--no-hardlinks', '--no-tags', ROOT, work], {
+      cwd: ROOT,
+      stream: true,
+    });
     mutate('git', ['filter-repo', '--force', '--subdirectory-filter', mod.dir], { cwd: work });
   } else {
     // git subtree split: replays the directory onto a synthetic branch
@@ -382,8 +430,9 @@ function extract(mod, work, tool) {
 }
 
 function ghRepoExists(full) {
-  return run('gh', ['repo', 'view', full, '--json', 'name'], { check: false, quiet: true })
-    .status === 0;
+  return (
+    run('gh', ['repo', 'view', full, '--json', 'name'], { check: false, quiet: true }).status === 0
+  );
 }
 
 function createAndPush(mod, work) {
@@ -432,11 +481,24 @@ function replaceWithSubmodule(mod, work) {
   if (!OPTS.push) log.warn(`Submodule URL points at the temp clone: ${url}`);
   // stale .git/modules entries make `submodule add` refuse
   const modulesDir = path.join(ROOT, '.git', 'modules', mod.dir);
-  if (!OPTS.dryRun && fs.existsSync(modulesDir)) fs.rmSync(modulesDir, { recursive: true, force: true });
-  gitM([
-    '-c', 'protocol.file.allow=always',
-    'submodule', 'add', '--force', '-b', OPTS.branch, '--name', mod.dir, url, mod.dir,
-  ], { stream: true });
+  if (!OPTS.dryRun && fs.existsSync(modulesDir))
+    fs.rmSync(modulesDir, { recursive: true, force: true });
+  gitM(
+    [
+      '-c',
+      'protocol.file.allow=always',
+      'submodule',
+      'add',
+      '--force',
+      '-b',
+      OPTS.branch,
+      '--name',
+      mod.dir,
+      url,
+      mod.dir,
+    ],
+    { stream: true }
+  );
   gitM(['commit', '-m', `chore(split): add ${mod.dir} as submodule → ${mod.full}`]);
   log.ok(`submodule ${mod.dir} → ${url}`);
 }
@@ -467,7 +529,13 @@ function main() {
   const tool = preflight();
   const state = loadState();
   const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'split-repo-'));
-  const report = { org: OPTS.org, branch: OPTS.branch, tool, generated: new Date().toISOString(), modules: [] };
+  const report = {
+    org: OPTS.org,
+    branch: OPTS.branch,
+    tool,
+    generated: new Date().toISOString(),
+    modules: [],
+  };
   const failures = [];
 
   for (const mod of plan) {
@@ -490,7 +558,13 @@ function main() {
 
       state.done[mod.dir] = { repo: mod.full, url: mod.url, at: new Date().toISOString(), commits };
       saveState(state);
-      report.modules.push({ path: mod.dir, repo: mod.full, url: mod.url, commits, title: mod.entry.title || null });
+      report.modules.push({
+        path: mod.dir,
+        repo: mod.full,
+        url: mod.url,
+        commits,
+        title: mod.entry.title || null,
+      });
 
       if (!OPTS.keepTemp && !OPTS.dryRun) fs.rmSync(work, { recursive: true, force: true });
     } catch (err) {

@@ -1,18 +1,12 @@
 <!doctype html>
-<html lang="en">
+  <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="robots"
-      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-    />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="author" content="SimiaCryptus" />
-
-    <meta
-      name="description"
-      content="A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot."
-    />
+    
+    <meta name="description" content="A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot." />
     <title>Spacelike Knots — Mathematical Explorations</title>
     <link rel="canonical" href="https://math.cognotik.com/companion/spacelike-knots/index.html" />
     <meta name="theme-color" content="#0a0a14" />
@@ -21,408 +15,246 @@
     <meta property="og:type" content="article" />
     <meta property="og:site_name" content="Mathematical Explorations" />
     <meta property="og:title" content="Spacelike Knots — Mathematical Explorations" />
-    <meta
-      property="og:description"
-      content="A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot."
-    />
-    <meta
-      property="og:url"
-      content="https://math.cognotik.com/companion/spacelike-knots/index.html"
-    />
+    <meta property="og:description" content="A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot." />
+    <meta property="og:url" content="https://math.cognotik.com/companion/spacelike-knots/index.html" />
     <meta property="og:image" content="https://math.cognotik.com/og-image.png" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Spacelike Knots — Mathematical Explorations" />
-    <meta
-      name="twitter:description"
-      content="A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot."
-    />
+    <meta name="twitter:description" content="A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot." />
     <meta name="twitter:image" content="https://math.cognotik.com/og-image.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../../assets/css/companion-collatz-conjecture-index.css" />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "TechArticle",
-            "headline": "Spacelike Knots",
-            "description": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot.",
-            "url": "https://math.cognotik.com/companion/spacelike-knots/index.html",
-            "inLanguage": "en",
-            "author": { "@type": "Person", "name": "SimiaCryptus" },
-            "publisher": {
-              "@type": "Organization",
-              "name": "Mathematical Explorations",
-              "url": "https://math.cognotik.com/"
-            },
-            "mainEntityOfPage": "https://math.cognotik.com/companion/spacelike-knots/index.html"
-          },
-          {
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Mathematical Explorations",
-                "item": "https://math.cognotik.com/"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Spacelike Knots",
-                "item": "https://math.cognotik.com/companion/spacelike-knots/index.html"
-              }
-            ]
-          },
-          {
-            "@type": "VideoObject",
-            "name": "Spacelike Knots — demonstration",
-            "description": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot.",
-            "thumbnailUrl": "https://math.cognotik.com/og-image.png",
-            "contentUrl": "https://math.cognotik.com/videos/Spacelike_Knots.mp4",
-            "uploadDate": "2026-06-17"
-          }
-        ]
-      }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+  :root{--bg:#0a0a14;--panel:#12121f;--ink:#e8e8f0;--muted:#a0a0b8;--accent:#7aa2ff;--accent2:#b78aff;--border:#23233a}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;font-size:17px}
+  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+  .arrow{font-size:.9em}
+  nav{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,20,.82);backdrop-filter:blur(8px);z-index:10}
+  nav .brand{display:flex;align-items:center;gap:.5rem;font-weight:700}
+  nav .brand-glyph{font-size:1.3rem;color:var(--accent2)}
+  nav .spacer{flex:1}
+  nav .nav-link{color:var(--muted);font-size:.95rem}
+  main{max-width:820px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+  .crumbs{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
+  .crumbs a{color:var(--muted)}
+  .page-head{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+  .page-icon{width:54px;height:54px;flex:none;border-radius:14px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.05rem;background:linear-gradient(135deg,#1c2440,#2a1c40);border:1px solid var(--border);color:var(--accent)}
+  h1{font-family:'Fraunces',serif;font-weight:800;font-size:2.1rem;line-height:1.1;margin:0}
+  .subtitle{color:var(--muted);margin:.4rem 0 1.5rem}
+  .cta{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a14;font-weight:700;padding:.7rem 1.2rem;border-radius:10px;margin:0 .6rem 1.5rem 0}
+  .cta:hover{text-decoration:none;filter:brightness(1.08)}
+  .cta.ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
+  .media{margin:1.5rem 0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#000}
+  .media video{display:block;width:100%;height:auto}
+  article{font-size:1.02rem}
+  article h1,article h2,article h3,article h4{font-family:'Fraunces',serif;line-height:1.2;margin-top:2rem}
+  article h2{font-size:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
+  article h3{font-size:1.2rem}
+  article code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:#1a1a2a;padding:.15em .4em;border-radius:5px}
+  article pre{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;overflow:auto}
+  article pre code{background:none;padding:0}
+  article img{max-width:100%;height:auto;border-radius:10px}
+  article blockquote{border-left:3px solid var(--accent2);margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:var(--muted)}
+  article table{border-collapse:collapse;width:100%;margin:1rem 0}
+  article th,article td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left}
+  .mermaid{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;margin:1rem 0}
+  .related{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.5rem}
+  .related h2{font-family:'Fraunces',serif;font-size:1.2rem}
+  .related ul{list-style:none;padding:0;display:grid;gap:.4rem}
+  footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.9rem}
+  .footer-mark{font-size:1.6rem;color:var(--accent2);margin-top:1rem}
+  .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.5rem}
+  .hub-card{display:block;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
+  .hub-card:hover{border-color:var(--accent);text-decoration:none}
+  .hub-card h3{margin:.2rem 0 .4rem;font-family:'Fraunces',serif}
+  .hub-card p{margin:0;color:var(--muted);font-size:.92rem}
+  .badge{display:inline-block;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--accent2);border:1px solid var(--border);border-radius:999px;padding:.15rem .6rem;margin-bottom:.5rem}
+  </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"TechArticle","headline":"Spacelike Knots","description":"A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot.","url":"https://math.cognotik.com/companion/spacelike-knots/index.html","inLanguage":"en","author":{"@type":"Person","name":"SimiaCryptus"},"publisher":{"@type":"Organization","name":"Mathematical Explorations","url":"https://math.cognotik.com/"},"mainEntityOfPage":"https://math.cognotik.com/companion/spacelike-knots/index.html"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Mathematical Explorations","item":"https://math.cognotik.com/"},{"@type":"ListItem","position":2,"name":"Spacelike Knots","item":"https://math.cognotik.com/companion/spacelike-knots/index.html"}]},{"@type":"VideoObject","name":"Spacelike Knots — demonstration","description":"A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot.","thumbnailUrl":"https://math.cognotik.com/og-image.png","contentUrl":"https://math.cognotik.com/videos/Spacelike_Knots.mp4","uploadDate":"2026-08-21"}]}</script>
+    
   </head>
   <body>
-    <nav>
+  <nav>
       <a class="brand" href="../../index.html">
         <span class="brand-glyph">∑</span>
         <span>Mathematical Explorations</span>
       </a>
       <span class="spacer"></span>
       <a class="nav-link" href="../../index.html">Interactive home <span class="arrow">↗</span></a>
-      <a
-        class="nav-link"
-        href="https://github.com/SimiaCryptus/Fun_With_Math"
-        target="_blank"
-        rel="noopener"
-        >GitHub <span class="arrow">↗</span></a
-      >
+      <a class="nav-link" href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub <span class="arrow">↗</span></a>
     </nav>
     <main>
       <div class="crumbs">
-        <a href="../../index.html">Home</a> › <a href="../index.html">Companion pages</a> ›
+        <a href="../../index.html">Home</a> ›
+        <a href="../index.html">Companion pages</a> ›
         <span>Spacelike Knots</span>
       </div>
       <div class="page-head">
         <div class="page-icon" aria-hidden="true">SK</div>
         <div>
           <h1>Spacelike Knots</h1>
+          
         </div>
       </div>
-      <p class="subtitle">
-        A knot equipped with a Minkowski metric, turning crossings into causal inversions. The
-        distance matrix becomes a causal diagram: timelike, spacelike, and null separations
-        color-coded across the whole knot.
-      </p>
+      <p class="subtitle">A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot.</p>
       <p>
-        <a class="cta" href="../../experiments/spacelike-knots/index.html"
-          >Open the interactive lab <span class="arrow">→</span></a
-        >
+        <a class="cta" href="../../experiments/spacelike-knots/index.html">Open the interactive lab <span class="arrow">→</span></a>
         <a class="cta ghost" href="./video.html">Watch the video <span class="arrow">→</span></a>
       </p>
       <div class="media">
-        <video
-          controls
-          preload="metadata"
-          playsinline
-          aria-label="Spacelike Knots demonstration video"
-        >
+        <video controls preload="metadata" playsinline aria-label="Spacelike Knots demonstration video">
           <source src="../../videos/Spacelike_Knots.mp4" type="video/mp4" />
         </video>
       </div>
-      <article>
-        <h1>Knot Topology Lab — Causal Crossings via Minkowski Metric</h1>
-        <blockquote>
-          <p>
-            <strong
-              >A knot equipped with a Minkowski metric, turning crossings into causal
-              relationships.</strong
-            >
-            Each strand pair is classified as timelike (causally connected), spacelike (causally
-            disconnected), or lightlike (null) — recasting the over/under choice of a crossing as a
-            <em>causal inversion</em> in a relativistic embedding of the knot.
-          </p>
-        </blockquote>
-        <p>
-          An interactive 3D knot theory visualization tool that uses TensorFlow.js for physics-based
-          optimization and distance matrix analysis. Explore classical knot types through the lens
-          of Euclidean and Minkowski spacetime metrics.
-        </p>
-        <hr />
-        <h2>Why This Is Different</h2>
-        <p>
-          Standard knot visualizations focus on 3D embeddings, crossings, or projections to knot
-          diagrams. This lab adds an axis of structure that&#39;s normally absent from knot theory:
-          a <strong>causal metric</strong>.
-        </p>
-        <p>
-          By designating one spatial axis as &quot;time&quot; and computing pairwise Minkowski
-          intervals $ds^2 = -c^2,dt^2 + dx^2 + dy^2$, every pair of points on the knot is classified
-          as:
-        </p>
-        <ul>
-          <li><strong>Timelike</strong> — one point can causally influence the other</li>
-          <li><strong>Spacelike</strong> — the two points are causally disconnected</li>
-          <li>
-            <strong>Lightlike (null)</strong> — the two points lie on each other&#39;s light cone
-          </li>
-        </ul>
-        <p>
-          Crossings in the Euclidean picture become <strong>causal inversions</strong> in the
-          Minkowski picture: the strand that&#39;s &quot;above&quot; is also the strand that&#39;s
-          in the causal future, and tugging the knot through itself flips the causal ordering of
-          nearby strand pairs. The distance matrix becomes a <em>causal diagram</em> of the knot.
-        </p>
-        <p>
-          This is not a known invariant; it&#39;s a fresh visualization angle that makes knot
-          topology look like a small relativistic spacetime.
-        </p>
-        <hr />
-        <h2>Features</h2>
-        <h3>Knot Types</h3>
-        <ul>
-          <li>
-            <strong>Random Spline</strong> — Catmull-Rom spline through randomly placed control
-            points
-          </li>
-          <li><strong>Trefoil (3₁)</strong> — Parametric trefoil knot</li>
-          <li><strong>Figure-Eight (4₁)</strong> — Parametric figure-eight knot</li>
-          <li><strong>Cinquefoil (5₁)</strong> — Parametric cinquefoil knot</li>
-          <li><strong>Unknot</strong> — Simple circle for baseline comparison</li>
-        </ul>
-        <h3>Distance Metrics</h3>
-        <ul>
-          <li><strong>Euclidean (L2)</strong> — Standard 3D distance matrix</li>
-          <li><strong>Minkowski (Z=Time)</strong> — Spacetime metric with Z as the time axis</li>
-          <li><strong>Minkowski (X=Time)</strong> — Spacetime metric with X as the time axis</li>
-          <li><strong>Minkowski (Y=Time)</strong> — Spacetime metric with Y as the time axis</li>
-        </ul>
-        <p>In Minkowski mode, the distance matrix is color-coded by causal structure:</p>
-        <ul>
-          <li>🔴 <strong>Red</strong> — Timelike future separation</li>
-          <li>🔵 <strong>Blue</strong> — Timelike past separation</li>
-          <li>🟢 <strong>Green</strong> — Spacelike separation</li>
-          <li>⚪ <strong>White</strong> — Lightlike (null) separation</li>
-        </ul>
-        <h3>Physics Optimization</h3>
-        <p>Points are optimized using two competing forces:</p>
-        <pre><code>L = L_edge + L_repel
-
-L_edge  = k · Σ (|pᵢ - pᵢ₊₁| - d₀)²
-L_repel = r · Σᵢ≠ⱼ±₁  1 / (|pᵢ - pⱼ|² + ε)
-</code></pre>
-        <ul>
-          <li><strong>Edge constraint</strong> — Keeps adjacent points at a target spacing</li>
-          <li>
-            <strong>Repulsion</strong> — Prevents non-adjacent strand crossings from collapsing
-          </li>
-        </ul>
-        <h3>Optimizers</h3>
-        <ul>
-          <li><strong>Adam</strong> — Adaptive moment estimation (default)</li>
-          <li><strong>QQN</strong> — Quasi-Quasi-Newton method</li>
-          <li><strong>L-BFGS</strong> — Limited-memory BFGS</li>
-        </ul>
-        <h3>Metric Optimization (Minkowski mode)</h3>
-        <p>Automatically rotates the knot in 3D to extremize its causal structure:</p>
-        <ul>
-          <li>
-            <strong>Max Timelike</strong> — Rotate to maximize timelike point-pair separations
-          </li>
-          <li>
-            <strong>Max Spacelike</strong> — Rotate to maximize spacelike point-pair separations
-          </li>
-          <li><strong>Max Lightlike</strong> — Rotate to maximize null/lightlike separations</li>
-          <li>
-            <strong>Align Time Axis</strong> — Snap the camera view to look along the chosen time
-            axis
-          </li>
-        </ul>
-        <hr />
-        <h2>Controls</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Control</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Start / Stop</strong></td>
-              <td>Toggle continuous optimization</td>
-            </tr>
-            <tr>
-              <td><strong>Step</strong></td>
-              <td>Run a single optimization step</td>
-            </tr>
-            <tr>
-              <td><strong>Reset</strong></td>
-              <td>Reinitialize the knot</td>
-            </tr>
-            <tr>
-              <td><strong>Redistribute</strong></td>
-              <td>Randomly resample points along the current curve</td>
-            </tr>
-            <tr>
-              <td><strong>Copy / Paste</strong></td>
-              <td>Export/import knot point data as JSON</td>
-            </tr>
-            <tr>
-              <td><strong>Orbit Knot</strong></td>
-              <td>Mouse drag rotates the knot geometry itself (not just the camera)</td>
-            </tr>
-            <tr>
-              <td><strong>Export STL</strong></td>
-              <td>Download a tube mesh of the current knot for 3D printing</td>
-            </tr>
-            <tr>
-              <td><strong>Mouse drag</strong></td>
-              <td>Rotate camera view</td>
-            </tr>
-            <tr>
-              <td><strong>Scroll wheel</strong></td>
-              <td>Zoom</td>
-            </tr>
-          </tbody>
-        </table>
-        <hr />
-        <h2>Parameters</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Parameter</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Points (N)</strong></td>
-              <td>Number of points sampled along the knot curve</td>
-            </tr>
-            <tr>
-              <td><strong>Control Points</strong></td>
-              <td>Number of Catmull-Rom control points (random spline only)</td>
-            </tr>
-            <tr>
-              <td><strong>Target Edge Length</strong></td>
-              <td>Rest length for the edge spring constraint</td>
-            </tr>
-            <tr>
-              <td><strong>Edge Stiffness</strong></td>
-              <td>Spring constant for edge length enforcement</td>
-            </tr>
-            <tr>
-              <td><strong>Repulsion Strength</strong></td>
-              <td>Magnitude of non-adjacent point repulsion</td>
-            </tr>
-            <tr>
-              <td><strong>Repulsion Cutoff</strong></td>
-              <td>Distance beyond which repulsion is suppressed</td>
-            </tr>
-            <tr>
-              <td><strong>Learning Rate</strong></td>
-              <td>Optimizer step size</td>
-            </tr>
-            <tr>
-              <td><strong>Time/Space Ratio (c)</strong></td>
-              <td>Speed-of-light parameter for Minkowski metric</td>
-            </tr>
-          </tbody>
-        </table>
-        <hr />
-        <h2>Distance Matrix</h2>
-        <p>
-          The right panel shows the <strong>N×N pairwise distance matrix</strong> D[i,j] = ‖pᵢ −
-          pⱼ‖.
-        </p>
-        <ul>
-          <li>The diagonal is always zero (self-distance)</li>
-          <li>The matrix is symmetric</li>
-          <li>Banding patterns near the diagonal reflect local strand geometry</li>
-          <li>Off-diagonal structure encodes global knot topology</li>
-          <li>Hover over any cell to highlight the corresponding point pair in the 3D view</li>
-        </ul>
-        <p>
-          In Minkowski mode, the matrix becomes a <strong>causal diagram</strong> — the colored
-          cells show, for every pair of points on the knot, whether one could in principle send a
-          signal to the other. Crossings show up as small islands of causal inversion.
-        </p>
-        <hr />
-        <h2>Tech Stack</h2>
-        <ul>
-          <li>
-            <strong>TensorFlow.js 4.15</strong> — GPU-accelerated tensor math and automatic
-            differentiation
-          </li>
-          <li><strong>Canvas 2D API</strong> — 3D projection and matrix rendering</li>
-          <li><strong>Vanilla JS (ES Modules)</strong> — No build step required</li>
-          <li><strong>Google Fonts</strong> — JetBrains Mono, Inter</li>
-        </ul>
-        <hr />
-        <h2>File Structure</h2>
-        <pre><code>spacelike-knots/
-├── index.html              # Main application
-└── js/
-    ├── optimizer-adam.js   # Adam optimizer wrapper
-    ├── optimizer-qqn.js    # QQN optimizer
-    └── optimizer-lbfgs.js  # L-BFGS optimizer
-</code></pre>
-        <hr />
-        <h2>Running Locally</h2>
-        <p>No build step required. Serve the directory with any static file server:</p>
-        <pre><code class="language-bash">npx serve spacelike-knots
-# or
-python -m http.server 8080
-</code></pre>
-        <p>Then open <code>http://localhost:8080</code> in a browser.</p>
-      </article>
+      <article><h1>Knot Topology Lab — Where Knots Become Tiny Spacetimes</h1>
+<p>What happens if you treat a knot not as a static tangle of
+curves, but as a small relativistic universe? The result is the <strong>Knot Topology
+Lab</strong>, an interactive playground that recasts the over-and-under crossings of a
+knot as <em>causal relationships</em> — the same kind of cause-and-effect structure
+that governs signals traveling through spacetime. This document is a tour of the
+idea and the interface, written for the curious rather than the code-inclined;
+you don&#39;t need to be a programmer (or a topologist, or a physicist) to follow
+along.</p>
+<hr>
+<h2>The Core Idea</h2>
+<p>A knot, in the mathematical sense, is just a closed loop of string embedded in
+three-dimensional space — think of a shoelace fused at its ends after being
+tangled up. Knot theory studies which of these tangles are genuinely different
+from one another and which can be smoothly wiggled into each other without
+cutting. It&#39;s a beautiful, surprisingly deep corner of mathematics, and the
+usual way to picture a knot is as a flat diagram with little breaks marking
+where one strand passes over another.</p>
+<p>This project adds an axis of structure that knot diagrams normally leave out: a
+sense of <em>time</em>.</p>
+<p>Here&#39;s the trick. In Einstein&#39;s picture of spacetime, distance isn&#39;t measured
+the way we measure it on a ruler. If you single out one direction and call it
+&quot;time,&quot; the interval between two events is computed with a minus sign in front
+of the time part — the <strong>Minkowski metric</strong>, $ds^2 = -c^2,dt^2 + dx^2 + dy^2$.
+That single sign flip has dramatic consequences: it splits every pair of points
+into three categories.</p>
+<ul>
+<li><strong>Timelike</strong> — close enough in space and far enough apart in time that one
+could, in principle, influence the other. They are <em>causally connected</em>.</li>
+<li><strong>Spacelike</strong> — too far apart in space to signal one another in the available
+time. They are <em>causally disconnected</em>.</li>
+<li><strong>Lightlike (null)</strong> — poised exactly on the boundary, on each other&#39;s light
+cone.</li>
+</ul>
+<p>So the lab picks one spatial axis of the knot, quietly relabels it &quot;time,&quot; and
+asks: for every pair of points along the loop, are they timelike, spacelike, or
+lightlike? The knot stops being a mere tangle and becomes a little map of who
+could send a message to whom.</p>
+<hr>
+<h2>Why This Is Interesting</h2>
+<p>It turns out that when you look at a knot this way, its crossings take on a new
+identity. In the ordinary Euclidean picture, a crossing is just a choice: this
+strand goes over, that one goes under. In the Minkowski picture, that same
+choice becomes a <strong>causal inversion</strong> — the strand that sits &quot;above&quot; is also the
+strand sitting in the causal <em>future</em>, and tugging the knot through itself flips
+the causal ordering of the strand pairs nearby.</p>
+<p>I want to be candid about what this is and isn&#39;t. This is <strong>not</strong> a known knot
+invariant, and I&#39;m not claiming it distinguishes knots that other methods can&#39;t;
+it&#39;s a fresh <em>visualization angle</em>, a way of making topology look and feel like
+a small relativistic spacetime. Sometimes the value of a tool is not that it
+proves a theorem but that it lets you <em>see</em> familiar objects from an unfamiliar
+vantage — and that, I think, is worth building.</p>
+<p>The distance matrix — the grid that records how far every point is from every
+other — is where the two worlds meet. In Euclidean mode it&#39;s a smooth,
+symmetric landscape of distances. In Minkowski mode it becomes a <strong>causal
+diagram</strong>: colored cells telling you, pair by pair, whether one point could
+reach the other. Crossings show up as small islands of causal inversion, little
+disturbances in an otherwise orderly sea.</p>
+<hr>
+<h2>A Quick Tour of the Interface</h2>
+<p>The lab is arranged as two panels. On the left, a live 3D view of the knot,
+which you can rotate, zoom, and reshape. On the right, the distance matrix — the
+knot&#39;s structure translated into a grid you can read at a glance.</p>
+<p>A few of the things you can do:</p>
+<ol>
+<li><strong>Choose a knot.</strong> Classic specimens are built in — the trefoil (3₁), the
+figure-eight (4₁), the cinquefoil (5₁), the humble unknot for baseline
+comparison, and a random spline for open-ended exploration.</li>
+<li><strong>Switch metrics.</strong> Flip between ordinary Euclidean distance and the
+Minkowski metric with time assigned to the X, Y, or Z axis. The matrix
+recolors itself instantly: red and blue for timelike (future and past),
+green for spacelike, white for lightlike.</li>
+<li><strong>Let it relax.</strong> The knot settles into a comfortable shape under two gentle,
+competing forces — a spring that keeps neighboring points evenly spaced, and
+a repulsion that stops distant strands from collapsing into one another. Hit
+<em>Start</em> and watch the tangle breathe its way toward equilibrium.</li>
+<li><strong>Reorient for effect.</strong> In Minkowski mode, the tool can automatically rotate
+the knot to <em>maximize</em> its timelike, spacelike, or lightlike character — in
+effect, searching for the orientation in which the knot is most causally
+connected, most disconnected, or most balanced on the light cone.</li>
+<li><strong>Hover to connect the views.</strong> Point at any cell in the matrix and the
+corresponding pair of points lights up in the 3D scene, so the abstract grid
+and the concrete geometry stay tied together in your mind.</li>
+<li><strong>Take it with you.</strong> Copy and paste knot data as plain text, or export a
+tube mesh for 3D printing if you&#39;d like to hold your spacetime in your hand.</li>
+</ol>
+<p>The controls are deliberately immediate; nothing needs to be compiled or
+configured, and everything responds as you nudge it.</p>
+<hr>
+<h2>A Little Background</h2>
+<p>Knot theory began, charmingly, as a wrong idea. In the nineteenth century Lord
+Kelvin proposed that atoms were knotted vortices in the &quot;ether,&quot; which sent
+mathematicians off to catalog the possible knots. The physics didn&#39;t survive,
+but the mathematics flourished, and today knot theory reaches into everything
+from the folding of DNA to quantum field theory.</p>
+<p>The Minkowski metric, meanwhile, comes from special relativity — Hermann
+Minkowski&#39;s insight, roughly a century ago, that space and time are best treated
+as a single four-dimensional fabric with that characteristic minus sign. The
+causal structure it implies (light cones, past and future, the impossibility of
+signaling faster than light) is one of the most intuitive and profound ideas in
+modern physics.</p>
+<p>This project simply lets these two ideas share a room. It borrows the <em>language</em>
+of relativity — light cones, causal order — and applies it to the geometry of
+knots, using physical spacetime as a conceptual model rather than a literal
+claim. The knots aren&#39;t really relativistic objects; but pretending they are,
+just for a moment, reveals structure that&#39;s genuinely fun to look at.</p>
+<hr>
+<h2>Who Might Enjoy This</h2>
+<ul>
+<li><strong>The mathematically curious</strong> — anyone who likes puzzles, patterns, and the
+pleasure of seeing an abstract object made tangible, no prior knot theory
+required.</li>
+<li><strong>Students and educators</strong> — the lab makes both knot crossings and relativistic
+causal structure visible and manipulable, which is often worth more than a
+page of equations.</li>
+<li><strong>Physics and math enthusiasts</strong> — those who already know what a light cone is
+and want to see one wrapped around a trefoil.</li>
+<li><strong>Artists and 3D-printing hobbyists</strong> — the knots relax into organic, elegant
+forms, and you can export them to print.</li>
+<li><strong>Anyone who enjoys interactive toys</strong> — sometimes the best reason to explore
+something is simply that it&#39;s beautiful and responds to your touch.</li>
+</ul>
+<hr>
+<h2>A Closing Note</h2>
+<p>I built this primarily for the joy of the question — what does a knot look like
+when you ask it who can talk to whom? — and it turned out to be more rewarding to
+watch than I anticipated. It doesn&#39;t prove anything; it <em>shows</em> something, and I
+think that&#39;s a fine thing for a tool to do. If you find an orientation or a knot
+that produces a particularly striking causal diagram, I&#39;d love to hear about it.</p>
+<p>Enjoy the exploration!</p>
+</article>
       <section class="related">
         <h2>More from Mathematical Explorations</h2>
         <ul>
-          <li>
-            <a href="../pentagonal-lattice-geometry/index.html">Pentagonal Lattice Geometry</a> — A
-            multi-sheeted covering construction in which the regular pentagon develops fractional
-            dimension (d ≈ 2.37)…
-          </li>
-          <li>
-            <a href="../space-color-symmetry/index.html">Space-Color Symmetry</a> — A pixel canvas
-            where symmetry doesn&#39;t just mirror your strokes — it rewires the diffusion graph.
-            Heat flows…
-          </li>
-          <li>
-            <a href="../geometric-entropy/index.html">Geometric Entropy</a> — A continuous analogue
-            of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize…
-          </li>
-          <li>
-            <a href="../layered-cellular-automata/index.html">Layered Cellular Automata</a> —
-            Langton&#39;s ants write a colored substrate that gates where Conway&#39;s Life is
-            allowed to live. Three feedback…
-          </li>
-          <li>
-            <a href="../fractal-learning/index.html">Fractal Learning</a> — Inverse
-            iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so
-            the depth-N…
-          </li>
+          <li><a href="../pentagonal-lattice-geometry/index.html">Pentagonal Lattice Geometry</a> — A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37)…</li>
+<li><a href="../geometric-entropy/index.html">Geometric Entropy</a> — A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize…</li>
+<li><a href="../pid-regulated-cellular-automaton/index.html">PID-Regulated Cellular Automaton</a> — A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor…</li>
+<li><a href="../layered-cellular-automata/index.html">Layered Cellular Automata</a> — Langton&#39;s ants write a colored substrate that gates where Conway&#39;s Life is allowed to live. Three feedback…</li>
+<li><a href="../space-color-symmetry/index.html">Space-Color Symmetry</a> — A pixel canvas where symmetry doesn&#39;t just mirror your strokes — it rewires the diffusion graph. Heat flows…</li>
         </ul>
       </section>
     </main>
     <footer>
-      <p>
-        Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive
-        experiments in geometry, number theory, and dynamical systems.
-      </p>
+      <p>Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive experiments in geometry, number theory, and dynamical systems.</p>
       <p class="footer-mark">∑</p>
     </footer>
   </body>
-</html>
+  </html>

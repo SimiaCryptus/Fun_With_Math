@@ -1,0 +1,257 @@
+<!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="author" content="SimiaCryptus" />
+    
+    <meta name="description" content="An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from &quot;which direction should I move?&quot; into &quot;where on this curve should I stop?&quot; — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of…" />
+    <title>Which Direction? → Where on the Curve? — Mathematical Explorations</title>
+    <link rel="canonical" href="https://math.cognotik.com/companion/which-direction-where-on-the-curve/index.html" />
+    <meta name="theme-color" content="#0a0a14" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" type="image/png" href="../../icon.png" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Mathematical Explorations" />
+    <meta property="og:title" content="Which Direction? → Where on the Curve? — Mathematical Explorations" />
+    <meta property="og:description" content="An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from &quot;which direction should I move?&quot; into &quot;where on this curve should I stop?&quot; — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of…" />
+    <meta property="og:url" content="https://math.cognotik.com/companion/which-direction-where-on-the-curve/index.html" />
+    <meta property="og:image" content="https://math.cognotik.com/og-image.png" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Which Direction? → Where on the Curve? — Mathematical Explorations" />
+    <meta name="twitter:description" content="An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from &quot;which direction should I move?&quot; into &quot;where on this curve should I stop?&quot; — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of…" />
+    <meta name="twitter:image" content="https://math.cognotik.com/og-image.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+  :root{--bg:#0a0a14;--panel:#12121f;--ink:#e8e8f0;--muted:#a0a0b8;--accent:#7aa2ff;--accent2:#b78aff;--border:#23233a}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.65;font-size:17px}
+  a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+  .arrow{font-size:.9em}
+  nav{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,20,.82);backdrop-filter:blur(8px);z-index:10}
+  nav .brand{display:flex;align-items:center;gap:.5rem;font-weight:700}
+  nav .brand-glyph{font-size:1.3rem;color:var(--accent2)}
+  nav .spacer{flex:1}
+  nav .nav-link{color:var(--muted);font-size:.95rem}
+  main{max-width:820px;margin:0 auto;padding:2.5rem 1.5rem 5rem}
+  .crumbs{font-size:.85rem;color:var(--muted);margin-bottom:1.5rem}
+  .crumbs a{color:var(--muted)}
+  .page-head{display:flex;align-items:center;gap:1rem;margin-bottom:.5rem}
+  .page-icon{width:54px;height:54px;flex:none;border-radius:14px;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.05rem;background:linear-gradient(135deg,#1c2440,#2a1c40);border:1px solid var(--border);color:var(--accent)}
+  h1{font-family:'Fraunces',serif;font-weight:800;font-size:2.1rem;line-height:1.1;margin:0}
+  .subtitle{color:var(--muted);margin:.4rem 0 1.5rem}
+  .cta{display:inline-flex;align-items:center;gap:.4rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#0a0a14;font-weight:700;padding:.7rem 1.2rem;border-radius:10px;margin:0 .6rem 1.5rem 0}
+  .cta:hover{text-decoration:none;filter:brightness(1.08)}
+  .cta.ghost{background:transparent;border:1px solid var(--border);color:var(--ink)}
+  .media{margin:1.5rem 0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#000}
+  .media video{display:block;width:100%;height:auto}
+  article{font-size:1.02rem}
+  article h1,article h2,article h3,article h4{font-family:'Fraunces',serif;line-height:1.2;margin-top:2rem}
+  article h2{font-size:1.5rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
+  article h3{font-size:1.2rem}
+  article code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:#1a1a2a;padding:.15em .4em;border-radius:5px}
+  article pre{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;overflow:auto}
+  article pre code{background:none;padding:0}
+  article img{max-width:100%;height:auto;border-radius:10px}
+  article blockquote{border-left:3px solid var(--accent2);margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:var(--muted)}
+  article table{border-collapse:collapse;width:100%;margin:1rem 0}
+  article th,article td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left}
+  .mermaid{background:#0d0d18;border:1px solid var(--border);border-radius:10px;padding:1rem;margin:1rem 0}
+  .related{margin-top:3rem;border-top:1px solid var(--border);padding-top:1.5rem}
+  .related h2{font-family:'Fraunces',serif;font-size:1.2rem}
+  .related ul{list-style:none;padding:0;display:grid;gap:.4rem}
+  footer{border-top:1px solid var(--border);padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:.9rem}
+  .footer-mark{font-size:1.6rem;color:var(--accent2);margin-top:1rem}
+  .hub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.5rem}
+  .hub-card{display:block;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
+  .hub-card:hover{border-color:var(--accent);text-decoration:none}
+  .hub-card h3{margin:.2rem 0 .4rem;font-family:'Fraunces',serif}
+  .hub-card p{margin:0;color:var(--muted);font-size:.92rem}
+  .badge{display:inline-block;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--accent2);border:1px solid var(--border);border-radius:999px;padding:.15rem .6rem;margin-bottom:.5rem}
+  </style>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Article","headline":"Which Direction? → Where on the Curve?","description":"An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from \"which direction should I move?\" into \"where on this curve should I stop?\" — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of…","url":"https://math.cognotik.com/companion/which-direction-where-on-the-curve/index.html","inLanguage":"en","author":{"@type":"Person","name":"SimiaCryptus"},"publisher":{"@type":"Organization","name":"Mathematical Explorations","url":"https://math.cognotik.com/"},"mainEntityOfPage":"https://math.cognotik.com/companion/which-direction-where-on-the-curve/index.html"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Mathematical Explorations","item":"https://math.cognotik.com/"},{"@type":"ListItem","position":2,"name":"Which Direction? → Where on the Curve?","item":"https://math.cognotik.com/companion/which-direction-where-on-the-curve/index.html"}]}]}</script>
+    
+  </head>
+  <body>
+  <nav>
+      <a class="brand" href="../../index.html">
+        <span class="brand-glyph">∑</span>
+        <span>Mathematical Explorations</span>
+      </a>
+      <span class="spacer"></span>
+      <a class="nav-link" href="../../index.html">Interactive home <span class="arrow">↗</span></a>
+      <a class="nav-link" href="https://github.com/SimiaCryptus/Fun_With_Math" target="_blank" rel="noopener">GitHub <span class="arrow">↗</span></a>
+    </nav>
+    <main>
+      <div class="crumbs">
+        <a href="../../index.html">Home</a> ›
+        <a href="../index.html">Companion pages</a> ›
+        <span>Which Direction? → Where on the Curve?</span>
+      </div>
+      <div class="page-head">
+        <div class="page-icon" aria-hidden="true">QQN</div>
+        <div>
+          <h1>Which Direction? → Where on the Curve?</h1>
+          <p class="subtitle">Interactive · optimization</p>
+        </div>
+      </div>
+      <p class="subtitle">An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from "which direction should I move?" into "where on this curve should I stop?" — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of classical methods (gradient descent, momentum, L-BFGS, trust regions, OWL-QN) into points in one configuration space. <em>Built to make the geometry something you can feel, not just read.</em></p>
+      <p>
+        <a class="cta" href="../../essays/QQN-Visuals/index.html">Open the interactive lab <span class="arrow">→</span></a>
+        
+      </p>
+      
+      <article><h1>Which Direction? → Where on the Curve?</h1>
+<p><em>An interactive tutorial on the Quadratic Quasi-Newton (QQN) optimizer.</em></p>
+<p>Most optimizers pick a direction and hope. This one draws a little curve and
+<em>searches</em> it. That single reframing — turning &quot;which direction should I
+move?&quot; into &quot;where on this curve should I stop?&quot; — is the idea this tutorial
+is built to help you <em>feel</em>, not just read about.</p>
+<hr>
+<h2>What this is</h2>
+<p>This is an interactive, scroll-driven tutorial — a kind of visual essay — that
+teaches how optimization algorithms actually work, from first principles, and
+uses the QQN (Quadratic Quasi-Newton) method as a way into the surprisingly
+rich world of <em>line search</em>. It is deliberately <strong>not</strong> a developer&#39;s project
+README; there is no build-and-run walkthrough here. Instead, this document
+explains what you are looking at, why it is interesting, and who might get
+something out of it.</p>
+<p>The experience is a single scrolling page. As you read the prose, a pinned
+visualization on the side responds: contour maps light up, gradient arrows
+appear, a small parabola blossoms out from the current point, and a line
+search walks along it probing for a good step. You can drag the start point,
+scrub a slider, swap the landscape beneath your feet, and — in the later
+sections — literally reshape the algorithm&#39;s search curve with your mouse.</p>
+<hr>
+<h2>A little background</h2>
+<p>Numerical optimization has long been shaped by a single, stubborn trade-off
+between two families of methods:</p>
+<ul>
+<li><strong>First-order methods</strong> (gradient descent, momentum, Adam) follow the
+downhill slope <code>-∇f</code>. They are cheap, memory-light, and <em>robust</em> — the
+negative gradient always points somewhere useful — but they can be
+painfully slow, zig-zagging down long narrow valleys.</li>
+<li><strong>Second-order / quasi-Newton methods</strong> (Newton, BFGS, L-BFGS) use
+curvature information to take big, well-aimed strides. They are <em>fast</em> near
+a solution but <em>fragile</em>: their step can point uphill on the wrong kind of
+landscape.</li>
+</ul>
+<p>The classical fix is to pick one direction and then run a line search along
+it — accept a big step if it works, backtrack if it doesn&#39;t. But that still
+commits to a single direction per step.</p>
+<p>QQN&#39;s insight is to refuse the binary choice. Instead of selecting <em>either</em>
+the gradient direction <em>or</em> the quasi-Newton direction, it builds a smooth
+<strong>quadratic path</strong> that connects them:</p>
+<pre><code>d(t) = t(1 − t)(−∇f) + t²(−H∇f),   t ∈ [0, 1]
+</code></pre>
+<p>This curve has three decisive properties. It <em>starts</em> where you are; it
+<em>begins</em> tangent to the gradient (so a small step always goes downhill); and
+it <em>ends</em> exactly at the quasi-Newton step. The line search then simply walks
+<code>t</code> from 0 toward 1 and discovers the right blend on its own — robust when it
+needs to be, aggressive when it can afford to be, with no manual tuning.</p>
+<hr>
+<h2>What the tutorial shows you</h2>
+<p>The narrative builds up in the same order the ideas historically emerged, so
+each concept has somewhere to land before the next arrives:</p>
+<ol>
+<li><strong>The landscape</strong> — height is loss; we want to get low. A 3D surface and a
+2D contour of the same function, linked so hovering one lights up the
+other.</li>
+<li><strong>What an optimizer <em>is</em></strong> — a loop: look around, pick a direction, pick a
+step, move, repeat.</li>
+<li><strong>Gradient descent</strong> — watch a learning-rate knob take you from crawling to
+smooth to diverging.</li>
+<li><strong>Momentum &amp; Adam</strong> — a heavy ball rolling through the valley; per-axis
+adaptive steps. (Hold onto Adam — later it reappears not as a rival but as
+a <em>component</em> of QQN.)</li>
+<li><strong>L-BFGS</strong> — curvature ellipses, big confident strides, and the moment of
+fragility where the step points the wrong way.</li>
+<li><strong>The trade-off</strong> — a side-by-side race that crystallizes <em>robust-but-slow</em>
+versus <em>fast-but-fragile</em>.</li>
+<li><strong>QQN&#39;s blend</strong> — the centerpiece: drag the oracle endpoint and watch the
+search curve deform live; scrub <code>t</code> and read off <code>f(x + d(t))</code>.</li>
+<li><strong>The path&#39;s three properties</strong> — annotated and verifiable on screen.</li>
+<li><strong>Line search</strong> — a one-dimensional slice showing how Armijo, Wolfe, and
+backtracking searches actually accept or reject a step.</li>
+<li><strong>Spline search</strong> — reusing the slope at every probe to fit a cubic curve
+and find better steps with fewer evaluations.</li>
+<li><strong>The four axes</strong> — a config rack (gradient / oracle / search / region)
+you can rewire and re-run.</li>
+<li><strong>Equivalences</strong> — presets named after classical methods, showing that
+many of them are just QQN with one or two knobs fixed.</li>
+</ol>
+<p>Throughout, the geometry is trustworthy: gradients and curvature come from
+closed-form landscapes, not finite-differenced approximations, so what you see
+is what the math actually does. The tutorial also takes pains to reproduce the
+<em>caveats</em> honestly — where a heuristic is only a heuristic, or where a strong
+condition over-restricts the step — rather than showing only the wins.</p>
+<hr>
+<h2>Why it&#39;s interesting</h2>
+<p>Optimizers are usually presented as opaque update rules — a line of pseudocode
+you take on faith. QQN adds firm <strong>geometric foundations</strong> that happen to be
+unusually teachable, and slightly alien to current expectations: the
+optimizer&#39;s move is a <em>curve</em>, not an arrow. Seeing that curve, reshaping it,
+and watching a search walk along it turns a stack of equations into something
+you can develop physical intuition for.</p>
+<p>There is also a pleasing unification lurking here. Once you see optimization
+factored into four orthogonal pieces — the gradient anchor, a swappable
+<em>oracle</em> that supplies curvature, a <em>search</em> that walks the curve, and an
+optional <em>region</em> that enforces constraints — a whole zoo of classical methods
+collapses into &quot;points in one configuration space.&quot; Gradient descent is the
+<code>t → 0</code> regime; L-BFGS is the <code>t = 1</code> corner; momentum, trust regions, and
+OWL-QN are particular oracle or region choices. That reframing is genuinely
+clarifying, and it is far more convincing when you can <em>watch</em> one method morph
+into another.</p>
+<hr>
+<h2>Who might find it useful</h2>
+<ul>
+<li><strong>ML practitioners and students</strong> who call <code>optimizer.step()</code> every day but
+have never <em>seen</em> what that step does on a loss surface — the primary
+audience, and the reason the tutorial starts from the very idea of a
+landscape.</li>
+<li><strong>Numerical-optimization newcomers</strong> who are comfortable with calculus but
+have not met the quasi-Newton or line-search literature; this is a gentle,
+intuition-first on-ramp.</li>
+<li><strong>Experienced optimization people</strong> curious about QQN specifically, who want
+an intuition pump for its four-axis factoring and its equivalences to
+classical methods.</li>
+<li><strong>Educators</strong> looking for a worked example of &quot;scrollytelling&quot; applied to a
+genuinely mathematical subject.</li>
+</ul>
+<p>You do not need to be a developer, and you certainly do not need to read any
+source code, to get the payoff. If you have ever wondered what &quot;the optimizer&quot;
+is really doing under the hood — or found the robustness-versus-speed tension
+intriguing — this is built for you.</p>
+<hr>
+<h2>A note on the deeper documentation</h2>
+<p>This tutorial rests on a set of companion technical documents for readers who
+want to go further: the comprehensive algorithm reference, the background and
+motivation, the oracle abstraction, the projective regions, and the
+information-reusing spline search. They are optional. The whole point of the
+interactive version is that you can build a working mental model <em>first</em>, and
+reach for the formal treatment only when your curiosity outruns the visuals.</p>
+<p>Enjoy — and I&#39;m looking forward to feedback on where the intuition lands and
+where it still needs work.</p>
+</article>
+      <section class="related">
+        <h2>More from Mathematical Explorations</h2>
+        <ul>
+          <li><a href="../quadratic-quasi-newton/index.html">Quadratic Quasi-Newton</a> — A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS.</li>
+<li><a href="../rcc-rational-certificate-complexity/index.html">RCC — Rational Certificate Complexity</a> — The foundation of the trilogy. Treats every convergence sequence as a rational certificate engine, measures…</li>
+<li><a href="../pi-rcc-the-simplest-increment-x-sin-x/index.html">PI_RCC — The Simplest Increment: x + sin(x)</a> — A cubic-convergent iteration for π whose outer recurrence is not hypergeometric — it falls outside RCC&#39;s…</li>
+<li><a href="../nam-numbers-as-machines-2/index.html">NAM — Numbers as Machines</a> — A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an…</li>
+<li><a href="../the-extension-ladder-one-way-to-watch-number-systems-grow/index.html">The Extension Ladder: One Way to Watch Number Systems Grow</a></li>
+        </ul>
+      </section>
+    </main>
+    <footer>
+      <p>Part of <a href="../../index.html">Mathematical Explorations</a> — original interactive experiments in geometry, number theory, and dynamical systems.</p>
+      <p class="footer-mark">∑</p>
+    </footer>
+  </body>
+  </html>
