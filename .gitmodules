@@ -10,3 +10,7 @@
 	path = essays/QQN
 	url = https://github.com/Simiacryptus/qqn.git
 	branch = main
+[submodule "essays/QQN-Visuals"]
+	path = essays/QQN-Visuals
+	url = https://github.com/Simiacryptus/qqn-visuals.git
+	branch = main
