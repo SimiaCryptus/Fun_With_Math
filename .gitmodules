@@ -110,3 +110,7 @@
 	path = games/stereo-tac-toe
 	url = https://github.com/Simiacryptus/stereo-tac-toe.git
 	branch = main
+[submodule "games/vocal-parkour"]
+	path = games/vocal-parkour
+	url = https://github.com/Simiacryptus/vocal-parkour.git
+	branch = main
