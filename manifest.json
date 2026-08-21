@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-21T21:20:10.572Z",
+  "generatedAt": "2026-08-21T21:23:33.810Z",
   "counts": {
     "lab": 18,
     "game": 6,
@@ -457,7 +457,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/Arcade_of_Life",
         "path": "games/aol",
-        "commit": "9d4c236645d2b56824d61cf110a03cf47cf4b9e5",
+        "commit": "6b61c5d1d89adcac7af889ef37618df33caf33e2",
         "submodule": true
       },
       "dir": "games/aol",
@@ -480,7 +480,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/SonicParkour",
         "path": "games/vocal_parkour",
-        "commit": "173113ccd15cf68b11c17aa6d6a683f29cb34f50",
+        "commit": "37c420f859ecf8bd135b976eeea57d70ab7da75f",
         "submodule": true
       },
       "dir": "games/vocal_parkour",

@@ -325,6 +325,24 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://math.cognotik.com/games/aol/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/games/aol/docs/metrics/loc_viewer.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/games/aol/privacy.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://math.cognotik.com/games/arithmatic-dynamics/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
@@ -344,6 +362,18 @@
   </url>
   <url>
     <loc>https://math.cognotik.com/games/stereo-tac-toe/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/games/vocal_parkour/web/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/games/vocal_parkour/web/packages/vad-demo/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -481,7 +511,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://math.cognotik.com/quadratics/Pentagon_Lattice_Geometry/</loc>
+    <loc>https://math.cognotik.com/quadratics/pentagon/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
