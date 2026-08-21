@@ -1,5 +1,6 @@
 #!/bin/bash
-pushd `direname $0`
+
+pushd `dirname $0`
 cd ..
 npm run build
 npm run validate
