@@ -30,3 +30,7 @@
 	path = experiments/Pentagon_Lattice_Geometry
 	url = https://github.com/Simiacryptus/pentagon-lattice-geometry.git
 	branch = main
+[submodule "experiments/chromatic"]
+	path = experiments/chromatic
+	url = https://github.com/Simiacryptus/chromatic.git
+	branch = main
