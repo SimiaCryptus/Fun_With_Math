@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-21T19:12:10.830Z",
+  "generatedAt": "2026-08-21T21:12:22.003Z",
   "counts": {
     "lab": 18,
     "game": 6,
@@ -20,17 +20,16 @@
       "launchLabel": "Open the Pentagonal Lattice Geometry lab",
       "pitch": "A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy — a discrete model where a single loop requires two passes to return to identity.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/pentagon-lattice-geometry",
-        "remote": "https://github.com/Simiacryptus/pentagon-lattice-geometry.git",
+        "url": "https://github.com/SimiaCryptus/Pentagon_Lattice_Geometry",
+        "remote": "git@github.com:SimiaCryptus/Pentagon_Lattice_Geometry.git",
         "host": "github.com",
-        "slug": "Simiacryptus/pentagon-lattice-geometry",
-        "path": "quadratics/Pentagon_Lattice_Geometry",
-        "commit": "f286d1f0672be767034f2c63a21f105f2340ad5e",
-        "branch": "main",
+        "slug": "SimiaCryptus/Pentagon_Lattice_Geometry",
+        "path": "quadratics/pentagon",
+        "commit": "bd42407bc9cc861976e1a275276127fbdfbb73b9",
         "submodule": true
       },
-      "dir": "quadratics/Pentagon_Lattice_Geometry",
-      "source": "quadratics/Pentagon_Lattice_Geometry/entry.json"
+      "dir": "quadratics/pentagon",
+      "source": "quadratics/pentagon/entry.json"
     },
     {
       "id": "geometric-entropy",
@@ -290,7 +289,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/primegen",
         "path": "numbers/primegen",
-        "commit": "1c49da579c7d8488ff090f693de25338e26d6551",
+        "commit": "81e6cbb3b8b1b18ff329cadd985ee39413d6ab26",
         "branch": "main",
         "submodule": true
       },
