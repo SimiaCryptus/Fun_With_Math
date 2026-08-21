@@ -90,10 +90,6 @@
 	path = physics/symmetry_simple
 	url = https://github.com/Simiacryptus/symmetry-simple.git
 	branch = main
-[submodule "games/arcade-of-life"]
-	path = games/arcade-of-life
-	url = https://github.com/Simiacryptus/arcade-of-life.git
-	branch = main
 [submodule "games/arithmatic-dynamics"]
 	path = games/arithmatic-dynamics
 	url = https://github.com/Simiacryptus/arithmatic-dynamics.git
@@ -106,10 +102,6 @@
 	path = games/stereo-tac-toe
 	url = https://github.com/Simiacryptus/stereo-tac-toe.git
 	branch = main
-[submodule "games/vocal-parkour"]
-	path = games/vocal-parkour
-	url = https://github.com/Simiacryptus/vocal-parkour.git
-	branch = main
 [submodule "games/wordsearch"]
 	path = games/wordsearch
 	url = https://github.com/Simiacryptus/wordsearch.git
@@ -117,3 +109,9 @@
 [submodule "quadratics/pentagon"]
 	path = quadratics/pentagon
 	url = git@github.com:SimiaCryptus/Pentagon_Lattice_Geometry.git
+[submodule "games/aol"]
+	path = games/aol
+	url = https://github.com/SimiaCryptus/Arcade_of_Life/
+[submodule "games/vocal_parkour"]
+	path = games/vocal_parkour
+	url = git@github.com:SimiaCryptus/SonicParkour.git

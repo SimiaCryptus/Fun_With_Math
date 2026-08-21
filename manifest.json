@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-21T21:12:22.003Z",
+  "generatedAt": "2026-08-21T21:20:10.572Z",
   "counts": {
     "lab": 18,
     "game": 6,
@@ -25,7 +25,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/Pentagon_Lattice_Geometry",
         "path": "quadratics/pentagon",
-        "commit": "bd42407bc9cc861976e1a275276127fbdfbb73b9",
+        "commit": "0f4aedd365cf371172118a74717f06c7a9a75a48",
         "submodule": true
       },
       "dir": "quadratics/pentagon",
@@ -289,7 +289,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/primegen",
         "path": "numbers/primegen",
-        "commit": "81e6cbb3b8b1b18ff329cadd985ee39413d6ab26",
+        "commit": "75d4057e57f5b6bead78c9ee7edd71de6c33dd2b",
         "branch": "main",
         "submodule": true
       },
@@ -447,22 +447,21 @@
       "icon": "AL",
       "title": "The Arcade of Life",
       "href": "https://aol.cognotik.com/",
-      "readme": "README.md",
+      "readme": "INTRO.md",
       "video": "/videos/arcade-of-life.mp4",
       "launchLabel": "Open The Arcade of Life",
       "pitch": "A browser-based arcade built on Conway's Game of Life and 50+ cellular automaton rulesets. Play, tweak, and explore emergent behavior across a wide catalog of rules. <a href=\"https://aol.cognotik.com/\" target=\"_blank\" rel=\"noopener\">Visit the sister site ↗</a>.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/arcade-of-life",
-        "remote": "https://github.com/Simiacryptus/arcade-of-life.git",
+        "url": "https://github.com/SimiaCryptus/Arcade_of_Life",
+        "remote": "https://github.com/SimiaCryptus/Arcade_of_Life/",
         "host": "github.com",
-        "slug": "Simiacryptus/arcade-of-life",
-        "path": "games/arcade-of-life",
-        "commit": "a48abf414484cc035f44821e35b70a21a04ff9cc",
-        "branch": "main",
+        "slug": "SimiaCryptus/Arcade_of_Life",
+        "path": "games/aol",
+        "commit": "9d4c236645d2b56824d61cf110a03cf47cf4b9e5",
         "submodule": true
       },
-      "dir": "games/arcade-of-life",
-      "source": "games/arcade-of-life/entry.json"
+      "dir": "games/aol",
+      "source": "games/aol/entry.json"
     },
     {
       "id": "vocal-parkour",
@@ -472,21 +471,20 @@
       "icon": "VP",
       "title": "Vocal Parkour",
       "href": "https://vp.cognotik.com/",
-      "readme": "README.md",
+      "readme": "INTRO.md",
       "launchLabel": "Open Vocal Parkour",
       "pitch": "A vocal-gesture rhythm game: navigate levels using your voice. Real-time audio-DSP feature extraction and an in-browser classifier turn mic input into game controls — all analysis runs client-side.",
       "repo": {
-        "url": "https://github.com/Simiacryptus/vocal-parkour",
-        "remote": "https://github.com/Simiacryptus/vocal-parkour.git",
+        "url": "https://github.com/SimiaCryptus/SonicParkour",
+        "remote": "git@github.com:SimiaCryptus/SonicParkour.git",
         "host": "github.com",
-        "slug": "Simiacryptus/vocal-parkour",
-        "path": "games/vocal-parkour",
-        "commit": "1d63cd6d1a67b1f9d7f6c1e35784244a0a00a6d9",
-        "branch": "main",
+        "slug": "SimiaCryptus/SonicParkour",
+        "path": "games/vocal_parkour",
+        "commit": "173113ccd15cf68b11c17aa6d6a683f29cb34f50",
         "submodule": true
       },
-      "dir": "games/vocal-parkour",
-      "source": "games/vocal-parkour/entry.json"
+      "dir": "games/vocal_parkour",
+      "source": "games/vocal_parkour/entry.json"
     },
     {
       "id": "wordsearch",
