@@ -8,11 +8,11 @@
     <mapping directory="$PROJECT_DIR$/experiments/3inline" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal_learning" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/no3sieve" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/arcade-of-life" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/games/aol" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/arithmatic-dynamics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/number-crush" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/stereo-tac-toe" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/vocal-parkour" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/games/vocal_parkour" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/wordsearch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/NAM" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/PI_RCC" vcs="Git" />
