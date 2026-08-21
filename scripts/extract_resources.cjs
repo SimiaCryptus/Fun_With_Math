@@ -31,7 +31,9 @@ const DEFAULTS = {
   dedupe: true,            // identical blocks share one file
   jsEnabled: true,
   cssEnabled: true,
-  urlPrefix: null          // e.g. "/static" -> href="/static/css/page.css"
+  urlPrefix: null,         // e.g. "/static" -> href="/static/css/page.css"
+  perModule: false,        // put the files inside the owning git submodule
+  moduleRoots: []          // extra module roots (repeatable --module-root)
 };
 
 const HELP = `extract_resources v${VERSION}
@@ -48,6 +50,8 @@ Options:
       --ext <list>       html extensions   (default: .html,.htm,.xhtml)
       --ignore <list>    extra directory names to skip
       --min-size <n>     skip blocks shorter than n characters
+      --per-module       write into the nearest git submodule (see .gitmodules)
+      --module-root <d>  treat <d> as a module too (repeatable)
       --js-only          only extract <script> blocks
       --css-only         only extract <style> blocks
       --no-dedupe        write one file per block, even if identical
@@ -79,7 +83,8 @@ function splitList(value) {
 function parseArgs(argv) {
   const opts = Object.assign({}, DEFAULTS, {
     extensions: DEFAULTS.extensions.slice(),
-    ignore: DEFAULTS.ignore.slice()
+    ignore: DEFAULTS.ignore.slice(),
+    moduleRoots: DEFAULTS.moduleRoots.slice()
   });
   const positional = [];
 
@@ -106,6 +111,9 @@ function parseArgs(argv) {
       case '-q': case '--quiet':     opts.quiet = true; break;
       case '--backup':               opts.backup = true; break;
       case '--no-dedupe':            opts.dedupe = false; break;
+      case '--per-module':
+      case '--submodules':           opts.perModule = true; break;
+      case '--module-root':          opts.moduleRoots.push(value()); break;
       case '--js-only':              opts.cssEnabled = false; break;
       case '--css-only':             opts.jsEnabled = false; break;
       case '-o': case '--out':       opts.outDir = value(); break;
@@ -351,6 +359,68 @@ function sha1(text) {
 function isHtml(file, opts) {
   return opts.extensions.includes(path.extname(file).toLowerCase());
 }
+/* ------------------------------------------------------------------ *
+* git submodule awareness
+* ------------------------------------------------------------------ */
+/** Every `path = …` entry of the root .gitmodules (may be empty). */
+function readGitmodules(root) {
+  let text;
+  try {
+    text = fs.readFileSync(path.join(root, '.gitmodules'), 'utf8');
+  } catch (e) {
+    return [];
+  }
+  const out = [];
+  const re = /^\s*path\s*=\s*(.+?)\s*$/gm;
+  let m;
+  while ((m = re.exec(text))) out.push(m[1]);
+  return out;
+}
+/**
+* All nested checkouts under `root`, deepest first, so the first hit of
+* moduleRootFor() is always the closest owner.
+*/
+function discoverModules(root, options) {
+  const opts = options || {};
+  const ignore = opts.ignore || DEFAULTS.ignore;
+  const found = new Set();
+  for (const relPath of readGitmodules(root)) {
+    const full = path.resolve(root, relPath);
+    if (fs.existsSync(full)) found.add(full);
+  }
+  for (const relPath of (opts.moduleRoots || [])) found.add(path.resolve(root, relPath));
+  const stack = [path.resolve(root)];
+  while (stack.length) {
+    const dir = stack.pop();
+    let entries;
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch (e) {
+      continue;
+    }
+    for (const entry of entries) {
+      if (entry.name === '.git') {                 // dir (repo) or file (submodule)
+        if (dir !== path.resolve(root)) found.add(dir);
+        continue;
+      }
+      if (!entry.isDirectory() || entry.isSymbolicLink()) continue;
+      if (ignore.includes(entry.name)) continue;
+      stack.push(path.join(dir, entry.name));
+    }
+  }
+  found.delete(path.resolve(root));
+  return [...found].sort((a, b) => b.length - a.length);
+}
+/** Closest module that contains `file`, or `fallback` (the outer repo). */
+function moduleRootFor(file, modules, fallback) {
+  const abs = path.resolve(file);
+  for (const mod of modules || []) {
+    if (abs === mod) continue;
+    if (abs.startsWith(mod + path.sep)) return mod;
+  }
+  return fallback;
+}
+
 
 function walk(dir, opts, acc) {
   let entries;
@@ -365,7 +435,9 @@ function walk(dir, opts, acc) {
     if (entry.isSymbolicLink()) continue;
     if (entry.isDirectory()) {
       if (opts.ignore.includes(entry.name)) continue;
-      if (path.resolve(full) === opts.outRoot) continue;      // never rescan our output
+      const abs = path.resolve(full);
+      // never rescan our own output (any module's, in --per-module mode)
+      if (opts.outDir && (abs === opts.outRoot || (opts.outRoots && opts.outRoots.has(abs)))) continue;
       walk(full, opts, acc);
     } else if (entry.isFile() && isHtml(entry.name, opts)) {
       acc.push(full);
@@ -390,10 +462,11 @@ function collectFiles(inputs, opts) {
   return [...new Set(files.map(f => path.resolve(f)))].sort();
 }
 
-function toHref(htmlFile, target, opts) {
+function toHref(htmlFile, target, opts, outRoot) {
+  const base = outRoot || opts.outRoot;
   let rel;
   if (opts.urlPrefix) {
-    const inside = path.relative(opts.outRoot, target).split(path.sep).join('/');
+    const inside = path.relative(base, target).split(path.sep).join('/');
     rel = opts.urlPrefix.replace(/\/+$/, '') + '/' + inside;
   } else {
     rel = path.relative(path.dirname(htmlFile), target).split(path.sep).join('/');
@@ -418,24 +491,27 @@ function uniquePath(target, ctx) {
 
 function processFile(file, opts, ctx) {
   const original = fs.readFileSync(file, 'utf8');
+  const moduleRoot = opts.perModule ? moduleRootFor(file, opts.modules, opts.root) : opts.root;
+  const outRoot = path.resolve(moduleRoot, opts.outDir);
   const rel = path.relative(opts.root, file) || path.basename(file);
-  const base = slug(rel);
+  const base = slug(path.relative(moduleRoot, file) || path.basename(file));
   const counters = { js: 0, css: 0 };
   const pending = [];
 
   const result = extract(original, opts, (kind, content, hint) => {
-    const key = kind + ':' + sha1(content);
-    if (opts.dedupe && ctx.byHash.has(key)) return toHref(file, ctx.byHash.get(key), opts);
+    // the module is part of the key: submodules never share a file
+    const key = kind + ':' + outRoot + ':' + sha1(content);
+    if (opts.dedupe && ctx.byHash.has(key)) return toHref(file, ctx.byHash.get(key), opts, outRoot);
 
     const n = ++counters[kind];
     const ext = kind === 'js' ? '.js' : '.css';
     const sub = kind === 'js' ? opts.jsDir : opts.cssDir;
     const name = hint ? `${base}-${slug(hint)}` : (n > 1 ? `${base}-${n}` : base);
 
-    const target = uniquePath(path.join(opts.outRoot, sub, name + ext), ctx);
+    const target = uniquePath(path.join(outRoot, sub, name + ext), ctx);
     ctx.byHash.set(key, target);
     pending.push({ target, content });
-    return toHref(file, target, opts);
+    return toHref(file, target, opts, outRoot);
   });
 
   if (!result.changed) {
@@ -486,6 +562,11 @@ function main(argv) {
   const firstIsDir = fs.existsSync(first) && fs.statSync(first).isDirectory();
   opts.root = path.resolve(opts.inputs.length === 1 && firstIsDir ? first : '.');
   opts.outRoot = path.resolve(opts.root, opts.outDir);
+  opts.modules = opts.perModule ? discoverModules(opts.root, opts) : [];
+  opts.outRoots = new Set([opts.outRoot, ...opts.modules.map(m => path.resolve(m, opts.outDir))]);
+  if (opts.perModule && opts.verbose && !opts.quiet) {
+    for (const mod of opts.modules) console.log(`  module: ${path.relative(opts.root, mod) || '.'}`);
+  }
 
   const files = collectFiles(opts.inputs, opts);
   if (!files.length) {
@@ -523,7 +604,8 @@ module.exports = {
   VERSION, DEFAULTS, HELP,
   main, parseArgs, findBlocks, parseAttrs, getAttr,
   shouldExtract, cleanContent, dedent, buildTag, extract,
-  slug, collectFiles, processFile
+  slug, sha1, isHtml, collectFiles, processFile,
+  readGitmodules, discoverModules, moduleRootFor
 };
 
 if (require.main === module) {
