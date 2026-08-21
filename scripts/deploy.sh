@@ -1,3 +1,6 @@
+#!/bin/bash
+pushd `direname $0`
+cd ..
 npm run build
 npm run validate
 npm run manifest:build
@@ -28,3 +31,4 @@ aws s3 cp --recursive ./ s3://math.cognotik.com/ \
 aws cloudfront create-invalidation \
   --distribution-id E2V4URD2KDRZ6N \
   --paths "/*"
+popd

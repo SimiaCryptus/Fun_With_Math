@@ -5,8 +5,8 @@
 //
 //  usage: extract_resources.js [options] [dir|file ...]
 //
-//  * <script>…</script>  ->  <script src="assets/js/<page>.js"></script>
-//  * <style>…</style>    ->  <link rel="stylesheet" href="assets/css/<page>.css">
+//  * <script>…</script>  ->  <script src="/js/<page>.js"></script>
+//  * <style>…</style>    ->  <link rel="stylesheet" href="/css/<page>.css">
 //
 //  Blocks that must stay inline (external src, JSON-LD, templates,
 //  data-no-extract, …) are left untouched.
@@ -18,7 +18,7 @@ const crypto = require('crypto');
 const VERSION = '1.0.0';
 
 const DEFAULTS = {
-  outDir: 'assets',        // root folder for the generated files
+  outDir: '',        // root folder for the generated files
   jsDir: 'js',             // <outDir>/js
   cssDir: 'css',           // <outDir>/css
   extensions: ['.html', '.htm', '.xhtml'],
@@ -41,7 +41,7 @@ Usage:
   extract_resources.js [options] [dir|file ...]      (default: ".")
 
 Options:
-  -o, --out <dir>        output root, relative to the scanned root  (default: assets)
+  -o, --out <dir>        output root, relative to the scanned root  (default: )
       --js-dir <dir>     sub folder for scripts      (default: js)
       --css-dir <dir>    sub folder for stylesheets  (default: css)
       --url-prefix <p>   emit "<p>/js/file.js" instead of a relative path
