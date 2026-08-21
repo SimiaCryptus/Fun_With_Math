@@ -70,3 +70,7 @@
 	path = experiments/no3sieve
 	url = https://github.com/Simiacryptus/no3sieve.git
 	branch = main
+[submodule "experiments/optimization-mechanics"]
+	path = experiments/optimization-mechanics
+	url = https://github.com/Simiacryptus/optimization-mechanics.git
+	branch = main
