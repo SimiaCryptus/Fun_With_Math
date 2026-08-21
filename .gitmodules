@@ -82,3 +82,7 @@
 	path = experiments/primegen
 	url = https://github.com/Simiacryptus/primegen.git
 	branch = main
+[submodule "experiments/spacelike-knots"]
+	path = experiments/spacelike-knots
+	url = https://github.com/Simiacryptus/spacelike-knots.git
+	branch = main
