@@ -62,6 +62,9 @@
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/home.css" />
     <link rel="stylesheet" href="css/videos.css" />
+    <link rel="stylesheet" href="css/browse.css" />
+    <!-- Prime the manifest fetch as early as possible -->
+    <link rel="preload" href="manifest.json" as="fetch" crossorigin="anonymous" />
     <script src="/lib/marked.min.js"></script>
     <!-- MathJax configuration must be set before the library loads -->
     <script src="js/index.js"></script>
@@ -71,7 +74,8 @@
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-    <!-- Structured data: WebSite + Organization + ItemList of labs/essays -->
+    <!-- Structured data: WebSite + Organization; the ItemList is emitted at
+         runtime by js/home-browse.js straight from manifest.json. -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -83,9 +87,15 @@
             "name": "Mathematical Explorations",
             "description": "Original interactive experiments in geometry, number theory, and dynamical systems — in-browser mathematical research.",
             "inLanguage": "en",
-            "publisher": {
-              "@id": "https://math.cognotik.com/#org"
-            }
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://math.cognotik.com/?q={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            },
+            "publisher": { "@id": "https://math.cognotik.com/#org" }
           },
           {
             "@type": "Organization",
@@ -99,65 +109,8 @@
             "@id": "https://math.cognotik.com/#webpage",
             "url": "https://math.cognotik.com/",
             "name": "Mathematical Explorations",
-            "isPartOf": {
-              "@id": "https://math.cognotik.com/#website"
-            },
+            "isPartOf": { "@id": "https://math.cognotik.com/#website" },
             "about": "Interactive mathematical experiments and visualizations"
-          },
-          {
-            "@type": "ItemList",
-            "name": "Featured Laboratories",
-            "itemListOrder": "https://schema.org/ItemListUnordered",
-            "itemListElement": [
-              {
-                "@type": "ListItem",
-                "position": 1,
-                "name": "Pentagonal Lattice Geometry",
-                "url": "https://math.cognotik.com/experiments/Pentagon_Lattice_Geometry/index.html"
-              },
-              {
-                "@type": "ListItem",
-                "position": 2,
-                "name": "Space-Color Symmetry",
-                "url": "https://math.cognotik.com/experiments/symmetry_simple/index.html"
-              },
-              {
-                "@type": "ListItem",
-                "position": 3,
-                "name": "Geometric Entropy",
-                "url": "https://math.cognotik.com/experiments/geometric-entropy/index.html"
-              },
-              {
-                "@type": "ListItem",
-                "position": 4,
-                "name": "Spacelike Knots",
-                "url": "https://math.cognotik.com/experiments/spacelike-knots/index.html"
-              },
-              {
-                "@type": "ListItem",
-                "position": 5,
-                "name": "Layered Cellular Automata",
-                "url": "https://math.cognotik.com/experiments/layered_ca/index.html"
-              },
-              {
-                "@type": "ListItem",
-                "position": 6,
-                "name": "Fractal Learning",
-                "url": "https://math.cognotik.com/experiments/fractal_learning/index.html"
-              },
-              {
-                "@type": "ListItem",
-                "position": 7,
-                "name": "Irrational Lattice",
-                "url": "https://math.cognotik.com/experiments/irrational_lattice/index.html"
-              },
-              {
-                "@type": "ListItem",
-                "position": 8,
-                "name": "Relativistic 2-Body Gravity",
-                "url": "https://math.cognotik.com/experiments/gravity/index.html"
-              }
-            ]
           }
         ]
       }
@@ -179,10 +132,9 @@
         <span class="brand-text">Mathematical Explorations</span>
       </a>
       <span class="spacer"></span>
-      <a class="nav-link nav-section-link" href="#featured">Labs</a>
-      <a class="nav-link nav-section-link" href="#games">Games</a>
-      <a class="nav-link nav-section-link" href="#essays">Essays</a>
-      <a class="nav-link nav-section-link" href="#demos">Demos</a>
+      <a class="nav-link nav-section-link" href="#browse" data-jump-cat="lab">Labs</a>
+      <a class="nav-link nav-section-link" href="#browse" data-jump-cat="game">Games</a>
+      <a class="nav-link nav-section-link" href="#browse" data-jump-cat="essay">Essays</a>
       <a
         class="nav-link"
         href="glossary/"
@@ -201,13 +153,14 @@
       >
     </nav>
 
-    <section class="hero">
+    <section class="hero hero-compact">
       <div class="hero-badge">
         <span class="hero-badge-dot"></span>
         Interactive experiments · runs entirely in the browser
       </div>
 
       <div
+        class="hero-embed"
         data-pidca
         data-pidca-controls="none"
         data-pidca-autoplay="true"
@@ -244,74 +197,97 @@
       <script type="module" src="./js/embed.js"></script>
 
       <p class="hero-lede">
-        A collection of original interactive experiments in geometry, number theory, and dynamical
-        systems; each lab is a small piece of in-browser mathematical research, not a textbook
-        visualization. Most began as questions I'd carried for years — sometimes decades — that
-        simply never had the tooling to be finished and shared. AI-assisted tooling supplied the
-        leverage to close the loops and publish; the questions, the intuitions, and the results are
-        human.
+        Original interactive experiments in geometry, number theory, and dynamical systems — each
+        lab a small piece of in-browser mathematical research, not a textbook visualization. Most
+        began as questions carried for years; AI-assisted tooling supplied the leverage to close the
+        loops and publish. The questions, intuitions, and results are human.
       </p>
-      <div class="hero-scroll" aria-hidden="true">
-        <span class="hero-scroll-line"></span>
-        <span class="hero-scroll-text">scroll</span>
-      </div>
+
+      <p class="hero-hint"><kbd>/</kbd> to search · <kbd>Esc</kbd> to clear</p>
     </section>
 
-    <p class="section-title" id="featured">
-      <span class="section-title-num">01</span>
-      Featured Laboratories
-      <span class="section-title-sub">— in-depth experiments</span>
-    </p>
-    <p class="section-subtitle">
-      Extended interactive studies, each accompanied by documentation describing the underlying
-      mathematics, the motivation, and the methods. Click a card to read its full notes; use the
-      Open button to launch the lab and play with it yourself.
-    </p>
+    <!-- ── Browse: search / filter / sort ─────────────────────── -->
+    <section id="browse" class="browse" aria-label="Browse all experiments">
+      <div class="browse-bar" id="browseBar">
+        <div class="browse-row browse-row-main">
+          <div class="search-field">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <label class="sr-only" for="searchInput">Search experiments</label>
+            <input
+              id="searchInput"
+              type="search"
+              class="search-input"
+              placeholder="Search titles, topics, tags…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button
+              type="button"
+              class="search-clear"
+              id="searchClear"
+              aria-label="Clear search"
+              hidden
+            >
+              ✕
+            </button>
+          </div>
 
-    <div class="featured-grid" id="featuredGrid">
-      <!-- Populated from labs.json by js/home-data.js -->
-    </div>
+          <div class="cat-tabs" id="catTabs" role="tablist" aria-label="Filter by category">
+            <!-- Populated by js/home-browse.js -->
+          </div>
 
-    <p class="section-title" id="games">
-      <span class="section-title-num">03</span>
-      Games <span class="section-title-sub">— interactive, playable</span>
-    </p>
-    <p class="section-subtitle">
-      Playable sister projects and game-like labs, built on the same browser-native tooling as the
-      experiments above. Click a card to read its notes; use the Open button to launch the game.
-    </p>
-    <div class="featured-grid" id="gamesGrid">
-      <!-- Populated from games.json by js/home-data.js -->
-    </div>
+          <div class="browse-tools">
+            <label class="sr-only" for="sortSelect">Sort order</label>
+            <select id="sortSelect" class="tool-select" title="Sort order">
+              <option value="curated">Curated</option>
+              <option value="az">Title A–Z</option>
+              <option value="za">Title Z–A</option>
+              <option value="media">Has demo video</option>
+            </select>
+            <div class="view-toggle" role="group" aria-label="Layout density">
+              <button type="button" data-view="grid" class="view-btn" title="Gallery view">
+                ▦
+              </button>
+              <button type="button" data-view="list" class="view-btn" title="Compact list">
+                ☰
+              </button>
+            </div>
+          </div>
+        </div>
 
-    <p class="section-title" id="essays">
-      <span class="section-title-num">04</span>
-      Essays <span class="section-title-sub">— long-form explorations</span>
-    </p>
-    <p class="section-subtitle">
-      Extended written investigations into the foundations of computational mathematics. The
-      <strong>RCC&nbsp;·&nbsp;PI_RCC&nbsp;·&nbsp;NAM</strong> trilogy forms a single arc — three
-      angles on one question: <em>what is a mathematical constant, computationally?</em> Each treats
-      a number not as a static value but as an <em>engine</em> whose structure, cost, and
-      reachability can be measured. Click a card to read inline; use Open for the dedicated view.
-    </p>
-    <div class="featured-grid" id="essaysGrid">
-      <!-- Populated from labs.json by js/home-data.js -->
-    </div>
+        <div class="browse-row browse-row-tags" id="tagRow" hidden>
+          <span class="tag-row-label">Topics</span>
+          <div class="tag-chips" id="tagChips"></div>
+          <button type="button" class="tag-more" id="tagMore" hidden>more ▾</button>
+        </div>
 
-    <p class="section-title" id="demos">
-      <span class="section-title-num">05</span>
-      Short Demonstrations
-      <span class="section-title-sub">— classical concepts, concisely</span>
-    </p>
-    <p class="section-subtitle">
-      Compact, self-contained demonstrations of classical mathematical concepts. These are warm-ups
-      rather than research; start here if you'd rather see a familiar face before the deeper labs.
-    </p>
+        <div class="browse-row browse-row-status">
+          <p class="browse-status" id="browseStatus" role="status" aria-live="polite">
+            Loading manifest…
+          </p>
+          <button type="button" class="reset-btn" id="resetFilters" hidden>Reset filters</button>
+        </div>
+      </div>
 
-    <div class="card-grid" id="demoGrid">
-      <!-- Populated from labs.json by js/home-data.js -->
-    </div>
+      <div id="entryGroups" class="entry-groups">
+        <!-- Populated from manifest.json by js/home-browse.js -->
+      </div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <p class="empty-glyph" aria-hidden="true">∅</p>
+        <p class="empty-title">No entries match that query.</p>
+        <p class="empty-sub">Try a broader term, or clear the active filters.</p>
+        <button type="button" class="reset-btn" id="emptyReset">Reset filters</button>
+      </div>
+
+      <noscript>
+        <p class="browse-status">
+          This index is rendered from <a href="manifest.json">manifest.json</a> and requires
+          JavaScript. The individual experiments live under <code>/experiments</code>,
+          <code>/games</code>, and <code>/essays</code>.
+        </p>
+      </noscript>
+    </section>
 
     <footer>
       <div class="footer-divider" aria-hidden="true"></div>
@@ -345,15 +321,19 @@
       <div class="modal-card" id="modalCard">
         <div class="modal-header">
           <div class="modal-icon" id="modalIcon" aria-hidden="true"></div>
-          <h2 class="modal-title" id="modalTitle"></h2>
+          <div class="modal-heads">
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <p class="modal-subtitle" id="modalSubtitle"></p>
+          </div>
           <a class="modal-launch" id="modalLaunch" href="#">Open <span class="arrow">→</span></a>
           <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
         </div>
+        <div class="modal-meta" id="modalMeta"></div>
         <div class="modal-media" id="modalMedia"></div>
         <div class="modal-body" id="modalBody"></div>
       </div>
     </div>
 
-    <script src="js/home-data.js"></script>
+    <script src="js/home-browse.js"></script>
   </body>
 </html>
