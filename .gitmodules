@@ -86,3 +86,7 @@
 	path = experiments/spacelike-knots
 	url = https://github.com/Simiacryptus/spacelike-knots.git
 	branch = main
+[submodule "experiments/static-secrets"]
+	path = experiments/static-secrets
+	url = https://github.com/Simiacryptus/static-secrets.git
+	branch = main
