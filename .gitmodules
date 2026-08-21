@@ -42,3 +42,7 @@
 	path = experiments/geometric-entropy
 	url = https://github.com/Simiacryptus/geometric-entropy.git
 	branch = main
+[submodule "experiments/gravity"]
+	path = experiments/gravity
+	url = https://github.com/Simiacryptus/gravity.git
+	branch = main
