@@ -34,3 +34,7 @@
 	path = experiments/chromatic
 	url = https://github.com/Simiacryptus/chromatic.git
 	branch = main
+[submodule "experiments/fractal_learning"]
+	path = experiments/fractal_learning
+	url = https://github.com/Simiacryptus/fractal-learning.git
+	branch = main
