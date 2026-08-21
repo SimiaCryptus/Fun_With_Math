@@ -18,3 +18,7 @@
 	path = essays/RCC
 	url = https://github.com/Simiacryptus/rcc.git
 	branch = main
+[submodule "essays/TEL"]
+	path = essays/TEL
+	url = https://github.com/Simiacryptus/tel.git
+	branch = main
