@@ -54,3 +54,7 @@
 	path = experiments/layered_ca
 	url = https://github.com/Simiacryptus/layered-ca.git
 	branch = main
+[submodule "experiments/markov-analysis"]
+	path = experiments/markov-analysis
+	url = https://github.com/Simiacryptus/markov-analysis.git
+	branch = main
