@@ -62,3 +62,7 @@
 	path = experiments/mesh
 	url = https://github.com/Simiacryptus/mesh.git
 	branch = main
+[submodule "experiments/nam-calculator"]
+	path = experiments/nam-calculator
+	url = https://github.com/Simiacryptus/nam-calculator.git
+	branch = main
