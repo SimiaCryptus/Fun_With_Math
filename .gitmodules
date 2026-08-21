@@ -98,3 +98,7 @@
 	path = games/arcade-of-life
 	url = https://github.com/Simiacryptus/arcade-of-life.git
 	branch = main
+[submodule "games/arithmatic-dynamics"]
+	path = games/arithmatic-dynamics
+	url = https://github.com/Simiacryptus/arithmatic-dynamics.git
+	branch = main
