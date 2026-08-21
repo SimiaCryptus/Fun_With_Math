@@ -1,0 +1,11 @@
+{
+  "id": "static-secrets",
+  "category": "lab",
+  "section": "featured",
+  "order": 10,
+  "icon": "🔒",
+  "title": "Static Secrets",
+  "href": "index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
+  "readme": "README.md",
+  "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key."
+}

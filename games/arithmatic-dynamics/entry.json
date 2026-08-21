@@ -1,0 +1,12 @@
+{
+  "id": "arithmatic-dynamics",
+  "category": "game",
+  "section": "games",
+  "order": 4,
+  "icon": "AD",
+  "title": "Arithmetic Dynamics",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open Arithmetic Dynamics",
+  "pitch": "A touch-first puzzle game that teaches the mechanics of arithmetic — not by drilling facts, but by letting kids bend, break, and recombine numbers until a problem collapses into its simplest shape. Every move (split, swap, group, combine, cancel) is guaranteed to preserve value, so children can experiment freely as fluency emerges quietly through play."
+}

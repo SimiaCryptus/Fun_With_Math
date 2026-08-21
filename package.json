@@ -4,6 +4,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.web.json",
+    "typecheck:watch": "tsc -p tsconfig.json --watch",
+     "manifest:split": "tsx scripts/split-manifest.ts",
+     "manifest:split:dry": "tsx scripts/split-manifest.ts --dry-run",
+     "manifest:split:check": "tsx scripts/split-manifest.ts --dry-run --strict",
+     "manifest:build": "tsx scripts/build-manifest.ts",
+     "split:list": "node split_repo.js --list",
+     "split:dry": "node split_repo.js --dry-run",
+     "split": "node split_repo.js",
     "test": "node test/run-all.js",
     "serve": "npx http-server -p 8080 -c-1",
     "sitemap": "node scripts/generate-sitemap.js",
@@ -20,7 +29,7 @@
     "lint:all:fix": "npm run lint:fix && npm run lint:css:fix && npm run lint:md:fix",
     "format": "prettier --write '**/*.js' '**/*.html' '**/*.css' '**/*.json' '**/*.md'",
     "format:check": "prettier --check '**/*.js' '**/*.html' '**/*.css' '**/*.json' '**/*.md'",
-    "validate": "npm run lint:all && npm run format:check && npm run test",
+    "validate": "npm run typecheck && npm run lint:all && npm run format:check && npm run test",
     "prebuild": "npm run format",
     "build": "npm run assets",
     "build:seo": "node scripts/generate-seo-pages.cjs",
@@ -28,11 +37,12 @@
   },
   "author": "SimiaCryptus",
   "dependencies": {
-    "canvas": "^3.2.3",
-    "fs": "^0.0.1-security",
-    "path": "^0.12.7"
+     "canvas": "^3.2.3"
   },
   "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.8.2",
+     "tsx": "^4.19.2",
     "@bubblewrap/cli": "^1.24.1",
     "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
@@ -44,5 +54,8 @@
     "stylelint-config-standard": "^36.0.1",
     "stylelint-prettier": "^5.0.0",
     "marked": "^12.0.0"
-  }
+   },
+   "engines": {
+     "node": ">=20.11.0"
+   }
 }

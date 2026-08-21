@@ -1,0 +1,12 @@
+{
+  "id": "geometric-entropy",
+  "category": "lab",
+  "section": "featured",
+  "order": 1,
+  "icon": "GE",
+  "title": "Geometric Entropy",
+  "href": "index.html",
+  "readme": "README.md",
+  "video": "/videos/Geometric_Entropy.mp4",
+  "pitch": "A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize the Shannon entropy of their pairwise-distance distribution."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "nam",
+  "category": "essay",
+  "section": "essays",
+  "order": 4,
+  "icon": "NAM",
+  "title": "NAM — Numbers as Machines",
+  "subtitle": "Trilogy III · the executable substrate",
+  "href": "index.html",
+  "readme": "README.md",
+  "pitch": "A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream. RCC's cost classes resurface here as generator state-dimension tiers, with a two-tier ABI, base-as-codec, BBP-as-resonance, and an honest interval account of equality. <em>Where RCC measures and PI_RCC engineers, NAM builds the machine that runs them all.</em>"
+}

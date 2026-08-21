@@ -1,0 +1,12 @@
+{
+  "id": "number-crush",
+  "category": "game",
+  "section": "games",
+  "order": 5,
+  "icon": "NC",
+  "title": "Number Crush",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open Number Crush",
+  "pitch": "A match-and-clear puzzle game that swaps color-matching for arithmetic. Draw connected lines across a hexagonal grid of numbered tiles to satisfy the level's rule — a target sum, a shared factor, a consecutive run, or matching values. Tiles clear and cascade into combos, the board reshuffles rather than deadlocking, and it's colorblind-friendly by design since the information lives in the digits."
+}

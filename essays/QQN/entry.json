@@ -1,0 +1,12 @@
+{
+  "id": "qqn",
+  "category": "essay",
+  "section": "essays",
+  "order": 0,
+  "icon": "QQN",
+  "title": "Quadratic Quasi-Newton",
+  "subtitle": "Standalone · optimization",
+  "href": "index.html",
+  "readme": "README.md",
+  "pitch": "A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS."
+}

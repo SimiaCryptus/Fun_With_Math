@@ -1,0 +1,848 @@
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("main.mac")
+
+read and interpret /home/andrew/code/Fun_With_Math/essays/RCC/main.mac
+(%i2) rcc_fpprec:200
+(%i3) fpprec:rcc_fpprec
+(%i4) rcc_pi_ref:bfloat(%pi)
+(%i5) rcc_e_ref:bfloat(%e)
+(%i6) rcc_bits(r):=block([p,q],r:rat(r),p:num(r),q:denom(r),
+               if p = 0 then 1
+                   else floor(log(abs(p))/log(2))+floor(log(abs(q))/log(2))+2)
+(%i7) rcc_intbits(n):=if n <= 0 then 0 else floor(log(n)/log(2))+1
+(%i8) rcc_bf(r):=bfloat(r)
+(%i9) rcc_abserr(approx,ref):=abs(bfloat(approx)-ref)
+(%i10) rcc_eps_ladder(kmax):=makelist(bfloat(10)^-k,k,1,kmax)
+(%i11) rcc_linfit(xs,ys):=block([n,sx,sy,sxx,sxy,denom,m,b,i,xi,yi],
+                  n:length(xs),sx:0.0,sy:0.0,sxx:0.0,sxy:0.0,
+                  for i thru n do
+                      (xi:float(xs[i]),yi:float(ys[i]),sx:sx+xi,sy:sy+yi,
+                       sxx:sxx+xi*xi,sxy:sxy+xi*yi),denom:n*sxx-sx*sx,
+                  if abs(denom) < 1.0E-300 then [0.0,sy/n]
+                      else (m:(n*sxy-sx*sy)/denom,b:(sy-m*sx)/n,[m,b]))
+(%i12) rcc_linresidual(xs,ys,fit):=block([m,b,s,i],m:fit[1],b:fit[2],s:0.0,
+                       for i thru length(xs) do
+                           s:s+(float(ys[i])-(m*float(xs[i])+b))^2,s)
+(%i13) rcc_r2(xs,ys,fit):=block([m,b,ybar,sstot,ssres,i,n],m:fit[1],b:fit[2],
+              n:length(ys),ybar:0.0,for i thru n do ybar:ybar+float(ys[i]),
+              ybar:ybar/n,sstot:0.0,ssres:0.0,
+              for i thru n do
+                  (sstot:sstot+(float(ys[i])-ybar)^2,
+                   ssres:ssres+(float(ys[i])-(m*float(xs[i])+b))^2),
+              if sstot < 1.0E-300 then 1.0 else 1.0-ssres/sstot)
+(%i14) rcc_fit_class(tbl):=block(
+                     [L,M,invE,polylogx,fit_log,fit_polylog,fit_loglog,r2_log,
+                      r2_polylog,r2_loglog,slope_loglog,i,n,logM,label,
+                      detail],n:length(tbl),
+                     L:makelist(float(log(1/bfloat(tbl[i][1]))),i,1,n),
+                     M:makelist(float(tbl[i][2]),i,1,n),
+                     invE:makelist(float(1/bfloat(tbl[i][1])),i,1,n),
+                     polylogx:makelist(invE[i]*L[i],i,1,n),
+                     logM:makelist(if M[i] > 0 then float(log(M[i])) else 0.0,
+                                   i,1,n),fit_log:rcc_linfit(L,M),
+                     r2_log:rcc_r2(L,M,fit_log),
+                     fit_polylog:rcc_linfit(polylogx,M),
+                     r2_polylog:rcc_r2(polylogx,M,fit_polylog),
+                     fit_loglog:rcc_linfit(L,logM),
+                     r2_loglog:rcc_r2(L,logM,fit_loglog),
+                     slope_loglog:fit_loglog[1],
+                     if r2_log > 0.999 and abs(slope_loglog) < 0.15
+                         then (label:"RC1",
+                               detail:sconcat("log-linear R^2=",r2_log,
+                                              "  poly-exp~",slope_loglog,
+                                              "  (information-theoretically optimal)"))
+                         else (if slope_loglog > 1.5
+                                   then (if slope_loglog > 3.0
+                                             then (label:"RC3",
+                                                   detail
+                                                    :sconcat("log-log slope=",
+                                                             slope_loglog,
+                                                             " (super-polynomial growth)"))
+                                             else (label:"RC2",
+                                                   detail
+                                                    :sconcat("log-log slope=",
+                                                             slope_loglog,
+                                                             " (polynomial, exponent>1)")))
+                                   else (if
+                                   r2_polylog > r2_log and r2_polylog > 0.99
+                                    then (label:"RC2-polylog",
+                                          detail
+                                           :sconcat("(1/eps)*log(1/eps) R^2=",
+                                                    r2_polylog,"  poly-exp~",
+                                                    slope_loglog))
+                                    else (label:"RC2",
+                                          detail
+                                           :sconcat(
+                                            "log-log slope (poly exponent)=",
+                                            slope_loglog,"  log-linear R^2=",
+                                            r2_log)))),
+                     [label,detail,
+                      [["r2_log",r2_log],["r2_polylog",r2_polylog],
+                       ["r2_loglog",r2_loglog],["poly_exp",slope_loglog]]])
+(%i15) rcc_gl_partial(n):=block([s,k],s:0,
+                      for k from 0 thru n-1 do s:s+(-1)^k/(2*k+1),4*s)
+(%i16) rcc_gl_errbound(n):=bfloat(4/(2*n+1))
+(%i17) rcc_nila_partial(n):=block([s,k],s:3,
+                        for k thru n do
+                            s:s+((-1)^(k+1)*4)/((2*k)*(2*k+1)*(2*k+2)),s)
+(%i18) rcc_nila_errbound(n):=bfloat(4/((2*(n+1))*(2*(n+1)+1)*(2*(n+1)+2)))
+(%i19) rcc_wallis_partial(n):=block([p,k],p:2,
+                          for k thru n do p:(p*(2*k)^2)/((2*k-1)*(2*k+1)),p)
+(%i20) rcc_wallis_errbound(n):=bfloat(%pi/(4*n))
+(%i21) rcc_binom_partial(kk,n):=block([s,m,rho],rho:1-1/kk,s:0,
+                         for m from 0 thru n-1 do
+                             s:s+(binomial(2*m,m)/4^m)*rho^m,s)
+(%i22) rcc_binom_errbound(kk,n):=block([rho],rho:bfloat(1-1/kk),bfloat(kk)
+                                                                 *rho^n)
+(%i23) rcc_e_partial(n):=block([s,m],s:0,for m from 0 thru n-1 do s:s+1/m!,s)
+(%i24) rcc_e_errbound(n):=if n < 1 then bfloat(3) else bfloat(3/n!)
+(%i25) rcc_engine_ref(name):=if name = "binom2" then bfloat(sqrt(2))
+                       elseif name = "binom3" then bfloat(sqrt(3))
+                       elseif name = "binom5" then bfloat(sqrt(5))
+                       elseif name = "binom10" then bfloat(sqrt(10))
+                       elseif name = "e" then rcc_e_ref else rcc_pi_ref
+(%i26) rcc_engine_partial(name,n):=if name = "gl" then rcc_gl_partial(n)
+                           elseif name = "nila" then rcc_nila_partial(n)
+                           elseif name = "wallis" then rcc_wallis_partial(n)
+                           elseif name = "binom2" then rcc_binom_partial(2,n)
+                           elseif name = "binom3" then rcc_binom_partial(3,n)
+                           elseif name = "binom5" then rcc_binom_partial(5,n)
+                           elseif name = "binom10"
+                           then rcc_binom_partial(10,n) elseif name = "e"
+                           then rcc_e_partial(n)
+                           else error("unknown engine",name)
+(%i27) rcc_engine_errbound(name,n):=if name = "gl" then rcc_gl_errbound(n)
+                            elseif name = "nila" then rcc_nila_errbound(n)
+                            elseif name = "wallis" then rcc_wallis_errbound(n)
+                            elseif name = "binom2"
+                            then rcc_binom_errbound(2,n)
+                            elseif name = "binom3"
+                            then rcc_binom_errbound(3,n)
+                            elseif name = "binom5"
+                            then rcc_binom_errbound(5,n)
+                            elseif name = "binom10"
+                            then rcc_binom_errbound(10,n) elseif name = "e"
+                            then rcc_e_errbound(n)
+                            else error("unknown engine",name)
+(%i28) rcc_engine_predicted(name):=if name = "gl" then "RC2"
+                             elseif name = "nila" then "RC2"
+                             elseif name = "wallis" then "RC2-polylog"
+                             elseif name = "e" then "RC1" else "RC1"
+(%i29) rcc_engine_pretty(name):=if name = "gl" then "Gregory-Leibniz (pi)"
+                          elseif name = "nila" then "Nilakantha (pi)"
+                          elseif name = "wallis" then "Wallis product (pi)"
+                          elseif name = "binom2"
+                          then "Binomial series sqrt(2)"
+                          elseif name = "binom3"
+                          then "Binomial series sqrt(3)"
+                          elseif name = "binom5"
+                          then "Binomial series sqrt(5)"
+                          elseif name = "binom10"
+                          then "Binomial series sqrt(10)" elseif name = "e"
+                          then "Taylor series (e)" else name
+(%i30) rcc_all_engines:["gl","nila","wallis","binom2","binom3","binom5",
+                        "binom10","e"]
+(%i31) rcc_find_N(name,eps):=block([n,bnd,stp,guard],n:1,stp:1,guard:0,
+                  while rcc_engine_errbound(name,n) >= eps and guard < 200 do
+                        (n:n+stp,stp:stp*2,guard:guard+1),
+                  block([lo,hi,mid],lo:max(1,floor(n/2)),hi:n,
+                        while lo < hi do
+                              (mid:floor((lo+hi)/2),
+                               if rcc_engine_errbound(name,mid) < eps
+                                   then hi:mid else lo:mid+1),lo))
+(%i32) rcc_sweep(name,kmax):=block([ladder,rows,eps,N,S,b],
+                 ladder:rcc_eps_ladder(kmax),rows:[],
+                 for eps in ladder do
+                     (N:rcc_find_N(name,eps),S:rcc_engine_partial(name,N),
+                      b:rcc_bits(rat(S)),rows:append(rows,[[eps,N,b]])),rows)
+(%i33) rcc_verify_bounds(name,Nlist):=block([ref,ok,n,S,err,bnd,fails],
+                         ref:rcc_engine_ref(name),ok:true,fails:[],
+                         for n in Nlist do
+                             (S:rcc_engine_partial(name,n),
+                              err:rcc_abserr(S,ref),
+                              bnd:rcc_engine_errbound(name,n),
+                              if err > bnd
+                                  then (ok:false,
+                                        fails:append(fails,[[n,err,bnd]]))),
+                         [ok,fails])
+(%i34) rcc_lcm_upto(M):=block([L,i],L:1,for i from 2 thru M do L:lcm(L,i),L)
+(%i35) rcc_psi(M):=float(log(rcc_lcm_upto(M)))
+(%i36) rcc_odd_lcm_log(N):=block([L,k],L:1,
+                       for k from 0 thru N do L:lcm(L,2*k+1),float(log(L)))
+(%i37) rcc_triple_lcm_log(N):=block([L,k],L:1,
+                          for k thru N do L:lcm(L,(2*k)*(2*k+1)*(2*k+2)),
+                          float(log(L)))
+(%i38) rcc_wallis_den_log(N):=block([s,k],s:0.0,
+                          for k thru N do s:s+float(log((2*k-1)*(2*k+1))),s)
+(%i39) rcc_report_chebyshev(maxM,stepM):=block([M,ratio,rows],rows:[],
+                            print("  --- G3.1  Chebyshev psi(M) = log lcm(1..M),  expect psi(M)/M -> 1 ---"),
+                            M:stepM,
+                            while M <= maxM do
+                                  (ratio:rcc_psi(M)/M,
+                                   print(
+                                    sconcat("    M=",M,"   psi(M)=",
+                                            rcc_psi(M),"   psi(M)/M=",ratio)),
+                                   rows:append(rows,[[M,ratio]]),M:M+stepM),
+                            rows)
+(%i40) rcc_report_den_growth(name,Nlist):=block([n,S,db,naive,tight,rows],
+                             rows:[],
+                             print(sconcat(
+                                    "  --- G3.2  Denominator growth for ",
+                                    rcc_engine_pretty(name),
+                                    " : actual reduced-denominator bits vs N and N*log2(N) ---")),
+                             for n in Nlist do
+                                 (S:rat(rcc_engine_partial(name,n)),
+                                  db:rcc_intbits(abs(denom(S))),
+                                  naive:float((n*log(n))/log(2)),
+                                  tight:float(n),
+                                  print(
+                                   sconcat("    N=",n,"   den-bits=",db,
+                                           "   N=",tight,"   N*log2(N)=",
+                                           naive,"   ratio(db/N)=",
+                                           float(db/max(1,n)))),
+                                  rows:append(rows,[[n,db,tight,naive]])),
+                             rows)
+(%i41) rcc_classify_N(sweep_rows):=block([tbl],
+                      tbl:makelist([sweep_rows[i][1],sweep_rows[i][2]],i,1,
+                                   length(sweep_rows)),rcc_fit_class(tbl))
+(%i42) rcc_classify_bits(sweep_rows):=block([tbl],
+                         tbl:makelist([sweep_rows[i][1],sweep_rows[i][3]],i,1,
+                                      length(sweep_rows)),rcc_fit_class(tbl))
+(%i43) rcc_wallis_vs_gl(kmax):=block([gl,wl,i,n],gl:rcc_sweep("gl",kmax),
+                        wl:rcc_sweep("wallis",kmax),
+                        print("  --- G4.2  Wallis vs Gregory-Leibniz: bits-vs-eps side by side ---"),
+                        print("    eps          GL:N      GL:bits     Wallis:N    Wallis:bits   ratio(W/GL bits)"),
+                        n:min(length(gl),length(wl)),
+                        for i thru n do
+                            print(sconcat("    ",float(gl[i][1]),"   ",
+                                          gl[i][2],"   ",gl[i][3],"      ",
+                                          wl[i][2],"   ",wl[i][3],"    ",
+                                          float(wl[i][3]/max(1,gl[i][3])))),
+                        [gl,wl])
+(%i44) rcc_wallis_rc2_check(kmax,delta):=block([wl,i,eps,bits,val,rows],
+                            wl:rcc_sweep("wallis",kmax),rows:[],
+                            print(sconcat(
+                                   "  --- G4.3  Wallis RC2 check: bits / ((1/eps)^(1+delta)) -> 0, delta=",
+                                   float(delta)," ---")),
+                            for i thru length(wl) do
+                                (eps:wl[i][1],bits:wl[i][3],
+                                 val:float(bits/(1/bfloat(eps))^(1+delta)),
+                                 print(sconcat("    eps=",float(eps),
+                                               "   bits=",bits,
+                                               "   bits/(1/eps)^(1+delta)=",
+                                               val)),
+                                 rows:append(rows,[[eps,val]])),
+                            print("    (decreasing toward 0 confirms Wallis is RC2, not RC3.)"),
+                            rows)
+(%i45) rcc_floor_check(name,kmax):=block([sw,i,eps,bits,floorbits,ok,rows],
+                       sw:rcc_sweep(name,kmax),ok:true,rows:[],
+                       for i thru length(sw) do
+                           (eps:sw[i][1],bits:sw[i][3],
+                            floorbits:float(log(1/bfloat(eps))/log(2)),
+                            if bits < floorbits then ok:false,
+                            rows:append(rows,[[eps,bits,floorbits]])),
+                       [ok,rows])
+(%i46) rcc_saturation_check(name,kmax):=block([sw,i,eps,bits,floorbits,ratio,
+                                               rows],sw:rcc_sweep(name,kmax),
+                            rows:[],
+                            print(sconcat("  --- G5.2  Saturation for ",
+                                          rcc_engine_pretty(name),
+                                          ": bits/log2(1/eps) -> const (RC1 optimality) ---")),
+                            for i thru length(sw) do
+                                (eps:sw[i][1],bits:sw[i][3],
+                                 floorbits:float(log(1/bfloat(eps))/log(2)),
+                                 ratio:float(bits/max(1.0,floorbits)),
+                                 print(sconcat("    eps=",float(eps),
+                                               "   bits=",bits,
+                                               "   log2(1/eps)=",floorbits,
+                                               "   ratio=",ratio)),
+                                 rows:append(rows,[[eps,ratio]])),rows)
+(%i47) rcc_is_rational_in(expr,var):=block([r],r:ratsimp(expr),
+                          polynomialp(num(r),[var])
+                            and polynomialp(denom(r),[var]))
+(%i48) rcc_hypergeometric_check(termexpr,n):=block([ratio],
+                                ratio:ratsimp(
+                                      subst(n = n+1,termexpr)/termexpr),
+                                [rcc_is_rational_in(ratio,n),ratio])
+(%i49) rcc_report_hypergeometric():=block([res,kk],
+                                 print("  --- G6.1  Hypergeometric term-ratio rationality checks ---"),
+                                 res:rcc_hypergeometric_check(
+                                     (-1)^n/(2*n+1),n),
+                                 print(sconcat(
+                                        "    Gregory-Leibniz   hypergeometric? ",
+                                        res[1],"   ratio=",res[2])),
+                                 res:rcc_hypergeometric_check(
+                                     ((-1)^(n+1)*4)/((2*n)*(2*n+1)*(2*n+2)),
+                                     n),
+                                 print(sconcat(
+                                        "    Nilakantha        hypergeometric? ",
+                                        res[1],"   ratio=",res[2])),
+                                 res:rcc_hypergeometric_check(
+                                     (2*n)^2/((2*n-1)*(2*n+1)),n),
+                                 print(sconcat(
+                                        "    Wallis (factor)   hypergeometric? ",
+                                        res[1],"   ratio=",res[2])),
+                                 res:rcc_hypergeometric_check(
+                                     (binomial(2*n,n)/4^n)*rho^n,n),
+                                 print(sconcat(
+                                        "    Binomial sqrt(k)  hypergeometric? ",
+                                        res[1],"   ratio=",res[2])),
+                                 res:rcc_hypergeometric_check(1/n!,n),
+                                 print(sconcat(
+                                        "    Taylor e          hypergeometric? ",
+                                        res[1],"   ratio=",res[2])),'done)
+(%i50) rcc_report_agm_negative():=block([ratio,israt],
+                               print("  --- G6.2  AGM negative test: term ratio involves sqrt (NOT rational) ---"),
+                               ratio:ratsimp(sqrt(a*b)/b),
+                               israt:freeof(sqrt,ratify_safe(ratio)),
+                               print(sconcat(
+                                      "    AGM step b_{n+1}/b_n = sqrt(a*b)/b = ",
+                                      ratio)),
+                               print("    This ratio depends on sqrt(a/b): NOT a rational function of the index."),
+                               print("    => AGM is excluded from the hypergeometric class (essay's claim)."),
+                               'done)
+(%i51) ratify_safe(e):=e
+(%i52) rcc_cbrt_binom_partial(target,x,n):=block([s,m,coeff,j],s:0,
+                              for m from 0 thru n-1 do
+                                  (coeff:1,
+                                   for j from 0 thru m-1 do
+                                       coeff:(coeff*((-1)/3-j))/(j+1),
+                                   s:s+coeff*(-x)^m),s)
+(%i53) rcc_cbrt2_partial(n):=rcc_cbrt_binom_partial(2,1/2,n)
+(%i54) rcc_cbrt2_errbound(n):=bfloat(3*(1/2)^n)
+(%i55) rcc_report_gauss_spotcheck(kmax):=block(
+                                  [eps,N,S,b,ref,floorbits,ratio,ladder,rows],
+                                  print(
+                                   "  --- G6.3  Gauss spot check: 2^(1/3) via binomial(-1/3) series ---"),
+                                  ref:bfloat(2^(1/3)),
+                                  ladder:rcc_eps_ladder(kmax),rows:[],
+                                  for eps in ladder do
+                                      (N:1,
+                                       while rcc_cbrt2_errbound(N) >= eps do
+                                             N:N+1,S:rcc_cbrt2_partial(N),
+                                       b:rcc_bits(rat(S)),
+                                       floorbits
+                                        :float(log(1/bfloat(eps))/log(2)),
+                                       ratio:float(b/max(1.0,floorbits)),
+                                       print(
+                                        sconcat("    eps=",float(eps),"   N=",
+                                                N,"   bits=",b,
+                                                "   log2(1/eps)=",floorbits,
+                                                "   ratio=",ratio)),
+                                       rows:append(rows,[[eps,N,b]])),
+                                  print(
+                                   "    Bits track log2(1/eps): supports RC1 for algebraic 2^(1/3)."),
+                                  rcc_classify_bits(rows))
+(%i56) rcc_agm_pi(iters):=block([a,b,t,p,i,an,prevpi,piapprox,prec],
+                  fpprec:rcc_fpprec,a:bfloat(1),b:bfloat(1/sqrt(2)),
+                  t:bfloat(1/4),p:bfloat(1),piapprox:bfloat(0),
+                  for i thru iters do
+                      (an:(a+b)/2,b:sqrt(a*b),t:t-p*(a-an)^2,a:an,p:2*p),
+                  piapprox:(a+b)^2/(4*t),piapprox)
+(%i57) rcc_report_agm_pi(maxiters):=block([i,papprox,err,bits_est,rrat,rows],
+                         print("  --- G7.1  AGM (Gauss-Legendre) for pi: quadratic convergence, RC1 ---"),
+                         print("    iters    |pi - approx|         ~achieved bits (log2(1/err))"),
+                         rows:[],
+                         for i thru maxiters do
+                             (papprox:rcc_agm_pi(i),
+                              err:rcc_abserr(papprox,rcc_pi_ref),
+                              bits_est:if err <= 0
+                                           then float(
+                                           (rcc_fpprec*log(10))/log(2))
+                                           else float(log(1/err)/log(2)),
+                              print(sconcat("    ",i,"      ",err,"     ",
+                                            bits_est)),
+                              rows:append(rows,[[err,i]])),
+                         print("    Error squares each step (doubling correct digits) => RC1 outside"),
+                         print("    the hypergeometric class, confirming the essay's collapse caveat."),
+                         rows)
+(%i58) rcc_ramanujan_recip_partial(n):=block([s,m],s:0,
+                                   for m from 0 thru n-1 do
+                                       s
+                                       :s
+                                        +((4*m)!*(1103+26390*m))
+                                         /(m!^4*396^(4*m)),s)
+(%i59) rcc_report_ramanujan_probe(maxN):=block([n,S,b,rows],
+                                  print(
+                                   "  --- G7.2  Open-question probe: Ramanujan fast hypergeometric pi-series ---"),
+                                  print(
+                                   "    Per-term convergence ~10^-8/term (few terms suffice), but naive"),
+                                  print(
+                                   "    common-denominator bit-length grows fast. N -> reduced-core bits:"),
+                                  rows:[],
+                                  for n thru maxN do
+                                      (S:rat(rcc_ramanujan_recip_partial(n)),
+                                       b:rcc_bits(S),
+                                       print(
+                                        sconcat("    N=",n,"   core-bits=",
+                                                b)),
+                                       rows:append(rows,[[n,b]])),
+                                  print(
+                                   "    Bit-length per term grows ~ linearly in N while N(eps)~log(1/eps);"),
+                                  print(
+                                   "    naive summation therefore does NOT reach RC1 — binary-splitting would."),
+                                  print(
+                                   "    Heuristic verdict (low confidence): no naive-hypergeometric RC1 engine"),
+                                  print(
+                                   "    for pi found; consistent with the essay's OPEN question."),
+                                  rows)
+(%i60) rcc_export_benchmark(filename,kmax):=block([stream,name,sw,i,line],
+                            stream:openw(filename),
+                            printf(stream,"engine,predicted_rc,eps,N,bits~%"),
+                            for name in rcc_all_engines do
+                                (sw:rcc_sweep(name,kmax),
+                                 for i thru length(sw) do
+                                     printf(stream,"~a,~a,~a,~a,~a~%",
+                                            rcc_engine_pretty(name),
+                                            rcc_engine_predicted(name),
+                                            float(sw[i][1]),sw[i][2],
+                                            sw[i][3])),close(stream),
+                            print(sconcat(
+                                   "  --- G7.3  Benchmark suite written to ",
+                                   filename," ---")),'done)
+(%i61) rcc_engine_hypergeometric(name):=block([res],
+                                 if name = "gl"
+                                     then res
+                                     :rcc_hypergeometric_check(
+                                      (-1)^n/(2*n+1),n) elseif name = "nila"
+                                     then res
+                                     :rcc_hypergeometric_check(
+                                      ((-1)^(n+1)*4)/((2*n)*(2*n+1)*(2*n+2)),
+                                      n) elseif name = "wallis"
+                                     then res
+                                     :rcc_hypergeometric_check(
+                                      (2*n)^2/((2*n-1)*(2*n+1)),n)
+                                     elseif name = "e"
+                                     then res:rcc_hypergeometric_check(1/n!,n)
+                                     else res
+                                     :rcc_hypergeometric_check(
+                                      (binomial(2*n,n)/4^n)*rho^n,n),res[1])
+(%i62) rcc_verdict(measured,predicted):=block([norm_m,norm_p],
+                   norm_m:if measured = "RC2-polylog" then "RC2"
+                              else measured,
+                   norm_p:if predicted = "RC2-polylog" then "RC2"
+                              else predicted,
+                   if norm_m = norm_p then "AGREE"
+                       else sconcat("DISAGREE (measured=",measured,
+                                    ", predicted=",predicted,")"))
+(%i63) rcc_report_engine(name,kmax):=block([sw,hyp,ncls,bcls,pred,verdict,
+                                            bndres],sw:rcc_sweep(name,kmax),
+                         hyp:rcc_engine_hypergeometric(name),
+                         ncls:rcc_classify_N(sw),bcls:rcc_classify_bits(sw),
+                         pred:rcc_engine_predicted(name),
+                         verdict:rcc_verdict(bcls[1],pred),
+                         bndres:rcc_verify_bounds(name,
+                                                  makelist(sw[i][2],i,1,
+                                                           length(sw))),
+                         print("  ----------------------------------------------------------"),
+                         print(sconcat("  ENGINE: ",rcc_engine_pretty(name))),
+                         print(sconcat("    hypergeometric?       ",hyp)),
+                         print(sconcat("    rigorous bounds hold?  ",
+                                       bndres[1])),
+                         print(sconcat("    measured N(eps) class: ",ncls[1],
+                                       "   [",ncls[2],"]")),
+                         print(sconcat("    measured bits class:   ",bcls[1],
+                                       "   [",bcls[2],"]")),
+                         print(sconcat("    predicted RC class:    ",pred)),
+                         print(sconcat("    VERDICT:               ",
+                                       verdict)),
+                         [name,hyp,ncls[1],bcls[1],pred,verdict])
+(%i64) rcc_run_all([opts]):=block([kmax,summary,name,ssize,denN],
+                   kmax:if length(opts) >= 1 then opts[1] else 6,
+                   ssize:if length(opts) >= 2 then opts[2] else 14,
+                   print("=============================================================="),
+                   print("  RATIONAL CERTIFICATE COMPLEXITY (RCC) — COMPANION REPORT"),
+                   print(sconcat("  tolerance ladder: eps = 10^-1 ... 10^-",
+                                 kmax)),
+                   print("=============================================================="),
+                   print(""),
+                   print("== Section 6: Hypergeometric Regularity Condition =="),
+                   rcc_report_hypergeometric(),rcc_report_agm_negative(),
+                   rcc_report_gauss_spotcheck(min(kmax,8)),print(""),
+                   print("== Section 3: Denominator-Growth Verification (PNT step) =="),
+                   rcc_report_chebyshev(60,10),denN:[4,8,16,32,64],
+                   rcc_report_den_growth("gl",denN),
+                   print(sconcat("  --- G3.3  Nilakantha triple-product lcm (expect Theta(N)) ---")),
+                   for n in denN do
+                       print(sconcat("    N=",n,"   log lcm(triples)=",
+                                     rcc_triple_lcm_log(n),"   ratio/N=",
+                                     float(rcc_triple_lcm_log(n)/n))),
+                   print(sconcat("  --- G3.4  Wallis denominator log (expect ~ N log N) ---")),
+                   for n in denN do
+                       print(sconcat("    N=",n,"   log den=",
+                                     rcc_wallis_den_log(n),
+                                     "   ratio/(N log N)=",
+                                     float(
+                                      rcc_wallis_den_log(n)
+                                       /max(1,n*log(n))))),print(""),
+                   print("== Section 2/4/8: Per-Engine Sweep, Classification & Verdicts =="),
+                   summary:[],
+                   for name in rcc_all_engines do
+                       summary:append(summary,[rcc_report_engine(name,kmax)]),
+                   print(""),print("== Section 4: Headline Distinctions =="),
+                   rcc_wallis_vs_gl(kmax),rcc_wallis_rc2_check(kmax,1/4),
+                   print(""),
+                   print("== Section 5: Optimality / Information-Theoretic Floor =="),
+                   block([fc],fc:rcc_floor_check("gl",kmax),
+                         print(sconcat("  G5.1  GL respects floor (bits >= log2(1/eps))? ",
+                                       fc[1])),
+                         fc:rcc_floor_check("binom2",kmax),
+                         print(sconcat("  G5.1  binom2 respects floor? ",
+                                       fc[1]))),
+                   rcc_saturation_check("binom2",kmax),print(""),
+                   print("== Section 7: Stretch / Research-Facing =="),
+                   rcc_report_agm_pi(7),rcc_report_ramanujan_probe(6),
+                   rcc_export_benchmark("rcc_benchmark.csv",kmax),print(""),
+                   print("== FINAL SUMMARY (Reporting Contract, G8) =="),
+                   print("  engine | hyper? | N(eps) class | bits class | predicted | verdict"),
+                   for row in summary do
+                       print(sconcat("  ",row[1]," | ",row[2]," | ",row[3],
+                                     " | ",row[4]," | ",row[5]," | ",row[6])),
+                   print("=============================================================="),
+                   print("  Discrepancies (DISAGREE) are the headline output: informative,"),
+                   print("  not invalidating — exactly as the essay frames them."),
+                   print("=============================================================="),
+                   summary)
+(%i65) rcc_run_all(6,14)
+==============================================================
+  RATIONAL CERTIFICATE COMPLEXITY (RCC) — COMPANION REPORT
+  tolerance ladder: eps = 10^-1 ... 10^-6
+==============================================================
+
+== Section 6: Hypergeometric Regularity Condition ==
+  --- G6.1  Hypergeometric term-ratio rationality checks ---
+    Gregory-Leibniz   hypergeometric? true   ratio=-(2*n+1)/(2*n+3)
+    Nilakantha        hypergeometric? true   ratio=-(2*n^2+n)/(2*n^2+7*n+6)
+    Wallis (factor)   hypergeometric? true   ratio=(2*n^3+3*n^2-1)/(2*n^3+3*n^\
+2)
+    Binomial sqrt(k)  hypergeometric? false   ratio=(binomial(2*n+2,n+1)*rho)/\
+(4*binomial(2*n,n))
+    Taylor e          hypergeometric? false   ratio=n!/(n+1)!
+  --- G6.2  AGM negative test: term ratio involves sqrt (NOT rational) ---
+    AGM step b_{n+1}/b_n = sqrt(a*b)/b = sqrt(a*b)/b
+    This ratio depends on sqrt(a/b): NOT a rational function of the index.
+    => AGM is excluded from the hypergeometric class (essay's claim).
+  --- G6.3  Gauss spot check: 2^(1/3) via binomial(-1/3) series ---
+    eps=0.1   N=5   bits=25   log2(1/eps)=3.321928094887363   ratio=7.52574989\
+159953
+    eps=0.01   N=9   bits=47   log2(1/eps)=6.643856189774725   ratio=7.0742048\
+98103558
+    eps=0.001   N=12   bits=67   log2(1/eps)=9.965784284662087   ratio=6.72300\
+323649558
+    eps=1.0E-4   N=15   bits=86   log2(1/eps)=13.28771237954945   ratio=6.4721\
+44906775595
+    eps=1.0E-5   N=19   bits=116   log2(1/eps)=16.60964047443681   ratio=6.983\
+895899404364
+    eps=1.0E-6   N=22   bits=138   log2(1/eps)=19.93156856932418   ratio=6.923\
+689900271568
+    Bits track log2(1/eps): supports RC1 for algebraic 2^(1/3).
+
+== Section 3: Denominator-Growth Verification (PNT step) ==
+  --- G3.1  Chebyshev psi(M) = log lcm(1..M),  expect psi(M)/M -> 1 ---
+    M=10   psi(M)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0),5\
+.0),6.0),7.0),8.0),9.0),10.0))   psi(M)/M=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(1.0,2.0),3.0),4.0),5.0),6.0),7.0),8.0),9.0),10.0))/10
+    M=20   psi(M)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0),5.0),6.0),7.0),8.0),9.0),10.0),11.0),12\
+.0),13.0),14.0),15.0),16.0),17.0),18.0),19.0),20.0))   psi(M)/M=log(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0\
+),4.0),5.0),6.0),7.0),8.0),9.0),10.0),11.0),12.0),13.0),14.0),15.0),16.0),17.0\
+),18.0),19.0),20.0))/20
+    M=30   psi(M)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0)\
+,5.0),6.0),7.0),8.0),9.0),10.0),11.0),12.0),13.0),14.0),15.0),16.0),17.0),18.0\
+),19.0),20.0),21.0),22.0),23.0),24.0),25.0),26.0),27.0),28.0),29.0),30.0))   p\
+si(M)/M=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0),5.0),6.0)\
+,7.0),8.0),9.0),10.0),11.0),12.0),13.0),14.0),15.0),16.0),17.0),18.0),19.0),20\
+.0),21.0),22.0),23.0),24.0),25.0),26.0),27.0),28.0),29.0),30.0))/30
+    M=40   psi(M)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0),5.0),6.0),7.0),8.0),9.0),10.0),11.0),\
+12.0),13.0),14.0),15.0),16.0),17.0),18.0),19.0),20.0),21.0),22.0),23.0),24.0),\
+25.0),26.0),27.0),28.0),29.0),30.0),31.0),32.0),33.0),34.0),35.0),36.0),37.0),\
+38.0),39.0),40.0))   psi(M)/M=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0),5.0),6.0),7.0),8.0),9.0),\
+10.0),11.0),12.0),13.0),14.0),15.0),16.0),17.0),18.0),19.0),20.0),21.0),22.0),\
+23.0),24.0),25.0),26.0),27.0),28.0),29.0),30.0),31.0),32.0),33.0),34.0),35.0),\
+36.0),37.0),38.0),39.0),40.0))/40
+    M=50   psi(M)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.\
+0),5.0),6.0),7.0),8.0),9.0),10.0),11.0),12.0),13.0),14.0),15.0),16.0),17.0),18\
+.0),19.0),20.0),21.0),22.0),23.0),24.0),25.0),26.0),27.0),28.0),29.0),30.0),31\
+.0),32.0),33.0),34.0),35.0),36.0),37.0),38.0),39.0),40.0),41.0),42.0),43.0),44\
+.0),45.0),46.0),47.0),48.0),49.0),50.0))   psi(M)/M=log(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0),5.0),6.0),7.0),8.0),9.0),10.0),11.0),12.0\
+),13.0),14.0),15.0),16.0),17.0),18.0),19.0),20.0),21.0),22.0),23.0),24.0),25.0\
+),26.0),27.0),28.0),29.0),30.0),31.0),32.0),33.0),34.0),35.0),36.0),37.0),38.0\
+),39.0),40.0),41.0),42.0),43.0),44.0),45.0),46.0),47.0),48.0),49.0),50.0))/50
+    M=60   psi(M)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(1.0,2.0),3.0),4.0),5.0),6.0),7.0),8.0),9.0),10.0),11.0\
+),12.0),13.0),14.0),15.0),16.0),17.0),18.0),19.0),20.0),21.0),22.0),23.0),24.0\
+),25.0),26.0),27.0),28.0),29.0),30.0),31.0),32.0),33.0),34.0),35.0),36.0),37.0\
+),38.0),39.0),40.0),41.0),42.0),43.0),44.0),45.0),46.0),47.0),48.0),49.0),50.0\
+),51.0),52.0),53.0),54.0),55.0),56.0),57.0),58.0),59.0),60.0))   psi(M)/M=log(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(1.0,2.0),3.0),4.0),5.0),6.0),7.0),8.0),9.0),10.0),11.0),12.0),13.0),14.0),15\
+.0),16.0),17.0),18.0),19.0),20.0),21.0),22.0),23.0),24.0),25.0),26.0),27.0),28\
+.0),29.0),30.0),31.0),32.0),33.0),34.0),35.0),36.0),37.0),38.0),39.0),40.0),41\
+.0),42.0),43.0),44.0),45.0),46.0),47.0),48.0),49.0),50.0),51.0),52.0),53.0),54\
+.0),55.0),56.0),57.0),58.0),59.0),60.0))/60
+  --- G3.2  Denominator growth for Gregory-Leibniz (pi) : actual reduced-denom\
+inator bits vs N and N*log2(N) ---
+    N=4   den-bits=7   N=4.0   N*log2(N)=8.0   ratio(db/N)=1.75
+    N=8   den-bits=16   N=8.0   N*log2(N)=24.0   ratio(db/N)=2.0
+    N=16   den-bits=43   N=16.0   N*log2(N)=64.0   ratio(db/N)=2.6875
+    N=32   den-bits=84   N=32.0   N*log2(N)=160.0   ratio(db/N)=2.625
+    N=64   den-bits=177   N=64.0   N*log2(N)=384.0   ratio(db/N)=2.765625
+  --- G3.3  Nilakantha triple-product lcm (expect Theta(N)) ---
+    N=4   log lcm(triples)=log(lcm(lcm(lcm(lcm(1.0,24.0),120.0),336.0),720.0))\
+   ratio/N=0.25*log(lcm(lcm(lcm(lcm(1.0,24.0),120.0),336.0),720.0))
+    N=8   log lcm(triples)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,24.0),120.0\
+),336.0),720.0),1320.0),2184.0),3360.0),4896.0))   ratio/N=0.125*log(lcm(lcm(l\
+cm(lcm(lcm(lcm(lcm(lcm(1.0,24.0),120.0),336.0),720.0),1320.0),2184.0),3360.0),\
+4896.0))
+    N=16   log lcm(triples)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(1.0,24.0),120.0),336.0),720.0),1320.0),2184.0),3360.0),4896.\
+0),6840.0),9240.0),12144.0),15600.0),19656.0),24360.0),29760.0),35904.0))   ra\
+tio/N=0.0625*log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(l\
+cm(1.0,24.0),120.0),336.0),720.0),1320.0),2184.0),3360.0),4896.0),6840.0),9240\
+.0),12144.0),15600.0),19656.0),24360.0),29760.0),35904.0))
+    N=32   log lcm(triples)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(1.0,24.0),120.0),336.0),720.0),1320.0),2184.0),3360.0),4896.0),6840.0),924\
+0.0),12144.0),15600.0),19656.0),24360.0),29760.0),35904.0),42840.0),50616.0),5\
+9280.0),68880.0),79464.0),91080.0),103776.0),117600.0),132600.0),148824.0),166\
+320.0),185136.0),205320.0),226920.0),249984.0),274560.0))   ratio/N=0.03125*lo\
+g(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,24.0),120.0),336.0),72\
+0.0),1320.0),2184.0),3360.0),4896.0),6840.0),9240.0),12144.0),15600.0),19656.0\
+),24360.0),29760.0),35904.0),42840.0),50616.0),59280.0),68880.0),79464.0),9108\
+0.0),103776.0),117600.0),132600.0),148824.0),166320.0),185136.0),205320.0),226\
+920.0),249984.0),274560.0))
+    N=64   log lcm(triples)=log(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(1.0,24.0),120.0),336.0),\
+720.0),1320.0),2184.0),3360.0),4896.0),6840.0),9240.0),12144.0),15600.0),19656\
+.0),24360.0),29760.0),35904.0),42840.0),50616.0),59280.0),68880.0),79464.0),91\
+080.0),103776.0),117600.0),132600.0),148824.0),166320.0),185136.0),205320.0),2\
+26920.0),249984.0),274560.0),300696.0),328440.0),357840.0),388944.0),421800.0)\
+,456456.0),492960.0),531360.0),571704.0),614040.0),658416.0),704880.0),753480.\
+0),804264.0),857280.0),912576.0),970200.0),1030200.0),1092624.0),1157520.0),12\
+24936.0),1294920.0),1367520.0),1442784.0),1520760.0),1601496.0),1685040.0),177\
+1440.0),1860744.0),1953000.0),2048256.0),2146560.0))   ratio/N=0.015625*log(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lc\
+m(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(lcm(\
+lcm(lcm(lcm(lcm(lcm(1.0,24.0),120.0),336.0),720.0),1320.0),2184.0),3360.0),489\
+6.0),6840.0),9240.0),12144.0),15600.0),19656.0),24360.0),29760.0),35904.0),428\
+40.0),50616.0),59280.0),68880.0),79464.0),91080.0),103776.0),117600.0),132600.\
+0),148824.0),166320.0),185136.0),205320.0),226920.0),249984.0),274560.0),30069\
+6.0),328440.0),357840.0),388944.0),421800.0),456456.0),492960.0),531360.0),571\
+704.0),614040.0),658416.0),704880.0),753480.0),804264.0),857280.0),912576.0),9\
+70200.0),1030200.0),1092624.0),1157520.0),1224936.0),1294920.0),1367520.0),144\
+2784.0),1520760.0),1601496.0),1685040.0),1771440.0),1860744.0),1953000.0),2048\
+256.0),2146560.0))
+  --- G3.4  Wallis denominator log (expect ~ N log N) ---
+    N=4   log den=11.50514527765127   ratio/(N log N)=2.07480200459682
+    N=8   log den=31.87737286176794   ratio/(N log N)=1.916221989343376
+    N=16   log den=83.08799648361695   ratio/(N log N)=1.872978757567403
+    N=32   log den=207.0334477671115   ratio/(N log N)=1.866788302448474
+    N=64   log den=498.6115313018415   ratio/(N log N)=1.873292665466716
+
+== Section 2/4/8: Per-Engine Sweep, Classification & Verdicts ==
+  ----------------------------------------------------------
+  ENGINE: Gregory-Leibniz (pi)
+    hypergeometric?       true
+    rigorous bounds hold?  true
+    measured N(eps) class: RC2-polylog   [(1/eps)*log(1/eps) R^2=0.99973657184\
+28897  poly-exp~1.000000000000002]
+    measured bits class:   RC2-polylog   [(1/eps)*log(1/eps) R^2=0.99973529193\
+39153  poly-exp~1.011509118394338]
+    predicted RC class:    RC2
+    VERDICT:               AGREE
+  ----------------------------------------------------------
+  ENGINE: Nilakantha (pi)
+    hypergeometric?       true
+    rigorous bounds hold?  true
+    measured N(eps) class: RC2   [log-log slope (poly exponent)=0.373058248406\
+7701  log-linear R^2=0.7924520304527151]
+    measured bits class:   RC2   [log-log slope (poly exponent)=0.342840801725\
+8714  log-linear R^2=0.7869238158358436]
+    predicted RC class:    RC2
+    VERDICT:               AGREE
+  ----------------------------------------------------------
+  ENGINE: Wallis product (pi)
+    hypergeometric?       true
+    rigorous bounds hold?  true
+    measured N(eps) class: RC2-polylog   [(1/eps)*log(1/eps) R^2=0.99973658161\
+50705  poly-exp~0.9986303300782664]
+    measured bits class:   RC2-polylog   [(1/eps)*log(1/eps) R^2=0.99973664529\
+22735  poly-exp~1.00169420070406]
+    predicted RC class:    RC2-polylog
+    VERDICT:               AGREE
+  ----------------------------------------------------------
+  ENGINE: Binomial series sqrt(2)
+    hypergeometric?       false
+    rigorous bounds hold?  true
+    measured N(eps) class: RC2   [log-log slope (poly exponent)=0.123071216577\
+7444  log-linear R^2=0.9981566820276497]
+    measured bits class:   RC2   [log-log slope (poly exponent)=0.138819000901\
+4621  log-linear R^2=0.9969002559023812]
+    predicted RC class:    RC1
+    VERDICT:               DISAGREE (measured=RC2, predicted=RC1)
+  ----------------------------------------------------------
+  ENGINE: Binomial series sqrt(3)
+    hypergeometric?       false
+    rigorous bounds hold?  true
+    measured N(eps) class: RC1   [log-linear R^2=0.9992447324378835  poly-exp~\
+0.119169016663939  (information-theoretically optimal)]
+    measured bits class:   RC2   [log-log slope (poly exponent)=0.137274012406\
+9568  log-linear R^2=0.9951622560172434]
+    predicted RC class:    RC1
+    VERDICT:               DISAGREE (measured=RC2, predicted=RC1)
+  ----------------------------------------------------------
+  ENGINE: Binomial series sqrt(5)
+    hypergeometric?       false
+    rigorous bounds hold?  true
+    measured N(eps) class: RC1   [log-linear R^2=0.9997774377521213  poly-exp~\
+0.1148383168130442  (information-theoretically optimal)]
+    measured bits class:   RC1   [log-linear R^2=0.999172059413483  poly-exp~0\
+.1164957315463037  (information-theoretically optimal)]
+    predicted RC class:    RC1
+    VERDICT:               AGREE
+  ----------------------------------------------------------
+  ENGINE: Binomial series sqrt(10)
+    hypergeometric?       false
+    rigorous bounds hold?  true
+    measured N(eps) class: RC1   [log-linear R^2=0.9999430450940468  poly-exp~\
+0.1058912506187728  (information-theoretically optimal)]
+    measured bits class:   RC1   [log-linear R^2=0.999868446629583  poly-exp~0\
+.1102904852105921  (information-theoretically optimal)]
+    predicted RC class:    RC1
+    VERDICT:               AGREE
+  ----------------------------------------------------------
+  ENGINE: Taylor series (e)
+    hypergeometric?       false
+    rigorous bounds hold?  true
+    measured N(eps) class: RC1   [log-linear R^2=1.0  poly-exp~0.0597547343561\
+3255  (information-theoretically optimal)]
+    measured bits class:   RC2   [log-log slope (poly exponent)=0.092767839774\
+84729  log-linear R^2=0.8541359310772003]
+    predicted RC class:    RC1
+    VERDICT:               DISAGREE (measured=RC2, predicted=RC1)
+
+== Section 4: Headline Distinctions ==
+  --- G4.2  Wallis vs Gregory-Leibniz: bits-vs-eps side by side ---
+    eps          GL:N      GL:bits     Wallis:N    Wallis:bits   ratio(W/GL bi\
+ts)
+    0.1   20   97      8   62    0.6391752577319587
+    0.01   200   1134      79   614    0.5414462081128748
+    0.001   2000   11478      786   6274    0.5466109078236626
+    1.0E-4   20000   115408      7854   62798    0.5441390544849577
+    1.0E-5   200000   1154435      78540   628290    0.5442402560559928
+    1.0E-6   2000000   11540052      785399   6283126    0.5444625379504355
+  --- G4.3  Wallis RC2 check: bits / ((1/eps)^(1+delta)) -> 0, delta=0.25 ---
+    eps=0.1   bits=62   bits/(1/eps)^(1+delta)=3.486516216180165
+    eps=0.01   bits=614   bits/(1/eps)^(1+delta)=1.941638483343385
+    eps=0.001   bits=6274   bits/(1/eps)^(1+delta)=1.11569250185842
+    eps=1.0E-4   bits=62798   bits/(1/eps)^(1+delta)=0.62798
+    eps=1.0E-5   bits=628290   bits/(1/eps)^(1+delta)=0.3533134312038444
+    eps=1.0E-6   bits=6283126   bits/(1/eps)^(1+delta)=0.1986898898582311
+    (decreasing toward 0 confirms Wallis is RC2, not RC3.)
+
+== Section 5: Optimality / Information-Theoretic Floor ==
+  G5.1  GL respects floor (bits >= log2(1/eps))? true
+  G5.1  binom2 respects floor? true
+  --- G5.2  Saturation for Binomial series sqrt(2): bits/log2(1/eps) -> const \
+(RC1 optimality) ---
+    eps=0.1   bits=24   log2(1/eps)=3.321928094887363   ratio=7.224719895935548
+
+    eps=0.01   bits=38   log2(1/eps)=6.643856189774725   ratio=5.7195699176156\
+42
+    eps=0.001   bits=58   log2(1/eps)=9.965784284662087   ratio=5.819913249503\
+636
+    eps=1.0E-4   bits=80   log2(1/eps)=13.28771237954945   ratio=6.02059991327\
+9623
+    eps=1.0E-5   bits=100   log2(1/eps)=16.60964047443681   ratio=6.0205999132\
+79623
+    eps=1.0E-6   bits=118   log2(1/eps)=19.93156856932418   ratio=5.9202565813\
+9163
+
+== Section 7: Stretch / Research-Facing ==
+  --- G7.1  AGM (Gauss-Legendre) for pi: quadratic convergence, RC1 ---
+    iters    |pi - approx|         ~achieved bits (log2(1/err))
+    1      1.01340306762499015131211430367957242372916186215748533145789896223\
+364825130609080074720378935016743614266436646838272049007347789784278146543120\
+59911084500265738692408555967642445718356801523838174819b-3     9.946576183567\
+757
+    2      7.37625095631329895129680710988273217602950302641540510748638163906\
+541373393339137642412576210298346480774711820440084866608022011980161972694852\
+23808739201956175955896546172497230277712565239855149701b-9     27.01446511371\
+933
+    3      1.83130608477638909815943894539658885187613890281434268447281599596\
+617883298648009552305492666392660692229839603230220844105292343926923317727368\
+58573187257122574673966762355076972383342544631793114501b-19     62.2437608593\
+0329
+    4      5.47210914568994183274853317896417855659369170282476155189995457864\
+223650053924822393039023586420668938147903893142239388978983196591204658141753\
+05967387420030531542923993925144124405308989465823980929b-41     133.746954884\
+1392
+    5      2.40612213044503207240364740913192411089115548892509391449933759124\
+547529077688565547690185613753403139454781351610678003403839727568862702123493\
+25041551988162258174229979338720641939862774464597551316b-84     277.775250097\
+5525
+    6      2.30858071493439026682132073436350887551252913962808576744898566457\
+820578946575046815936661446594981397685624081174084219765847980115645238152153\
+95923430254406480843494803180703723704267011673047387585b-171     566.84269805\
+15064
+    7      1.95963026494539055802168825907211378153932874392631944114500696217\
+174656806784993851853647082958031044235163412927322667861045213946652230829946\
+46394186121647780330938432868835305079270235902075339515b-200     663.41503749\
+92788
+    Error squares each step (doubling correct digits) => RC1 outside
+    the hypergeometric class, confirming the essay's collapse caveat.
+  --- G7.2  Open-question probe: Ramanujan fast hypergeometric pi-series ---
+    Per-term convergence ~10^-8/term (few terms suffice), but naive
+    common-denominator bit-length grows fast. N -> reduced-core bits:
+    N=1   core-bits=12
+    N=2   core-bits=71
+    N=3   core-bits=130
+    N=4   core-bits=196
+    N=5   core-bits=268
+    N=6   core-bits=322
+    Bit-length per term grows ~ linearly in N while N(eps)~log(1/eps);
+    naive summation therefore does NOT reach RC1 — binary-splitting would.
+    Heuristic verdict (low confidence): no naive-hypergeometric RC1 engine
+    for pi found; consistent with the essay's OPEN question.
+  --- G7.3  Benchmark suite written to rcc_benchmark.csv ---
+
+== FINAL SUMMARY (Reporting Contract, G8) ==
+  engine | hyper? | N(eps) class | bits class | predicted | verdict
+  gl | true | RC2-polylog | RC2-polylog | RC2 | AGREE
+  nila | true | RC2 | RC2 | RC2 | AGREE
+  wallis | true | RC2-polylog | RC2-polylog | RC2-polylog | AGREE
+  binom2 | false | RC2 | RC2 | RC1 | DISAGREE (measured=RC2, predicted=RC1)
+  binom3 | false | RC1 | RC2 | RC1 | DISAGREE (measured=RC2, predicted=RC1)
+  binom5 | false | RC1 | RC1 | RC1 | AGREE
+  binom10 | false | RC1 | RC1 | RC1 | AGREE
+  e | false | RC1 | RC2 | RC1 | DISAGREE (measured=RC2, predicted=RC1)
+==============================================================
+  Discrepancies (DISAGREE) are the headline output: informative,
+  not invalidating — exactly as the essay frames them.
+==============================================================
+(%o66)        /home/andrew/code/Fun_With_Math/essays/RCC/main.mac
+andrew@andrew-desktop-1:~/code/Fun_With_Math/essays/RCC (main*)$

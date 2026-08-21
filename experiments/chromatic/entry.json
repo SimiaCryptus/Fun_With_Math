@@ -1,0 +1,12 @@
+{
+  "id": "chromatic",
+  "category": "lab",
+  "section": "featured",
+  "order": 15,
+  "icon": "CH",
+  "title": "Chromatic — OKLab vs Naive HSL",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
+  "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "optimization-mechanics",
+  "category": "lab",
+  "section": "featured",
+  "order": 14,
+  "icon": "OM",
+  "title": "Optimization Mechanics Visualizer",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open the Optimization Mechanics Visualizer lab",
+  "pitch": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations."
+}

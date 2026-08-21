@@ -1,0 +1,12 @@
+{
+  "id": "irrational-lattice",
+  "category": "lab",
+  "section": "featured",
+  "order": 6,
+  "icon": "IL",
+  "title": "Irrational Lattice",
+  "href": "index.html",
+  "readme": "README.md",
+  "video": "/videos/Irrational_Lattice.mp4",
+  "pitch": "A new primitive: deterministic, algebraic “colored noise” for lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a nearest-lattice map — provably aperiodic, spectrally tunable, integer-arithmetic clean."
+}

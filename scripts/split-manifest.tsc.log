@@ -1,0 +1,30 @@
+node_modules/@types/inquirer/index.d.ts(2,28): error TS2792: Cannot find module 'rxjs'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/objects/choice.d.ts(1,88): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/objects/choices.d.ts(1,70): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/objects/separator.d.ts(1,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/base.d.ts(2,28): error TS2792: Cannot find module 'rxjs'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/base.d.ts(3,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/checkbox.d.ts(2,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/confirm.d.ts(2,49): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/editor.d.ts(2,39): error TS2792: Cannot find module 'rxjs'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/editor.d.ts(3,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/expand.d.ts(2,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/input.d.ts(2,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/list.d.ts(2,46): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/number.d.ts(2,48): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/password.d.ts(2,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/prompts/rawlist.d.ts(2,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/ui/baseUI.d.ts(2,27): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/ui/bottom-bar.d.ts(1,20): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/ui/prompt.d.ts(1,20): error TS2792: Cannot find module '../..'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/inquirer/lib/utils/events.d.ts(2,28): error TS2792: Cannot find module 'rxjs'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/node-fetch/index.d.ts(3,27): error TS2792: Cannot find module 'form-data'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/node/http.d.ts(2085,36): error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/node/http.d.ts(2089,37): error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/node/http.d.ts(2093,39): error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/node/web-globals/fetch.d.ts(3,25): error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+node_modules/@types/node/worker_threads.d.ts(66,34): error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+scripts/split-manifest.ts(21,8): error TS1259: Module '"node:path"' can only be default-imported using the 'allowSyntheticDefaultImports' flag
+scripts/split-manifest.ts(22,8): error TS1259: Module '"node:process"' can only be default-imported using the 'allowSyntheticDefaultImports' flag
+scripts/split-manifest.ts(42,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+scripts/split-manifest.ts(54,41): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.

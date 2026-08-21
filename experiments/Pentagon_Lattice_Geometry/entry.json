@@ -1,0 +1,13 @@
+{
+  "id": "pentagon-lattice-geometry",
+  "category": "lab",
+  "section": "featured",
+  "order": 0,
+  "icon": "PL",
+  "title": "Pentagonal Lattice Geometry",
+  "href": "index.html",
+  "readme": "README.md",
+  "video": "/videos/Pentagon_Lattice_Geometry.mp4",
+  "launchLabel": "Open the Pentagonal Lattice Geometry lab",
+  "pitch": "A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy — a discrete model where a single loop requires two passes to return to identity."
+}
