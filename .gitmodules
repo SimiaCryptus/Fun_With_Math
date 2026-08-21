@@ -22,3 +22,7 @@
 	path = essays/TEL
 	url = https://github.com/Simiacryptus/tel.git
 	branch = main
+[submodule "experiments/3inline"]
+	path = experiments/3inline
+	url = https://github.com/Simiacryptus/3inline.git
+	branch = main
