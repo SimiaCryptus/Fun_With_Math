@@ -94,3 +94,7 @@
 	path = experiments/symmetry_simple
 	url = https://github.com/Simiacryptus/symmetry-simple.git
 	branch = main
+[submodule "games/arcade-of-life"]
+	path = games/arcade-of-life
+	url = https://github.com/Simiacryptus/arcade-of-life.git
+	branch = main
