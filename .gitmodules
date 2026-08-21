@@ -102,3 +102,7 @@
 	path = games/arithmatic-dynamics
 	url = https://github.com/Simiacryptus/arithmatic-dynamics.git
 	branch = main
+[submodule "games/number-crush"]
+	path = games/number-crush
+	url = https://github.com/Simiacryptus/number-crush.git
+	branch = main
