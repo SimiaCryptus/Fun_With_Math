@@ -2,3 +2,7 @@
 	path = essays/NAM
 	url = https://github.com/Simiacryptus/nam.git
 	branch = main
+[submodule "essays/PI_RCC"]
+	path = essays/PI_RCC
+	url = https://github.com/Simiacryptus/pi-rcc.git
+	branch = main
