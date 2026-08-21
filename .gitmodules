@@ -106,3 +106,7 @@
 	path = games/number-crush
 	url = https://github.com/Simiacryptus/number-crush.git
 	branch = main
+[submodule "games/stereo-tac-toe"]
+	path = games/stereo-tac-toe
+	url = https://github.com/Simiacryptus/stereo-tac-toe.git
+	branch = main
