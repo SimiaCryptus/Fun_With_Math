@@ -6,3 +6,7 @@
 	path = essays/PI_RCC
 	url = https://github.com/Simiacryptus/pi-rcc.git
 	branch = main
+[submodule "essays/QQN"]
+	path = essays/QQN
+	url = https://github.com/Simiacryptus/qqn.git
+	branch = main
