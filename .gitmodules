@@ -38,3 +38,7 @@
 	path = experiments/fractal_learning
 	url = https://github.com/Simiacryptus/fractal-learning.git
 	branch = main
+[submodule "experiments/geometric-entropy"]
+	path = experiments/geometric-entropy
+	url = https://github.com/Simiacryptus/geometric-entropy.git
+	branch = main
