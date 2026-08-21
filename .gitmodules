@@ -58,3 +58,7 @@
 	path = experiments/markov-analysis
 	url = https://github.com/Simiacryptus/markov-analysis.git
 	branch = main
+[submodule "experiments/mesh"]
+	path = experiments/mesh
+	url = https://github.com/Simiacryptus/mesh.git
+	branch = main
