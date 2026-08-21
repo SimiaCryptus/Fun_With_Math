@@ -46,3 +46,7 @@
 	path = experiments/gravity
 	url = https://github.com/Simiacryptus/gravity.git
 	branch = main
+[submodule "experiments/irrational_lattice"]
+	path = experiments/irrational_lattice
+	url = https://github.com/Simiacryptus/irrational-lattice.git
+	branch = main
