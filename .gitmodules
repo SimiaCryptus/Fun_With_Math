@@ -66,3 +66,7 @@
 	path = experiments/nam-calculator
 	url = https://github.com/Simiacryptus/nam-calculator.git
 	branch = main
+[submodule "experiments/no3sieve"]
+	path = experiments/no3sieve
+	url = https://github.com/Simiacryptus/no3sieve.git
+	branch = main
