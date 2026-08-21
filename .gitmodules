@@ -26,3 +26,7 @@
 	path = experiments/3inline
 	url = https://github.com/Simiacryptus/3inline.git
 	branch = main
+[submodule "experiments/Pentagon_Lattice_Geometry"]
+	path = experiments/Pentagon_Lattice_Geometry
+	url = https://github.com/Simiacryptus/pentagon-lattice-geometry.git
+	branch = main
