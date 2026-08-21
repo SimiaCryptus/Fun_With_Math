@@ -118,3 +118,6 @@
 	path = games/wordsearch
 	url = https://github.com/Simiacryptus/wordsearch.git
 	branch = main
+[submodule "quadratics/pentagon"]
+	path = quadratics/pentagon
+	url = git@github.com:SimiaCryptus/Pentagon_Lattice_Geometry.git
