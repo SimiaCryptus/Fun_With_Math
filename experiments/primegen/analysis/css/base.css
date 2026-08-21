@@ -9,8 +9,8 @@
   --fg-faint: #6b7a92;
   --accent: #6aa9ff;
   --accent-soft: #6aa9ff22;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --radius: 8px;
   --shadow: 0 8px 24px #0008;
 
@@ -131,10 +131,10 @@ select {
   background: transparent;
 }
 
-mjx-container[jax="CHTML"] {
+mjx-container[jax='CHTML'] {
   color: #eaf1ff;
 }
-mjx-container[display="true"] {
+mjx-container[display='true'] {
   margin: 0.6em 0 !important;
   overflow-x: auto;
   overflow-y: hidden;

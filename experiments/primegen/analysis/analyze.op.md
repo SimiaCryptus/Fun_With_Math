@@ -30,7 +30,7 @@ A single JSON object conforming to `TheoryGraph` in
    `axiom` or `definition`, not a `theorem`.
 3. **Normalize.** Rewrite each statement as one self-contained declarative sentence in the present tense. Resolve
    pronouns and "this"/"the above". Keep inline LaTeX intact; put the symbolic form in `formal` when present.
-4. **Deduplicate across documents.** The same claim restated in another file is *one* node with multiple entries in
+4. **Deduplicate across documents.** The same claim restated in another file is _one_ node with multiple entries in
    `sources` and any variant phrasings in `aliases`. Prefer the most precise phrasing as `statement`.
 5. **Relate.** Emit an edge for every dependency the text asserts or clearly implies. Prefer explicit textual evidence;
    put the trigger phrase in the edge's `sources[].quote`.
@@ -46,7 +46,7 @@ A single JSON object conforming to `TheoryGraph` in
 ## Kind selection
 
 | Signal in the text                                                                        | `kind`          |
-|-------------------------------------------------------------------------------------------|-----------------|
+| ----------------------------------------------------------------------------------------- | --------------- |
 | "assume", "we take as given", "by construction", stated without proof and used downstream | `axiom`         |
 | "let X be", "we call", notation introduction                                              | `definition`    |
 | A named framework / explanatory account tying several claims together                     | `theory`        |
@@ -84,7 +84,7 @@ Do not invent transitive edges: if A→B and B→C are stated, do not add A→C.
 
 - `id` = `<kind>.<kebab-slug-of-name>`, e.g. `conjecture.gap-density-decay`,
   `model.wheel-210-sieve`. Stable across runs; never reuse an id for a different claim.
-- `confidence` is *your extraction confidence* (0–1): how sure you are the document says this. It is not the truth of
+- `confidence` is _your extraction confidence_ (0–1): how sure you are the document says this. It is not the truth of
   the claim — that goes in
   `status` and in `strength` on supporting edges.
 - Anything you had to infer rather than read gets `confidence ≤ 0.5` and a

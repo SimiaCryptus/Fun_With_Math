@@ -5,16 +5,61 @@
   "generator": { "op": "analyze.op.md" },
   "corpus": {
     "documents": [
-      { "id": "README", "path": "../README.md", "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields", "order": 1 },
-      { "id": "idea", "path": "../idea.md", "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields: Density, Entropy, Spectrum", "order": 2 },
-      { "id": "observation", "path": "../observation.md", "title": "The Multiplier Set of a Prime", "order": 3 },
-      { "id": "generator", "path": "../generator.md", "title": "Generational Rings of Primes", "order": 4 },
-      { "id": "algorithm", "path": "../algorithm.md", "title": "The Orthogonal Stream Prime Generator: A Complete Algorithm", "order": 5 },
-      { "id": "paper", "path": "../paper.md", "title": "The Orthogonal Stream Prime Generator", "order": 6 },
-      { "id": "min_factor", "path": "../min_factor.md", "title": "Algorithm C — the min-factor exponent-spine generator", "order": 7 },
-      { "id": "factorization", "path": "../factorization.md", "title": "Factorization from the Orthogonal Stream Family", "order": 8 },
+      {
+        "id": "README",
+        "path": "../README.md",
+        "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields",
+        "order": 1
+      },
+      {
+        "id": "idea",
+        "path": "../idea.md",
+        "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields: Density, Entropy, Spectrum",
+        "order": 2
+      },
+      {
+        "id": "observation",
+        "path": "../observation.md",
+        "title": "The Multiplier Set of a Prime",
+        "order": 3
+      },
+      {
+        "id": "generator",
+        "path": "../generator.md",
+        "title": "Generational Rings of Primes",
+        "order": 4
+      },
+      {
+        "id": "algorithm",
+        "path": "../algorithm.md",
+        "title": "The Orthogonal Stream Prime Generator: A Complete Algorithm",
+        "order": 5
+      },
+      {
+        "id": "paper",
+        "path": "../paper.md",
+        "title": "The Orthogonal Stream Prime Generator",
+        "order": 6
+      },
+      {
+        "id": "min_factor",
+        "path": "../min_factor.md",
+        "title": "Algorithm C — the min-factor exponent-spine generator",
+        "order": 7
+      },
+      {
+        "id": "factorization",
+        "path": "../factorization.md",
+        "title": "Factorization from the Orthogonal Stream Family",
+        "order": 8
+      },
       { "id": "fractal", "path": "../fractal.md", "title": "The Fractal Reading", "order": 9 },
-      { "id": "twin_prime", "path": "../twin_prime.md", "title": "Twin Primes in the Wheel Lattice", "order": 10 },
+      {
+        "id": "twin_prime",
+        "path": "../twin_prime.md",
+        "title": "Twin Primes in the Wheel Lattice",
+        "order": 10
+      },
       { "id": "theory", "path": "../theory.md", "title": "Theory Inventory", "order": 11 }
     ]
   },
@@ -30,9 +75,21 @@
       "confidence": 0.98,
       "domain": "sieve",
       "sources": [
-        { "file": "generator.md", "heading": "2.4 Orthogonal Streams", "quote": "A composite number \\(m\\) is **owned** by the prime \\(p\\) if \\(p\\) is the smallest prime factor of \\(m\\)." },
-        { "file": "paper.md", "heading": "2.1 The partition", "quote": "Write `spf(m)` for the smallest prime factor of `m > 1`." },
-        { "file": "theory.md", "heading": "T10", "quote": "A composite \\(m\\) is **owned** by \\(p = \\mathrm{spf}(m)\\)." }
+        {
+          "file": "generator.md",
+          "heading": "2.4 Orthogonal Streams",
+          "quote": "A composite number \\(m\\) is **owned** by the prime \\(p\\) if \\(p\\) is the smallest prime factor of \\(m\\)."
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.1 The partition",
+          "quote": "Write `spf(m)` for the smallest prime factor of `m > 1`."
+        },
+        {
+          "file": "theory.md",
+          "heading": "T10",
+          "quote": "A composite \\(m\\) is **owned** by \\(p = \\mathrm{spf}(m)\\)."
+        }
       ],
       "first_seen": "generator"
     },
@@ -47,8 +104,16 @@
       "confidence": 0.98,
       "domain": "sieve",
       "sources": [
-        { "file": "algorithm.md", "heading": "1. Notation", "quote": "\\(R_p = \\{m\\ge 1 : \\gcd(m,P_{<p})=1\\}\\) the \\(p\\)-**rough** numbers: no prime factor \\(< p\\)" },
-        { "file": "paper.md", "heading": "2.2", "quote": "call `m` **`p`-rough** if no prime `< p` divides it, equivalently `gcd(m, P_{<p}) = 1`" }
+        {
+          "file": "algorithm.md",
+          "heading": "1. Notation",
+          "quote": "\\(R_p = \\{m\\ge 1 : \\gcd(m,P_{<p})=1\\}\\) the \\(p\\)-**rough** numbers: no prime factor \\(< p\\)"
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.2",
+          "quote": "call `m` **`p`-rough** if no prime `< p` divides it, equivalently `gcd(m, P_{<p}) = 1`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -63,7 +128,11 @@
       "confidence": 0.97,
       "domain": "sieve",
       "sources": [
-        { "file": "observation.md", "heading": "Overview", "quote": "\\Theta_N = N \\cdot A_N, \\qquad A_N = \\{ a \\ge N : \\gcd(a, P_{<N}) = 1 \\}" },
+        {
+          "file": "observation.md",
+          "heading": "Overview",
+          "quote": "\\Theta_N = N \\cdot A_N, \\qquad A_N = \\{ a \\ge N : \\gcd(a, P_{<N}) = 1 \\}"
+        },
         { "file": "algorithm.md", "heading": "2.1", "quote": "A_p = R_p \\cap [p,\\infty)" }
       ],
       "first_seen": "observation"
@@ -83,8 +152,16 @@
         { "key": "survivor_density", "value": "prod (1 - 1/p_i)", "unit": "dimensionless" }
       ],
       "sources": [
-        { "file": "fractal.md", "heading": "1. The lattice", "quote": "S_k = { r mod P_k : gcd(r, P_k) = 1 } the **stage-\\(k\\) lattice**" },
-        { "file": "paper.md", "heading": "2.5", "quote": "`S_k` is exactly the wheel of §4.2 at `W = P_k`." }
+        {
+          "file": "fractal.md",
+          "heading": "1. The lattice",
+          "quote": "S_k = { r mod P_k : gcd(r, P_k) = 1 } the **stage-\\(k\\) lattice**"
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.5",
+          "quote": "`S_k` is exactly the wheel of §4.2 at `W = P_k`."
+        }
       ],
       "first_seen": "fractal"
     },
@@ -99,8 +176,16 @@
       "confidence": 0.96,
       "domain": "sieve",
       "sources": [
-        { "file": "min_factor.md", "heading": "1. Notation", "quote": "B_p = { r ≥ 1 : q prime, q ∣ r ⟹ q > p } the monoid generated by the primes > p" },
-        { "file": "algorithm.md", "heading": "2.8", "quote": "Write \\(B_p = \\{ r \\ge 1 : q \\text{ prime},\\ q \\mid r \\Rightarrow q > p \\}\\)" }
+        {
+          "file": "min_factor.md",
+          "heading": "1. Notation",
+          "quote": "B_p = { r ≥ 1 : q prime, q ∣ r ⟹ q > p } the monoid generated by the primes > p"
+        },
+        {
+          "file": "algorithm.md",
+          "heading": "2.8",
+          "quote": "Write \\(B_p = \\{ r \\ge 1 : q \\text{ prime},\\ q \\mid r \\Rightarrow q > p \\}\\)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -115,8 +200,16 @@
       "confidence": 0.95,
       "domain": "sieve",
       "sources": [
-        { "file": "min_factor.md", "heading": "4. Design", "quote": "B̃_p = {1} ∪ { r ≥ p : gcd(r, W) = 1, p ∤ r }  ⊇  B_p ." },
-        { "file": "paper.md", "heading": "4C.1", "quote": "let layer `(p, e)` be the stream `p^e·B̃_p`, minus the single non-composite element `p`" }
+        {
+          "file": "min_factor.md",
+          "heading": "4. Design",
+          "quote": "B̃_p = {1} ∪ { r ≥ p : gcd(r, W) = 1, p ∤ r }  ⊇  B_p ."
+        },
+        {
+          "file": "paper.md",
+          "heading": "4C.1",
+          "quote": "let layer `(p, e)` be the stream `p^e·B̃_p`, minus the single non-composite element `p`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -130,8 +223,16 @@
       "confidence": 0.97,
       "domain": "wheel",
       "sources": [
-        { "file": "algorithm.md", "heading": "2.4", "quote": "Define \\(\\mathrm{NextRough}(p,y) = \\min\\{a \\in R_p : a > y\\}\\)" },
-        { "file": "theory.md", "heading": "T28", "quote": "\\(\\mathrm{NextRough}(p,\\cdot)\\) is the successor function on the wheel of modulus \\(P_{<p}\\)." }
+        {
+          "file": "algorithm.md",
+          "heading": "2.4",
+          "quote": "Define \\(\\mathrm{NextRough}(p,y) = \\min\\{a \\in R_p : a > y\\}\\)"
+        },
+        {
+          "file": "theory.md",
+          "heading": "T28",
+          "quote": "\\(\\mathrm{NextRough}(p,\\cdot)\\) is the successor function on the wheel of modulus \\(P_{<p}\\)."
+        }
       ],
       "first_seen": "generator"
     },
@@ -145,8 +246,16 @@
       "confidence": 0.97,
       "domain": "sieve",
       "sources": [
-        { "file": "generator.md", "heading": "3.1 Definition", "quote": "\\text{NextOwnedComposite}(p, x) = \\min\\{ m \\in \\Theta_p : m > x \\}" },
-        { "file": "theory.md", "heading": "T26", "quote": "\\(\\mathrm{NOC}(p, x) = \\min\\{ m \\in \\Theta_p : m > x \\}\\)." }
+        {
+          "file": "generator.md",
+          "heading": "3.1 Definition",
+          "quote": "\\text{NextOwnedComposite}(p, x) = \\min\\{ m \\in \\Theta_p : m > x \\}"
+        },
+        {
+          "file": "theory.md",
+          "heading": "T26",
+          "quote": "\\(\\mathrm{NOC}(p, x) = \\min\\{ m \\in \\Theta_p : m > x \\}\\)."
+        }
       ],
       "first_seen": "generator"
     },
@@ -160,8 +269,16 @@
       "confidence": 0.95,
       "domain": "sieve",
       "sources": [
-        { "file": "paper.md", "heading": "4.4", "quote": "the set of streams that claim `m` is exactly `{ p prime : p ∣ m, p² ≤ m }`" },
-        { "file": "factorization.md", "heading": "2. Notation", "quote": "`claimants_B(m)` | `{ p prime : p ∣ m, p² ≤ m }` (`AlgB.claims_iff`)" }
+        {
+          "file": "paper.md",
+          "heading": "4.4",
+          "quote": "the set of streams that claim `m` is exactly `{ p prime : p ∣ m, p² ≤ m }`"
+        },
+        {
+          "file": "factorization.md",
+          "heading": "2. Notation",
+          "quote": "`claimants_B(m)` | `{ p prime : p ∣ m, p² ≤ m }` (`AlgB.claims_iff`)"
+        }
       ],
       "first_seen": "paper"
     },
@@ -176,7 +293,11 @@
       "confidence": 0.97,
       "domain": "gaps",
       "sources": [
-        { "file": "twin_prime.md", "heading": "1. Notation", "quote": "`S_k^{(2)}` | the **pair lattice**: `{ r mod P_k : gcd(r(r+2), P_k) = 1 }`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "1. Notation",
+          "quote": "`S_k^{(2)}` | the **pair lattice**: `{ r mod P_k : gcd(r(r+2), P_k) = 1 }`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -191,8 +312,16 @@
       "confidence": 0.97,
       "domain": "sieve",
       "sources": [
-        { "file": "idea.md", "heading": "2.1 The single-prime field", "quote": "For a prime \\(p\\), define the periodic mask ... This is a period-\\(p\\) function on \\(\\mathbb{Z}\\)" },
-        { "file": "README.md", "heading": "What You Are Looking At", "quote": "every prime p emits a perfectly periodic exclusion field M_p that kills exactly the multiples of p" }
+        {
+          "file": "idea.md",
+          "heading": "2.1 The single-prime field",
+          "quote": "For a prime \\(p\\), define the periodic mask ... This is a period-\\(p\\) function on \\(\\mathbb{Z}\\)"
+        },
+        {
+          "file": "README.md",
+          "heading": "What You Are Looking At",
+          "quote": "every prime p emits a perfectly periodic exclusion field M_p that kills exactly the multiples of p"
+        }
       ],
       "first_seen": "README"
     },
@@ -206,8 +335,16 @@
       "confidence": 0.99,
       "domain": "sieve",
       "sources": [
-        { "file": "generator.md", "heading": "2.1", "quote": "**Lemma 1.** Let \\(m\\) be composite with \\(2 \\le m \\le N^2\\). Then \\(m\\) has a prime factor \\(p \\le N\\)." },
-        { "file": "theory.md", "heading": "T2", "quote": "If \\(m\\) is composite and \\(2 \\le m \\le N^2\\), then \\(m\\) has a prime factor \\(p \\le N\\)." }
+        {
+          "file": "generator.md",
+          "heading": "2.1",
+          "quote": "**Lemma 1.** Let \\(m\\) be composite with \\(2 \\le m \\le N^2\\). Then \\(m\\) has a prime factor \\(p \\le N\\)."
+        },
+        {
+          "file": "theory.md",
+          "heading": "T2",
+          "quote": "If \\(m\\) is composite and \\(2 \\le m \\le N^2\\), then \\(m\\) has a prime factor \\(p \\le N\\)."
+        }
       ],
       "first_seen": "generator"
     },
@@ -221,8 +358,16 @@
       "confidence": 0.99,
       "domain": "sieve",
       "sources": [
-        { "file": "idea.md", "heading": "2.4 CRT reading", "quote": "\\mathbb{Z}/L_k\\mathbb{Z} \\cong \\mathbb{Z}/p_1\\mathbb{Z} \\times \\cdots \\times \\mathbb{Z}/p_k\\mathbb{Z}" },
-        { "file": "theory.md", "heading": "T4", "quote": "For distinct primes \\(p_1,\\dots,p_k\\) with \\(L_k = \\prod p_i\\), \\(\\mathbb{Z}/L_k\\mathbb{Z} \\cong \\prod_i \\mathbb{Z}/p_i\\mathbb{Z}\\)." }
+        {
+          "file": "idea.md",
+          "heading": "2.4 CRT reading",
+          "quote": "\\mathbb{Z}/L_k\\mathbb{Z} \\cong \\mathbb{Z}/p_1\\mathbb{Z} \\times \\cdots \\times \\mathbb{Z}/p_k\\mathbb{Z}"
+        },
+        {
+          "file": "theory.md",
+          "heading": "T4",
+          "quote": "For distinct primes \\(p_1,\\dots,p_k\\) with \\(L_k = \\prod p_i\\), \\(\\mathbb{Z}/L_k\\mathbb{Z} \\cong \\prod_i \\mathbb{Z}/p_i\\mathbb{Z}\\)."
+        }
       ],
       "first_seen": "idea"
     },
@@ -235,11 +380,13 @@
       "status": "accepted",
       "confidence": 0.98,
       "domain": "complexity",
-      "attributes": [
-        { "key": "feasibility_ceiling_prime", "value": 60, "unit": "prime" }
-      ],
+      "attributes": [{ "key": "feasibility_ceiling_prime", "value": 60, "unit": "prime" }],
       "sources": [
-        { "file": "theory.md", "heading": "T5", "quote": "any construction whose storage or period is \\(P_k\\) is infeasible past \\(p_k \\approx 40\\text{–}60\\)" }
+        {
+          "file": "theory.md",
+          "heading": "T5",
+          "quote": "any construction whose storage or period is \\(P_k\\) is infeasible past \\(p_k \\approx 40\\text{–}60\\)"
+        }
       ],
       "first_seen": "theory"
     },
@@ -253,7 +400,11 @@
       "confidence": 0.98,
       "domain": "distribution",
       "sources": [
-        { "file": "theory.md", "heading": "T7", "quote": "the wheel modulo \\(P_k\\) thins only *logarithmically* while its period grows *exponentially*" }
+        {
+          "file": "theory.md",
+          "heading": "T7",
+          "quote": "the wheel modulo \\(P_k\\) thins only *logarithmically* while its period grows *exponentially*"
+        }
       ],
       "first_seen": "theory"
     },
@@ -266,7 +417,11 @@
       "confidence": 0.95,
       "domain": "distribution",
       "sources": [
-        { "file": "theory.md", "heading": "T9", "quote": "\\(g(P_k) \\ll \\log^2 P_k \\asymp p_k^2\\) (Iwaniec), and \\(g(P_k) \\gg p_k \\log p_k \\log\\log\\log p_k/(\\log\\log p_k)^2\\)" }
+        {
+          "file": "theory.md",
+          "heading": "T9",
+          "quote": "\\(g(P_k) \\ll \\log^2 P_k \\asymp p_k^2\\) (Iwaniec), and \\(g(P_k) \\gg p_k \\log p_k \\log\\log\\log p_k/(\\log\\log p_k)^2\\)"
+        }
       ],
       "first_seen": "theory"
     },
@@ -279,8 +434,16 @@
       "confidence": 0.93,
       "domain": "distribution",
       "sources": [
-        { "file": "theory.md", "heading": "T8", "quote": "\\(\\Phi(x,y) \\sim \\omega(u)\\,x/\\log y\\) with \\(u = \\log x/\\log y\\), \\(\\omega\\) the Buchstab function" },
-        { "file": "paper.md", "heading": "2.2", "quote": "asymptotically `≈ ω(u)·X/(p log p)` with Buchstab `ω`" }
+        {
+          "file": "theory.md",
+          "heading": "T8",
+          "quote": "\\(\\Phi(x,y) \\sim \\omega(u)\\,x/\\log y\\) with \\(u = \\log x/\\log y\\), \\(\\omega\\) the Buchstab function"
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.2",
+          "quote": "asymptotically `≈ ω(u)·X/(p log p)` with Buchstab `ω`"
+        }
       ],
       "first_seen": "paper"
     },
@@ -298,9 +461,21 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "2.1 Ownership theorem", "quote": "**Theorem 2.1 (multiplier set).** For every prime \\(p\\), \\Theta_p = p \\cdot A_p" },
-        { "file": "paper.md", "heading": "2.2", "quote": "_Status: **machine-checked** — `Primegen.theta_eq_image`" },
-        { "file": "observation.md", "heading": "1. Statement", "quote": "\\(\\Theta_N\\) is exactly the set of composites whose smallest prime factor is \\(N\\)" }
+        {
+          "file": "algorithm.md",
+          "heading": "2.1 Ownership theorem",
+          "quote": "**Theorem 2.1 (multiplier set).** For every prime \\(p\\), \\Theta_p = p \\cdot A_p"
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.2",
+          "quote": "_Status: **machine-checked** — `Primegen.theta_eq_image`"
+        },
+        {
+          "file": "observation.md",
+          "heading": "1. Statement",
+          "quote": "\\(\\Theta_N\\) is exactly the set of composites whose smallest prime factor is \\(N\\)"
+        }
       ],
       "first_seen": "generator"
     },
@@ -314,8 +489,16 @@
       "confidence": 0.98,
       "domain": "wheel",
       "sources": [
-        { "file": "algorithm.md", "heading": "2.2", "quote": "**Corollary 2.2.** \\(A_p \\cup \\{1\\}\\) is periodic modulo \\(P_{<p}\\) with \\(\\varphi(P_{<p})\\) residues per period" },
-        { "file": "observation.md", "heading": "2", "quote": "\\(A_N\\) is **infinite**, and the finite list above is one period, not the whole set" }
+        {
+          "file": "algorithm.md",
+          "heading": "2.2",
+          "quote": "**Corollary 2.2.** \\(A_p \\cup \\{1\\}\\) is periodic modulo \\(P_{<p}\\) with \\(\\varphi(P_{<p})\\) residues per period"
+        },
+        {
+          "file": "observation.md",
+          "heading": "2",
+          "quote": "\\(A_N\\) is **infinite**, and the finite list above is one period, not the whole set"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -334,8 +517,16 @@
         { "key": "rough_phase_threshold", "value": "p <= N^(1/3)" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "2.3", "quote": "**Lemma 2.3 (phase separation).** If \\(a \\in A_p\\) and \\(a < p^2\\), then \\(a\\) is prime." },
-        { "file": "paper.md", "heading": "2.2", "quote": "**Claim O2 (phase separation).** If `a ∈ A_p` and `a < p²` then `a` is prime." }
+        {
+          "file": "algorithm.md",
+          "heading": "2.3",
+          "quote": "**Lemma 2.3 (phase separation).** If \\(a \\in A_p\\) and \\(a < p^2\\), then \\(a\\) is prime."
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.2",
+          "quote": "**Claim O2 (phase separation).** If `a ∈ A_p` and `a < p²` then `a` is prime."
+        }
       ],
       "first_seen": "observation"
     },
@@ -348,12 +539,18 @@
       "status": "accepted",
       "confidence": 0.99,
       "domain": "sieve",
-      "attributes": [
-        { "key": "lean_name", "value": "Primegen.sq_mem_theta" }
-      ],
+      "attributes": [{ "key": "lean_name", "value": "Primegen.sq_mem_theta" }],
       "sources": [
-        { "file": "generator.md", "heading": "3.2", "quote": "**Corollary.** \\(\\min \\Theta_p = p^2\\) — always, not \"typically\"" },
-        { "file": "theory.md", "heading": "T12a", "quote": "it is not \"typically\", it is **always**" }
+        {
+          "file": "generator.md",
+          "heading": "3.2",
+          "quote": "**Corollary.** \\(\\min \\Theta_p = p^2\\) — always, not \"typically\""
+        },
+        {
+          "file": "theory.md",
+          "heading": "T12a",
+          "quote": "it is not \"typically\", it is **always**"
+        }
       ],
       "first_seen": "generator"
     },
@@ -371,8 +568,16 @@
         { "key": "composite_totatives_mod_210", "value": 5, "unit": "residues" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "2.3", "quote": "which holds iff \\(p \\le 7\\) (\\(P_{<7}=30<49\\), but \\(P_{<11}=210>121\\))" },
-        { "file": "observation.md", "heading": "3", "quote": "The first composite multiplier anywhere is \\(121 = 11^2\\)" }
+        {
+          "file": "algorithm.md",
+          "heading": "2.3",
+          "quote": "which holds iff \\(p \\le 7\\) (\\(P_{<7}=30<49\\), but \\(P_{<11}=210>121\\))"
+        },
+        {
+          "file": "observation.md",
+          "heading": "3",
+          "quote": "The first composite multiplier anywhere is \\(121 = 11^2\\)"
+        }
       ],
       "first_seen": "observation"
     },
@@ -386,8 +591,16 @@
       "confidence": 0.98,
       "domain": "sieve",
       "sources": [
-        { "file": "algorithm.md", "heading": "2.4", "quote": "**Proposition 2.6.** ... \\mathrm{NextOwnedComposite}(p,x) = p \\cdot \\mathrm{NextRough}(p, \\max(p-1, \\lfloor x/p \\rfloor))" },
-        { "file": "paper.md", "heading": "2.3", "quote": "There is no other formula to find: _the generator is a merge of wheel successor functions._" }
+        {
+          "file": "algorithm.md",
+          "heading": "2.4",
+          "quote": "**Proposition 2.6.** ... \\mathrm{NextOwnedComposite}(p,x) = p \\cdot \\mathrm{NextRough}(p, \\max(p-1, \\lfloor x/p \\rfloor))"
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.3",
+          "quote": "There is no other formula to find: _the generator is a merge of wheel successor functions._"
+        }
       ],
       "first_seen": "generator"
     },
@@ -404,8 +617,16 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "2.6", "quote": "**Theorem 2.8 (causality).** ... (iii) \\(a'\\) is determined by data about integers \\(< n\\) only." },
-        { "file": "observation.md", "heading": "5", "quote": "no step ever consults an integer \\(\\ge n\\)" }
+        {
+          "file": "algorithm.md",
+          "heading": "2.6",
+          "quote": "**Theorem 2.8 (causality).** ... (iii) \\(a'\\) is determined by data about integers \\(< n\\) only."
+        },
+        {
+          "file": "observation.md",
+          "heading": "5",
+          "quote": "no step ever consults an integer \\(\\ge n\\)"
+        }
       ],
       "first_seen": "observation"
     },
@@ -422,8 +643,16 @@
         { "key": "stateless_cost", "value": "Theta(pi(p))", "unit": "divisions" }
       ],
       "sources": [
-        { "file": "paper.md", "heading": "2.4", "quote": "**Conjecture X1 (obstruction).** There is no algorithm computing `NextRough(p, y)` in O(1) time and `poly(log p, log y)` space" },
-        { "file": "theory.md", "heading": "T31", "quote": "**This should be labelled a conjecture, not an assumption.**" }
+        {
+          "file": "paper.md",
+          "heading": "2.4",
+          "quote": "**Conjecture X1 (obstruction).** There is no algorithm computing `NextRough(p, y)` in O(1) time and `poly(log p, log y)` space"
+        },
+        {
+          "file": "theory.md",
+          "heading": "T31",
+          "quote": "**This should be labelled a conjecture, not an assumption.**"
+        }
       ],
       "first_seen": "generator"
     },
@@ -441,8 +670,16 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "3.1", "quote": "**Theorem 3.1 (stream tree).** ... Then \\(\\{\\Sigma_b\\}_{b\\ge 2}\\) is a partition of the composites" },
-        { "file": "paper.md", "heading": "3.1", "quote": "_Status: **machine-checked** — `AlgA.exists_unique_split`" }
+        {
+          "file": "algorithm.md",
+          "heading": "3.1",
+          "quote": "**Theorem 3.1 (stream tree).** ... Then \\(\\{\\Sigma_b\\}_{b\\ge 2}\\) is a partition of the composites"
+        },
+        {
+          "file": "paper.md",
+          "heading": "3.1",
+          "quote": "_Status: **machine-checked** — `AlgA.exists_unique_split`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -461,8 +698,16 @@
         { "key": "segment_parallel", "value": false }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "3. Algorithm A", "quote": "**Algorithm A** (§3) pays in _streams_: perfectly orthogonal, **each composite touched exactly once**" },
-        { "file": "paper.md", "heading": "3", "quote": "Algorithm A is included because it realises the partition of §2.1 with zero redundancy" }
+        {
+          "file": "algorithm.md",
+          "heading": "3. Algorithm A",
+          "quote": "**Algorithm A** (§3) pays in _streams_: perfectly orthogonal, **each composite touched exactly once**"
+        },
+        {
+          "file": "paper.md",
+          "heading": "3",
+          "quote": "Algorithm A is included because it realises the partition of §2.1 with zero redundancy"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -476,8 +721,16 @@
       "domain": "sieve",
       "notes": "Proved by induction in algorithm.md §3.5; paper.md marks the same claim A2 as TODO, so status is 'proposed' rather than 'accepted'.",
       "sources": [
-        { "file": "algorithm.md", "heading": "3.5", "quote": "**Theorem 3.2 (correctness).** `A(N)` emits precisely the primes \\(\\le N\\), in increasing order" },
-        { "file": "paper.md", "heading": "3.4", "quote": "**Claim A2 (correctness).** ... _TODO: induction on `n` using Claim A1_" }
+        {
+          "file": "algorithm.md",
+          "heading": "3.5",
+          "quote": "**Theorem 3.2 (correctness).** `A(N)` emits precisely the primes \\(\\le N\\), in increasing order"
+        },
+        {
+          "file": "paper.md",
+          "heading": "3.4",
+          "quote": "**Claim A2 (correctness).** ... _TODO: induction on `n` using Claim A1_"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -490,7 +743,11 @@
       "confidence": 0.93,
       "domain": "implementation",
       "sources": [
-        { "file": "algorithm.md", "heading": "3.5", "quote": "**Theorem 3.5 (causality, Algorithm A).** Every array access `primes[j]` performed while processing \\(n\\) satisfies `primes[j] < n`" }
+        {
+          "file": "algorithm.md",
+          "heading": "3.5",
+          "quote": "**Theorem 3.5 (causality, Algorithm A).** Every array access `primes[j]` performed while processing \\(n\\) satisfies `primes[j] < n`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -507,8 +764,16 @@
         { "key": "saddle_point_beta", "value": 0.6 }
       ],
       "sources": [
-        { "file": "paper.md", "heading": "3.5", "quote": "**Conjecture A4.** `S(N) = N^{θ+o(1)}` with `θ ≈ 0.75`." },
-        { "file": "algorithm.md", "heading": "3.7", "quote": "maximises near \\(\\beta \\approx 0.6\\) and gives \\(S(N) = N^{\\theta+o(1)}\\) with \\(\\theta \\approx 0.75\\)" }
+        {
+          "file": "paper.md",
+          "heading": "3.5",
+          "quote": "**Conjecture A4.** `S(N) = N^{θ+o(1)}` with `θ ≈ 0.75`."
+        },
+        {
+          "file": "algorithm.md",
+          "heading": "3.7",
+          "quote": "maximises near \\(\\beta \\approx 0.6\\) and gives \\(S(N) = N^{\\theta+o(1)}\\) with \\(\\theta \\approx 0.75\\)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -521,7 +786,11 @@
       "confidence": 0.85,
       "domain": "complexity",
       "sources": [
-        { "file": "algorithm.md", "heading": "3.7", "quote": "A saddle-point estimate using Dickman's \\(\\rho\\) ... Measure it with the `stats` mode ... before trusting the exponent." }
+        {
+          "file": "algorithm.md",
+          "heading": "3.7",
+          "quote": "A saddle-point estimate using Dickman's \\(\\rho\\) ... Measure it with the `stats` mode ... before trusting the exponent."
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -533,11 +802,13 @@
       "status": "proposed",
       "confidence": 0.9,
       "domain": "implementation",
-      "attributes": [
-        { "key": "empirical_reduction_at_w6", "value": "one order of magnitude" }
-      ],
+      "attributes": [{ "key": "empirical_reduction_at_w6", "value": "one order of magnitude" }],
       "sources": [
-        { "file": "algorithm.md", "heading": "3.8", "quote": "the reduction is large (empirically an order of magnitude at \\(w=6\\)) though we do not attempt a sharp exponent" }
+        {
+          "file": "algorithm.md",
+          "heading": "3.8",
+          "quote": "the reduction is large (empirically an order of magnitude at \\(w=6\\)) though we do not attempt a sharp exponent"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -558,8 +829,16 @@
         { "key": "segment_parallel", "value": true }
       ],
       "sources": [
-        { "file": "paper.md", "heading": "4. Algorithm B", "quote": "This is the recommended construction." },
-        { "file": "algorithm.md", "heading": "4.1 Design", "quote": "Advancement is exact O(1) with O(1) state: `a += step[a % W]`, `v = p*a`." }
+        {
+          "file": "paper.md",
+          "heading": "4. Algorithm B",
+          "quote": "This is the recommended construction."
+        },
+        {
+          "file": "algorithm.md",
+          "heading": "4.1 Design",
+          "quote": "Advancement is exact O(1) with O(1) state: `a += step[a % W]`, `v = p*a`."
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -576,8 +855,16 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "4.4", "quote": "**Lemma 4.1 (coverage).** ... \\(m = p\\cdot a\\) with \\(a\\in\\tilde A_p\\): \\(m\\) is a value of the stream of \\(p\\)." },
-        { "file": "paper.md", "heading": "4.4", "quote": "_Status: **machine-checked** — `AlgB.coverage`" }
+        {
+          "file": "algorithm.md",
+          "heading": "4.4",
+          "quote": "**Lemma 4.1 (coverage).** ... \\(m = p\\cdot a\\) with \\(a\\in\\tilde A_p\\): \\(m\\) is a value of the stream of \\(p\\)."
+        },
+        {
+          "file": "paper.md",
+          "heading": "4.4",
+          "quote": "_Status: **machine-checked** — `AlgB.coverage`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -594,8 +881,16 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "4.4", "quote": "**Lemma 4.2 (no early claims).** Every key in \\(Q\\) is \\(\\ge n\\)" },
-        { "file": "paper.md", "heading": "4.4", "quote": "the `ahead` field of `AlgB.Inv` is preserved by `AlgB.inv_step`" }
+        {
+          "file": "algorithm.md",
+          "heading": "4.4",
+          "quote": "**Lemma 4.2 (no early claims).** Every key in \\(Q\\) is \\(\\ge n\\)"
+        },
+        {
+          "file": "paper.md",
+          "heading": "4.4",
+          "quote": "the `ahead` field of `AlgB.Inv` is preserved by `AlgB.inv_step`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -609,11 +904,22 @@
       "domain": "sieve",
       "attributes": [
         { "key": "lean_name", "value": "AlgB.emit_iff" },
-        { "key": "formal_status", "value": "per-candidate decision machine-checked; outer induction open" }
+        {
+          "key": "formal_status",
+          "value": "per-candidate decision machine-checked; outer induction open"
+        }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "4.4", "quote": "**Theorem 4.3.** `B()` emits exactly the primes, in increasing order, forever." },
-        { "file": "paper.md", "heading": "4.4", "quote": "The outer induction \"the emitted prefix is exactly the primes below `n`\" is not yet formalised" }
+        {
+          "file": "algorithm.md",
+          "heading": "4.4",
+          "quote": "**Theorem 4.3.** `B()` emits exactly the primes, in increasing order, forever."
+        },
+        {
+          "file": "paper.md",
+          "heading": "4.4",
+          "quote": "The outer induction \"the emitted prefix is exactly the primes below `n`\" is not yet formalised"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -626,8 +932,16 @@
       "confidence": 0.96,
       "domain": "complexity",
       "sources": [
-        { "file": "algorithm.md", "heading": "4.4", "quote": "**Theorem 4.4 (state).** Advancement uses no prime lookups at all" },
-        { "file": "paper.md", "heading": "4.4", "quote": "`AlgB.Rec` carries exactly `(p, a)`, two words" }
+        {
+          "file": "algorithm.md",
+          "heading": "4.4",
+          "quote": "**Theorem 4.4 (state).** Advancement uses no prime lookups at all"
+        },
+        {
+          "file": "paper.md",
+          "heading": "4.4",
+          "quote": "`AlgB.Rec` carries exactly `(p, a)`, two words"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -642,11 +956,22 @@
       "domain": "complexity",
       "attributes": [
         { "key": "lean_name", "value": "AlgB.claims_iff" },
-        { "key": "formal_status", "value": "claimant identity machine-checked; the sum is a measurement" }
+        {
+          "key": "formal_status",
+          "value": "claimant identity machine-checked; the sum is a measurement"
+        }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "4.5", "quote": "\\mathrm{ops}(N) \\approx \\kappa_W N(\\ln\\ln\\sqrt N - \\ln\\ln p_w + o(1))" },
-        { "file": "paper.md", "heading": "4.5", "quote": "the set of streams that claim `m` is exactly `{ p prime : p ∣ m, p² ≤ m }`" }
+        {
+          "file": "algorithm.md",
+          "heading": "4.5",
+          "quote": "\\mathrm{ops}(N) \\approx \\kappa_W N(\\ln\\ln\\sqrt N - \\ln\\ln p_w + o(1))"
+        },
+        {
+          "file": "paper.md",
+          "heading": "4.5",
+          "quote": "the set of streams that claim `m` is exactly `{ p prime : p ∣ m, p² ≤ m }`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -666,7 +991,11 @@
         { "key": "records", "value": 78498 }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "4.5", "quote": "\\(\\mathrm{ops} \\approx 0.46\\,N\\) — versus the one-touch ideal \\(\\kappa_W N - \\pi(N) \\approx 0.19\\,N\\)" }
+        {
+          "file": "algorithm.md",
+          "heading": "4.5",
+          "quote": "\\(\\mathrm{ops} \\approx 0.46\\,N\\) — versus the one-touch ideal \\(\\kappa_W N - \\pi(N) \\approx 0.19\\,N\\)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -679,7 +1008,11 @@
       "confidence": 0.95,
       "domain": "implementation",
       "sources": [
-        { "file": "algorithm.md", "heading": "4.6", "quote": "**Random-access restart (parallelism):** for a segment beginning at \\(X\\), the state of stream \\(p\\) is recomputed in O(1)" }
+        {
+          "file": "algorithm.md",
+          "heading": "4.6",
+          "quote": "**Random-access restart (parallelism):** for a segment beginning at \\(X\\), the state of stream \\(p\\) is recomputed in O(1)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -692,8 +1025,16 @@
       "confidence": 0.97,
       "domain": "complexity",
       "sources": [
-        { "file": "paper.md", "heading": "4.3", "quote": "inserting its stream only at `n = p²` keeps the queue at `π(√n)` records forever" },
-        { "file": "theory.md", "heading": "T38", "quote": "the heap holds only \\(\\pi(\\sqrt{n})\\) entries" }
+        {
+          "file": "paper.md",
+          "heading": "4.3",
+          "quote": "inserting its stream only at `n = p²` keeps the queue at `π(√n)` records forever"
+        },
+        {
+          "file": "theory.md",
+          "heading": "T38",
+          "quote": "the heap holds only \\(\\pi(\\sqrt{n})\\) entries"
+        }
       ],
       "first_seen": "generator"
     },
@@ -711,8 +1052,16 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "min_factor.md", "heading": "2.1", "quote": "**Claim M1 (min-factor normal form).** Every integer `n > 1` factors **uniquely** as n = p^e · r" },
-        { "file": "algorithm.md", "heading": "2.8", "quote": "**Theorem 2.10 (min-factor normal form).** Every \\(n>1\\) is **uniquely** \\(n = p^{e} r\\)" }
+        {
+          "file": "min_factor.md",
+          "heading": "2.1",
+          "quote": "**Claim M1 (min-factor normal form).** Every integer `n > 1` factors **uniquely** as n = p^e · r"
+        },
+        {
+          "file": "algorithm.md",
+          "heading": "2.8",
+          "quote": "**Theorem 2.10 (min-factor normal form).** Every \\(n>1\\) is **uniquely** \\(n = p^{e} r\\)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -726,8 +1075,16 @@
       "domain": "sieve",
       "notes": "Retained because the notes retain it: the printed identity is false and is superseded by Correction M2'.",
       "sources": [
-        { "file": "min_factor.md", "heading": "2.2", "quote": "**Claim M2 (cone recursion).** For every prime `p`, B_p = {1} ⊎ ⨄_{q > p prime} q · B_q ." },
-        { "file": "algorithm.md", "heading": "2.8", "quote": "**Proposition 2.11 (cone recursion).** \\(B_p = \\{1\\} \\uplus \\biguplus_{q>p} q\\cdot B_q\\)." }
+        {
+          "file": "min_factor.md",
+          "heading": "2.2",
+          "quote": "**Claim M2 (cone recursion).** For every prime `p`, B_p = {1} ⊎ ⨄_{q > p prime} q · B_q ."
+        },
+        {
+          "file": "algorithm.md",
+          "heading": "2.8",
+          "quote": "**Proposition 2.11 (cone recursion).** \\(B_p = \\{1\\} \\uplus \\biguplus_{q>p} q\\cdot B_q\\)."
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -744,7 +1101,11 @@
         { "key": "lean_name", "value": "MinFac.not_one_step_cone / MinFac.cone_recursion" }
       ],
       "sources": [
-        { "file": "min_factor.md", "heading": "2.2", "quote": "**Correction M2′ (forced by the formalisation).** The displayed identity is **false as written**" }
+        {
+          "file": "min_factor.md",
+          "heading": "2.2",
+          "quote": "**Correction M2′ (forced by the formalisation).** The displayed identity is **false as written**"
+        }
       ],
       "first_seen": "min_factor"
     },
@@ -757,8 +1118,16 @@
       "confidence": 0.96,
       "domain": "sieve",
       "sources": [
-        { "file": "min_factor.md", "heading": "2.3", "quote": "**Claim M3.** If `r ∈ B_p` and `1 < r < (p+1)²` then `r` is prime" },
-        { "file": "algorithm.md", "heading": "2.8", "quote": "**Lemma 2.12 (strict phase separation).**" }
+        {
+          "file": "min_factor.md",
+          "heading": "2.3",
+          "quote": "**Claim M3.** If `r ∈ B_p` and `1 < r < (p+1)²` then `r` is prime"
+        },
+        {
+          "file": "algorithm.md",
+          "heading": "2.8",
+          "quote": "**Lemma 2.12 (strict phase separation).**"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -770,11 +1139,13 @@
       "status": "accepted",
       "confidence": 0.94,
       "domain": "sieve",
-      "attributes": [
-        { "key": "lean_name", "value": "MinFac.causality" }
-      ],
+      "attributes": [{ "key": "lean_name", "value": "MinFac.causality" }],
       "sources": [
-        { "file": "min_factor.md", "heading": "2.4", "quote": "**Claim M4 (causality).** ... `r ≤ m/p ≤ m/2` and `r' < m`" }
+        {
+          "file": "min_factor.md",
+          "heading": "2.4",
+          "quote": "**Claim M4 (causality).** ... `r ≤ m/p ≤ m/2` and `r' < m`"
+        }
       ],
       "first_seen": "min_factor"
     },
@@ -793,8 +1164,16 @@
         { "key": "segment_parallel", "value": true }
       ],
       "sources": [
-        { "file": "min_factor.md", "heading": "5. Specification", "quote": "Algorithm C is Algorithm B re-indexed by Claim M1: streams are **layers** `(p, e)` rather than primes `p`." },
-        { "file": "paper.md", "heading": "4C", "quote": "It is a streaming min-factor oracle, not a faster prime generator." }
+        {
+          "file": "min_factor.md",
+          "heading": "5. Specification",
+          "quote": "Algorithm C is Algorithm B re-indexed by Claim M1: streams are **layers** `(p, e)` rather than primes `p`."
+        },
+        {
+          "file": "paper.md",
+          "heading": "4C",
+          "quote": "It is a streaming min-factor oracle, not a faster prime generator."
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -808,7 +1187,11 @@
       "domain": "sieve",
       "attributes": [{ "key": "lean_name", "value": "MinFac.coverage" }],
       "sources": [
-        { "file": "min_factor.md", "heading": "6", "quote": "**Claim M6 (coverage).** Every `W`-coprime composite `m` is a value of layer `(p, e)`" }
+        {
+          "file": "min_factor.md",
+          "heading": "6",
+          "quote": "**Claim M6 (coverage).** Every `W`-coprime composite `m` is a value of layer `(p, e)`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -822,7 +1205,11 @@
       "domain": "sieve",
       "attributes": [{ "key": "lean_name", "value": "MinFac.not_prime_of_claims" }],
       "sources": [
-        { "file": "min_factor.md", "heading": "6", "quote": "**Claim M7 (soundness).** Every key in `Q` is a `W`-coprime composite." }
+        {
+          "file": "min_factor.md",
+          "heading": "6",
+          "quote": "**Claim M7 (soundness).** Every key in `Q` is a `W`-coprime composite."
+        }
       ],
       "first_seen": "min_factor"
     },
@@ -836,7 +1223,11 @@
       "domain": "sieve",
       "notes": "Only the p² half is machine-checked (MinFac.sq_le_of_claims); the ≥ n half is the unformalised loop invariant.",
       "sources": [
-        { "file": "min_factor.md", "heading": "12", "quote": "🟡 the `≥ p²` half only; the `≥ n` half is the loop invariant" }
+        {
+          "file": "min_factor.md",
+          "heading": "12",
+          "quote": "🟡 the `≥ p²` half only; the `≥ n` half is the loop invariant"
+        }
       ],
       "first_seen": "min_factor"
     },
@@ -849,7 +1240,11 @@
       "confidence": 0.92,
       "domain": "sieve",
       "sources": [
-        { "file": "min_factor.md", "heading": "6", "quote": "**Claim M9 (decision rule).** ... `C()` emits exactly the primes, in increasing order, forever." }
+        {
+          "file": "min_factor.md",
+          "heading": "6",
+          "quote": "**Claim M9 (decision rule).** ... `C()` emits exactly the primes, in increasing order, forever."
+        }
       ],
       "first_seen": "min_factor"
     },
@@ -866,7 +1261,11 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "min_factor.md", "heading": "7.1", "quote": "**Claim M10 (duplicate accounting).** ... claimants_C(m) ⊆ claimants_B(m)" }
+        {
+          "file": "min_factor.md",
+          "heading": "7.1",
+          "quote": "**Claim M10 (duplicate accounting).** ... claimants_C(m) ⊆ claimants_B(m)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -880,7 +1279,11 @@
       "domain": "sieve",
       "attributes": [{ "key": "lean_name", "value": "MinFac.oracle" }],
       "sources": [
-        { "file": "min_factor.md", "heading": "8", "quote": "**Claim M11 (streaming min-factor oracle).** ... that record's `(p, e, r)` satisfies `p = spf(n)`" }
+        {
+          "file": "min_factor.md",
+          "heading": "8",
+          "quote": "**Claim M11 (streaming min-factor oracle).** ... that record's `(p, e, r)` satisfies `p = spf(n)`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -899,8 +1302,16 @@
         { "key": "claims_C", "value": 1 }
       ],
       "sources": [
-        { "file": "min_factor.md", "heading": "7.1", "quote": "m = 847 = 7 · 11²  :   B claims twice ... C claims once" },
-        { "file": "factorization.md", "heading": "5.1", "quote": "Least witness at `W = 30`: `m = 847 = 7·11²`" }
+        {
+          "file": "min_factor.md",
+          "heading": "7.1",
+          "quote": "m = 847 = 7 · 11²  :   B claims twice ... C claims once"
+        },
+        {
+          "file": "factorization.md",
+          "heading": "5.1",
+          "quote": "Least witness at `W = 30`: `m = 847 = 7·11²`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -917,8 +1328,16 @@
         { "key": "relative_gap_at_1e12", "value": 0.0001 }
       ],
       "sources": [
-        { "file": "min_factor.md", "heading": "7.1", "quote": "**Algorithm C is not a faster prime generator.**" },
-        { "file": "paper.md", "heading": "4C.3", "quote": "that gap is `≈10⁻⁴·N` against `ops_B ≈ 0.46·N`" }
+        {
+          "file": "min_factor.md",
+          "heading": "7.1",
+          "quote": "**Algorithm C is not a faster prime generator.**"
+        },
+        {
+          "file": "paper.md",
+          "heading": "4C.3",
+          "quote": "that gap is `≈10⁻⁴·N` against `ops_B ≈ 0.46·N`"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -930,11 +1349,13 @@
       "status": "accepted",
       "confidence": 0.9,
       "domain": "complexity",
-      "attributes": [
-        { "key": "records_at_1e12", "value": 83500, "unit": "records" }
-      ],
+      "attributes": [{ "key": "records_at_1e12", "value": 83500, "unit": "records" }],
       "sources": [
-        { "file": "min_factor.md", "heading": "7.3", "quote": "records_C(n) = π(√n) + O( π(n^{1/3})·log n / log p )  =  (1 + o(1))·π(√n)" }
+        {
+          "file": "min_factor.md",
+          "heading": "7.3",
+          "quote": "records_C(n) = π(√n) + O( π(n^{1/3})·log n / log p )  =  (1 + o(1))·π(√n)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -947,7 +1368,11 @@
       "confidence": 0.9,
       "domain": "implementation",
       "sources": [
-        { "file": "min_factor.md", "heading": "3", "quote": "**Claim M5.** Algorithm C∞ is Algorithm A read in the opposite orientation" }
+        {
+          "file": "min_factor.md",
+          "heading": "3",
+          "quote": "**Claim M5.** Algorithm C∞ is Algorithm A read in the opposite orientation"
+        }
       ],
       "first_seen": "min_factor"
     },
@@ -960,7 +1385,11 @@
       "confidence": 0.95,
       "domain": "complexity",
       "sources": [
-        { "file": "factorization.md", "heading": "1. Scope", "quote": "**Claim FC0 (the no-go).** ... costs `Ω(π(√N))` operations in the best case" }
+        {
+          "file": "factorization.md",
+          "heading": "1. Scope",
+          "quote": "**Claim FC0 (the no-go).** ... costs `Ω(π(√N))` operations in the best case"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -973,7 +1402,11 @@
       "confidence": 0.95,
       "domain": "sieve",
       "sources": [
-        { "file": "factorization.md", "heading": "3.2", "quote": "**Claim FC-B1 (flat completeness).** ... `L(m)` is `1` or prime, and at most one prime factor of `m` exceeds `√m`" }
+        {
+          "file": "factorization.md",
+          "heading": "3.2",
+          "quote": "**Claim FC-B1 (flat completeness).** ... `L(m)` is `1` or prime, and at most one prime factor of `m` exceeds `√m`"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -985,11 +1418,13 @@
       "status": "accepted",
       "confidence": 0.95,
       "domain": "sieve",
-      "attributes": [
-        { "key": "lean_name", "value": "MinFac.not_claims_847_eleven" }
-      ],
+      "attributes": [{ "key": "lean_name", "value": "MinFac.not_claims_847_eleven" }],
       "sources": [
-        { "file": "factorization.md", "heading": "5.1", "quote": "**Claim FC1 (drain incompleteness of C).** There are composites `m` and primes `p ∣ m` with `p² ≤ m` such that no layer of `p` claims `m`." }
+        {
+          "file": "factorization.md",
+          "heading": "5.1",
+          "quote": "**Claim FC1 (drain incompleteness of C).** There are composites `m` and primes `p ∣ m` with `p² ≤ m` such that no layer of `p` claims `m`."
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1001,11 +1436,13 @@
       "status": "accepted",
       "confidence": 0.93,
       "domain": "sieve",
-      "attributes": [
-        { "key": "chain_length_at_1e18", "value": 15, "unit": "steps" }
-      ],
+      "attributes": [{ "key": "chain_length_at_1e18", "value": 15, "unit": "steps" }],
       "sources": [
-        { "file": "factorization.md", "heading": "5.2", "quote": "**Claim FC2 (chain length).** ... has length `≤ log_{p_{w+1}} n`" }
+        {
+          "file": "factorization.md",
+          "heading": "5.2",
+          "quote": "**Claim FC2 (chain length).** ... has length `≤ log_{p_{w+1}} n`"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1019,7 +1456,11 @@
       "domain": "complexity",
       "notes": "Explicitly corrects min_factor.md §8 and its open problem 5.",
       "sources": [
-        { "file": "factorization.md", "heading": "5.3", "quote": "**Claim FC3 (no bounded window).** ... spread across `[√X, 2X/p_{w+1}]`" }
+        {
+          "file": "factorization.md",
+          "heading": "5.3",
+          "quote": "**Claim FC3 (no bounded window).** ... spread across `[√X, 2X/p_{w+1}]`"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1037,7 +1478,11 @@
         { "key": "record_width", "value": 4, "unit": "words" }
       ],
       "sources": [
-        { "file": "factorization.md", "heading": "6. Algorithm D", "quote": "Replacing C's constraint `r ≥ p` with `p^e·r ≥ p²` yields Algorithm D" }
+        {
+          "file": "factorization.md",
+          "heading": "6. Algorithm D",
+          "quote": "Replacing C's constraint `r ≥ p` with `p^e·r ≥ p²` yields Algorithm D"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1050,7 +1495,11 @@
       "confidence": 0.9,
       "domain": "sieve",
       "sources": [
-        { "file": "factorization.md", "heading": "6.3", "quote": "**Claim FC4 (claimant identity).** ... a bijection onto `claimants_B(m)`." }
+        {
+          "file": "factorization.md",
+          "heading": "6.3",
+          "quote": "**Claim FC4 (claimant identity).** ... a bijection onto `claimants_B(m)`."
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1063,7 +1512,11 @@
       "confidence": 0.9,
       "domain": "sieve",
       "sources": [
-        { "file": "factorization.md", "heading": "6.3", "quote": "**Claim FC5 (flat completeness).** ... the full factorization of `m` is the drain plus `L`." }
+        {
+          "file": "factorization.md",
+          "heading": "6.3",
+          "quote": "**Claim FC5 (flat completeness).** ... the full factorization of `m` is the drain plus `L`."
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1076,7 +1529,11 @@
       "confidence": 0.9,
       "domain": "sieve",
       "sources": [
-        { "file": "factorization.md", "heading": "6.3", "quote": "**Claim FC6 (soundness, decision rule).** ... `D()` emits exactly the primes, forever." }
+        {
+          "file": "factorization.md",
+          "heading": "6.3",
+          "quote": "**Claim FC6 (soundness, decision rule).** ... `D()` emits exactly the primes, forever."
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1089,7 +1546,11 @@
       "confidence": 0.9,
       "domain": "complexity",
       "sources": [
-        { "file": "factorization.md", "heading": "6.4", "quote": "**Claim FC7 (touch identity).** `ops_D(N) = ops_B(N)` **exactly**, not merely to leading order." }
+        {
+          "file": "factorization.md",
+          "heading": "6.4",
+          "quote": "**Claim FC7 (touch identity).** `ops_D(N) = ops_B(N)` **exactly**, not merely to leading order."
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1102,7 +1563,11 @@
       "confidence": 0.94,
       "domain": "sieve",
       "sources": [
-        { "file": "factorization.md", "heading": "7.2", "quote": "The smooth half is false. Smoothness is a condition on `P(m)`, and C indexes by `spf(m)`" }
+        {
+          "file": "factorization.md",
+          "heading": "7.2",
+          "quote": "The smooth half is false. Smoothness is a condition on `P(m)`, and C indexes by `spf(m)`"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1116,7 +1581,11 @@
       "domain": "sieve",
       "notes": "Flagged in the notes as prior art: the Hamming-number heap generalised, superseded by Bernstein for counting.",
       "sources": [
-        { "file": "factorization.md", "heading": "7.2", "quote": "**Claim FC8 (smooth enumeration).** Running Algorithm A with every prime cursor clamped at `y` enumerates the `y`-smooth integers `≤ N`" }
+        {
+          "file": "factorization.md",
+          "heading": "7.2",
+          "quote": "**Claim FC8 (smooth enumeration).** Running Algorithm A with every prime cursor clamped at `y` enumerates the `y`-smooth integers `≤ N`"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1133,7 +1602,11 @@
         { "key": "memory_at_1e12", "value": 16, "unit": "GB" }
       ],
       "sources": [
-        { "file": "factorization.md", "heading": "8", "quote": "**Claim FC9 (ancestry).** ... the multiset of prime factors of `m` is `{q}` together with the labels on the path from `b` to the root" }
+        {
+          "file": "factorization.md",
+          "heading": "8",
+          "quote": "**Claim FC9 (ancestry).** ... the multiset of prime factors of `m` is `{q}` together with the labels on the path from `b` to the root"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1146,8 +1619,16 @@
       "confidence": 0.98,
       "domain": "sieve",
       "sources": [
-        { "file": "paper.md", "heading": "Abstract", "quote": "each known prime `p` owns an infinite, strictly increasing _stream_ of composites ... the streams are pairwise disjoint" },
-        { "file": "generator.md", "heading": "Abstract", "quote": "Prime generation then reduces to a single sorted merge of pairwise disjoint composite streams" }
+        {
+          "file": "paper.md",
+          "heading": "Abstract",
+          "quote": "each known prime `p` owns an infinite, strictly increasing _stream_ of composites ... the streams are pairwise disjoint"
+        },
+        {
+          "file": "generator.md",
+          "heading": "Abstract",
+          "quote": "Prime generation then reduces to a single sorted merge of pairwise disjoint composite streams"
+        }
       ],
       "first_seen": "generator"
     },
@@ -1160,8 +1641,16 @@
       "confidence": 0.95,
       "domain": "sieve",
       "sources": [
-        { "file": "generator.md", "heading": "2.3", "quote": "each new prime is a break in the current periodic structure and simultaneously becomes a new generator that extends it" },
-        { "file": "README.md", "heading": "Why This Is Interesting", "quote": "Each new prime is a break in the current symmetry, but it immediately becomes a fresh generator of the next, larger symmetry." }
+        {
+          "file": "generator.md",
+          "heading": "2.3",
+          "quote": "each new prime is a break in the current periodic structure and simultaneously becomes a new generator that extends it"
+        },
+        {
+          "file": "README.md",
+          "heading": "Why This Is Interesting",
+          "quote": "Each new prime is a break in the current symmetry, but it immediately becomes a fresh generator of the next, larger symmetry."
+        }
       ],
       "first_seen": "README"
     },
@@ -1174,8 +1663,16 @@
       "confidence": 0.94,
       "domain": "sieve",
       "sources": [
-        { "file": "fractal.md", "heading": "Overview", "quote": "the lattice recursion is exact, and the set deleted at each stage is an _affine copy of the previous stage_" },
-        { "file": "paper.md", "heading": "2.5", "quote": "the stream decomposition and the fractal decomposition are the same theorem" }
+        {
+          "file": "fractal.md",
+          "heading": "Overview",
+          "quote": "the lattice recursion is exact, and the set deleted at each stage is an _affine copy of the previous stage_"
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.5",
+          "quote": "the stream decomposition and the fractal decomposition are the same theorem"
+        }
       ],
       "first_seen": "fractal"
     },
@@ -1190,8 +1687,16 @@
       "domain": "wheel",
       "notes": "Routine (CRT + counting) but not yet formalised; its algorithmic content is machine-checked as theta_eq_image.",
       "sources": [
-        { "file": "fractal.md", "heading": "2", "quote": "**Claim F1 (lattice recursion).** ... tile the previous lattice \\(p\\) times, then delete one dilated copy of it." },
-        { "file": "paper.md", "heading": "2.5", "quote": "_Status: routine (CRT + counting); not yet formalised._" }
+        {
+          "file": "fractal.md",
+          "heading": "2",
+          "quote": "**Claim F1 (lattice recursion).** ... tile the previous lattice \\(p\\) times, then delete one dilated copy of it."
+        },
+        {
+          "file": "paper.md",
+          "heading": "2.5",
+          "quote": "_Status: routine (CRT + counting); not yet formalised._"
+        }
       ],
       "first_seen": "generator"
     },
@@ -1208,7 +1713,11 @@
         { "key": "lebesgue_measure", "value": 0 }
       ],
       "sources": [
-        { "file": "fractal.md", "heading": "3", "quote": "the lattice is a **measure-zero, dimension-one** set: the fractality is real but _invisible to dimension_" }
+        {
+          "file": "fractal.md",
+          "heading": "3",
+          "quote": "the lattice is a **measure-zero, dimension-one** set: the fractality is real but _invisible to dimension_"
+        }
       ],
       "first_seen": "fractal"
     },
@@ -1221,8 +1730,16 @@
       "confidence": 0.95,
       "domain": "sieve",
       "sources": [
-        { "file": "idea.md", "heading": "Abstract", "quote": "a finite (and in the limit, infinite) product of orthogonal periodic exclusion fields, one per prime" },
-        { "file": "README.md", "heading": "What You Are Looking At", "quote": "The sieve is the pointwise product of the individual masks." }
+        {
+          "file": "idea.md",
+          "heading": "Abstract",
+          "quote": "a finite (and in the limit, infinite) product of orthogonal periodic exclusion fields, one per prime"
+        },
+        {
+          "file": "README.md",
+          "heading": "What You Are Looking At",
+          "quote": "The sieve is the pointwise product of the individual masks."
+        }
       ],
       "first_seen": "README"
     },
@@ -1235,7 +1752,11 @@
       "confidence": 0.97,
       "domain": "sieve",
       "sources": [
-        { "file": "idea.md", "heading": "2.2", "quote": "_the sieve is always exactly periodic, at every finite stage_, with a period that grows as the primorial" }
+        {
+          "file": "idea.md",
+          "heading": "2.2",
+          "quote": "_the sieve is always exactly periodic, at every finite stage_, with a period that grows as the primorial"
+        }
       ],
       "first_seen": "idea"
     },
@@ -1248,7 +1769,11 @@
       "confidence": 0.97,
       "domain": "distribution",
       "sources": [
-        { "file": "idea.md", "heading": "3", "quote": "each new prime removes a fixed fraction of _whatever survives so far_, regardless of the internal structure" }
+        {
+          "file": "idea.md",
+          "heading": "3",
+          "quote": "each new prime removes a fixed fraction of _whatever survives so far_, regardless of the internal structure"
+        }
       ],
       "first_seen": "README"
     },
@@ -1262,7 +1787,11 @@
       "confidence": 0.95,
       "domain": "randomness",
       "sources": [
-        { "file": "idea.md", "heading": "4", "quote": "the **joint entropy** of the \\(k\\) per-prime alive/dead indicators is exactly additive" }
+        {
+          "file": "idea.md",
+          "heading": "4",
+          "quote": "the **joint entropy** of the \\(k\\) per-prime alive/dead indicators is exactly additive"
+        }
       ],
       "first_seen": "README"
     },
@@ -1275,7 +1804,11 @@
       "confidence": 0.94,
       "domain": "randomness",
       "sources": [
-        { "file": "idea.md", "heading": "4", "quote": "\\Delta h_k = H(p_k) \\sim \\frac{\\log p_k}{p_k}" }
+        {
+          "file": "idea.md",
+          "heading": "4",
+          "quote": "\\Delta h_k = H(p_k) \\sim \\frac{\\log p_k}{p_k}"
+        }
       ],
       "first_seen": "README"
     },
@@ -1289,7 +1822,11 @@
       "confidence": 0.94,
       "domain": "sieve",
       "sources": [
-        { "file": "idea.md", "heading": "5.2", "quote": "C_{(m_1,\\ldots,m_k)} = \\prod_{i=1}^k \\hat M_{p_i}(m_i)" }
+        {
+          "file": "idea.md",
+          "heading": "5.2",
+          "quote": "C_{(m_1,\\ldots,m_k)} = \\prod_{i=1}^k \\hat M_{p_i}(m_i)"
+        }
       ],
       "first_seen": "idea"
     },
@@ -1303,7 +1840,11 @@
       "domain": "sieve",
       "notes": "idea.md explicitly corrects an earlier, stronger 'disjoint spectra' phrasing; the DC term is shared.",
       "sources": [
-        { "file": "idea.md", "heading": "5.1", "quote": "**disjoint nonzero spectral support**, not merely disjoint kill-sets in position space" }
+        {
+          "file": "idea.md",
+          "heading": "5.1",
+          "quote": "**disjoint nonzero spectral support**, not merely disjoint kill-sets in position space"
+        }
       ],
       "first_seen": "README"
     },
@@ -1316,7 +1857,11 @@
       "confidence": 0.93,
       "domain": "sieve",
       "sources": [
-        { "file": "idea.md", "heading": "5.3", "quote": "The natural ambient space is the **profinite integers** ... Its Pontryagin dual is the discrete group \\(\\mathbb{Q}/\\mathbb{Z}\\)" }
+        {
+          "file": "idea.md",
+          "heading": "5.3",
+          "quote": "The natural ambient space is the **profinite integers** ... Its Pontryagin dual is the discrete group \\(\\mathbb{Q}/\\mathbb{Z}\\)"
+        }
       ],
       "first_seen": "idea"
     },
@@ -1329,8 +1874,16 @@
       "confidence": 0.94,
       "domain": "randomness",
       "sources": [
-        { "file": "idea.md", "heading": "8.7", "quote": "there are principled dynamical reasons why this exact construction **cannot** capture the fine pseudorandomness of the primes" },
-        { "file": "README.md", "heading": "Honest Caveats", "quote": "the underlying dynamical system is a zero-entropy profinite odometer" }
+        {
+          "file": "idea.md",
+          "heading": "8.7",
+          "quote": "there are principled dynamical reasons why this exact construction **cannot** capture the fine pseudorandomness of the primes"
+        },
+        {
+          "file": "README.md",
+          "heading": "Honest Caveats",
+          "quote": "the underlying dynamical system is a zero-entropy profinite odometer"
+        }
       ],
       "first_seen": "README"
     },
@@ -1344,8 +1897,16 @@
       "domain": "gaps",
       "notes": "idea.md flags this as interpretive only, carrying no proof obligation and never usable as a premise.",
       "sources": [
-        { "file": "idea.md", "heading": "7", "quote": "Prime gaps, in this reading, are not primitive facts about primes; they are **interference patterns**" },
-        { "file": "theory.md", "heading": "T56", "quote": "Interpretive only. Carries no proof obligation and should never be used as a premise." }
+        {
+          "file": "idea.md",
+          "heading": "7",
+          "quote": "Prime gaps, in this reading, are not primitive facts about primes; they are **interference patterns**"
+        },
+        {
+          "file": "theory.md",
+          "heading": "T56",
+          "quote": "Interpretive only. Carries no proof obligation and should never be used as a premise."
+        }
       ],
       "first_seen": "README"
     },
@@ -1358,7 +1919,11 @@
       "confidence": 0.96,
       "domain": "gaps",
       "sources": [
-        { "file": "twin_prime.md", "heading": "0. Summary", "quote": "a wheel **counts exactly** over its full period `P_k`; a wheel **certifies primality** only on the window `[p_{k+1}, p_{k+1}²)`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "0. Summary",
+          "quote": "a wheel **counts exactly** over its full period `P_k`; a wheel **certifies primality** only on the window `[p_{k+1}, p_{k+1}²)`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1372,7 +1937,11 @@
       "domain": "gaps",
       "attributes": [{ "key": "lean_name", "value": "Twin.rough_pair_of_twin" }],
       "sources": [
-        { "file": "twin_prime.md", "heading": "2", "quote": "**Claim TP0 (one-way containment).** ... Equality holds on `q ∈ [p_{k+1}, p_{k+1}² − 2)`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "2",
+          "quote": "**Claim TP0 (one-way containment).** ... Equality holds on `q ∈ [p_{k+1}, p_{k+1}² − 2)`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1390,7 +1959,11 @@
         { "key": "lean_name", "value": "Twin.card_pairLattice_prime" }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "4.1", "quote": "**Claim TP1 (pair count).** `T_1 = 1` and, for `k ≥ 1` with `p = p_{k+1}`, `T_{k+1} = (p − 2)·T_k`." }
+        {
+          "file": "twin_prime.md",
+          "heading": "4.1",
+          "quote": "**Claim TP1 (pair count).** `T_1 = 1` and, for `k ≥ 1` with `p = p_{k+1}`, `T_{k+1} = (p − 2)·T_k`."
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1403,7 +1976,11 @@
       "confidence": 0.93,
       "domain": "gaps",
       "sources": [
-        { "file": "twin_prime.md", "heading": "4.2", "quote": "**Claim TP2 (pair lattice recursion).** ... with `|D| = |D'| = T_k` and `D ∩ D' = ∅` for `p ≥ 3`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "4.2",
+          "quote": "**Claim TP2 (pair lattice recursion).** ... with `|D| = |D'| = T_k` and `D ∩ D' = ∅` for `p ≥ 3`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1415,11 +1992,13 @@
       "status": "accepted",
       "confidence": 0.95,
       "domain": "gaps",
-      "attributes": [
-        { "key": "twin_constant_C2", "value": 0.6601618 }
-      ],
+      "attributes": [{ "key": "twin_constant_C2", "value": 0.6601618 }],
       "sources": [
-        { "file": "twin_prime.md", "heading": "4.3", "quote": "The pair lattice therefore _is_ the Hardy–Littlewood singular series, materialised as a finite set of residues." }
+        {
+          "file": "twin_prime.md",
+          "heading": "4.3",
+          "quote": "The pair lattice therefore _is_ the Hardy–Littlewood singular series, materialised as a finite set of residues."
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1436,7 +2015,11 @@
         { "key": "pair_factor", "value": 1.2599 }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "4.3", "quote": "hole density is strictly larger than prime density, and the discrepancy does not vanish with `k`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "4.3",
+          "quote": "hole density is strictly larger than prime density, and the discrepancy does not vanish with `k`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1449,7 +2032,11 @@
       "confidence": 0.94,
       "domain": "gaps",
       "sources": [
-        { "file": "twin_prime.md", "heading": "4.5", "quote": "**Claim TP4 (admissibility).** ... `S_k^{(H)} ≠ ∅` for all `k` iff `H` is admissible" }
+        {
+          "file": "twin_prime.md",
+          "heading": "4.5",
+          "quote": "**Claim TP4 (admissibility).** ... `S_k^{(H)} ≠ ∅` for all `k` iff `H` is admissible"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1466,7 +2053,11 @@
         { "key": "example_pair", "value": "167, 169" }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "5.1", "quote": "`(167, 169) ∈ S_4^{(2)}` — both coprime to `210`, `167` prime, `169 = 13²`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "5.1",
+          "quote": "`(167, 169) ∈ S_4^{(2)}` — both coprime to `210`, `167` prime, `169 = 13²`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1479,7 +2070,11 @@
       "confidence": 0.95,
       "domain": "gaps",
       "sources": [
-        { "file": "twin_prime.md", "heading": "5.3", "quote": "**Claim TP6 (direction).** ... Growth of that count from stage to stage is growth of an upper bound" }
+        {
+          "file": "twin_prime.md",
+          "heading": "5.3",
+          "quote": "**Claim TP6 (direction).** ... Growth of that count from stage to stage is growth of an upper bound"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1496,7 +2091,11 @@
         { "key": "formal_status", "value": "(a) and (b) machine-checked; (c) not formalised" }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "4.4", "quote": "**Claim TP8 (deletion geometry).** ... `j_1(r) − j_0(r) ≡ −2P̄ =: δ_k (mod p)`, **independent of `r`**" }
+        {
+          "file": "twin_prime.md",
+          "heading": "4.4",
+          "quote": "**Claim TP8 (deletion geometry).** ... `j_1(r) − j_0(r) ≡ −2P̄ =: δ_k (mod p)`, **independent of `r`**"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1509,7 +2108,11 @@
       "confidence": 0.93,
       "domain": "gaps",
       "sources": [
-        { "file": "twin_prime.md", "heading": "4.4", "quote": "**Remark TP8a (adjacency criterion).** The two deleted copies of a class are cyclically **adjacent** exactly when `δ_k ≡ ±1 (mod p)`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "4.4",
+          "quote": "**Remark TP8a (adjacency criterion).** The two deleted copies of a class are cyclically **adjacent** exactly when `δ_k ≡ ±1 (mod p)`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1527,8 +2130,16 @@
         { "key": "false_at", "value": 2 }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "6", "quote": "**Claim W (window occupancy).** For every prime `p > 2` there exist `h` with `p ≤ h`, `h + 2 < p²`" },
-        { "file": "twin_prime.md", "heading": "6", "quote": "the unrestricted form is outright false (`Twin.not_windowAt_two`)" }
+        {
+          "file": "twin_prime.md",
+          "heading": "6",
+          "quote": "**Claim W (window occupancy).** For every prime `p > 2` there exist `h` with `p ≤ h`, `h + 2 < p²`"
+        },
+        {
+          "file": "twin_prime.md",
+          "heading": "6",
+          "quote": "the unrestricted form is outright false (`Twin.not_windowAt_two`)"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1545,7 +2156,11 @@
         { "key": "formal_status", "value": "machine-checked" }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "6", "quote": "**Claim TP7 (W ⟹ TPC).** Claim W implies there are infinitely many twin primes." }
+        {
+          "file": "twin_prime.md",
+          "heading": "6",
+          "quote": "**Claim TP7 (W ⟹ TPC).** Claim W implies there are infinitely many twin primes."
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1558,7 +2173,11 @@
       "confidence": 0.95,
       "domain": "gaps",
       "sources": [
-        { "file": "twin_prime.md", "heading": "6", "quote": "**Conjecture TP-J (pair Jacobsthal).** `g_2(P_k) ≪ log² P_k ≍ p_k²`." }
+        {
+          "file": "twin_prime.md",
+          "heading": "6",
+          "quote": "**Conjecture TP-J (pair Jacobsthal).** `g_2(P_k) ≪ log² P_k ≍ p_k²`."
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1578,7 +2197,11 @@
         { "key": "ratio_max", "value": 1.19 }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "6.1", "quote": "**W holds for every prime `2 < p < 60`**, with the witness count never below `2`." }
+        {
+          "file": "twin_prime.md",
+          "heading": "6.1",
+          "quote": "**W holds for every prime `2 < p < 60`**, with the witness count never below `2`."
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1591,7 +2214,11 @@
       "confidence": 0.95,
       "domain": "implementation",
       "sources": [
-        { "file": "twin_prime.md", "heading": "8.1", "quote": "Twin detection is one register ... No extra asymptotic cost" }
+        {
+          "file": "twin_prime.md",
+          "heading": "8.1",
+          "quote": "Twin detection is one register ... No extra asymptotic cost"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1609,7 +2236,11 @@
         { "key": "scan_reduction", "value": 3.88, "unit": "x" }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "8.2", "quote": "pair-restrict the scan, never the advance" }
+        {
+          "file": "twin_prime.md",
+          "heading": "8.2",
+          "quote": "pair-restrict the scan, never the advance"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1626,8 +2257,16 @@
         { "key": "mark_array_cost", "value": "Delta/8", "unit": "bytes" }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "5.1", "quote": "All operations are O(1) amortised and sequential in memory." },
-        { "file": "paper.md", "heading": "5.1", "quote": "This reintroduces a _segment-sized_ array" }
+        {
+          "file": "algorithm.md",
+          "heading": "5.1",
+          "quote": "All operations are O(1) amortised and sequential in memory."
+        },
+        {
+          "file": "paper.md",
+          "heading": "5.1",
+          "quote": "This reintroduces a _segment-sized_ array"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1646,7 +2285,11 @@
         { "key": "touch_reduction", "value": 0.15, "unit": "fraction" }
       ],
       "sources": [
-        { "file": "paper.md", "heading": "6.1", "quote": "a 323× larger table for 15% fewer touches — and _halving_ `κ` to ≈ 0.10 requires primes up to ≈ 274" }
+        {
+          "file": "paper.md",
+          "heading": "6.1",
+          "quote": "a 323× larger table for 15% fewer touches — and _halving_ `κ` to ≈ 0.10 requires primes up to ≈ 274"
+        }
       ],
       "first_seen": "paper"
     },
@@ -1663,7 +2306,11 @@
         { "key": "modulus", "value": 210 }
       ],
       "sources": [
-        { "file": "fractal.md", "heading": "4", "quote": "\\(121 = 11^2 \\in S_4\\) ... so the mod-210 lattice has a composite hole inside its first period" }
+        {
+          "file": "fractal.md",
+          "heading": "4",
+          "quote": "\\(121 = 11^2 \\in S_4\\) ... so the mod-210 lattice has a composite hole inside its first period"
+        }
       ],
       "first_seen": "fractal"
     },
@@ -1680,7 +2327,11 @@
         { "key": "default_w", "value": 6 }
       ],
       "sources": [
-        { "file": "algorithm.md", "heading": "6", "quote": "## 6. Reference implementation (Python, executable and self-checking)" }
+        {
+          "file": "algorithm.md",
+          "heading": "6",
+          "quote": "## 6. Reference implementation (Python, executable and self-checking)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1697,7 +2348,11 @@
         { "key": "sorry_free", "value": true }
       ],
       "sources": [
-        { "file": "paper.md", "heading": "9", "quote": "`lean/` contains a `sorry`-free Lean 4 + Mathlib formalisation of the structural claims" }
+        {
+          "file": "paper.md",
+          "heading": "9",
+          "quote": "`lean/` contains a `sorry`-free Lean 4 + Mathlib formalisation of the structural claims"
+        }
       ],
       "first_seen": "paper"
     },
@@ -1710,7 +2365,11 @@
       "confidence": 0.96,
       "domain": "implementation",
       "sources": [
-        { "file": "twin_prime.md", "heading": "8.3", "quote": "`lean/Primegen/Twin.lean` is `sorry`-free and builds against the pinned Mathlib." }
+        {
+          "file": "twin_prime.md",
+          "heading": "8.3",
+          "quote": "`lean/Primegen/Twin.lean` is `sorry`-free and builds against the pinned Mathlib."
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1723,7 +2382,11 @@
       "confidence": 0.97,
       "domain": "implementation",
       "sources": [
-        { "file": "algorithm.md", "heading": "6", "quote": "The assertion `pops == composites` is the machine-checkable statement of exact orthogonality (Theorem 3.2)" }
+        {
+          "file": "algorithm.md",
+          "heading": "6",
+          "quote": "The assertion `pops == composites` is the machine-checkable statement of exact orthogonality (Theorem 3.2)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1736,7 +2399,11 @@
       "confidence": 0.96,
       "domain": "complexity",
       "sources": [
-        { "file": "algorithm.md", "heading": "9", "quote": "Sharp asymptotics for \\(S(N) = \\#\\{b\\ge2 : b\\,P(b)\\le N\\}\\) — the memory of Algorithm A." }
+        {
+          "file": "algorithm.md",
+          "heading": "9",
+          "quote": "Sharp asymptotics for \\(S(N) = \\#\\{b\\ge2 : b\\,P(b)\\le N\\}\\) — the memory of Algorithm A."
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1749,7 +2416,11 @@
       "confidence": 0.96,
       "domain": "implementation",
       "sources": [
-        { "file": "algorithm.md", "heading": "9", "quote": "Optimal \\(w\\) as a function of \\(N\\) and cache size for Algorithm B" }
+        {
+          "file": "algorithm.md",
+          "heading": "9",
+          "quote": "Optimal \\(w\\) as a function of \\(N\\) and cache size for Algorithm B"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1762,7 +2433,11 @@
       "confidence": 0.95,
       "domain": "complexity",
       "sources": [
-        { "file": "algorithm.md", "heading": "9", "quote": "This should get one-touch behaviour with much smaller \\(S(N)\\); the accounting is not yet done." }
+        {
+          "file": "algorithm.md",
+          "heading": "9",
+          "quote": "This should get one-touch behaviour with much smaller \\(S(N)\\); the accounting is not yet done."
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1775,7 +2450,11 @@
       "confidence": 0.96,
       "domain": "implementation",
       "sources": [
-        { "file": "paper.md", "heading": "7", "quote": "**The outer induction.** Formalise \"the list emitted by `B()` is exactly the primes below `n`\"." }
+        {
+          "file": "paper.md",
+          "heading": "7",
+          "quote": "**The outer induction.** Formalise \"the list emitted by `B()` is exactly the primes below `n`\"."
+        }
       ],
       "first_seen": "paper"
     },
@@ -1788,7 +2467,11 @@
       "confidence": 0.95,
       "domain": "complexity",
       "sources": [
-        { "file": "algorithm.md", "heading": "9", "quote": "**Exponent-spine Algorithm A:** index A's bases as \\(b = p^{e}b'\\) and run-length encode the spine." }
+        {
+          "file": "algorithm.md",
+          "heading": "9",
+          "quote": "**Exponent-spine Algorithm A:** index A's bases as \\(b = p^{e}b'\\) and run-length encode the spine."
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1801,7 +2484,11 @@
       "confidence": 0.94,
       "domain": "complexity",
       "sources": [
-        { "file": "factorization.md", "heading": "13", "quote": "**The bicone index (§7.3).** Index composites by `(spf, v_spf, P(m))`" }
+        {
+          "file": "factorization.md",
+          "heading": "13",
+          "quote": "**The bicone index (§7.3).** Index composites by `(spf, v_spf, P(m))`"
+        }
       ],
       "first_seen": "factorization"
     },
@@ -1814,7 +2501,11 @@
       "confidence": 0.95,
       "domain": "distribution",
       "sources": [
-        { "file": "paper.md", "heading": "7", "quote": "Does any _approximate_ log-periodicity show up in prime statistics at primorial scales, or is the apparent signal an artefact of binning?" }
+        {
+          "file": "paper.md",
+          "heading": "7",
+          "quote": "Does any _approximate_ log-periodicity show up in prime statistics at primorial scales, or is the apparent signal an artefact of binning?"
+        }
       ],
       "first_seen": "fractal"
     },
@@ -1827,7 +2518,11 @@
       "confidence": 0.94,
       "domain": "distribution",
       "sources": [
-        { "file": "paper.md", "heading": "7", "quote": "**The `φ(P_k) → π` transfer.** Sharp form of the transfer in the certified window" }
+        {
+          "file": "paper.md",
+          "heading": "7",
+          "quote": "**The `φ(P_k) → π` transfer.** Sharp form of the transfer in the certified window"
+        }
       ],
       "first_seen": "fractal"
     },
@@ -1844,7 +2539,11 @@
         { "key": "segmented_range", "value": "k <= 12" }
       ],
       "sources": [
-        { "file": "twin_prime.md", "heading": "10", "quote": "**Measure `g_2(P_k)`** exactly for `k ≤ 8` and by segmented enumeration for `k ≤ 12`" }
+        {
+          "file": "twin_prime.md",
+          "heading": "10",
+          "quote": "**Measure `g_2(P_k)`** exactly for `k ≤ 8` and by segmented enumeration for `k ≤ 12`"
+        }
       ],
       "first_seen": "twin_prime"
     },
@@ -1857,7 +2556,11 @@
       "confidence": 0.96,
       "domain": "benchmark",
       "sources": [
-        { "file": "algorithm.md", "heading": "9", "quote": "Measure \\(\\mathrm{ops}_C\\) against \\(\\mathrm{ops}_B\\) at \\(N = 10^{8}\\dots10^{12}\\)" }
+        {
+          "file": "algorithm.md",
+          "heading": "9",
+          "quote": "Measure \\(\\mathrm{ops}_C\\) against \\(\\mathrm{ops}_B\\) at \\(N = 10^{8}\\dots10^{12}\\)"
+        }
       ],
       "first_seen": "algorithm"
     },
@@ -1870,148 +2573,1169 @@
       "confidence": 0.94,
       "domain": "implementation",
       "sources": [
-        { "file": "factorization.md", "heading": "13", "quote": "**Optimal `w` for D.** ... The trade is not B's trade. Re-derive it, and measure the crossover" }
+        {
+          "file": "factorization.md",
+          "heading": "13",
+          "quote": "**Optimal `w` for D.** ... The trade is not B's trade. Re-derive it, and measure the crossover"
+        }
       ],
       "first_seen": "factorization"
     }
   ],
   "edges": [
-    { "id": "e.ownership-partition.depends_on.smallest-prime-factor-ownership", "from": "theorem.ownership-partition", "to": "definition.smallest-prime-factor-ownership", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.ownership-partition.depends_on.multiplier-set-a-p", "from": "theorem.ownership-partition", "to": "definition.multiplier-set-a-p", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.multiplier-set-a-p.depends_on.rough-numbers", "from": "definition.multiplier-set-a-p", "to": "definition.rough-numbers", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.multiplier-set-is-wheel.depends_on.multiplier-set-a-p", "from": "theorem.multiplier-set-is-wheel", "to": "definition.multiplier-set-a-p", "relation": "depends_on", "confidence": 0.96, "sources": [{ "file": "algorithm.md", "quote": "depends only on \\(a \\bmod P_{<p}\\)" }] },
-    { "id": "e.phase-separation.depends_on.multiplier-set-a-p", "from": "theorem.phase-separation", "to": "definition.multiplier-set-a-p", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.min-owned-composite.depends_on.ownership-partition", "from": "theorem.min-owned-composite-is-p-squared", "to": "theorem.ownership-partition", "relation": "depends_on", "confidence": 0.95, "sources": [{ "file": "generator.md", "quote": "since the least multiplier is \\(p\\) itself" }] },
-    { "id": "e.coincidence-window.depends_on.phase-separation", "from": "theorem.coincidence-window-p-le-7", "to": "theorem.phase-separation", "relation": "depends_on", "confidence": 0.96, "sources": [{ "file": "algorithm.md", "quote": "**Corollary 2.4.** \\(A_p \\cap [p, p^2) = \\{\\text{primes in that range}\\}\\)" }] },
-    { "id": "e.next-owned-composite-reduces.depends_on.ownership-partition", "from": "theorem.next-owned-composite-reduces-to-next-rough", "to": "theorem.ownership-partition", "relation": "depends_on", "confidence": 0.96, "sources": [{ "file": "algorithm.md", "quote": "By Theorem 2.1 the owned composites are \\(pa\\), \\(a\\in A_p\\)" }] },
-    { "id": "e.next-owned-composite-reduces.depends_on.next-rough", "from": "theorem.next-owned-composite-reduces-to-next-rough", "to": "definition.next-rough", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.next-owned-composite-reduces.depends_on.next-owned-composite", "from": "theorem.next-owned-composite-reduces-to-next-rough", "to": "definition.next-owned-composite", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.causality.depends_on.ownership-partition", "from": "theorem.causality", "to": "theorem.ownership-partition", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.no-o1-next-rough.depends_on.primorial-growth", "from": "conjecture.no-o1-polylog-next-rough", "to": "theorem.primorial-growth", "relation": "depends_on", "confidence": 0.95, "sources": [{ "file": "theory.md", "quote": "the only known exact O(1)-time rule (T29) needs exponential space" }] },
-    { "id": "e.jacobsthal.supports.no-o1-next-rough", "from": "theorem.jacobsthal-bounds", "to": "conjecture.no-o1-polylog-next-rough", "relation": "supports", "relation_note": "evidence against an O(1) scan", "strength": 0.7, "confidence": 0.93, "sources": [{ "file": "theory.md", "heading": "T31", "quote": "any \"scan and test\" method is superlinear in \\(p\\) in the worst case" }] },
-    { "id": "e.no-o1-next-rough.motivates.algorithm-a", "from": "conjecture.no-o1-polylog-next-rough", "to": "model.algorithm-a", "relation": "motivates", "confidence": 0.95, "sources": [{ "file": "paper.md", "quote": "one must either **derive** rough multipliers from other streams (exact — Algorithm A)" }] },
-    { "id": "e.no-o1-next-rough.motivates.algorithm-b", "from": "conjecture.no-o1-polylog-next-rough", "to": "model.algorithm-b", "relation": "motivates", "confidence": 0.95, "sources": [{ "file": "paper.md", "quote": "or **relax** the multiplier set to a fixed tabulated wheel (inexact but bounded — Algorithm B)" }] },
-    { "id": "e.orthogonal-stream-sieve.depends_on.ownership-partition", "from": "theory.orthogonal-stream-sieve", "to": "theorem.ownership-partition", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.algorithm-a.instantiates.orthogonal-stream-sieve", "from": "model.algorithm-a", "to": "theory.orthogonal-stream-sieve", "relation": "instantiates", "confidence": 0.96 },
-    { "id": "e.algorithm-b.instantiates.orthogonal-stream-sieve", "from": "model.algorithm-b", "to": "theory.orthogonal-stream-sieve", "relation": "instantiates", "confidence": 0.96 },
-    { "id": "e.algorithm-a.depends_on.stream-tree", "from": "model.algorithm-a", "to": "theorem.stream-tree", "relation": "depends_on", "confidence": 0.97, "sources": [{ "file": "algorithm.md", "quote": "**Theorem 3.1 (stream tree).**" }] },
-    { "id": "e.algorithm-a-correctness.depends_on.stream-tree", "from": "theorem.algorithm-a-correctness", "to": "theorem.stream-tree", "relation": "depends_on", "confidence": 0.95, "sources": [{ "file": "paper.md", "quote": "induction on `n` using Claim A1 for uniqueness of `(b,q)`" }] },
-    { "id": "e.algorithm-a-causality.depends_on.causality", "from": "theorem.algorithm-a-causality", "to": "theorem.causality", "relation": "depends_on", "confidence": 0.9 },
-    { "id": "e.dickman.supports.algorithm-a-stream-count", "from": "heuristic.dickman-saddle-estimate", "to": "conjecture.algorithm-a-stream-count", "relation": "supports", "strength": 0.6, "confidence": 0.93 },
-    { "id": "e.measure-s-n.tests.algorithm-a-stream-count", "from": "open_question.measure-s-n", "to": "conjecture.algorithm-a-stream-count", "relation": "tests", "confidence": 0.95 },
-    { "id": "e.wheeled-algorithm-a.specializes.algorithm-a", "from": "model.wheeled-algorithm-a", "to": "model.algorithm-a", "relation": "specializes", "confidence": 0.92 },
-    { "id": "e.pops-equals-composites.tests.algorithm-a-correctness", "from": "experiment.pops-equals-composites", "to": "theorem.algorithm-a-correctness", "relation": "tests", "confidence": 0.96, "sources": [{ "file": "algorithm.md", "quote": "it fails immediately if any composite is claimed twice or missed" }] },
-    { "id": "e.algorithm-b.depends_on.wheel-lattice-s-k", "from": "model.algorithm-b", "to": "definition.wheel-lattice-s-k", "relation": "depends_on", "confidence": 0.92, "sources": [{ "file": "paper.md", "quote": "The wheel is not an optimisation bolted on; it is the first `w` streams materialised as a table." }] },
-    { "id": "e.algorithm-b-coverage.depends_on.ownership-partition", "from": "theorem.algorithm-b-coverage", "to": "theorem.ownership-partition", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.algorithm-b-correctness.depends_on.algorithm-b-coverage", "from": "theorem.algorithm-b-correctness", "to": "theorem.algorithm-b-coverage", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.algorithm-b-correctness.depends_on.algorithm-b-no-early-claims", "from": "theorem.algorithm-b-correctness", "to": "theorem.algorithm-b-no-early-claims", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.algorithm-b-no-early-claims.depends_on.min-owned-composite", "from": "theorem.algorithm-b-no-early-claims", "to": "theorem.min-owned-composite-is-p-squared", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.deferred-activation.depends_on.min-owned-composite", "from": "theorem.deferred-activation-heap-bound", "to": "theorem.min-owned-composite-is-p-squared", "relation": "depends_on", "confidence": 0.95, "sources": [{ "file": "paper.md", "quote": "a prime contributes nothing below `p²`" }] },
-    { "id": "e.algorithm-b.depends_on.deferred-activation", "from": "model.algorithm-b", "to": "theorem.deferred-activation-heap-bound", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.algorithm-b-duplicate-accounting.depends_on.claimant-set-b", "from": "theorem.algorithm-b-duplicate-accounting", "to": "definition.claimant-set-b", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.algorithm-b-duplicate-accounting.depends_on.mertens-third", "from": "theorem.algorithm-b-duplicate-accounting", "to": "theorem.mertens-third", "relation": "depends_on", "confidence": 0.9, "sources": [{ "file": "paper.md", "quote": "That is Mertens, again, and it is the whole reason the trade is worth taking." }] },
-    { "id": "e.ops-b-at-1e12.measures.algorithm-b-duplicate-accounting", "from": "observation.ops-b-at-1e12", "to": "theorem.algorithm-b-duplicate-accounting", "relation": "measures", "confidence": 0.95 },
-    { "id": "e.optimal-wheel-size-w.measures.algorithm-b", "from": "open_question.optimal-wheel-size-w", "to": "model.algorithm-b", "relation": "measures", "confidence": 0.92 },
-    { "id": "e.wheel-diminishing-returns.supports.optimal-wheel-size-w", "from": "observation.wheel-diminishing-returns", "to": "open_question.optimal-wheel-size-w", "relation": "supports", "strength": 0.7, "confidence": 0.9 },
-    { "id": "e.wheel-diminishing-returns.depends_on.mertens-third", "from": "observation.wheel-diminishing-returns", "to": "theorem.mertens-third", "relation": "depends_on", "confidence": 0.92, "sources": [{ "file": "paper.md", "quote": "The `log log` is Mertens, and it is a ceiling rather than a trend." }] },
-    { "id": "e.outer-induction.tests.algorithm-b-correctness", "from": "open_question.outer-induction-formalisation", "to": "theorem.algorithm-b-correctness", "relation": "tests", "confidence": 0.93 },
-    { "id": "e.hybrid-a-b.motivates.algorithm-a", "from": "open_question.hybrid-a-b", "to": "model.algorithm-a", "relation": "motivates", "confidence": 0.88 },
-    { "id": "e.min-factor-normal-form.refines.ownership-partition", "from": "theorem.min-factor-normal-form", "to": "theorem.ownership-partition", "relation": "refines", "confidence": 0.96, "sources": [{ "file": "min_factor.md", "quote": "Claim M1 is a **refinement** of Claim O1 ... not a competitor to it" }] },
-    { "id": "e.correction-cone.refutes.cone-recursion", "from": "lemma.correction-cone-recursion", "to": "theorem.cone-recursion", "relation": "refutes", "strength": 0.95, "confidence": 0.96, "sources": [{ "file": "min_factor.md", "quote": "The displayed identity is **false as written**" }] },
-    { "id": "e.cone-recursion.depends_on.rough-monoid-b-p", "from": "theorem.cone-recursion", "to": "definition.rough-monoid-b-p", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.min-factor-normal-form.depends_on.rough-monoid-b-p", "from": "theorem.min-factor-normal-form", "to": "definition.rough-monoid-b-p", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.strict-phase-separation.specializes.phase-separation", "from": "theorem.strict-phase-separation", "to": "theorem.phase-separation", "relation": "specializes", "confidence": 0.92, "sources": [{ "file": "min_factor.md", "quote": "same argument as `Primegen.prime_of_rough_of_lt_sq`, one step stricter" }] },
-    { "id": "e.algorithm-c.refines.algorithm-b", "from": "model.algorithm-c", "to": "model.algorithm-b", "relation": "refines", "confidence": 0.96, "sources": [{ "file": "paper.md", "quote": "Algorithm C is Algorithm B re-indexed by Claim M1" }] },
-    { "id": "e.algorithm-c.depends_on.min-factor-normal-form", "from": "model.algorithm-c", "to": "theorem.min-factor-normal-form", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.algorithm-c.depends_on.layer-p-e", "from": "model.algorithm-c", "to": "definition.layer-p-e", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.algorithm-c-coverage.depends_on.min-factor-normal-form", "from": "theorem.algorithm-c-coverage", "to": "theorem.min-factor-normal-form", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.algorithm-c-decision-rule.depends_on.algorithm-c-coverage", "from": "theorem.algorithm-c-decision-rule", "to": "theorem.algorithm-c-coverage", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.algorithm-c-decision-rule.depends_on.algorithm-c-soundness", "from": "theorem.algorithm-c-decision-rule", "to": "theorem.algorithm-c-soundness", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.algorithm-c-decision-rule.depends_on.algorithm-c-no-early-claims", "from": "theorem.algorithm-c-decision-rule", "to": "theorem.algorithm-c-no-early-claims", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.min-factor-oracle.depends_on.algorithm-c-claimant-subset", "from": "theorem.min-factor-oracle", "to": "theorem.algorithm-c-claimant-subset", "relation": "depends_on", "confidence": 0.93, "sources": [{ "file": "min_factor.md", "quote": "The exponent is exact because `p ∤ r` (Claim M10)." }] },
-    { "id": "e.847-witness.supports.algorithm-c-claimant-subset", "from": "observation.847-witness", "to": "theorem.algorithm-c-claimant-subset", "relation": "supports", "strength": 0.9, "confidence": 0.96 },
-    { "id": "e.847-witness.supports.c-drain-incomplete", "from": "observation.847-witness", "to": "theorem.c-drain-incomplete", "relation": "supports", "strength": 0.95, "confidence": 0.96 },
-    { "id": "e.ops-c-gap.measures.algorithm-c", "from": "observation.ops-c-gap", "to": "model.algorithm-c", "relation": "measures", "confidence": 0.94 },
-    { "id": "e.measure-ops-c-vs-b.tests.ops-c-gap", "from": "open_question.measure-ops-c-vs-b", "to": "observation.ops-c-gap", "relation": "tests", "confidence": 0.95 },
-    { "id": "e.thinned-spine.refines.algorithm-c", "from": "theorem.algorithm-c-thinned-spine-memory", "to": "model.algorithm-c", "relation": "refines", "confidence": 0.92 },
-    { "id": "e.algorithm-c-infinity.generalizes.algorithm-c", "from": "model.algorithm-c-infinity", "to": "model.algorithm-c", "relation": "generalizes", "confidence": 0.85, "notes": "C∞ is the exact form of which C is the wheeled relaxation." },
-    { "id": "e.algorithm-c-infinity.equivalent_to.algorithm-a", "from": "model.algorithm-c-infinity", "to": "model.algorithm-a", "relation": "equivalent_to", "confidence": 0.85, "conditions": "as traversals of the same factorisation tree, read from opposite ends", "sources": [{ "file": "min_factor.md", "quote": "Algorithm C∞ is Algorithm A read in the opposite orientation" }] },
-    { "id": "e.c-drain-incomplete.contradicts.min-factor-oracle", "from": "theorem.c-drain-incomplete", "to": "theorem.min-factor-oracle", "relation": "contradicts", "confidence": 0.6, "conditions": "only as a factorizer: C reports one prime exactly, not all of them", "notes": "Not a logical contradiction; recorded because factorization.md frames FC1 as inverting the advantage claimed for C.", "sources": [{ "file": "factorization.md", "quote": "the property that makes C cheap makes it incomplete" }] },
-    { "id": "e.no-bounded-cofactor-window.refutes.cofactor-chain-length", "from": "theorem.no-bounded-cofactor-window", "to": "theorem.cofactor-chain-length", "relation": "refutes", "strength": 0.5, "confidence": 0.75, "conditions": "refutes the bounded-window reading of the chain, not the chain length itself", "sources": [{ "file": "factorization.md", "quote": "That is false as stated." }] },
-    { "id": "e.no-bounded-cofactor-window.motivates.algorithm-d", "from": "theorem.no-bounded-cofactor-window", "to": "model.algorithm-d", "relation": "motivates", "confidence": 0.94, "sources": [{ "file": "factorization.md", "quote": "The chain is elegant and it is a trap. §6 removes the need for it." }] },
-    { "id": "e.algorithm-d.refines.algorithm-c", "from": "model.algorithm-d", "to": "model.algorithm-c", "relation": "refines", "confidence": 0.95, "sources": [{ "file": "factorization.md", "quote": "The only line that differs from `min_factor.md` §5 is the multiplier seed" }] },
-    { "id": "e.algorithm-d-claimant-identity.implies.algorithm-d-touch-identity", "from": "theorem.algorithm-d-claimant-identity", "to": "theorem.algorithm-d-touch-identity", "relation": "implies", "confidence": 0.93, "sources": [{ "file": "factorization.md", "quote": "_Status: `[T]` given FC4._" }] },
-    { "id": "e.algorithm-d-flat-completeness.depends_on.algorithm-d-claimant-identity", "from": "theorem.algorithm-d-flat-completeness", "to": "theorem.algorithm-d-claimant-identity", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.algorithm-d-flat-completeness.depends_on.flat-completeness-b", "from": "theorem.algorithm-d-flat-completeness", "to": "theorem.flat-completeness-b", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.algorithm-d-touch-identity.depends_on.algorithm-b-duplicate-accounting", "from": "theorem.algorithm-d-touch-identity", "to": "theorem.algorithm-b-duplicate-accounting", "relation": "depends_on", "confidence": 0.92 },
-    { "id": "e.optimal-w-for-d.measures.algorithm-d", "from": "open_question.optimal-w-for-d", "to": "model.algorithm-d", "relation": "measures", "confidence": 0.92 },
-    { "id": "e.no-single-target-factorization.contradicts.algorithm-d", "from": "theorem.no-single-target-factorization", "to": "model.algorithm-d", "relation": "contradicts", "confidence": 0.55, "conditions": "only for the single-target use; D factors ranges, not one N", "notes": "Recorded as a scope limitation the notes state emphatically, not as a defect of D." },
-    { "id": "e.correction-smooth.refutes.min-factor-oracle", "from": "lemma.correction-smooth-enumeration", "to": "theorem.min-factor-oracle", "relation": "refutes", "strength": 0.4, "confidence": 0.7, "conditions": "refutes only the smooth-enumeration bullet claimed for the oracle's output", "sources": [{ "file": "factorization.md", "quote": "The smooth half is false." }] },
-    { "id": "e.smooth-enumeration.depends_on.stream-tree", "from": "theorem.smooth-enumeration-clamped-a", "to": "theorem.stream-tree", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.correction-smooth.motivates.smooth-enumeration", "from": "lemma.correction-smooth-enumeration", "to": "theorem.smooth-enumeration-clamped-a", "relation": "motivates", "confidence": 0.9 },
-    { "id": "e.ancestry.depends_on.stream-tree", "from": "theorem.ancestry-factorization", "to": "theorem.stream-tree", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.bicone-index.motivates.algorithm-d", "from": "open_question.bicone-index", "to": "model.algorithm-d", "relation": "motivates", "confidence": 0.85 },
-    { "id": "e.fractal-lattice-reading.depends_on.lattice-recursion", "from": "theory.fractal-lattice-reading", "to": "theorem.lattice-recursion", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.lattice-recursion.depends_on.crt", "from": "theorem.lattice-recursion", "to": "theorem.crt", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.lattice-recursion.depends_on.wheel-lattice-s-k", "from": "theorem.lattice-recursion", "to": "definition.wheel-lattice-s-k", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.lattice-recursion.equivalent_to.ownership-partition", "from": "theorem.lattice-recursion", "to": "theorem.ownership-partition", "relation": "equivalent_to", "confidence": 0.9, "conditions": "the deleted set p·S_k is Θ_p read mod P_{k+1}", "sources": [{ "file": "paper.md", "quote": "the stream decomposition and the fractal decomposition are the same theorem" }] },
-    { "id": "e.lattice-dimension-one.depends_on.mertens-third", "from": "theorem.lattice-dimension-one", "to": "theorem.mertens-third", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.first-composite-hole-121.supports.phase-separation", "from": "observation.first-composite-hole-121", "to": "theorem.phase-separation", "relation": "supports", "strength": 0.8, "confidence": 0.93, "sources": [{ "file": "fractal.md", "quote": "The first failure is small and explicit" }] },
-    { "id": "e.log-periodicity.motivates.fractal-lattice-reading", "from": "open_question.log-periodicity", "to": "theory.fractal-lattice-reading", "relation": "motivates", "confidence": 0.85 },
-    { "id": "e.buchstab-transfer.motivates.generational-rings", "from": "open_question.buchstab-transfer", "to": "theory.generational-rings", "relation": "motivates", "confidence": 0.85 },
-    { "id": "e.generational-rings.depends_on.square-root-divisor-bound", "from": "theory.generational-rings", "to": "theorem.square-root-divisor-bound", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.generational-rings.depends_on.phase-separation", "from": "theory.generational-rings", "to": "theorem.phase-separation", "relation": "depends_on", "confidence": 0.92 },
-    { "id": "e.spectral.depends_on.periodic-exclusion-mask", "from": "theory.spectral-orthogonal-fields", "to": "definition.periodic-exclusion-mask", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.spectral.depends_on.crt", "from": "theory.spectral-orthogonal-fields", "to": "theorem.crt", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.exact-periodicity.depends_on.crt", "from": "theorem.exact-periodicity-of-partial-sieve", "to": "theorem.crt", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.multiplicative-density.depends_on.crt", "from": "theorem.multiplicative-density", "to": "theorem.crt", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.additive-joint-entropy.depends_on.crt", "from": "theorem.additive-joint-entropy", "to": "theorem.crt", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.entropy-density-collapse.depends_on.additive-joint-entropy", "from": "theorem.entropy-density-collapse", "to": "theorem.additive-joint-entropy", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.crt-dual.depends_on.crt", "from": "theorem.crt-dual-spectral-factorization", "to": "theorem.crt", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.disjoint-support.depends_on.crt-dual", "from": "theorem.disjoint-nonzero-spectral-support", "to": "theorem.crt-dual-spectral-factorization", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.profinite-limit.depends_on.exact-periodicity", "from": "theorem.profinite-limit", "to": "theorem.exact-periodicity-of-partial-sieve", "relation": "depends_on", "confidence": 0.9 },
-    { "id": "e.sarnak.depends_on.profinite-limit", "from": "theorem.sarnak-obstruction", "to": "theorem.profinite-limit", "relation": "depends_on", "confidence": 0.92 },
-    { "id": "e.sarnak.refutes.wave-particle-duality", "from": "theorem.sarnak-obstruction", "to": "heuristic.wave-particle-duality", "relation": "refutes", "strength": 0.6, "confidence": 0.88, "conditions": "refutes RH-adjacent extrapolations of the wave picture, not the picture as exposition", "sources": [{ "file": "idea.md", "quote": "cannot serve as a step toward Hilbert–Pólya-style spectral interpretations" }] },
-    { "id": "e.wave-particle-duality.depends_on.disjoint-support", "from": "heuristic.wave-particle-duality", "to": "theorem.disjoint-nonzero-spectral-support", "relation": "depends_on", "confidence": 0.9 },
-    { "id": "e.period-window-dichotomy.depends_on.phase-separation", "from": "theory.period-window-dichotomy", "to": "theorem.phase-separation", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.period-window-dichotomy.depends_on.lattice-recursion", "from": "theory.period-window-dichotomy", "to": "theorem.lattice-recursion", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.twin-one-way-containment.depends_on.pair-lattice", "from": "theorem.twin-one-way-containment", "to": "definition.pair-lattice", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.twin-one-way-containment.depends_on.phase-separation", "from": "theorem.twin-one-way-containment", "to": "theorem.phase-separation", "relation": "depends_on", "confidence": 0.94, "sources": [{ "file": "twin_prime.md", "quote": "The equality range is Claim O2 / `Primegen.prime_of_rough_of_lt_sq` applied to both coordinates." }] },
-    { "id": "e.pair-count-recursion.depends_on.crt", "from": "theorem.pair-count-recursion", "to": "theorem.crt", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.pair-lattice-recursion.specializes.lattice-recursion", "from": "theorem.pair-lattice-recursion", "to": "theorem.lattice-recursion", "relation": "specializes", "confidence": 0.92, "sources": [{ "file": "twin_prime.md", "quote": "promotion in the pair setting is exactly what it is in the single-hole setting" }] },
-    { "id": "e.pair-count-recursion.depends_on.pair-lattice-recursion", "from": "theorem.pair-count-recursion", "to": "theorem.pair-lattice-recursion", "relation": "depends_on", "confidence": 0.9 },
-    { "id": "e.pair-density.depends_on.pair-count-recursion", "from": "theorem.pair-density-singular-series", "to": "theorem.pair-count-recursion", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.pair-density.depends_on.mertens-third", "from": "theorem.pair-density-singular-series", "to": "theorem.mertens-third", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.hole-density.depends_on.mertens-third", "from": "theorem.hole-density-exceeds-prime-density", "to": "theorem.mertens-third", "relation": "depends_on", "confidence": 0.93 },
-    { "id": "e.hole-density.supports.twin-one-way-containment", "from": "theorem.hole-density-exceeds-prime-density", "to": "theorem.twin-one-way-containment", "relation": "supports", "strength": 0.8, "confidence": 0.9, "sources": [{ "file": "twin_prime.md", "quote": "TP3a is the quantitative form of TP0" }] },
-    { "id": "e.admissibility.generalizes.pair-count-recursion", "from": "theorem.admissibility", "to": "theorem.pair-count-recursion", "relation": "generalizes", "confidence": 0.92 },
-    { "id": "e.composite-pair-holes.supports.period-window-dichotomy", "from": "theorem.composite-pair-holes", "to": "theory.period-window-dichotomy", "relation": "supports", "strength": 0.85, "confidence": 0.93 },
-    { "id": "e.pair-count-bounds-pi2.depends_on.twin-one-way-containment", "from": "theorem.pair-count-bounds-pi2", "to": "theorem.twin-one-way-containment", "relation": "depends_on", "confidence": 0.96 },
-    { "id": "e.pair-deletion-geometry.depends_on.pair-lattice-recursion", "from": "theorem.pair-deletion-geometry", "to": "theorem.pair-lattice-recursion", "relation": "depends_on", "confidence": 0.94 },
-    { "id": "e.pair-deletion-geometry.implies.pair-count-recursion", "from": "theorem.pair-deletion-geometry", "to": "theorem.pair-count-recursion", "relation": "implies", "confidence": 0.9, "sources": [{ "file": "twin_prime.md", "quote": "counting `p − 2` survivors per class over all `T_k` classes is TP1 again" }] },
-    { "id": "e.deletion-adjacency.depends_on.pair-deletion-geometry", "from": "theorem.deletion-adjacency-criterion", "to": "theorem.pair-deletion-geometry", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.window-implies-tpc.depends_on.window-occupancy", "from": "theorem.window-implies-tpc", "to": "conjecture.window-occupancy", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.window-implies-tpc.depends_on.phase-separation", "from": "theorem.window-implies-tpc", "to": "theorem.phase-separation", "relation": "depends_on", "confidence": 0.97, "sources": [{ "file": "twin_prime.md", "quote": "from `Primegen.prime_of_rough_of_lt_sq` alone" }] },
-    { "id": "e.pair-jacobsthal.implies.window-occupancy", "from": "conjecture.pair-jacobsthal", "to": "conjecture.window-occupancy", "relation": "implies", "confidence": 0.94, "conditions": "up to constants: a gap bound below the window length p_{k+1}² forces a hole-pair in the window", "sources": [{ "file": "twin_prime.md", "quote": "`TP-J ⟹ W` up to constants" }] },
-    { "id": "e.pair-jacobsthal.cites.jacobsthal-bounds", "from": "conjecture.pair-jacobsthal", "to": "theorem.jacobsthal-bounds", "relation": "cites", "confidence": 0.94, "sources": [{ "file": "twin_prime.md", "quote": "the corresponding bound is Iwaniec's theorem `g(P_k) ≪ log²P_k`" }] },
-    { "id": "e.window-occupancy-below-60.supports.window-occupancy", "from": "observation.window-occupancy-below-60", "to": "conjecture.window-occupancy", "relation": "supports", "strength": 0.7, "confidence": 0.96 },
-    { "id": "e.measure-g2.tests.pair-jacobsthal", "from": "open_question.measure-g2", "to": "conjecture.pair-jacobsthal", "relation": "tests", "confidence": 0.96 },
-    { "id": "e.twin-generator.depends_on.algorithm-b", "from": "model.twin-generator", "to": "model.algorithm-b", "relation": "depends_on", "confidence": 0.97 },
-    { "id": "e.pair-wheel-scan.depends_on.pair-lattice", "from": "model.pair-wheel-scan", "to": "definition.pair-lattice", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.pair-wheel-scan.assumes.no-o1-polylog-next-rough", "from": "model.pair-wheel-scan", "to": "conjecture.no-o1-polylog-next-rough", "relation": "assumes", "confidence": 0.85, "sources": [{ "file": "twin_prime.md", "quote": "it is the same wall as Conjecture X1 one level up" }] },
-    { "id": "e.bucket-priority-queue.refines.algorithm-b", "from": "model.bucket-priority-queue", "to": "model.algorithm-b", "relation": "refines", "confidence": 0.93 },
-    { "id": "e.reference-implementation.instantiates.algorithm-b", "from": "artifact.reference-implementation-python", "to": "model.algorithm-b", "relation": "instantiates", "confidence": 0.96 },
-    { "id": "e.reference-implementation.instantiates.algorithm-a", "from": "artifact.reference-implementation-python", "to": "model.algorithm-a", "relation": "instantiates", "confidence": 0.96 },
-    { "id": "e.reference-implementation.instantiates.algorithm-c", "from": "artifact.reference-implementation-python", "to": "model.algorithm-c", "relation": "instantiates", "confidence": 0.95 },
-    { "id": "e.pops-equals-composites.depends_on.reference-implementation", "from": "experiment.pops-equals-composites", "to": "artifact.reference-implementation-python", "relation": "depends_on", "confidence": 0.95 },
-    { "id": "e.lean-formalisation.supports.ownership-partition", "from": "artifact.lean-formalisation", "to": "theorem.ownership-partition", "relation": "supports", "strength": 1, "confidence": 0.97 },
-    { "id": "e.lean-formalisation.supports.algorithm-b-duplicate-accounting", "from": "artifact.lean-formalisation", "to": "theorem.algorithm-b-duplicate-accounting", "relation": "supports", "strength": 0.9, "confidence": 0.95, "conditions": "the claimant identity is checked; the sum is not" },
-    { "id": "e.lean-formalisation.supports.stream-tree", "from": "artifact.lean-formalisation", "to": "theorem.stream-tree", "relation": "supports", "strength": 1, "confidence": 0.96 },
-    { "id": "e.twin-lean.supports.window-implies-tpc", "from": "artifact.twin-lean", "to": "theorem.window-implies-tpc", "relation": "supports", "strength": 1, "confidence": 0.97 },
-    { "id": "e.twin-lean.supports.pair-deletion-geometry", "from": "artifact.twin-lean", "to": "theorem.pair-deletion-geometry", "relation": "supports", "strength": 0.8, "confidence": 0.94 },
-    { "id": "e.twin-lean.measures.window-occupancy", "from": "artifact.twin-lean", "to": "conjecture.window-occupancy", "relation": "measures", "confidence": 0.93, "sources": [{ "file": "twin_prime.md", "quote": "`Twin.windowWitnesses p` enumerates every `h` witnessing `WindowAt p`" }] },
-    { "id": "e.exponent-spine-a.motivates.min-factor-normal-form", "from": "open_question.exponent-spine-algorithm-a", "to": "theorem.min-factor-normal-form", "relation": "motivates", "confidence": 0.85 },
-    { "id": "e.readme.cites.spectral", "from": "theory.orthogonal-stream-sieve", "to": "theory.spectral-orthogonal-fields", "relation": "cites", "confidence": 0.8, "sources": [{ "file": "paper.md", "quote": "`idea.md` is the spectral/entropy reading" }] }
+    {
+      "id": "e.ownership-partition.depends_on.smallest-prime-factor-ownership",
+      "from": "theorem.ownership-partition",
+      "to": "definition.smallest-prime-factor-ownership",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.ownership-partition.depends_on.multiplier-set-a-p",
+      "from": "theorem.ownership-partition",
+      "to": "definition.multiplier-set-a-p",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.multiplier-set-a-p.depends_on.rough-numbers",
+      "from": "definition.multiplier-set-a-p",
+      "to": "definition.rough-numbers",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.multiplier-set-is-wheel.depends_on.multiplier-set-a-p",
+      "from": "theorem.multiplier-set-is-wheel",
+      "to": "definition.multiplier-set-a-p",
+      "relation": "depends_on",
+      "confidence": 0.96,
+      "sources": [{ "file": "algorithm.md", "quote": "depends only on \\(a \\bmod P_{<p}\\)" }]
+    },
+    {
+      "id": "e.phase-separation.depends_on.multiplier-set-a-p",
+      "from": "theorem.phase-separation",
+      "to": "definition.multiplier-set-a-p",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.min-owned-composite.depends_on.ownership-partition",
+      "from": "theorem.min-owned-composite-is-p-squared",
+      "to": "theorem.ownership-partition",
+      "relation": "depends_on",
+      "confidence": 0.95,
+      "sources": [
+        { "file": "generator.md", "quote": "since the least multiplier is \\(p\\) itself" }
+      ]
+    },
+    {
+      "id": "e.coincidence-window.depends_on.phase-separation",
+      "from": "theorem.coincidence-window-p-le-7",
+      "to": "theorem.phase-separation",
+      "relation": "depends_on",
+      "confidence": 0.96,
+      "sources": [
+        {
+          "file": "algorithm.md",
+          "quote": "**Corollary 2.4.** \\(A_p \\cap [p, p^2) = \\{\\text{primes in that range}\\}\\)"
+        }
+      ]
+    },
+    {
+      "id": "e.next-owned-composite-reduces.depends_on.ownership-partition",
+      "from": "theorem.next-owned-composite-reduces-to-next-rough",
+      "to": "theorem.ownership-partition",
+      "relation": "depends_on",
+      "confidence": 0.96,
+      "sources": [
+        {
+          "file": "algorithm.md",
+          "quote": "By Theorem 2.1 the owned composites are \\(pa\\), \\(a\\in A_p\\)"
+        }
+      ]
+    },
+    {
+      "id": "e.next-owned-composite-reduces.depends_on.next-rough",
+      "from": "theorem.next-owned-composite-reduces-to-next-rough",
+      "to": "definition.next-rough",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.next-owned-composite-reduces.depends_on.next-owned-composite",
+      "from": "theorem.next-owned-composite-reduces-to-next-rough",
+      "to": "definition.next-owned-composite",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.causality.depends_on.ownership-partition",
+      "from": "theorem.causality",
+      "to": "theorem.ownership-partition",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.no-o1-next-rough.depends_on.primorial-growth",
+      "from": "conjecture.no-o1-polylog-next-rough",
+      "to": "theorem.primorial-growth",
+      "relation": "depends_on",
+      "confidence": 0.95,
+      "sources": [
+        {
+          "file": "theory.md",
+          "quote": "the only known exact O(1)-time rule (T29) needs exponential space"
+        }
+      ]
+    },
+    {
+      "id": "e.jacobsthal.supports.no-o1-next-rough",
+      "from": "theorem.jacobsthal-bounds",
+      "to": "conjecture.no-o1-polylog-next-rough",
+      "relation": "supports",
+      "relation_note": "evidence against an O(1) scan",
+      "strength": 0.7,
+      "confidence": 0.93,
+      "sources": [
+        {
+          "file": "theory.md",
+          "heading": "T31",
+          "quote": "any \"scan and test\" method is superlinear in \\(p\\) in the worst case"
+        }
+      ]
+    },
+    {
+      "id": "e.no-o1-next-rough.motivates.algorithm-a",
+      "from": "conjecture.no-o1-polylog-next-rough",
+      "to": "model.algorithm-a",
+      "relation": "motivates",
+      "confidence": 0.95,
+      "sources": [
+        {
+          "file": "paper.md",
+          "quote": "one must either **derive** rough multipliers from other streams (exact — Algorithm A)"
+        }
+      ]
+    },
+    {
+      "id": "e.no-o1-next-rough.motivates.algorithm-b",
+      "from": "conjecture.no-o1-polylog-next-rough",
+      "to": "model.algorithm-b",
+      "relation": "motivates",
+      "confidence": 0.95,
+      "sources": [
+        {
+          "file": "paper.md",
+          "quote": "or **relax** the multiplier set to a fixed tabulated wheel (inexact but bounded — Algorithm B)"
+        }
+      ]
+    },
+    {
+      "id": "e.orthogonal-stream-sieve.depends_on.ownership-partition",
+      "from": "theory.orthogonal-stream-sieve",
+      "to": "theorem.ownership-partition",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.algorithm-a.instantiates.orthogonal-stream-sieve",
+      "from": "model.algorithm-a",
+      "to": "theory.orthogonal-stream-sieve",
+      "relation": "instantiates",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.algorithm-b.instantiates.orthogonal-stream-sieve",
+      "from": "model.algorithm-b",
+      "to": "theory.orthogonal-stream-sieve",
+      "relation": "instantiates",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.algorithm-a.depends_on.stream-tree",
+      "from": "model.algorithm-a",
+      "to": "theorem.stream-tree",
+      "relation": "depends_on",
+      "confidence": 0.97,
+      "sources": [{ "file": "algorithm.md", "quote": "**Theorem 3.1 (stream tree).**" }]
+    },
+    {
+      "id": "e.algorithm-a-correctness.depends_on.stream-tree",
+      "from": "theorem.algorithm-a-correctness",
+      "to": "theorem.stream-tree",
+      "relation": "depends_on",
+      "confidence": 0.95,
+      "sources": [
+        { "file": "paper.md", "quote": "induction on `n` using Claim A1 for uniqueness of `(b,q)`" }
+      ]
+    },
+    {
+      "id": "e.algorithm-a-causality.depends_on.causality",
+      "from": "theorem.algorithm-a-causality",
+      "to": "theorem.causality",
+      "relation": "depends_on",
+      "confidence": 0.9
+    },
+    {
+      "id": "e.dickman.supports.algorithm-a-stream-count",
+      "from": "heuristic.dickman-saddle-estimate",
+      "to": "conjecture.algorithm-a-stream-count",
+      "relation": "supports",
+      "strength": 0.6,
+      "confidence": 0.93
+    },
+    {
+      "id": "e.measure-s-n.tests.algorithm-a-stream-count",
+      "from": "open_question.measure-s-n",
+      "to": "conjecture.algorithm-a-stream-count",
+      "relation": "tests",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.wheeled-algorithm-a.specializes.algorithm-a",
+      "from": "model.wheeled-algorithm-a",
+      "to": "model.algorithm-a",
+      "relation": "specializes",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.pops-equals-composites.tests.algorithm-a-correctness",
+      "from": "experiment.pops-equals-composites",
+      "to": "theorem.algorithm-a-correctness",
+      "relation": "tests",
+      "confidence": 0.96,
+      "sources": [
+        {
+          "file": "algorithm.md",
+          "quote": "it fails immediately if any composite is claimed twice or missed"
+        }
+      ]
+    },
+    {
+      "id": "e.algorithm-b.depends_on.wheel-lattice-s-k",
+      "from": "model.algorithm-b",
+      "to": "definition.wheel-lattice-s-k",
+      "relation": "depends_on",
+      "confidence": 0.92,
+      "sources": [
+        {
+          "file": "paper.md",
+          "quote": "The wheel is not an optimisation bolted on; it is the first `w` streams materialised as a table."
+        }
+      ]
+    },
+    {
+      "id": "e.algorithm-b-coverage.depends_on.ownership-partition",
+      "from": "theorem.algorithm-b-coverage",
+      "to": "theorem.ownership-partition",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.algorithm-b-correctness.depends_on.algorithm-b-coverage",
+      "from": "theorem.algorithm-b-correctness",
+      "to": "theorem.algorithm-b-coverage",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.algorithm-b-correctness.depends_on.algorithm-b-no-early-claims",
+      "from": "theorem.algorithm-b-correctness",
+      "to": "theorem.algorithm-b-no-early-claims",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.algorithm-b-no-early-claims.depends_on.min-owned-composite",
+      "from": "theorem.algorithm-b-no-early-claims",
+      "to": "theorem.min-owned-composite-is-p-squared",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.deferred-activation.depends_on.min-owned-composite",
+      "from": "theorem.deferred-activation-heap-bound",
+      "to": "theorem.min-owned-composite-is-p-squared",
+      "relation": "depends_on",
+      "confidence": 0.95,
+      "sources": [{ "file": "paper.md", "quote": "a prime contributes nothing below `p²`" }]
+    },
+    {
+      "id": "e.algorithm-b.depends_on.deferred-activation",
+      "from": "model.algorithm-b",
+      "to": "theorem.deferred-activation-heap-bound",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.algorithm-b-duplicate-accounting.depends_on.claimant-set-b",
+      "from": "theorem.algorithm-b-duplicate-accounting",
+      "to": "definition.claimant-set-b",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.algorithm-b-duplicate-accounting.depends_on.mertens-third",
+      "from": "theorem.algorithm-b-duplicate-accounting",
+      "to": "theorem.mertens-third",
+      "relation": "depends_on",
+      "confidence": 0.9,
+      "sources": [
+        {
+          "file": "paper.md",
+          "quote": "That is Mertens, again, and it is the whole reason the trade is worth taking."
+        }
+      ]
+    },
+    {
+      "id": "e.ops-b-at-1e12.measures.algorithm-b-duplicate-accounting",
+      "from": "observation.ops-b-at-1e12",
+      "to": "theorem.algorithm-b-duplicate-accounting",
+      "relation": "measures",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.optimal-wheel-size-w.measures.algorithm-b",
+      "from": "open_question.optimal-wheel-size-w",
+      "to": "model.algorithm-b",
+      "relation": "measures",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.wheel-diminishing-returns.supports.optimal-wheel-size-w",
+      "from": "observation.wheel-diminishing-returns",
+      "to": "open_question.optimal-wheel-size-w",
+      "relation": "supports",
+      "strength": 0.7,
+      "confidence": 0.9
+    },
+    {
+      "id": "e.wheel-diminishing-returns.depends_on.mertens-third",
+      "from": "observation.wheel-diminishing-returns",
+      "to": "theorem.mertens-third",
+      "relation": "depends_on",
+      "confidence": 0.92,
+      "sources": [
+        {
+          "file": "paper.md",
+          "quote": "The `log log` is Mertens, and it is a ceiling rather than a trend."
+        }
+      ]
+    },
+    {
+      "id": "e.outer-induction.tests.algorithm-b-correctness",
+      "from": "open_question.outer-induction-formalisation",
+      "to": "theorem.algorithm-b-correctness",
+      "relation": "tests",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.hybrid-a-b.motivates.algorithm-a",
+      "from": "open_question.hybrid-a-b",
+      "to": "model.algorithm-a",
+      "relation": "motivates",
+      "confidence": 0.88
+    },
+    {
+      "id": "e.min-factor-normal-form.refines.ownership-partition",
+      "from": "theorem.min-factor-normal-form",
+      "to": "theorem.ownership-partition",
+      "relation": "refines",
+      "confidence": 0.96,
+      "sources": [
+        {
+          "file": "min_factor.md",
+          "quote": "Claim M1 is a **refinement** of Claim O1 ... not a competitor to it"
+        }
+      ]
+    },
+    {
+      "id": "e.correction-cone.refutes.cone-recursion",
+      "from": "lemma.correction-cone-recursion",
+      "to": "theorem.cone-recursion",
+      "relation": "refutes",
+      "strength": 0.95,
+      "confidence": 0.96,
+      "sources": [
+        { "file": "min_factor.md", "quote": "The displayed identity is **false as written**" }
+      ]
+    },
+    {
+      "id": "e.cone-recursion.depends_on.rough-monoid-b-p",
+      "from": "theorem.cone-recursion",
+      "to": "definition.rough-monoid-b-p",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.min-factor-normal-form.depends_on.rough-monoid-b-p",
+      "from": "theorem.min-factor-normal-form",
+      "to": "definition.rough-monoid-b-p",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.strict-phase-separation.specializes.phase-separation",
+      "from": "theorem.strict-phase-separation",
+      "to": "theorem.phase-separation",
+      "relation": "specializes",
+      "confidence": 0.92,
+      "sources": [
+        {
+          "file": "min_factor.md",
+          "quote": "same argument as `Primegen.prime_of_rough_of_lt_sq`, one step stricter"
+        }
+      ]
+    },
+    {
+      "id": "e.algorithm-c.refines.algorithm-b",
+      "from": "model.algorithm-c",
+      "to": "model.algorithm-b",
+      "relation": "refines",
+      "confidence": 0.96,
+      "sources": [
+        { "file": "paper.md", "quote": "Algorithm C is Algorithm B re-indexed by Claim M1" }
+      ]
+    },
+    {
+      "id": "e.algorithm-c.depends_on.min-factor-normal-form",
+      "from": "model.algorithm-c",
+      "to": "theorem.min-factor-normal-form",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.algorithm-c.depends_on.layer-p-e",
+      "from": "model.algorithm-c",
+      "to": "definition.layer-p-e",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.algorithm-c-coverage.depends_on.min-factor-normal-form",
+      "from": "theorem.algorithm-c-coverage",
+      "to": "theorem.min-factor-normal-form",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.algorithm-c-decision-rule.depends_on.algorithm-c-coverage",
+      "from": "theorem.algorithm-c-decision-rule",
+      "to": "theorem.algorithm-c-coverage",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.algorithm-c-decision-rule.depends_on.algorithm-c-soundness",
+      "from": "theorem.algorithm-c-decision-rule",
+      "to": "theorem.algorithm-c-soundness",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.algorithm-c-decision-rule.depends_on.algorithm-c-no-early-claims",
+      "from": "theorem.algorithm-c-decision-rule",
+      "to": "theorem.algorithm-c-no-early-claims",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.min-factor-oracle.depends_on.algorithm-c-claimant-subset",
+      "from": "theorem.min-factor-oracle",
+      "to": "theorem.algorithm-c-claimant-subset",
+      "relation": "depends_on",
+      "confidence": 0.93,
+      "sources": [
+        { "file": "min_factor.md", "quote": "The exponent is exact because `p ∤ r` (Claim M10)." }
+      ]
+    },
+    {
+      "id": "e.847-witness.supports.algorithm-c-claimant-subset",
+      "from": "observation.847-witness",
+      "to": "theorem.algorithm-c-claimant-subset",
+      "relation": "supports",
+      "strength": 0.9,
+      "confidence": 0.96
+    },
+    {
+      "id": "e.847-witness.supports.c-drain-incomplete",
+      "from": "observation.847-witness",
+      "to": "theorem.c-drain-incomplete",
+      "relation": "supports",
+      "strength": 0.95,
+      "confidence": 0.96
+    },
+    {
+      "id": "e.ops-c-gap.measures.algorithm-c",
+      "from": "observation.ops-c-gap",
+      "to": "model.algorithm-c",
+      "relation": "measures",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.measure-ops-c-vs-b.tests.ops-c-gap",
+      "from": "open_question.measure-ops-c-vs-b",
+      "to": "observation.ops-c-gap",
+      "relation": "tests",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.thinned-spine.refines.algorithm-c",
+      "from": "theorem.algorithm-c-thinned-spine-memory",
+      "to": "model.algorithm-c",
+      "relation": "refines",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.algorithm-c-infinity.generalizes.algorithm-c",
+      "from": "model.algorithm-c-infinity",
+      "to": "model.algorithm-c",
+      "relation": "generalizes",
+      "confidence": 0.85,
+      "notes": "C∞ is the exact form of which C is the wheeled relaxation."
+    },
+    {
+      "id": "e.algorithm-c-infinity.equivalent_to.algorithm-a",
+      "from": "model.algorithm-c-infinity",
+      "to": "model.algorithm-a",
+      "relation": "equivalent_to",
+      "confidence": 0.85,
+      "conditions": "as traversals of the same factorisation tree, read from opposite ends",
+      "sources": [
+        {
+          "file": "min_factor.md",
+          "quote": "Algorithm C∞ is Algorithm A read in the opposite orientation"
+        }
+      ]
+    },
+    {
+      "id": "e.c-drain-incomplete.contradicts.min-factor-oracle",
+      "from": "theorem.c-drain-incomplete",
+      "to": "theorem.min-factor-oracle",
+      "relation": "contradicts",
+      "confidence": 0.6,
+      "conditions": "only as a factorizer: C reports one prime exactly, not all of them",
+      "notes": "Not a logical contradiction; recorded because factorization.md frames FC1 as inverting the advantage claimed for C.",
+      "sources": [
+        {
+          "file": "factorization.md",
+          "quote": "the property that makes C cheap makes it incomplete"
+        }
+      ]
+    },
+    {
+      "id": "e.no-bounded-cofactor-window.refutes.cofactor-chain-length",
+      "from": "theorem.no-bounded-cofactor-window",
+      "to": "theorem.cofactor-chain-length",
+      "relation": "refutes",
+      "strength": 0.5,
+      "confidence": 0.75,
+      "conditions": "refutes the bounded-window reading of the chain, not the chain length itself",
+      "sources": [{ "file": "factorization.md", "quote": "That is false as stated." }]
+    },
+    {
+      "id": "e.no-bounded-cofactor-window.motivates.algorithm-d",
+      "from": "theorem.no-bounded-cofactor-window",
+      "to": "model.algorithm-d",
+      "relation": "motivates",
+      "confidence": 0.94,
+      "sources": [
+        {
+          "file": "factorization.md",
+          "quote": "The chain is elegant and it is a trap. §6 removes the need for it."
+        }
+      ]
+    },
+    {
+      "id": "e.algorithm-d.refines.algorithm-c",
+      "from": "model.algorithm-d",
+      "to": "model.algorithm-c",
+      "relation": "refines",
+      "confidence": 0.95,
+      "sources": [
+        {
+          "file": "factorization.md",
+          "quote": "The only line that differs from `min_factor.md` §5 is the multiplier seed"
+        }
+      ]
+    },
+    {
+      "id": "e.algorithm-d-claimant-identity.implies.algorithm-d-touch-identity",
+      "from": "theorem.algorithm-d-claimant-identity",
+      "to": "theorem.algorithm-d-touch-identity",
+      "relation": "implies",
+      "confidence": 0.93,
+      "sources": [{ "file": "factorization.md", "quote": "_Status: `[T]` given FC4._" }]
+    },
+    {
+      "id": "e.algorithm-d-flat-completeness.depends_on.algorithm-d-claimant-identity",
+      "from": "theorem.algorithm-d-flat-completeness",
+      "to": "theorem.algorithm-d-claimant-identity",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.algorithm-d-flat-completeness.depends_on.flat-completeness-b",
+      "from": "theorem.algorithm-d-flat-completeness",
+      "to": "theorem.flat-completeness-b",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.algorithm-d-touch-identity.depends_on.algorithm-b-duplicate-accounting",
+      "from": "theorem.algorithm-d-touch-identity",
+      "to": "theorem.algorithm-b-duplicate-accounting",
+      "relation": "depends_on",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.optimal-w-for-d.measures.algorithm-d",
+      "from": "open_question.optimal-w-for-d",
+      "to": "model.algorithm-d",
+      "relation": "measures",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.no-single-target-factorization.contradicts.algorithm-d",
+      "from": "theorem.no-single-target-factorization",
+      "to": "model.algorithm-d",
+      "relation": "contradicts",
+      "confidence": 0.55,
+      "conditions": "only for the single-target use; D factors ranges, not one N",
+      "notes": "Recorded as a scope limitation the notes state emphatically, not as a defect of D."
+    },
+    {
+      "id": "e.correction-smooth.refutes.min-factor-oracle",
+      "from": "lemma.correction-smooth-enumeration",
+      "to": "theorem.min-factor-oracle",
+      "relation": "refutes",
+      "strength": 0.4,
+      "confidence": 0.7,
+      "conditions": "refutes only the smooth-enumeration bullet claimed for the oracle's output",
+      "sources": [{ "file": "factorization.md", "quote": "The smooth half is false." }]
+    },
+    {
+      "id": "e.smooth-enumeration.depends_on.stream-tree",
+      "from": "theorem.smooth-enumeration-clamped-a",
+      "to": "theorem.stream-tree",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.correction-smooth.motivates.smooth-enumeration",
+      "from": "lemma.correction-smooth-enumeration",
+      "to": "theorem.smooth-enumeration-clamped-a",
+      "relation": "motivates",
+      "confidence": 0.9
+    },
+    {
+      "id": "e.ancestry.depends_on.stream-tree",
+      "from": "theorem.ancestry-factorization",
+      "to": "theorem.stream-tree",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.bicone-index.motivates.algorithm-d",
+      "from": "open_question.bicone-index",
+      "to": "model.algorithm-d",
+      "relation": "motivates",
+      "confidence": 0.85
+    },
+    {
+      "id": "e.fractal-lattice-reading.depends_on.lattice-recursion",
+      "from": "theory.fractal-lattice-reading",
+      "to": "theorem.lattice-recursion",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.lattice-recursion.depends_on.crt",
+      "from": "theorem.lattice-recursion",
+      "to": "theorem.crt",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.lattice-recursion.depends_on.wheel-lattice-s-k",
+      "from": "theorem.lattice-recursion",
+      "to": "definition.wheel-lattice-s-k",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.lattice-recursion.equivalent_to.ownership-partition",
+      "from": "theorem.lattice-recursion",
+      "to": "theorem.ownership-partition",
+      "relation": "equivalent_to",
+      "confidence": 0.9,
+      "conditions": "the deleted set p·S_k is Θ_p read mod P_{k+1}",
+      "sources": [
+        {
+          "file": "paper.md",
+          "quote": "the stream decomposition and the fractal decomposition are the same theorem"
+        }
+      ]
+    },
+    {
+      "id": "e.lattice-dimension-one.depends_on.mertens-third",
+      "from": "theorem.lattice-dimension-one",
+      "to": "theorem.mertens-third",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.first-composite-hole-121.supports.phase-separation",
+      "from": "observation.first-composite-hole-121",
+      "to": "theorem.phase-separation",
+      "relation": "supports",
+      "strength": 0.8,
+      "confidence": 0.93,
+      "sources": [{ "file": "fractal.md", "quote": "The first failure is small and explicit" }]
+    },
+    {
+      "id": "e.log-periodicity.motivates.fractal-lattice-reading",
+      "from": "open_question.log-periodicity",
+      "to": "theory.fractal-lattice-reading",
+      "relation": "motivates",
+      "confidence": 0.85
+    },
+    {
+      "id": "e.buchstab-transfer.motivates.generational-rings",
+      "from": "open_question.buchstab-transfer",
+      "to": "theory.generational-rings",
+      "relation": "motivates",
+      "confidence": 0.85
+    },
+    {
+      "id": "e.generational-rings.depends_on.square-root-divisor-bound",
+      "from": "theory.generational-rings",
+      "to": "theorem.square-root-divisor-bound",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.generational-rings.depends_on.phase-separation",
+      "from": "theory.generational-rings",
+      "to": "theorem.phase-separation",
+      "relation": "depends_on",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.spectral.depends_on.periodic-exclusion-mask",
+      "from": "theory.spectral-orthogonal-fields",
+      "to": "definition.periodic-exclusion-mask",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.spectral.depends_on.crt",
+      "from": "theory.spectral-orthogonal-fields",
+      "to": "theorem.crt",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.exact-periodicity.depends_on.crt",
+      "from": "theorem.exact-periodicity-of-partial-sieve",
+      "to": "theorem.crt",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.multiplicative-density.depends_on.crt",
+      "from": "theorem.multiplicative-density",
+      "to": "theorem.crt",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.additive-joint-entropy.depends_on.crt",
+      "from": "theorem.additive-joint-entropy",
+      "to": "theorem.crt",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.entropy-density-collapse.depends_on.additive-joint-entropy",
+      "from": "theorem.entropy-density-collapse",
+      "to": "theorem.additive-joint-entropy",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.crt-dual.depends_on.crt",
+      "from": "theorem.crt-dual-spectral-factorization",
+      "to": "theorem.crt",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.disjoint-support.depends_on.crt-dual",
+      "from": "theorem.disjoint-nonzero-spectral-support",
+      "to": "theorem.crt-dual-spectral-factorization",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.profinite-limit.depends_on.exact-periodicity",
+      "from": "theorem.profinite-limit",
+      "to": "theorem.exact-periodicity-of-partial-sieve",
+      "relation": "depends_on",
+      "confidence": 0.9
+    },
+    {
+      "id": "e.sarnak.depends_on.profinite-limit",
+      "from": "theorem.sarnak-obstruction",
+      "to": "theorem.profinite-limit",
+      "relation": "depends_on",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.sarnak.refutes.wave-particle-duality",
+      "from": "theorem.sarnak-obstruction",
+      "to": "heuristic.wave-particle-duality",
+      "relation": "refutes",
+      "strength": 0.6,
+      "confidence": 0.88,
+      "conditions": "refutes RH-adjacent extrapolations of the wave picture, not the picture as exposition",
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "cannot serve as a step toward Hilbert–Pólya-style spectral interpretations"
+        }
+      ]
+    },
+    {
+      "id": "e.wave-particle-duality.depends_on.disjoint-support",
+      "from": "heuristic.wave-particle-duality",
+      "to": "theorem.disjoint-nonzero-spectral-support",
+      "relation": "depends_on",
+      "confidence": 0.9
+    },
+    {
+      "id": "e.period-window-dichotomy.depends_on.phase-separation",
+      "from": "theory.period-window-dichotomy",
+      "to": "theorem.phase-separation",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.period-window-dichotomy.depends_on.lattice-recursion",
+      "from": "theory.period-window-dichotomy",
+      "to": "theorem.lattice-recursion",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.twin-one-way-containment.depends_on.pair-lattice",
+      "from": "theorem.twin-one-way-containment",
+      "to": "definition.pair-lattice",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.twin-one-way-containment.depends_on.phase-separation",
+      "from": "theorem.twin-one-way-containment",
+      "to": "theorem.phase-separation",
+      "relation": "depends_on",
+      "confidence": 0.94,
+      "sources": [
+        {
+          "file": "twin_prime.md",
+          "quote": "The equality range is Claim O2 / `Primegen.prime_of_rough_of_lt_sq` applied to both coordinates."
+        }
+      ]
+    },
+    {
+      "id": "e.pair-count-recursion.depends_on.crt",
+      "from": "theorem.pair-count-recursion",
+      "to": "theorem.crt",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.pair-lattice-recursion.specializes.lattice-recursion",
+      "from": "theorem.pair-lattice-recursion",
+      "to": "theorem.lattice-recursion",
+      "relation": "specializes",
+      "confidence": 0.92,
+      "sources": [
+        {
+          "file": "twin_prime.md",
+          "quote": "promotion in the pair setting is exactly what it is in the single-hole setting"
+        }
+      ]
+    },
+    {
+      "id": "e.pair-count-recursion.depends_on.pair-lattice-recursion",
+      "from": "theorem.pair-count-recursion",
+      "to": "theorem.pair-lattice-recursion",
+      "relation": "depends_on",
+      "confidence": 0.9
+    },
+    {
+      "id": "e.pair-density.depends_on.pair-count-recursion",
+      "from": "theorem.pair-density-singular-series",
+      "to": "theorem.pair-count-recursion",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.pair-density.depends_on.mertens-third",
+      "from": "theorem.pair-density-singular-series",
+      "to": "theorem.mertens-third",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.hole-density.depends_on.mertens-third",
+      "from": "theorem.hole-density-exceeds-prime-density",
+      "to": "theorem.mertens-third",
+      "relation": "depends_on",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.hole-density.supports.twin-one-way-containment",
+      "from": "theorem.hole-density-exceeds-prime-density",
+      "to": "theorem.twin-one-way-containment",
+      "relation": "supports",
+      "strength": 0.8,
+      "confidence": 0.9,
+      "sources": [{ "file": "twin_prime.md", "quote": "TP3a is the quantitative form of TP0" }]
+    },
+    {
+      "id": "e.admissibility.generalizes.pair-count-recursion",
+      "from": "theorem.admissibility",
+      "to": "theorem.pair-count-recursion",
+      "relation": "generalizes",
+      "confidence": 0.92
+    },
+    {
+      "id": "e.composite-pair-holes.supports.period-window-dichotomy",
+      "from": "theorem.composite-pair-holes",
+      "to": "theory.period-window-dichotomy",
+      "relation": "supports",
+      "strength": 0.85,
+      "confidence": 0.93
+    },
+    {
+      "id": "e.pair-count-bounds-pi2.depends_on.twin-one-way-containment",
+      "from": "theorem.pair-count-bounds-pi2",
+      "to": "theorem.twin-one-way-containment",
+      "relation": "depends_on",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.pair-deletion-geometry.depends_on.pair-lattice-recursion",
+      "from": "theorem.pair-deletion-geometry",
+      "to": "theorem.pair-lattice-recursion",
+      "relation": "depends_on",
+      "confidence": 0.94
+    },
+    {
+      "id": "e.pair-deletion-geometry.implies.pair-count-recursion",
+      "from": "theorem.pair-deletion-geometry",
+      "to": "theorem.pair-count-recursion",
+      "relation": "implies",
+      "confidence": 0.9,
+      "sources": [
+        {
+          "file": "twin_prime.md",
+          "quote": "counting `p − 2` survivors per class over all `T_k` classes is TP1 again"
+        }
+      ]
+    },
+    {
+      "id": "e.deletion-adjacency.depends_on.pair-deletion-geometry",
+      "from": "theorem.deletion-adjacency-criterion",
+      "to": "theorem.pair-deletion-geometry",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.window-implies-tpc.depends_on.window-occupancy",
+      "from": "theorem.window-implies-tpc",
+      "to": "conjecture.window-occupancy",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.window-implies-tpc.depends_on.phase-separation",
+      "from": "theorem.window-implies-tpc",
+      "to": "theorem.phase-separation",
+      "relation": "depends_on",
+      "confidence": 0.97,
+      "sources": [
+        { "file": "twin_prime.md", "quote": "from `Primegen.prime_of_rough_of_lt_sq` alone" }
+      ]
+    },
+    {
+      "id": "e.pair-jacobsthal.implies.window-occupancy",
+      "from": "conjecture.pair-jacobsthal",
+      "to": "conjecture.window-occupancy",
+      "relation": "implies",
+      "confidence": 0.94,
+      "conditions": "up to constants: a gap bound below the window length p_{k+1}² forces a hole-pair in the window",
+      "sources": [{ "file": "twin_prime.md", "quote": "`TP-J ⟹ W` up to constants" }]
+    },
+    {
+      "id": "e.pair-jacobsthal.cites.jacobsthal-bounds",
+      "from": "conjecture.pair-jacobsthal",
+      "to": "theorem.jacobsthal-bounds",
+      "relation": "cites",
+      "confidence": 0.94,
+      "sources": [
+        {
+          "file": "twin_prime.md",
+          "quote": "the corresponding bound is Iwaniec's theorem `g(P_k) ≪ log²P_k`"
+        }
+      ]
+    },
+    {
+      "id": "e.window-occupancy-below-60.supports.window-occupancy",
+      "from": "observation.window-occupancy-below-60",
+      "to": "conjecture.window-occupancy",
+      "relation": "supports",
+      "strength": 0.7,
+      "confidence": 0.96
+    },
+    {
+      "id": "e.measure-g2.tests.pair-jacobsthal",
+      "from": "open_question.measure-g2",
+      "to": "conjecture.pair-jacobsthal",
+      "relation": "tests",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.twin-generator.depends_on.algorithm-b",
+      "from": "model.twin-generator",
+      "to": "model.algorithm-b",
+      "relation": "depends_on",
+      "confidence": 0.97
+    },
+    {
+      "id": "e.pair-wheel-scan.depends_on.pair-lattice",
+      "from": "model.pair-wheel-scan",
+      "to": "definition.pair-lattice",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.pair-wheel-scan.assumes.no-o1-polylog-next-rough",
+      "from": "model.pair-wheel-scan",
+      "to": "conjecture.no-o1-polylog-next-rough",
+      "relation": "assumes",
+      "confidence": 0.85,
+      "sources": [
+        { "file": "twin_prime.md", "quote": "it is the same wall as Conjecture X1 one level up" }
+      ]
+    },
+    {
+      "id": "e.bucket-priority-queue.refines.algorithm-b",
+      "from": "model.bucket-priority-queue",
+      "to": "model.algorithm-b",
+      "relation": "refines",
+      "confidence": 0.93
+    },
+    {
+      "id": "e.reference-implementation.instantiates.algorithm-b",
+      "from": "artifact.reference-implementation-python",
+      "to": "model.algorithm-b",
+      "relation": "instantiates",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.reference-implementation.instantiates.algorithm-a",
+      "from": "artifact.reference-implementation-python",
+      "to": "model.algorithm-a",
+      "relation": "instantiates",
+      "confidence": 0.96
+    },
+    {
+      "id": "e.reference-implementation.instantiates.algorithm-c",
+      "from": "artifact.reference-implementation-python",
+      "to": "model.algorithm-c",
+      "relation": "instantiates",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.pops-equals-composites.depends_on.reference-implementation",
+      "from": "experiment.pops-equals-composites",
+      "to": "artifact.reference-implementation-python",
+      "relation": "depends_on",
+      "confidence": 0.95
+    },
+    {
+      "id": "e.lean-formalisation.supports.ownership-partition",
+      "from": "artifact.lean-formalisation",
+      "to": "theorem.ownership-partition",
+      "relation": "supports",
+      "strength": 1,
+      "confidence": 0.97
+    },
+    {
+      "id": "e.lean-formalisation.supports.algorithm-b-duplicate-accounting",
+      "from": "artifact.lean-formalisation",
+      "to": "theorem.algorithm-b-duplicate-accounting",
+      "relation": "supports",
+      "strength": 0.9,
+      "confidence": 0.95,
+      "conditions": "the claimant identity is checked; the sum is not"
+    },
+    {
+      "id": "e.lean-formalisation.supports.stream-tree",
+      "from": "artifact.lean-formalisation",
+      "to": "theorem.stream-tree",
+      "relation": "supports",
+      "strength": 1,
+      "confidence": 0.96
+    },
+    {
+      "id": "e.twin-lean.supports.window-implies-tpc",
+      "from": "artifact.twin-lean",
+      "to": "theorem.window-implies-tpc",
+      "relation": "supports",
+      "strength": 1,
+      "confidence": 0.97
+    },
+    {
+      "id": "e.twin-lean.supports.pair-deletion-geometry",
+      "from": "artifact.twin-lean",
+      "to": "theorem.pair-deletion-geometry",
+      "relation": "supports",
+      "strength": 0.8,
+      "confidence": 0.94
+    },
+    {
+      "id": "e.twin-lean.measures.window-occupancy",
+      "from": "artifact.twin-lean",
+      "to": "conjecture.window-occupancy",
+      "relation": "measures",
+      "confidence": 0.93,
+      "sources": [
+        {
+          "file": "twin_prime.md",
+          "quote": "`Twin.windowWitnesses p` enumerates every `h` witnessing `WindowAt p`"
+        }
+      ]
+    },
+    {
+      "id": "e.exponent-spine-a.motivates.min-factor-normal-form",
+      "from": "open_question.exponent-spine-algorithm-a",
+      "to": "theorem.min-factor-normal-form",
+      "relation": "motivates",
+      "confidence": 0.85
+    },
+    {
+      "id": "e.readme.cites.spectral",
+      "from": "theory.orthogonal-stream-sieve",
+      "to": "theory.spectral-orthogonal-fields",
+      "relation": "cites",
+      "confidence": 0.8,
+      "sources": [{ "file": "paper.md", "quote": "`idea.md` is the spectral/entropy reading" }]
+    }
   ],
   "clusters": [
     {
@@ -2108,49 +3832,93 @@
       "kind": "contradiction",
       "description": "min_factor.md prints Claim M2 (one-step cone recursion) as routine, and then Correction M2′ in the same section refutes it with the witness 9. Both are retained; the corrected run-length and one-step forms supersede the printed identity.",
       "refs": ["theorem.cone-recursion", "lemma.correction-cone-recursion"],
-      "sources": [{ "file": "min_factor.md", "heading": "2.2", "quote": "**Correction M2′ (forced by the formalisation).** The displayed identity is **false as written**" }]
+      "sources": [
+        {
+          "file": "min_factor.md",
+          "heading": "2.2",
+          "quote": "**Correction M2′ (forced by the formalisation).** The displayed identity is **false as written**"
+        }
+      ]
     },
     {
       "kind": "contradiction",
       "description": "min_factor.md §8 asserts that a bounded window of previously reported normal forms suffices to factor n from Algorithm C's output; factorization.md Claim FC3 shows the required cofactors span Θ(range) and explicitly corrects that sentence and open problem 5.",
       "refs": ["theorem.no-bounded-cofactor-window", "theorem.min-factor-oracle"],
-      "sources": [{ "file": "factorization.md", "heading": "5.3", "quote": "`min_factor.md` §8 says ... \"a bounded window suffices if the consumer runs a second pass\". That is false as stated." }]
+      "sources": [
+        {
+          "file": "factorization.md",
+          "heading": "5.3",
+          "quote": "`min_factor.md` §8 says ... \"a bounded window suffices if the consumer runs a second pass\". That is false as stated."
+        }
+      ]
     },
     {
       "kind": "contradiction",
       "description": "min_factor.md §8 claims both y-smooth and y-rough enumeration for Algorithm C's layers; factorization.md Correction M8′ shows the smooth half is false because layers index spf and smoothness is a condition on the largest prime factor.",
       "refs": ["lemma.correction-smooth-enumeration", "theorem.min-factor-oracle"],
-      "sources": [{ "file": "factorization.md", "heading": "7.2", "quote": "The smooth half is false." }]
+      "sources": [
+        { "file": "factorization.md", "heading": "7.2", "quote": "The smooth half is false." }
+      ]
     },
     {
       "kind": "ambiguous_statement",
       "description": "paper.md §2.6 states Claim M2 in the printed (refuted) form while min_factor.md carries Correction M2′; the primary specification has not been updated to the corrected identity.",
       "refs": ["theorem.cone-recursion"],
-      "sources": [{ "file": "paper.md", "heading": "2.6", "quote": "**Claim M2 (cone recursion).** `B_p = {1} ⊎ ⨄_{q>p prime} q·B_q`." }]
+      "sources": [
+        {
+          "file": "paper.md",
+          "heading": "2.6",
+          "quote": "**Claim M2 (cone recursion).** `B_p = {1} ⊎ ⨄_{q>p prime} q·B_q`."
+        }
+      ]
     },
     {
       "kind": "missing_source",
       "description": "factorization.md §6.5 gives a primes_D sketch whose reopened-cloud seed is written both as next_adm(p, 1, p) in the pseudocode and next_adm(1, p, p, W, step) in the Python, with different argument orders; no executable artifact for Algorithm D exists in the corpus.",
       "refs": ["model.algorithm-d"],
-      "sources": [{ "file": "factorization.md", "heading": "6.5", "quote": "r1, mp1 = next_adm(1, p, p, W, step)  # <<< seed at 1, not p" }]
+      "sources": [
+        {
+          "file": "factorization.md",
+          "heading": "6.5",
+          "quote": "r1, mp1 = next_adm(1, p, p, W, step)  # <<< seed at 1, not p"
+        }
+      ]
     },
     {
       "kind": "dangling_reference",
       "description": "Several documents reference companion files not present in the extracted corpus: lean/Primegen/*.lean, lean/README.md, algorithm-a.js, algorithm-b.js, algorithm-c.js, and analyze.op.md. They are recorded as artifacts by name only.",
       "refs": ["artifact.lean-formalisation", "artifact.twin-lean"],
-      "sources": [{ "file": "factorization.md", "heading": "Companions", "quote": "`algorithm-a.js` / `algorithm-b.js` / `algorithm-c.js` (executable references)" }]
+      "sources": [
+        {
+          "file": "factorization.md",
+          "heading": "Companions",
+          "quote": "`algorithm-a.js` / `algorithm-b.js` / `algorithm-c.js` (executable references)"
+        }
+      ]
     },
     {
       "kind": "unparsed_math",
       "description": "algorithm.md §2.8 and §7 contain markdown-mangled LaTeX (stray underscores and escaped asterisks inside display math, e.g. 'B*p', '\\biguplus*{e\\ge1}'), so some formal fields were reconstructed from the surrounding prose rather than transcribed verbatim.",
       "refs": ["theorem.min-factor-normal-form", "theorem.cone-recursion"],
-      "sources": [{ "file": "algorithm.md", "heading": "2.8", "quote": "\\(\\Theta_p = \\Big(\\biguplus*{e\\ge1} p^{e} B*p\\Big)\\setminus\\{p\\}\\)" }]
+      "sources": [
+        {
+          "file": "algorithm.md",
+          "heading": "2.8",
+          "quote": "\\(\\Theta_p = \\Big(\\biguplus*{e\\ge1} p^{e} B*p\\Big)\\setminus\\{p\\}\\)"
+        }
+      ]
     },
     {
       "kind": "ambiguous_statement",
       "description": "algorithm.md §0 item 2 splits a sentence across a bullet boundary ('There is nothing else to' ... 'derive.'), leaving the intended claim about the primitive's uniqueness partially unreadable.",
       "refs": ["theorem.next-owned-composite-reduces-to-next-rough"],
-      "sources": [{ "file": "algorithm.md", "heading": "2.4", "quote": "There is nothing else to ... derive." }]
+      "sources": [
+        {
+          "file": "algorithm.md",
+          "heading": "2.4",
+          "quote": "There is nothing else to ... derive."
+        }
+      ]
     }
   ]
 }

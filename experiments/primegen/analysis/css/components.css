@@ -10,7 +10,10 @@
   padding: 0.28rem 0.7rem;
   cursor: pointer;
   color: var(--fg-dim);
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  transition:
+    background 0.12s,
+    color 0.12s,
+    border-color 0.12s;
 }
 
 .tab:hover,
@@ -20,7 +23,7 @@
   color: var(--fg);
 }
 
-.tab[aria-selected="true"] {
+.tab[aria-selected='true'] {
   background: var(--accent-soft);
   border-color: #6aa9ff55;
   color: #cfe2ff;
@@ -34,7 +37,7 @@
   gap: 0.35rem;
 }
 
-.chip[aria-pressed="true"] {
+.chip[aria-pressed='true'] {
   background: var(--accent-soft);
   border-color: #6aa9ff66;
   color: #cfe2ff;
@@ -107,10 +110,10 @@ details.facet > summary::-webkit-details-marker {
   display: none;
 }
 details.facet > summary::before {
-  content: "▸ ";
+  content: '▸ ';
 }
 details.facet[open] > summary::before {
-  content: "▾ ";
+  content: '▾ ';
 }
 
 .facet-body {
@@ -158,7 +161,7 @@ details.facet[open] > summary::before {
 .list-item:hover {
   background: var(--bg-2);
 }
-.list-item[aria-current="true"] {
+.list-item[aria-current='true'] {
   background: var(--accent-soft);
   box-shadow: inset 2px 0 0 var(--accent);
 }
@@ -184,18 +187,42 @@ details.facet[open] > summary::before {
 }
 
 /* kind colours */
-.k-axiom { --kc: var(--k-axiom); }
-.k-definition { --kc: var(--k-definition); }
-.k-theory { --kc: var(--k-theory); }
-.k-model { --kc: var(--k-model); }
-.k-conjecture { --kc: var(--k-conjecture); }
-.k-lemma { --kc: var(--k-lemma); }
-.k-theorem { --kc: var(--k-theorem); }
-.k-heuristic { --kc: var(--k-heuristic); }
-.k-observation { --kc: var(--k-observation); }
-.k-experiment { --kc: var(--k-experiment); }
-.k-artifact { --kc: var(--k-artifact); }
-.k-open_question { --kc: var(--k-open_question); }
+.k-axiom {
+  --kc: var(--k-axiom);
+}
+.k-definition {
+  --kc: var(--k-definition);
+}
+.k-theory {
+  --kc: var(--k-theory);
+}
+.k-model {
+  --kc: var(--k-model);
+}
+.k-conjecture {
+  --kc: var(--k-conjecture);
+}
+.k-lemma {
+  --kc: var(--k-lemma);
+}
+.k-theorem {
+  --kc: var(--k-theorem);
+}
+.k-heuristic {
+  --kc: var(--k-heuristic);
+}
+.k-observation {
+  --kc: var(--k-observation);
+}
+.k-experiment {
+  --kc: var(--k-experiment);
+}
+.k-artifact {
+  --kc: var(--k-artifact);
+}
+.k-open_question {
+  --kc: var(--k-open_question);
+}
 .dot,
 .badge.kind {
   background: var(--kc, var(--fg-faint));
@@ -217,14 +244,30 @@ details.facet[open] > summary::before {
   border: 1px solid currentColor;
   color: var(--sc, var(--fg-dim));
 }
-.st-accepted { --sc: var(--s-accepted); }
-.st-proposed { --sc: var(--s-proposed); }
-.st-tested { --sc: var(--s-tested); }
-.st-supported { --sc: var(--s-supported); }
-.st-refuted { --sc: var(--s-refuted); }
-.st-superseded { --sc: var(--s-superseded); }
-.st-abandoned { --sc: var(--s-abandoned); }
-.st-unknown { --sc: var(--s-unknown); }
+.st-accepted {
+  --sc: var(--s-accepted);
+}
+.st-proposed {
+  --sc: var(--s-proposed);
+}
+.st-tested {
+  --sc: var(--s-tested);
+}
+.st-supported {
+  --sc: var(--s-supported);
+}
+.st-refuted {
+  --sc: var(--s-refuted);
+}
+.st-superseded {
+  --sc: var(--s-superseded);
+}
+.st-abandoned {
+  --sc: var(--s-abandoned);
+}
+.st-unknown {
+  --sc: var(--s-unknown);
+}
 
 /* ---------- detail ---------- */
 

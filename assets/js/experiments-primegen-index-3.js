@@ -108,13 +108,7 @@ const DOCS = [
   { id: 'idea', file: 'idea.md', label: 'idea' },
 ];
 
-const MARKED_PATHS = [
-  '/lib/marked.min.js',
-  '../lib/marked.min.js',
-  '../../lib/marked.min.js',
-  'lib/marked.min.js',
-  'https://cdn.jsdelivr.net/npm/marked/marked.min.js',
-];
+const MARKED_PATHS = ['/lib/marked.min.js', 'https://cdn.jsdelivr.net/npm/marked/marked.min.js'];
 
 function loadScript(src) {
   return new Promise((res, rej) => {

@@ -113,12 +113,12 @@ app/                                # hand-written UI modules (not generated)
 `node download.js --tags` prints a ready-to-paste snippet for the current asset set:
 
 ```html
-<link rel="stylesheet" href="lib/prism/prism-tomorrow.min.css" />
-<script src="lib/mermaid.min.js" defer></script>
-<script src="lib/marked.min.js" defer></script>
-<script src="lib/purify.min.js" defer></script>
-<script src="lib/mathjax/tex-mml-chtml.js" defer></script>
-<script src="lib/prism/prism.min.js" defer></script>
+<link rel="stylesheet" href="/lib/prism/prism-tomorrow.min.css" />
+<script src="/lib/mermaid.min.js" defer></script>
+<script src="/lib/marked.min.js" defer></script>
+<script src="/lib/purify.min.js" defer></script>
+<script src="/lib/mathjax/tex-mml-chtml.js" defer></script>
+<script src="/lib/prism/prism.min.js" defer></script>
 
 <!-- Monaco: the AMD loader must NOT be deferred so require.config() can run right after it -->
 <script src="lib/monaco/vs/loader.js"></script>
