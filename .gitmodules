@@ -50,3 +50,7 @@
 	path = experiments/irrational_lattice
 	url = https://github.com/Simiacryptus/irrational-lattice.git
 	branch = main
+[submodule "experiments/layered_ca"]
+	path = experiments/layered_ca
+	url = https://github.com/Simiacryptus/layered-ca.git
+	branch = main
