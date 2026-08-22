@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-21T22:09:07.105Z",
+  "generatedAt": "2026-08-22T01:58:22.265Z",
   "counts": {
     "lab": 18,
     "game": 6,
@@ -121,7 +121,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/spacelike-knots",
         "path": "physics/spacelike-knots",
-        "commit": "f96aa26db130b6e0c2b4040b28519b57d0549b00",
+        "commit": "c341828e87fd90a2d2a356846f83bb23c8946668",
         "branch": "main",
         "submodule": true
       },
@@ -289,7 +289,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/primegen",
         "path": "numbers/primegen",
-        "commit": "00f36a879203c6629c749be38bf5f26663f61d76",
+        "commit": "744a53025ff78816bb08196ae1bcf842c9a05dc0",
         "branch": "main",
         "submodule": true
       },
