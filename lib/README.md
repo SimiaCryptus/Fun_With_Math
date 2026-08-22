@@ -4,7 +4,7 @@ Everything the embedded web UI loads at runtime lives here, so the server works 
 access**. The third-party files are **generated** by `download.js` – do not edit them by hand; re-run the
 downloader instead and commit the resulting diff (including `manifest.json`).
 
-> Not generated / hand-written (safe to edit): `app/**`, `monaco.js`, this `README.md` and `download.js` itself.
+> Not generated / hand-written (safe to edit): `app/**`, `monaco.js`, this `UI.md` and `download.js` itself.
 > `download.js` only ever writes the files listed in [Layout](#layout) plus `manifest.json`.
 
 ## Requirements

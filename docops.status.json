@@ -1,0 +1,68 @@
+{
+  "lastUpdated" : "2026-08-22T22:41:57.589387744Z",
+  "tasks" : {
+    "quadratics/pentagon/docs/analysis.theory_graph.json" : {
+      "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-SJUtXoNJ",
+      "startedAt" : "2026-08-22T20:11:03.340228007Z",
+      "completedAt" : "2026-08-22T20:13:46.113265091Z"
+    },
+    "quadratics/pentagon/docs/experiment.theory_graph.json" : {
+      "target" : "quadratics/pentagon/docs/experiment.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-Wc3pHWkj",
+      "startedAt" : "2026-08-22T20:11:03.337660833Z",
+      "completedAt" : "2026-08-22T20:13:14.998280887Z"
+    },
+    "quadratics/pentagon/docs/idea.theory_graph.json" : {
+      "target" : "quadratics/pentagon/docs/idea.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-nPzGOykF",
+      "startedAt" : "2026-08-22T20:11:03.345347933Z",
+      "completedAt" : "2026-08-22T20:13:51.071677980Z"
+    },
+    "quadratics/pentagon/docs/insights.theory_graph.json" : {
+      "target" : "quadratics/pentagon/docs/insights.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-a0RbAvwV",
+      "startedAt" : "2026-08-22T20:11:03.342743325Z",
+      "completedAt" : "2026-08-22T20:12:53.799256185Z"
+    },
+    "numbers/primegen/docs/algorithm.theory_graph.json" : {
+      "target" : "numbers/primegen/docs/algorithm.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-6gUCoBQ2",
+      "startedAt" : "2026-08-22T20:56:15.486472508Z",
+      "completedAt" : "2026-08-22T20:59:34.011057361Z"
+    },
+    "numbers/primegen/docs/fractal.theory_graph.json" : {
+      "target" : "numbers/primegen/docs/fractal.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-scOOV1Qr",
+      "startedAt" : "2026-08-22T20:56:15.482175335Z",
+      "completedAt" : "2026-08-22T20:58:35.902129300Z"
+    },
+    "numbers/primegen/docs/generator.theory_graph.json" : {
+      "target" : "numbers/primegen/docs/generator.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-HOHcbXDA",
+      "startedAt" : "2026-08-22T20:56:15.489868877Z",
+      "completedAt" : "2026-08-22T20:58:35.659201251Z"
+    },
+    "numbers/primegen/docs/twin_prime.theory_graph.json" : {
+      "target" : "numbers/primegen/docs/twin_prime.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-JSIFQJHx",
+      "startedAt" : "2026-08-22T20:56:15.493384335Z",
+      "completedAt" : "2026-08-22T20:59:13.616686007Z"
+    },
+    "ops/analysis-viewer/idea.theory_graph.json" : {
+      "target" : "ops/analysis-viewer/idea.theory_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-sluhudNj",
+      "startedAt" : "2026-08-22T22:36:37.859792578Z",
+      "completedAt" : "2026-08-22T22:41:57.589387744Z"
+    }
+  }
+}

@@ -1,0 +1,1419 @@
+{
+  "$schema": "./theory_graph.schema.ts",
+  "version": "2.0.0",
+  "generated_at": "2025-01-01T00:00:00Z",
+  "generator": { "op": "analyze.op.md" },
+  "corpus": {
+    "documents": [
+      {
+        "id": "idea",
+        "path": "idea.md",
+        "title": "A Consolidated Schema for Mathematical Knowledge: Toward a Metaontology of Mathematical Practice",
+        "order": 1,
+        "dominant_layers": ["inspiration", "fuzzy", "symbolic", "deductive"]
+      }
+    ]
+  },
+  "context": {
+    "social": {
+      "program": "a mechanism-first metaontology of mathematical practice",
+      "norms": [
+        "hybrid systems that bolt a computer algebra system to a proof assistant are treated as evidence of ontological mismatch, not of bad engineering"
+      ],
+      "folklore": [
+        "mathematics is a single edifice of true statements connected by proof"
+      ],
+      "blind_spots": [
+        "the pre-formal layer has historically been treated as unworthy of formal attention"
+      ]
+    },
+    "ecological": {
+      "affordances": [
+        "tools that can converse with, capture and manipulate pre-formal material"
+      ],
+      "constraints": [
+        "maintaining coherence across ontologies has a computational and conceptual cost that must be budgeted explicitly"
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "trajectory.metaontology-of-mathematical-practice",
+      "kind": "trajectory",
+      "name": "Design the Schema Underneath Mathematical Practice",
+      "statement": "The research direction pursued here is to design the metaontology beneath proof, symbolic manipulation and numerical experiment rather than to work inside any one of them.",
+      "status": "pre_formal",
+      "confidence": 0.9,
+      "shape": {
+        "descriptor": "go one level below the formal regimes and name the substrate they share",
+        "dims": ["what exists", "what is equal", "what counts as evidence"]
+      },
+      "representation": {
+        "layer": "inspiration",
+        "form": "prose-sketch",
+        "content": "This paper's goal is to design the schema underneath these three practices.",
+        "interfaces": [
+          { "to": "deductive", "via": "invariance_projection", "available": true, "target": "theory.consolidated-schema" }
+        ]
+      },
+      "domain": "metaontology",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "1. Introduction: Mathematics Is Not One Ontology",
+          "quote": "This paper's goal is to design the schema underneath these three practices: the metaontology that makes their differing commitments explicit"
+        }
+      ]
+    },
+    {
+      "id": "knowledge_gap.no-schema-for-pre-formal-mathematics",
+      "kind": "knowledge_gap",
+      "name": "The Pre-Formal Layer Has Never Been Written Down",
+      "statement": "The improvisational, analogical and exploratory activity that precedes formalization has never been given a formal ontological treatment.",
+      "status": "pre_formal",
+      "confidence": 0.9,
+      "shape": { "descriptor": "the layer everyone works in and nobody records" },
+      "representation": {
+        "layer": "inspiration",
+        "form": "prose-sketch",
+        "content": "Beneath these formal regimes lies a layer of practice that has never been formally written down."
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "Abstract",
+          "quote": "Beneath these formal regimes lies a layer of practice that has never been formally written down"
+        }
+      ]
+    },
+    {
+      "id": "analogy.inspiration-is-individual-social-steering",
+      "kind": "analogy",
+      "name": "Inspiration Is Individual Meta-Deductive Steering, the Social Layer Collective",
+      "statement": "The inspiration layer and the social layer perform the same analogical, trajectory-shaping reasoning on the same raw materials, one internally to a mind and one externally across a community.",
+      "status": "proposed",
+      "confidence": 0.9,
+      "shape": { "descriptor": "same steering machinery, one head versus many heads" },
+      "similar_to": [
+        { "to": "analogy.numeric-stability-mirrors-ecological-stability", "score": 0.7, "basis": "shape", "note": "both pair an internal mechanism with its collective analog" }
+      ],
+      "representation": { "layer": "inspiration", "form": "prose-sketch" },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "7. The Duality That Completes the Schema",
+          "quote": "Inspiration is individual meta-deductive steering... The social layer is collective meta-deductive steering"
+        }
+      ]
+    },
+    {
+      "id": "analogy.numeric-stability-mirrors-ecological-stability",
+      "kind": "analogy",
+      "name": "Numeric Stability Is Internal, Ecological Stability External",
+      "statement": "The numeric layer and the ecological layer both operate on noise, cost, feasibility and robustness, the first mathematically and the second environmentally.",
+      "status": "proposed",
+      "confidence": 0.9,
+      "shape": { "descriptor": "robustness under refinement versus robustness under the world" },
+      "representation": { "layer": "inspiration", "form": "prose-sketch" },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "7. The Duality That Completes the Schema",
+          "quote": "Both operate on the same raw materials — noise, cost, feasibility, robustness — one mathematically, one environmentally."
+        }
+      ]
+    },
+    {
+      "id": "domain_mapping.cognitive-layers-to-contextual-analogs",
+      "kind": "domain_mapping",
+      "name": "Duality Table Between Cognitive Layers and Their Contextual Analogs",
+      "statement": "Each of the five cognitive layers is mapped to a social analog and an ecological analog, giving the schema three axes rather than a linear stack.",
+      "status": "stabilized",
+      "confidence": 0.95,
+      "shape": { "descriptor": "one dictionary row per cognitive layer" },
+      "representation": {
+        "layer": "inspiration",
+        "form": "table",
+        "content": "-2 Inspiration | collective inspiration | problem ecology; 0 Fuzzy | community heuristics | environmental heuristics; 1 Symbolic | canonical formalisms | tool-driven representations; 2 Deductive | proof norms | physical/logical constraints; 3 Numeric | empirical norms | real-world stability"
+      },
+      "attributes": [
+        { "key": "cognitive_layers", "value": 5 },
+        { "key": "contextual_axes", "value": 2 }
+      ],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "7. The Duality That Completes the Schema",
+          "quote": "This gives the following duality table, which should be read as the organizing summary of the entire schema"
+        }
+      ]
+    },
+    {
+      "id": "invariance_hypothesis.descent-pattern-is-universal",
+      "kind": "invariance_hypothesis",
+      "name": "Every Fuzzy Pattern Descends Through Symbolic, Deductive and Numeric Form",
+      "statement": "A fuzzy pattern is expected to propagate downward into a symbolic rule, a deductive justification and a numeric consequence, and this descent pattern is claimed to recur across unrelated mathematical ideas.",
+      "status": "proposed",
+      "confidence": 0.85,
+      "shape": { "descriptor": "one hunch, three shadows" },
+      "representation": { "layer": "inspiration", "form": "prose-sketch" },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "Symmetry arguments, dimensional analysis, duality, change of basis, and perturbation expansions all follow the identical descent pattern"
+        }
+      ]
+    },
+    {
+      "id": "metaphor.three-sciences-in-the-same-clothing",
+      "kind": "metaphor",
+      "name": "Three Different Sciences Wearing the Same Clothing",
+      "statement": "Proving, symbolic manipulation and numerical experiment behave like three different sciences that merely share the vocabulary of mathematics.",
+      "status": "pre_formal",
+      "confidence": 0.9,
+      "shape": { "descriptor": "same costume, different organism" },
+      "representation": {
+        "layer": "fuzzy",
+        "form": "prose-sketch",
+        "content": "three activities that behave like different sciences wearing the same clothing"
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "1. Introduction: Mathematics Is Not One Ontology",
+          "quote": "three activities that behave like different sciences wearing the same clothing"
+        }
+      ]
+    },
+    {
+      "id": "proto_pattern.completing-the-square",
+      "kind": "proto_pattern",
+      "name": "Quadratics Simplify When a Perfect Square Is Isolated",
+      "statement": "Before any formalization, completing the square exists as the unformalized pattern that quadratics become simpler if a perfect square is isolated.",
+      "status": "pre_formal",
+      "confidence": 0.95,
+      "shape": { "descriptor": "isolate a perfect square and the rest goes quiet" },
+      "similar_to": [
+        { "to": "proto_pattern.laws-independent-of-observer", "score": 0.6, "basis": "shape", "note": "both are worked examples of the same descent pattern" }
+      ],
+      "representation": {
+        "layer": "fuzzy",
+        "form": "prose-sketch",
+        "content": "quadratics become simpler if you isolate a perfect square",
+        "interfaces": [
+          { "to": "symbolic", "via": "formalize_symbolic", "available": true, "target": "rewrite_rule.completing-the-square" },
+          { "to": "deductive", "via": "formalize_deductive", "available": true, "target": "proof.completing-the-square-preserves-equality", "lossy": true },
+          { "to": "numeric", "via": "formalize_numeric", "available": true, "target": "model.stable-root-location" }
+        ]
+      },
+      "domain": "algebra",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "At the fuzzy layer it exists as an unformalized pattern: quadratics become simpler if you isolate a perfect square."
+        }
+      ]
+    },
+    {
+      "id": "proto_pattern.laws-independent-of-observer",
+      "kind": "proto_pattern",
+      "name": "The Laws Should Not Depend on the Observer's Frame",
+      "statement": "The principle of relativity begins as the fuzzy hunch that physical laws should not depend on the observer's frame.",
+      "status": "pre_formal",
+      "confidence": 0.95,
+      "shape": { "descriptor": "the description may move, the law may not" },
+      "representation": {
+        "layer": "fuzzy",
+        "form": "prose-sketch",
+        "content": "the laws shouldn't depend on the observer's frame",
+        "interfaces": [
+          { "to": "symbolic", "via": "formalize_symbolic", "available": true, "target": "rewrite_rule.galilean-frame-change" },
+          { "to": "deductive", "via": "formalize_deductive", "available": true, "target": "theorem.lorentz-invariance" },
+          { "to": "numeric", "via": "formalize_numeric", "available": true, "target": "bound.symplectic-integrator-invariants" }
+        ]
+      },
+      "domain": "physics",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "the fuzzy hunch that \"the laws shouldn't depend on the observer's frame\""
+        }
+      ]
+    },
+    {
+      "id": "conjecture.six-morphisms-are-the-missing-architecture",
+      "kind": "conjecture",
+      "name": "The Six Cross-Ontology Morphisms Are the Missing Architecture",
+      "statement": "No existing mathematical software implements all six cross-ontology morphisms as first-class composable operations, and their absence is the actual missing architecture of the field's tooling.",
+      "status": "proposed",
+      "confidence": 0.85,
+      "representation": {
+        "layer": "fuzzy",
+        "form": "prose-sketch",
+        "content": "most systems implement one or two of them ad hoc, and none implement all six as first-class, composable operations"
+      },
+      "attributes": [{ "key": "morphism_count", "value": 6 }],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "These six morphisms are the actual missing architecture of mathematical software today"
+        }
+      ],
+      "notes": "Asserted without evidence in the notes; kept fuzzy per the hedging rule."
+    },
+    {
+      "id": "open_question.geometry-of-inspiration-and-fuzzy-space",
+      "kind": "open_question",
+      "name": "What Is the Geometry of Inspiration and Fuzzy Space?",
+      "statement": "It is unresolved how to make explicit the notion of similarity or distance between hunches and analogies so that tools can cluster, retrieve and extend proto-mathematical material.",
+      "status": "proposed",
+      "confidence": 0.9,
+      "shape": { "descriptor": "a metric on hunches" },
+      "representation": { "layer": "fuzzy", "form": "prose-sketch" },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "9. Implications and Directions for Further Work",
+          "quote": "making this geometry explicit would allow automated tools to cluster, retrieve, and extend proto-mathematical material in a principled way"
+        }
+      ]
+    },
+    {
+      "id": "definition.inspiration-layer",
+      "kind": "definition",
+      "name": "Inspiration Layer (Ontology −2)",
+      "statement": "The inspiration layer is defined as the stratum whose objects are directional inferences about the space of possible theories: research trajectories, domain mappings, suspected dualities, invariance hypotheses and identified gaps.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "notation": ["Ontology −2"],
+      "representation": {
+        "layer": "symbolic",
+        "form": "definition",
+        "content": "an inspiration-layer object is not a mathematical object at all — it is a directional inference about the space of possible theories"
+      },
+      "attributes": [{ "key": "layer_index", "value": -2 }],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "4. The Inspiration Layer: A Deductive Meta-Navigator",
+          "quote": "an inspiration-layer object is not a mathematical object at all — it is a directional inference about the space of possible theories"
+        }
+      ]
+    },
+    {
+      "id": "definition.fuzzy-layer",
+      "kind": "definition",
+      "name": "Fuzzy Layer (Ontology 0)",
+      "statement": "The fuzzy layer is defined as the pre-formal, pre-truth-apt stratum whose objects are patterns, conjectures, sketches, metaphors and partial operators, which exist once they can be expressed at all and whose equality is similarity of conceptual shape.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "notation": ["Ontology 0"],
+      "representation": {
+        "layer": "symbolic",
+        "form": "definition",
+        "content": "Existence: it exists once it can be expressed at all; Truth: not applicable; Equality: similarity of conceptual shape"
+      },
+      "attributes": [{ "key": "layer_index", "value": 0 }],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3. The Fuzzy Layer: A Fourth, Pre-Formal Ontology",
+          "quote": "We name this Ontology 0: the fuzzy layer, and give it the same structural treatment as the three formal ontologies."
+        }
+      ]
+    },
+    {
+      "id": "definition.social-layer",
+      "kind": "definition",
+      "name": "Social Layer (Ontology +S)",
+      "statement": "The social layer is defined as the distributed epistemic environment — citations, folklore, shared heuristics, norms, prestige gradients and funding incentives — that modulates every cognitive layer.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "notation": ["Ontology +S"],
+      "representation": {
+        "layer": "symbolic",
+        "form": "definition",
+        "content": "references, related work, citations, prior art, folklore, shared heuristics, established metaphors, domain conventions, research programs, open-problem lists, collective blind spots, prestige gradients, funding incentives, publication norms"
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "5. The Social Layer",
+          "quote": "We call this Ontology +S: the social layer, and treat it as orthogonal to the cognitive stack"
+        }
+      ]
+    },
+    {
+      "id": "definition.ecological-layer",
+      "kind": "definition",
+      "name": "Ecological Layer (Ontology +E)",
+      "statement": "The ecological layer is defined as the distributed physical and technological environment — physical constraints, engineering demands, computational limits, economic incentives and available substrates — that modulates every cognitive layer through constraint.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "notation": ["Ontology +E"],
+      "representation": {
+        "layer": "symbolic",
+        "form": "definition",
+        "content": "physical constraints, engineering demands, computational limits, economic incentives, technological affordances, available materials and substrates"
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "6. The Ecological Layer",
+          "quote": "the ecological layer is the distributed physical and technological environment of the world"
+        }
+      ]
+    },
+    {
+      "id": "signature.mathematical-object-triple",
+      "kind": "signature",
+      "name": "Object as Ontology Tag, Representation and Interfaces",
+      "statement": "Every mathematical object is represented as a triple of an ontology tag, an ontology-specific representation and a set of cross-ontology interfaces.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "formal": "Object := { Ontology: {Proof, Symbolic, Numeric}, Representation, Interfaces }",
+      "representation": {
+        "layer": "symbolic",
+        "form": "signature",
+        "content": "Object := { Ontology, Representation, Interfaces }"
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "Every mathematical object is represented as a triple of an ontology tag, an ontology-specific representation, and a set of cross-ontology interfaces"
+        }
+      ]
+    },
+    {
+      "id": "rewrite_rule.completing-the-square",
+      "kind": "rewrite_rule",
+      "name": "Completing the Square as a Rewrite Rule",
+      "statement": "At the symbolic layer, completing the square is the oriented rewrite of a quadratic into a shifted perfect square plus a constant.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "formal": "a x^2 + b x + c \\;\\to\\; a\\left(x + \\frac{b}{2a}\\right)^2 - \\frac{b^2}{4a} + c",
+      "representation": {
+        "layer": "symbolic",
+        "form": "rewrite-rule",
+        "content": "a x^2 + b x + c → a (x + b/2a)^2 − b^2/4a + c",
+        "interfaces": [
+          { "to": "deductive", "via": "embed", "available": true, "target": "proof.completing-the-square-preserves-equality" },
+          { "to": "numeric", "via": "evaluate", "available": true, "target": "model.stable-root-location", "lossy": true }
+        ]
+      },
+      "meta_operators": ["normalization"],
+      "domain": "algebra",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "a x^2 + b x + c → a (x + b/2a)^2 − b^2/4a + c"
+        }
+      ]
+    },
+    {
+      "id": "rewrite_rule.galilean-frame-change",
+      "kind": "rewrite_rule",
+      "name": "Covariance Under a Galilean Frame Change",
+      "statement": "Symbolically, the relativity hunch becomes the requirement that the laws be covariant under the substitution x' = x − vt.",
+      "status": "accepted",
+      "confidence": 0.9,
+      "formal": "x' = x - vt",
+      "representation": {
+        "layer": "symbolic",
+        "form": "rewrite-rule",
+        "content": "covariance requirement under x' = x − vt"
+      },
+      "domain": "physics",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "becomes, symbolically, a covariance requirement under x' = x − vt"
+        }
+      ]
+    },
+    {
+      "id": "model.unified-workspace-engine",
+      "kind": "model",
+      "name": "Unified Workspace Engine",
+      "statement": "The proposed workspace engine is a system that represents objects across all five cognitive layers uniformly, supports the morphisms between them and tracks social and ecological context as first-class metadata.",
+      "status": "proposed",
+      "confidence": 0.9,
+      "representation": {
+        "layer": "symbolic",
+        "form": "prose-sketch",
+        "content": "a system — a \"workspace engine\" — that represents objects across all five cognitive layers uniformly",
+        "interfaces": [
+          { "to": "numeric", "via": "evaluate", "available": false, "note": "no implementation or measurement exists in the notes" }
+        ]
+      },
+      "meta_operators": ["normalization", "verification", "refinement", "extraction", "approximation", "certification"],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "9. Implications and Directions for Further Work",
+          "quote": "The ultimate practical goal of this schema is a system — a \"workspace engine\""
+        }
+      ]
+    },
+    {
+      "id": "model.stable-root-location",
+      "kind": "model",
+      "layer": "numeric",
+      "layer_rationale": "The notes present this construction only as the numeric realization of completing the square — a stable method judged by robustness under refinement, not as a symbolic term.",
+      "name": "Stable Method for Locating Roots and Vertex Coordinates",
+      "statement": "At the numeric layer, completing the square becomes an algorithm that stably locates the roots or vertex coordinates of a quadratic.",
+      "status": "accepted",
+      "confidence": 0.85,
+      "representation": {
+        "layer": "numeric",
+        "form": "algorithm",
+        "content": "a stable method for locating roots or vertex coordinates"
+      },
+      "meta_operators": ["refinement"],
+      "domain": "algebra",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "At the numeric layer, it becomes an algorithm: a stable method for locating roots or vertex coordinates."
+        }
+      ]
+    },
+    {
+      "id": "axiom.symbolic-ontology-commitments",
+      "kind": "axiom",
+      "name": "Symbolic Ontology Commitments",
+      "statement": "In the symbolic ontology a mathematical object is a term in a rewrite system, existence is well-formedness, truth is reachability of a normal form and equality is convertibility.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "representation": {
+        "layer": "deductive",
+        "form": "proposition",
+        "content": "Existence: well-formed syntactic construct; Truth: reachability of a normal form; Equality: convertibility"
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)",
+          "quote": "Equality means convertibility — the existence of a rewrite path between two terms."
+        }
+      ]
+    },
+    {
+      "id": "axiom.deductive-ontology-commitments",
+      "kind": "axiom",
+      "name": "Deductive Ontology Commitments",
+      "statement": "In the deductive ontology a mathematical object is a node in a derivation graph, existence is derivability from axioms, truth is closure under inference rules and equality is provable equivalence.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "representation": {
+        "layer": "deductive",
+        "form": "proposition",
+        "content": "Existence: derivability from axioms; Truth: closure under inference rules; Equality: provable equivalence",
+        "interfaces": [
+          { "to": "symbolic", "via": "extract", "available": true, "target": "signature.mathematical-object-triple", "lossy": true, "note": "extract the term from a proof" }
+        ]
+      },
+      "meta_operators": ["verification"],
+      "social": {
+        "references": [{ "text": "type theories such as those underlying Coq or Lean", "kind": "software" }]
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.1 The Deductive Ontology (Proof-Objects)",
+          "quote": "Existence means derivability from axioms. Truth means closure under inference rules. Equality means provable equivalence."
+        }
+      ]
+    },
+    {
+      "id": "axiom.numeric-ontology-commitments",
+      "kind": "axiom",
+      "name": "Numeric Ontology Commitments",
+      "statement": "In the numeric ontology a mathematical object is a limit of computable approximations, existence is convergence under some metric, truth is stability under refinement and equality is indistinguishability within an error bound.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "representation": {
+        "layer": "deductive",
+        "form": "proposition",
+        "content": "Existence: convergence under some metric; Truth: stability under refinement; Equality: indistinguishability within an error bound"
+      },
+      "meta_operators": ["refinement", "approximation"],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.3 The Numeric (Analytic) Ontology",
+          "quote": "Equality means indistinguishability within an error bound."
+        }
+      ]
+    },
+    {
+      "id": "theory.consolidated-schema",
+      "kind": "theory",
+      "name": "The Consolidated Schema of Mathematical Practice",
+      "statement": "Mathematical practice is described by five cognitive layers — inspiration, fuzzy, symbolic, deductive, numeric — wired together by object, morphism and coherence structures, plus two orthogonal contextual layers, social and ecological, that are the structural duals of the inspiration and numeric layers.",
+      "status": "proposed",
+      "confidence": 0.95,
+      "representation": {
+        "layer": "deductive",
+        "form": "framework",
+        "content": "five cognitive layers and two contextual layers, with an object layer, a morphism layer and a coherence layer"
+      },
+      "attributes": [
+        { "key": "cognitive_layers", "value": 5 },
+        { "key": "contextual_layers", "value": 2 },
+        { "key": "cross_ontology_morphisms", "value": 6 },
+        { "key": "meta_operators", "value": 6 }
+      ],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "8. The Consolidated Schema",
+          "quote": "the consolidated schema consists of five cognitive layers and two contextual layers"
+        }
+      ]
+    },
+    {
+      "id": "theorem.lorentz-invariance",
+      "kind": "theorem",
+      "name": "Physical Laws Are Lorentz-Invariant",
+      "statement": "Deductively, the relativity hunch becomes the formal statement that physical laws are Lorentz-invariant.",
+      "status": "accepted",
+      "confidence": 0.9,
+      "representation": {
+        "layer": "deductive",
+        "form": "proposition",
+        "content": "physical laws are Lorentz-invariant",
+        "interfaces": [
+          { "to": "numeric", "via": "bound", "available": true, "target": "bound.symplectic-integrator-invariants" }
+        ]
+      },
+      "domain": "physics",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "deductively, the formal statement that physical laws are Lorentz-invariant"
+        }
+      ],
+      "notes": "Cited as a known result rather than proved in the notes."
+    },
+    {
+      "id": "proof.completing-the-square-preserves-equality",
+      "kind": "proof",
+      "name": "Derivation That Completing the Square Preserves Equality",
+      "statement": "At the deductive layer, completing the square is a proof object: a derivation showing that the rewrite preserves equality.",
+      "status": "accepted",
+      "confidence": 0.9,
+      "representation": {
+        "layer": "deductive",
+        "form": "proof-term",
+        "content": "a derivation showing that the rewrite preserves equality",
+        "interfaces": [
+          { "to": "symbolic", "via": "extract", "available": true, "target": "rewrite_rule.completing-the-square" }
+        ]
+      },
+      "meta_operators": ["verification"],
+      "domain": "algebra",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "At the deductive layer, it becomes a proof object — a derivation showing that the rewrite preserves equality."
+        }
+      ]
+    },
+    {
+      "id": "lemma.existence-from-interval-certificate",
+      "kind": "lemma",
+      "name": "Existence Proofs Constructed From Computation",
+      "statement": "A computation can be turned into an existence proof, as when interval-arithmetic certificates discharge a claim in the deductive ontology.",
+      "status": "proposed",
+      "confidence": 0.7,
+      "representation": {
+        "layer": "deductive",
+        "form": "proof-term",
+        "content": "Numeric → Proof (construct existence proofs from computation, e.g. interval-arithmetic certificates)"
+      },
+      "meta_operators": ["certification"],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "Numeric → Proof (construct existence proofs from computation, e.g. interval-arithmetic certificates)"
+        }
+      ],
+      "notes": "The notes name the morphism but never carry out an instance; recorded as a proposed deductive object."
+    },
+    {
+      "id": "certificate.interval-arithmetic-existence-proof",
+      "kind": "certificate",
+      "name": "Interval-Arithmetic Certificate",
+      "statement": "An interval-arithmetic computation is offered as the paradigm case of numeric evidence that certifies a deductive existence claim.",
+      "status": "proposed",
+      "confidence": 0.7,
+      "representation": {
+        "layer": "numeric",
+        "form": "interval",
+        "content": "interval-arithmetic certificates",
+        "interfaces": [
+          { "to": "deductive", "via": "certify", "available": false, "target": "lemma.existence-from-interval-certificate", "note": "named but never performed in the notes" }
+        ]
+      },
+      "meta_operators": ["certification"],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "e.g. interval-arithmetic certificates"
+        }
+      ]
+    },
+    {
+      "id": "bound.symplectic-integrator-invariants",
+      "kind": "bound",
+      "name": "Stable Integrators Must Preserve the Associated Invariants",
+      "statement": "Numerically, the relativity hunch becomes the requirement that stable integrators preserve the associated invariants such as energy and momentum.",
+      "status": "accepted",
+      "confidence": 0.9,
+      "representation": {
+        "layer": "numeric",
+        "form": "invariant-condition",
+        "content": "stable integrators preserve the associated invariants (energy, momentum)"
+      },
+      "attributes": [
+        { "key": "preserved_invariants", "value": "energy, momentum", "layer": "numeric" }
+      ],
+      "meta_operators": ["refinement"],
+      "domain": "physics",
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "numerically, the requirement that stable integrators preserve the associated invariants (energy, momentum)"
+        }
+      ]
+    },
+    {
+      "id": "norm.proof-norms-determine-legitimacy",
+      "kind": "norm",
+      "name": "The Community Decides What Counts as a Legitimate Proof",
+      "statement": "The social layer shapes the deductive layer by determining what counts as a legitimate proof and which axioms are acceptable.",
+      "status": "accepted",
+      "confidence": 0.9,
+      "representation": { "layer": "social", "form": "convention" },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "5. The Social Layer",
+          "quote": "It shapes the deductive layer by determining what counts as a legitimate proof and which axioms are acceptable."
+        }
+      ]
+    },
+    {
+      "id": "folklore.mathematics-is-a-single-edifice",
+      "kind": "folklore",
+      "name": "Mathematics Is a Single Edifice Connected by Proof",
+      "statement": "It is commonly held that mathematics is a single body of true statements connected by proof, a picture the notes call useful for pedagogy but false as a description of practice.",
+      "status": "refuted",
+      "confidence": 0.9,
+      "representation": { "layer": "social", "form": "shared-belief" },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "1. Introduction: Mathematics Is Not One Ontology",
+          "quote": "This picture is useful for pedagogy but false as a description of practice."
+        }
+      ]
+    },
+    {
+      "id": "research_program.type-systems-and-morphism-catalogues",
+      "kind": "research_program",
+      "name": "Type Systems, Morphism Catalogues and a Workspace Engine",
+      "statement": "The stated agenda is to give each layer an explicit type discipline, enumerate the morphisms with operational semantics, make the geometry of inspiration and fuzzy space explicit, and build a unified workspace engine.",
+      "status": "proposed",
+      "confidence": 0.95,
+      "representation": { "layer": "social", "form": "agenda" },
+      "attributes": [{ "key": "stated_directions", "value": 4 }],
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "9. Implications and Directions for Further Work",
+          "quote": "several directions of further work follow naturally from it"
+        }
+      ]
+    },
+    {
+      "id": "reference.coq-and-lean",
+      "kind": "reference",
+      "name": "Type Theories Underlying Coq and Lean",
+      "statement": "The notes cite the type theories underlying Coq and Lean as hosts of the deductive ontology.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "representation": { "layer": "social", "form": "citation" },
+      "social": {
+        "references": [{ "text": "type theories such as those underlying Coq or Lean", "kind": "software" }]
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.1 The Deductive Ontology (Proof-Objects)",
+          "quote": "the logical frameworks that host them (natural deduction, sequent calculi, type theories such as those underlying Coq or Lean)"
+        }
+      ]
+    },
+    {
+      "id": "constraint.coherence-maintenance-cost",
+      "kind": "constraint",
+      "name": "Coherence Across Ontologies Is Not Free",
+      "statement": "Maintaining semantic, logical and analytic coherence across the ontologies carries a computational and conceptual cost that any implementation must budget for explicitly.",
+      "status": "accepted",
+      "confidence": 0.95,
+      "representation": { "layer": "ecological", "form": "cost-condition" },
+      "ecological": {
+        "costs": [
+          { "measure": "computational", "note": "coherence checking across ontologies" },
+          { "measure": "developer-effort", "note": "conceptual cost of keeping three notions of equality aligned" }
+        ]
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "Coherence is not free; maintaining it across ontologies has a computational and conceptual cost"
+        }
+      ]
+    },
+    {
+      "id": "resource.tools-for-capturing-pre-formal-material",
+      "kind": "resource",
+      "name": "Tools That Capture and Manipulate Pre-Formal Material",
+      "statement": "The recent availability of tools that can converse with, capture and manipulate pre-formal material is what makes the fuzzy layer treatable as a first-class ontology.",
+      "status": "accepted",
+      "confidence": 0.9,
+      "representation": { "layer": "ecological", "form": "affordance" },
+      "ecological": {
+        "affordances": ["tools that can converse with, capture, and manipulate pre-formal material"]
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "1. Introduction: Mathematics Is Not One Ontology",
+          "quote": "The rise of tools that can converse with, capture, and manipulate this pre-formal material makes it possible — for the first time — to treat it as a first-class ontological layer"
+        }
+      ]
+    },
+    {
+      "id": "constraint.data-and-gpu-coexistence",
+      "kind": "constraint",
+      "name": "Deep Learning Required Data and GPUs to Coexist",
+      "statement": "Deep learning emerged only once large data and GPUs coexisted, which the notes offer as evidence that ecological pressure selects which mathematics develops.",
+      "status": "accepted",
+      "confidence": 0.9,
+      "representation": { "layer": "ecological", "form": "historical-condition" },
+      "ecological": {
+        "resources": ["data", "GPUs"]
+      },
+      "sources": [
+        {
+          "file": "idea.md",
+          "heading": "6. The Ecological Layer",
+          "quote": "why deep learning emerged only once data and GPUs coexisted"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "e.knowledge_gap.no-schema-for-pre-formal-mathematics.motivates.trajectory.metaontology-of-mathematical-practice",
+      "from": "knowledge_gap.no-schema-for-pre-formal-mathematics",
+      "to": "trajectory.metaontology-of-mathematical-practice",
+      "relation": "motivates",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "A complete schema for mathematical knowledge must include it." }]
+    },
+    {
+      "id": "e.trajectory.metaontology-of-mathematical-practice.steers.theory.consolidated-schema",
+      "from": "trajectory.metaontology-of-mathematical-practice",
+      "to": "theory.consolidated-schema",
+      "relation": "steers",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "What follows is a proposal for the full schema: five cognitive layers plus two contextual layers" }]
+    },
+    {
+      "id": "e.analogy.inspiration-is-individual-social-steering.dual_of.research_program.type-systems-and-morphism-catalogues",
+      "from": "analogy.inspiration-is-individual-social-steering",
+      "to": "research_program.type-systems-and-morphism-catalogues",
+      "relation": "dual_of",
+      "confidence": 0.5,
+      "sources": [{ "file": "idea.md", "quote": "distributed across a community and encoded in citations, folklore, and shared heuristics" }],
+      "notes": "Inferred pairing: the notes pair individual trajectory-setting with community research programs, but do not name this specific program as the dual."
+    },
+    {
+      "id": "e.analogy.inspiration-is-individual-social-steering.analogous_to.analogy.numeric-stability-mirrors-ecological-stability",
+      "from": "analogy.inspiration-is-individual-social-steering",
+      "to": "analogy.numeric-stability-mirrors-ecological-stability",
+      "relation": "analogous_to",
+      "strength": 0.8,
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "they are the structural duals of two specific cognitive layers" }]
+    },
+    {
+      "id": "e.analogy.inspiration-is-individual-social-steering.supports.theory.consolidated-schema",
+      "from": "analogy.inspiration-is-individual-social-steering",
+      "to": "theory.consolidated-schema",
+      "relation": "supports",
+      "strength": 0.7,
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "recognizing this duality is what makes the schema feel complete rather than merely long" }]
+    },
+    {
+      "id": "e.analogy.numeric-stability-mirrors-ecological-stability.supports.theory.consolidated-schema",
+      "from": "analogy.numeric-stability-mirrors-ecological-stability",
+      "to": "theory.consolidated-schema",
+      "relation": "supports",
+      "strength": 0.7,
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "Numeric ↔ Ecological ... one mathematically, one environmentally" }]
+    },
+    {
+      "id": "e.domain_mapping.cognitive-layers-to-contextual-analogs.steers.definition.social-layer",
+      "from": "domain_mapping.cognitive-layers-to-contextual-analogs",
+      "to": "definition.social-layer",
+      "relation": "steers",
+      "confidence": 0.6,
+      "sources": [{ "file": "idea.md", "quote": "Cognitive Layer | Social Analog | Ecological Analog" }]
+    },
+    {
+      "id": "e.invariance_hypothesis.descent-pattern-is-universal.generalizes.proto_pattern.completing-the-square",
+      "from": "invariance_hypothesis.descent-pattern-is-universal",
+      "to": "proto_pattern.completing-the-square",
+      "relation": "generalizes",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "The same pattern — fuzzy hunch propagating downward into symbolic form, deductive justification, and numeric implementation — recurs" }]
+    },
+    {
+      "id": "e.metaphor.three-sciences-in-the-same-clothing.motivates.theory.consolidated-schema",
+      "from": "metaphor.three-sciences-in-the-same-clothing",
+      "to": "theory.consolidated-schema",
+      "relation": "motivates",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "These are not three styles of doing the same thing." }]
+    },
+    {
+      "id": "e.proto_pattern.completing-the-square.formalizes.rewrite_rule.completing-the-square",
+      "from": "proto_pattern.completing-the-square",
+      "to": "rewrite_rule.completing-the-square",
+      "relation": "formalizes",
+      "confidence": 0.95,
+      "sources": [{ "file": "idea.md", "quote": "At the symbolic layer, it becomes a concrete rewrite rule" }]
+    },
+    {
+      "id": "e.proof.completing-the-square-preserves-equality.supports.rewrite_rule.completing-the-square",
+      "from": "proof.completing-the-square-preserves-equality",
+      "to": "rewrite_rule.completing-the-square",
+      "relation": "supports",
+      "strength": 1,
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "a derivation showing that the rewrite preserves equality" }]
+    },
+    {
+      "id": "e.model.stable-root-location.instantiates.rewrite_rule.completing-the-square",
+      "from": "model.stable-root-location",
+      "to": "rewrite_rule.completing-the-square",
+      "relation": "instantiates",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "At the numeric layer, it becomes an algorithm" }]
+    },
+    {
+      "id": "e.proto_pattern.laws-independent-of-observer.formalizes.rewrite_rule.galilean-frame-change",
+      "from": "proto_pattern.laws-independent-of-observer",
+      "to": "rewrite_rule.galilean-frame-change",
+      "relation": "formalizes",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "becomes, symbolically, a covariance requirement under x' = x − vt" }]
+    },
+    {
+      "id": "e.proto_pattern.laws-independent-of-observer.formalizes.theorem.lorentz-invariance",
+      "from": "proto_pattern.laws-independent-of-observer",
+      "to": "theorem.lorentz-invariance",
+      "relation": "formalizes",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "deductively, the formal statement that physical laws are Lorentz-invariant" }]
+    },
+    {
+      "id": "e.proto_pattern.laws-independent-of-observer.formalizes.bound.symplectic-integrator-invariants",
+      "from": "proto_pattern.laws-independent-of-observer",
+      "to": "bound.symplectic-integrator-invariants",
+      "relation": "formalizes",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "numerically, the requirement that stable integrators preserve the associated invariants" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.depends_on.definition.inspiration-layer",
+      "from": "theory.consolidated-schema",
+      "to": "definition.inspiration-layer",
+      "relation": "depends_on",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "−2 Inspiration Layer — deductive, analogical, improvisational steering" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.depends_on.definition.fuzzy-layer",
+      "from": "theory.consolidated-schema",
+      "to": "definition.fuzzy-layer",
+      "relation": "depends_on",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "0 Fuzzy Layer — stabilizes improvisation into proto-operators and proto-structures" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.depends_on.definition.social-layer",
+      "from": "theory.consolidated-schema",
+      "to": "definition.social-layer",
+      "relation": "depends_on",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "+S Social Layer — the distributed epistemic environment" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.depends_on.definition.ecological-layer",
+      "from": "theory.consolidated-schema",
+      "to": "definition.ecological-layer",
+      "relation": "depends_on",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "+E Ecological Layer — the distributed physical/technological environment" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.depends_on.signature.mathematical-object-triple",
+      "from": "theory.consolidated-schema",
+      "to": "signature.mathematical-object-triple",
+      "relation": "depends_on",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "an object layer tagging every mathematical entity with its ontology and cross-ontology interfaces" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.assumes.axiom.symbolic-ontology-commitments",
+      "from": "theory.consolidated-schema",
+      "to": "axiom.symbolic-ontology-commitments",
+      "relation": "assumes",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "1 Symbolic Layer — formal rewrite systems; term graphs" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.assumes.axiom.deductive-ontology-commitments",
+      "from": "theory.consolidated-schema",
+      "to": "axiom.deductive-ontology-commitments",
+      "relation": "assumes",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "2 Deductive Layer — proof objects and derivation graphs" }]
+    },
+    {
+      "id": "e.theory.consolidated-schema.assumes.axiom.numeric-ontology-commitments",
+      "from": "theory.consolidated-schema",
+      "to": "axiom.numeric-ontology-commitments",
+      "relation": "assumes",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "3 Numeric Layer — approximation and simulation" }]
+    },
+    {
+      "id": "e.conjecture.six-morphisms-are-the-missing-architecture.motivates.model.unified-workspace-engine",
+      "from": "conjecture.six-morphisms-are-the-missing-architecture",
+      "to": "model.unified-workspace-engine",
+      "relation": "motivates",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "supports the morphisms between them, tracks social and ecological context as first-class metadata" }]
+    },
+    {
+      "id": "e.model.unified-workspace-engine.instantiates.theory.consolidated-schema",
+      "from": "model.unified-workspace-engine",
+      "to": "theory.consolidated-schema",
+      "relation": "instantiates",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "The ultimate practical goal of this schema is a system" }]
+    },
+    {
+      "id": "e.open_question.geometry-of-inspiration-and-fuzzy-space.motivates.research_program.type-systems-and-morphism-catalogues",
+      "from": "open_question.geometry-of-inspiration-and-fuzzy-space",
+      "to": "research_program.type-systems-and-morphism-catalogues",
+      "relation": "motivates",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "Geometry of inspiration and fuzzy space." }]
+    },
+    {
+      "id": "e.norm.proof-norms-determine-legitimacy.selects_for.axiom.deductive-ontology-commitments",
+      "from": "norm.proof-norms-determine-legitimacy",
+      "to": "axiom.deductive-ontology-commitments",
+      "relation": "selects_for",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "determining what counts as a legitimate proof and which axioms are acceptable" }]
+    },
+    {
+      "id": "e.folklore.mathematics-is-a-single-edifice.contradicts.theory.consolidated-schema",
+      "from": "folklore.mathematics-is-a-single-edifice",
+      "to": "theory.consolidated-schema",
+      "relation": "contradicts",
+      "strength": 0.9,
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "Mathematics is conventionally treated as a single, homogeneous domain unified by a shared notion of truth." }]
+    },
+    {
+      "id": "e.research_program.type-systems-and-morphism-catalogues.selects_for.open_question.geometry-of-inspiration-and-fuzzy-space",
+      "from": "research_program.type-systems-and-morphism-catalogues",
+      "to": "open_question.geometry-of-inspiration-and-fuzzy-space",
+      "relation": "selects_for",
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "several directions of further work follow naturally from it" }]
+    },
+    {
+      "id": "e.constraint.coherence-maintenance-cost.constrains.model.unified-workspace-engine",
+      "from": "constraint.coherence-maintenance-cost",
+      "to": "model.unified-workspace-engine",
+      "relation": "constrains",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "any implementation must budget for explicitly rather than assume away" }]
+    },
+    {
+      "id": "e.resource.tools-for-capturing-pre-formal-material.constrains.definition.fuzzy-layer",
+      "from": "resource.tools-for-capturing-pre-formal-material",
+      "to": "definition.fuzzy-layer",
+      "relation": "constrains",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "makes it possible — for the first time — to treat it as a first-class ontological layer" }]
+    },
+    {
+      "id": "e.constraint.data-and-gpu-coexistence.supports.definition.ecological-layer",
+      "from": "constraint.data-and-gpu-coexistence",
+      "to": "definition.ecological-layer",
+      "relation": "supports",
+      "strength": 0.7,
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "This layer explains facts that no purely cognitive or social account can" }]
+    },
+    {
+      "id": "e.axiom.deductive-ontology-commitments.cites.reference.coq-and-lean",
+      "from": "axiom.deductive-ontology-commitments",
+      "to": "reference.coq-and-lean",
+      "relation": "cites",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "type theories such as those underlying Coq or Lean" }]
+    },
+    {
+      "id": "e.certificate.interval-arithmetic-existence-proof.supports.lemma.existence-from-interval-certificate",
+      "from": "certificate.interval-arithmetic-existence-proof",
+      "to": "lemma.existence-from-interval-certificate",
+      "relation": "supports",
+      "strength": 0.6,
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "construct existence proofs from computation, e.g. interval-arithmetic certificates" }]
+    },
+    {
+      "id": "e.bound.symplectic-integrator-invariants.tests.theorem.lorentz-invariance",
+      "from": "bound.symplectic-integrator-invariants",
+      "to": "theorem.lorentz-invariance",
+      "relation": "tests",
+      "confidence": 0.6,
+      "sources": [{ "file": "idea.md", "quote": "the requirement that stable integrators preserve the associated invariants (energy, momentum)" }],
+      "notes": "Inferred: the notes present the numeric requirement as the downstream consequence, not explicitly as a test."
+    }
+  ],
+  "morphisms": [
+    {
+      "id": "m.proto_pattern.completing-the-square.formalize_symbolic.rewrite_rule.completing-the-square",
+      "kind": "formalize_symbolic",
+      "from": "proto_pattern.completing-the-square",
+      "to": "rewrite_rule.completing-the-square",
+      "state": "performed",
+      "loss": "drops the informal motivation that the quadratic 'becomes simpler'",
+      "confidence": 0.95,
+      "sources": [{ "file": "idea.md", "quote": "At the symbolic layer, it becomes a concrete rewrite rule" }]
+    },
+    {
+      "id": "m.rewrite_rule.completing-the-square.embed.proof.completing-the-square-preserves-equality",
+      "kind": "embed",
+      "from": "rewrite_rule.completing-the-square",
+      "to": "proof.completing-the-square-preserves-equality",
+      "state": "performed",
+      "obligations": ["c.logical.rewrite-preserves-provable-equality"],
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "At the deductive layer, it becomes a proof object" }]
+    },
+    {
+      "id": "m.rewrite_rule.completing-the-square.evaluate.model.stable-root-location",
+      "kind": "evaluate",
+      "from": "rewrite_rule.completing-the-square",
+      "to": "model.stable-root-location",
+      "state": "performed",
+      "loss": "exact algebraic identity is replaced by a floating-point procedure",
+      "obligations": ["c.semantic.root-algorithm-respects-the-identity"],
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "it becomes an algorithm: a stable method for locating roots or vertex coordinates" }]
+    },
+    {
+      "id": "m.proto_pattern.laws-independent-of-observer.formalize_symbolic.rewrite_rule.galilean-frame-change",
+      "kind": "formalize_symbolic",
+      "from": "proto_pattern.laws-independent-of-observer",
+      "to": "rewrite_rule.galilean-frame-change",
+      "state": "performed",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "becomes, symbolically, a covariance requirement under x' = x − vt" }]
+    },
+    {
+      "id": "m.proto_pattern.laws-independent-of-observer.formalize_deductive.theorem.lorentz-invariance",
+      "kind": "formalize_deductive",
+      "from": "proto_pattern.laws-independent-of-observer",
+      "to": "theorem.lorentz-invariance",
+      "state": "performed",
+      "loss": "the hunch's generality is narrowed to a specific invariance group",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "deductively, the formal statement that physical laws are Lorentz-invariant" }]
+    },
+    {
+      "id": "m.proto_pattern.laws-independent-of-observer.formalize_numeric.bound.symplectic-integrator-invariants",
+      "kind": "formalize_numeric",
+      "from": "proto_pattern.laws-independent-of-observer",
+      "to": "bound.symplectic-integrator-invariants",
+      "state": "performed",
+      "obligations": ["c.analytic.invariance-guarantees-integrator-stability"],
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "quote": "numerically, the requirement that stable integrators preserve the associated invariants" }]
+    },
+    {
+      "id": "m.theorem.lorentz-invariance.bound.bound.symplectic-integrator-invariants",
+      "kind": "bound",
+      "from": "theorem.lorentz-invariance",
+      "to": "bound.symplectic-integrator-invariants",
+      "state": "intended",
+      "obligations": ["c.analytic.invariance-guarantees-integrator-stability"],
+      "confidence": 0.6,
+      "sources": [{ "file": "idea.md", "quote": "Proof → Numeric (construct computable bounds from a derivation)" }],
+      "notes": "Inferred: the notes name the Proof → Numeric morphism generally and give the integrator requirement as the numeric consequence, but never construct the bound."
+    },
+    {
+      "id": "m.certificate.interval-arithmetic-existence-proof.certify.lemma.existence-from-interval-certificate",
+      "kind": "certify",
+      "from": "certificate.interval-arithmetic-existence-proof",
+      "to": "lemma.existence-from-interval-certificate",
+      "state": "intended",
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "Numeric → Proof (construct existence proofs from computation, e.g. interval-arithmetic certificates)" }]
+    },
+    {
+      "id": "m.analogy.inspiration-is-individual-social-steering.domain_mapping.domain_mapping.cognitive-layers-to-contextual-analogs",
+      "kind": "domain_mapping",
+      "from": "analogy.inspiration-is-individual-social-steering",
+      "to": "domain_mapping.cognitive-layers-to-contextual-analogs",
+      "state": "performed",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "This gives the following duality table" }]
+    },
+    {
+      "id": "m.analogy.inspiration-is-individual-social-steering.analogy_fusion.analogy.numeric-stability-mirrors-ecological-stability",
+      "kind": "analogy_fusion",
+      "from": "analogy.inspiration-is-individual-social-steering",
+      "to": "analogy.numeric-stability-mirrors-ecological-stability",
+      "state": "performed",
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "the social and ecological layers are structural duals of the inspiration and numeric layers respectively" }]
+    },
+    {
+      "id": "m.open_question.geometry-of-inspiration-and-fuzzy-space.gap_identification.knowledge_gap.no-schema-for-pre-formal-mathematics",
+      "kind": "gap_identification",
+      "from": "open_question.geometry-of-inspiration-and-fuzzy-space",
+      "to": "knowledge_gap.no-schema-for-pre-formal-mathematics",
+      "state": "performed",
+      "confidence": 0.6,
+      "sources": [{ "file": "idea.md", "quote": "Both the inspiration layer and the fuzzy layer admit a notion of similarity or distance between objects" }]
+    },
+    {
+      "id": "m.invariance_hypothesis.descent-pattern-is-universal.invariance_projection.rewrite_rule.completing-the-square",
+      "kind": "invariance_projection",
+      "from": "invariance_hypothesis.descent-pattern-is-universal",
+      "to": "rewrite_rule.completing-the-square",
+      "state": "performed",
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "fuzzy pattern, symbolic rule, deductive justification, numeric consequence" }]
+    },
+    {
+      "id": "m.norm.proof-norms-determine-legitimacy.social_selection.axiom.deductive-ontology-commitments",
+      "kind": "social_selection",
+      "from": "norm.proof-norms-determine-legitimacy",
+      "to": "axiom.deductive-ontology-commitments",
+      "state": "performed",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "determining what counts as a legitimate proof and which axioms are acceptable" }]
+    },
+    {
+      "id": "m.constraint.coherence-maintenance-cost.ecological_constraint.model.unified-workspace-engine",
+      "kind": "ecological_constraint",
+      "from": "constraint.coherence-maintenance-cost",
+      "to": "model.unified-workspace-engine",
+      "state": "intended",
+      "cost": { "measure": "developer-effort", "note": "the cost of coherence must be budgeted rather than assumed away" },
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "quote": "any implementation must budget for explicitly rather than assume away" }]
+    },
+    {
+      "id": "m.theory.consolidated-schema.abstract.open_question.geometry-of-inspiration-and-fuzzy-space",
+      "kind": "abstract",
+      "from": "theory.consolidated-schema",
+      "to": "open_question.geometry-of-inspiration-and-fuzzy-space",
+      "state": "performed",
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "This schema is offered as a foundation rather than a finished theory" }]
+    }
+  ],
+  "coherence": [
+    {
+      "id": "c.logical.rewrite-preserves-provable-equality",
+      "kind": "logical",
+      "refs": [
+        "rewrite_rule.completing-the-square",
+        "proof.completing-the-square-preserves-equality",
+        "m.rewrite_rule.completing-the-square.embed.proof.completing-the-square-preserves-equality"
+      ],
+      "requirement": "The completing-the-square rewrite must preserve the provable equality of the two quadratics.",
+      "status": "discharged",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "quote": "a derivation showing that the rewrite preserves equality" }]
+    },
+    {
+      "id": "c.semantic.root-algorithm-respects-the-identity",
+      "kind": "semantic",
+      "refs": [
+        "rewrite_rule.completing-the-square",
+        "model.stable-root-location",
+        "m.rewrite_rule.completing-the-square.evaluate.model.stable-root-location"
+      ],
+      "requirement": "The numeric root-location algorithm must respect the symbolic identity it is derived from, within its error bound.",
+      "status": "pending",
+      "cost": { "measure": "developer-effort", "note": "the notes never check the numeric realization against the identity" },
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "Semantic coherence — numeric evaluation must respect symbolic identities." }]
+    },
+    {
+      "id": "c.analytic.invariance-guarantees-integrator-stability",
+      "kind": "analytic",
+      "refs": [
+        "theorem.lorentz-invariance",
+        "bound.symplectic-integrator-invariants",
+        "m.proto_pattern.laws-independent-of-observer.formalize_numeric.bound.symplectic-integrator-invariants"
+      ],
+      "requirement": "The invariance statement must guarantee the preservation of energy and momentum that the stable-integrator requirement claims.",
+      "status": "pending",
+      "cost": { "measure": "computational", "note": "coherence across ontologies has an unbudgeted cost in the notes" },
+      "confidence": 0.7,
+      "sources": [{ "file": "idea.md", "quote": "Analytic coherence — proofs must guarantee the convergence properties they claim." }]
+    }
+  ],
+  "clusters": [
+    {
+      "id": "cluster.completing-the-square-descent",
+      "name": "Completing the Square: Hunch to Algorithm",
+      "kind": "descent_chain",
+      "root": "proto_pattern.completing-the-square",
+      "members": [
+        "proto_pattern.completing-the-square",
+        "rewrite_rule.completing-the-square",
+        "proof.completing-the-square-preserves-equality",
+        "model.stable-root-location"
+      ],
+      "layers": ["fuzzy", "symbolic", "deductive", "numeric"],
+      "summary": "The §3.2 worked example: one fuzzy pattern realized as a rewrite rule, a derivation and a numeric method."
+    },
+    {
+      "id": "cluster.relativity-descent",
+      "name": "Relativity: Hunch to Integrator Requirement",
+      "kind": "descent_chain",
+      "root": "proto_pattern.laws-independent-of-observer",
+      "members": [
+        "proto_pattern.laws-independent-of-observer",
+        "rewrite_rule.galilean-frame-change",
+        "theorem.lorentz-invariance",
+        "bound.symplectic-integrator-invariants"
+      ],
+      "layers": ["fuzzy", "symbolic", "deductive", "numeric"]
+    },
+    {
+      "id": "cluster.three-formal-ontologies",
+      "name": "The Three Formal Ontologies and Their Connective Tissue",
+      "kind": "thread",
+      "root": "theory.consolidated-schema",
+      "members": [
+        "axiom.symbolic-ontology-commitments",
+        "axiom.deductive-ontology-commitments",
+        "axiom.numeric-ontology-commitments",
+        "signature.mathematical-object-triple",
+        "conjecture.six-morphisms-are-the-missing-architecture",
+        "constraint.coherence-maintenance-cost",
+        "theory.consolidated-schema"
+      ],
+      "layers": ["deductive", "symbolic", "fuzzy", "ecological"]
+    },
+    {
+      "id": "cluster.duality",
+      "name": "The Duality That Completes the Schema",
+      "kind": "analogy_family",
+      "root": "domain_mapping.cognitive-layers-to-contextual-analogs",
+      "members": [
+        "analogy.inspiration-is-individual-social-steering",
+        "analogy.numeric-stability-mirrors-ecological-stability",
+        "domain_mapping.cognitive-layers-to-contextual-analogs",
+        "definition.social-layer",
+        "definition.ecological-layer"
+      ],
+      "layers": ["inspiration", "symbolic"]
+    }
+  ],
+  "unresolved": [
+    {
+      "kind": "layer_ambiguity",
+      "description": "The notes present \"a stable method for locating roots or vertex coordinates\" as an algorithm, which is a symbolic construction by kind but is treated purely as the numeric realization of the pattern; assigned to the numeric layer with an explicit rationale.",
+      "refs": ["model.stable-root-location"],
+      "layers": ["symbolic", "numeric"],
+      "sources": [{ "file": "idea.md", "quote": "At the numeric layer, it becomes an algorithm" }]
+    },
+    {
+      "kind": "missing_morphism",
+      "description": "The notes name Symbolic → Proof, Numeric → Symbolic and Proof → Symbolic as first-class morphisms but perform none of them on a concrete object, so no transport could be recorded for them.",
+      "refs": ["conjecture.six-morphisms-are-the-missing-architecture", "signature.mathematical-object-triple"],
+      "layers": ["symbolic", "deductive", "numeric"],
+      "sources": [{ "file": "idea.md", "quote": "most systems implement one or two of them ad hoc, and none implement all six" }]
+    },
+    {
+      "kind": "unattributed_claim",
+      "description": "Historical claims about why calculus, probability theory, linear algebra and category theory emerged when they did are given without citation.",
+      "refs": ["definition.ecological-layer", "constraint.data-and-gpu-coexistence"],
+      "layers": ["social", "ecological"],
+      "sources": [{ "file": "idea.md", "quote": "why calculus emerged when physics demanded it, why probability theory emerged when gambling and insurance demanded it" }]
+    },
+    {
+      "kind": "ambiguous_statement",
+      "description": "The dual pairing recorded between the inspiration-layer analogy and the stated research program is an inference; the notes assert the inspiration↔social duality at the level of layers, not of specific objects.",
+      "refs": ["e.analogy.inspiration-is-individual-social-steering.dual_of.research_program.type-systems-and-morphism-catalogues"],
+      "layers": ["inspiration", "social"]
+    }
+  ],
+  "stats": {
+    "documents": 1,
+    "nodes": 36,
+    "edges": 35,
+    "morphisms": 15,
+    "obligations": 3,
+    "by_layer": {
+      "inspiration": 6,
+      "fuzzy": 5,
+      "symbolic": 8,
+      "deductive": 7,
+      "numeric": 3,
+      "social": 4,
+      "ecological": 3
+    },
+    "by_coherence": { "semantic": 1, "logical": 1, "analytic": 1 },
+    "cross_layer_edges": 30
+  }
+}
