@@ -1,5 +1,5 @@
 {
-  "lastUpdated" : "2026-08-22T22:41:57.589387744Z",
+  "lastUpdated" : "2026-08-22T23:48:56.388547059Z",
   "tasks" : {
     "quadratics/pentagon/docs/analysis.theory_graph.json" : {
       "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
@@ -63,6 +63,27 @@
       "sessionId" : "U-20260822-sluhudNj",
       "startedAt" : "2026-08-22T22:36:37.859792578Z",
       "completedAt" : "2026-08-22T22:41:57.589387744Z"
+    },
+    "analysis/knowledge/idea.knowledge_graph.json" : {
+      "target" : "analysis/knowledge/idea.knowledge_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-QtXXo0g0",
+      "startedAt" : "2026-08-22T23:34:35.575698988Z",
+      "completedAt" : "2026-08-22T23:40:11.039878286Z"
+    },
+    "analysis/theory/idea.knowledge_graph.json" : {
+      "target" : "analysis/theory/idea.knowledge_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-sPNwzfHm",
+      "startedAt" : "2026-08-22T23:34:35.577495734Z",
+      "completedAt" : "2026-08-22T23:40:04.739312891Z"
+    },
+    "numbers/primegen/docs/generator.knowledge_graph.json" : {
+      "target" : "numbers/primegen/docs/generator.knowledge_graph.json",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260822-qnEF8Xjy",
+      "startedAt" : "2026-08-22T23:42:22.155791518Z",
+      "completedAt" : "2026-08-22T23:48:56.388547059Z"
     }
   }
 }

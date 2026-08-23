@@ -1,0 +1,140 @@
+/* Shares the theory viewer's shell and theme, then adds the knowledge-specific bits. */
+@import url('../theory/styles.css');
+
+/* ---------------- relation colouring (by evidence group) ---------------- */
+.link.rel-lexical {
+  stroke: #a78bfa;
+}
+.link.rel-taxonomic {
+  stroke: #34d399;
+}
+.link.rel-definitional {
+  stroke: #fbbf24;
+  stroke-width: 1.6;
+}
+.link.rel-functional {
+  stroke: #38bdf8;
+}
+.link.rel-discourse {
+  stroke: #7f8ea3;
+  stroke-dasharray: 2 4;
+  opacity: 0.34;
+}
+.link.rel-provenance {
+  stroke: #2dd4bf;
+  stroke-dasharray: 6 3;
+}
+
+/* ---------------- node decorations ---------------- */
+/* dashed outline = the corpus never settles what this means */
+.node[data-needs='1'] .shape {
+  stroke-dasharray: 3 2;
+}
+.node[data-needs='0'] .shape {
+  stroke-dasharray: none;
+}
+.node .central-ring {
+  stroke: #ffffff44;
+  stroke-width: 1;
+}
+.node.hi .central-ring {
+  stroke: #ffffffaa;
+}
+
+/* ---------------- sidebar extras ---------------- */
+#sidebar select {
+  width: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+.legend .row.sep {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+}
+
+/* ---------------- inspector extras ---------------- */
+.badge.status {
+  color: #0b0e13;
+  font-weight: 700;
+  border: 0;
+}
+
+.gloss {
+  border-left: 3px solid var(--ok);
+  background: #ffffff06;
+  border-radius: 0 4px 4px 0;
+  padding: 6px 8px;
+  margin: 8px 0;
+  font-size: 12.5px;
+}
+.gloss .gloss-tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-bottom: 3px;
+}
+.gloss.provisional {
+  border-left-color: var(--warn);
+}
+.gloss.empty {
+  border-left-color: #3a4757;
+  color: var(--fg-dim);
+  font-style: italic;
+}
+
+.sense {
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 6px 8px;
+  margin: 6px 0;
+}
+.sense p {
+  margin: 4px 0 0;
+}
+.sense .discrim {
+  color: var(--fg-dim);
+  font-size: 11.5px;
+}
+
+.rel-tag.rel-lexical {
+  color: #a78bfa;
+}
+.rel-tag.rel-taxonomic {
+  color: #34d399;
+}
+.rel-tag.rel-definitional {
+  color: #fbbf24;
+}
+.rel-tag.rel-functional {
+  color: #38bdf8;
+}
+.rel-tag.rel-discourse {
+  color: #7f8ea3;
+}
+.rel-tag.rel-provenance {
+  color: #2dd4bf;
+}
+
+/* ---------------- request queue ---------------- */
+.pill.prio-high,
+.badge.prio-high {
+  color: var(--danger);
+  border-color: currentColor;
+}
+.pill.prio-medium,
+.badge.prio-medium {
+  color: var(--warn);
+  border-color: currentColor;
+}
+.pill.prio-low,
+.badge.prio-low {
+  color: var(--fg-dim);
+}

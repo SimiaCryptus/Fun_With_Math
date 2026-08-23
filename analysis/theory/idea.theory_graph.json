@@ -20,17 +20,13 @@
       "norms": [
         "hybrid systems that bolt a computer algebra system to a proof assistant are treated as evidence of ontological mismatch, not of bad engineering"
       ],
-      "folklore": [
-        "mathematics is a single edifice of true statements connected by proof"
-      ],
+      "folklore": ["mathematics is a single edifice of true statements connected by proof"],
       "blind_spots": [
         "the pre-formal layer has historically been treated as unworthy of formal attention"
       ]
     },
     "ecological": {
-      "affordances": [
-        "tools that can converse with, capture and manipulate pre-formal material"
-      ],
+      "affordances": ["tools that can converse with, capture and manipulate pre-formal material"],
       "constraints": [
         "maintaining coherence across ontologies has a computational and conceptual cost that must be budgeted explicitly"
       ]
@@ -53,7 +49,12 @@
         "form": "prose-sketch",
         "content": "This paper's goal is to design the schema underneath these three practices.",
         "interfaces": [
-          { "to": "deductive", "via": "invariance_projection", "available": true, "target": "theory.consolidated-schema" }
+          {
+            "to": "deductive",
+            "via": "invariance_projection",
+            "available": true,
+            "target": "theory.consolidated-schema"
+          }
         ]
       },
       "domain": "metaontology",
@@ -95,7 +96,12 @@
       "confidence": 0.9,
       "shape": { "descriptor": "same steering machinery, one head versus many heads" },
       "similar_to": [
-        { "to": "analogy.numeric-stability-mirrors-ecological-stability", "score": 0.7, "basis": "shape", "note": "both pair an internal mechanism with its collective analog" }
+        {
+          "to": "analogy.numeric-stability-mirrors-ecological-stability",
+          "score": 0.7,
+          "basis": "shape",
+          "note": "both pair an internal mechanism with its collective analog"
+        }
       ],
       "representation": { "layer": "inspiration", "form": "prose-sketch" },
       "sources": [
@@ -195,16 +201,37 @@
       "confidence": 0.95,
       "shape": { "descriptor": "isolate a perfect square and the rest goes quiet" },
       "similar_to": [
-        { "to": "proto_pattern.laws-independent-of-observer", "score": 0.6, "basis": "shape", "note": "both are worked examples of the same descent pattern" }
+        {
+          "to": "proto_pattern.laws-independent-of-observer",
+          "score": 0.6,
+          "basis": "shape",
+          "note": "both are worked examples of the same descent pattern"
+        }
       ],
       "representation": {
         "layer": "fuzzy",
         "form": "prose-sketch",
         "content": "quadratics become simpler if you isolate a perfect square",
         "interfaces": [
-          { "to": "symbolic", "via": "formalize_symbolic", "available": true, "target": "rewrite_rule.completing-the-square" },
-          { "to": "deductive", "via": "formalize_deductive", "available": true, "target": "proof.completing-the-square-preserves-equality", "lossy": true },
-          { "to": "numeric", "via": "formalize_numeric", "available": true, "target": "model.stable-root-location" }
+          {
+            "to": "symbolic",
+            "via": "formalize_symbolic",
+            "available": true,
+            "target": "rewrite_rule.completing-the-square"
+          },
+          {
+            "to": "deductive",
+            "via": "formalize_deductive",
+            "available": true,
+            "target": "proof.completing-the-square-preserves-equality",
+            "lossy": true
+          },
+          {
+            "to": "numeric",
+            "via": "formalize_numeric",
+            "available": true,
+            "target": "model.stable-root-location"
+          }
         ]
       },
       "domain": "algebra",
@@ -229,9 +256,24 @@
         "form": "prose-sketch",
         "content": "the laws shouldn't depend on the observer's frame",
         "interfaces": [
-          { "to": "symbolic", "via": "formalize_symbolic", "available": true, "target": "rewrite_rule.galilean-frame-change" },
-          { "to": "deductive", "via": "formalize_deductive", "available": true, "target": "theorem.lorentz-invariance" },
-          { "to": "numeric", "via": "formalize_numeric", "available": true, "target": "bound.symplectic-integrator-invariants" }
+          {
+            "to": "symbolic",
+            "via": "formalize_symbolic",
+            "available": true,
+            "target": "rewrite_rule.galilean-frame-change"
+          },
+          {
+            "to": "deductive",
+            "via": "formalize_deductive",
+            "available": true,
+            "target": "theorem.lorentz-invariance"
+          },
+          {
+            "to": "numeric",
+            "via": "formalize_numeric",
+            "available": true,
+            "target": "bound.symplectic-integrator-invariants"
+          }
         ]
       },
       "domain": "physics",
@@ -402,8 +444,19 @@
         "form": "rewrite-rule",
         "content": "a x^2 + b x + c → a (x + b/2a)^2 − b^2/4a + c",
         "interfaces": [
-          { "to": "deductive", "via": "embed", "available": true, "target": "proof.completing-the-square-preserves-equality" },
-          { "to": "numeric", "via": "evaluate", "available": true, "target": "model.stable-root-location", "lossy": true }
+          {
+            "to": "deductive",
+            "via": "embed",
+            "available": true,
+            "target": "proof.completing-the-square-preserves-equality"
+          },
+          {
+            "to": "numeric",
+            "via": "evaluate",
+            "available": true,
+            "target": "model.stable-root-location",
+            "lossy": true
+          }
         ]
       },
       "meta_operators": ["normalization"],
@@ -450,10 +503,22 @@
         "form": "prose-sketch",
         "content": "a system — a \"workspace engine\" — that represents objects across all five cognitive layers uniformly",
         "interfaces": [
-          { "to": "numeric", "via": "evaluate", "available": false, "note": "no implementation or measurement exists in the notes" }
+          {
+            "to": "numeric",
+            "via": "evaluate",
+            "available": false,
+            "note": "no implementation or measurement exists in the notes"
+          }
         ]
       },
-      "meta_operators": ["normalization", "verification", "refinement", "extraction", "approximation", "certification"],
+      "meta_operators": [
+        "normalization",
+        "verification",
+        "refinement",
+        "extraction",
+        "approximation",
+        "certification"
+      ],
       "sources": [
         {
           "file": "idea.md",
@@ -518,12 +583,21 @@
         "form": "proposition",
         "content": "Existence: derivability from axioms; Truth: closure under inference rules; Equality: provable equivalence",
         "interfaces": [
-          { "to": "symbolic", "via": "extract", "available": true, "target": "signature.mathematical-object-triple", "lossy": true, "note": "extract the term from a proof" }
+          {
+            "to": "symbolic",
+            "via": "extract",
+            "available": true,
+            "target": "signature.mathematical-object-triple",
+            "lossy": true,
+            "note": "extract the term from a proof"
+          }
         ]
       },
       "meta_operators": ["verification"],
       "social": {
-        "references": [{ "text": "type theories such as those underlying Coq or Lean", "kind": "software" }]
+        "references": [
+          { "text": "type theories such as those underlying Coq or Lean", "kind": "software" }
+        ]
       },
       "sources": [
         {
@@ -592,7 +666,12 @@
         "form": "proposition",
         "content": "physical laws are Lorentz-invariant",
         "interfaces": [
-          { "to": "numeric", "via": "bound", "available": true, "target": "bound.symplectic-integrator-invariants" }
+          {
+            "to": "numeric",
+            "via": "bound",
+            "available": true,
+            "target": "bound.symplectic-integrator-invariants"
+          }
         ]
       },
       "domain": "physics",
@@ -617,7 +696,12 @@
         "form": "proof-term",
         "content": "a derivation showing that the rewrite preserves equality",
         "interfaces": [
-          { "to": "symbolic", "via": "extract", "available": true, "target": "rewrite_rule.completing-the-square" }
+          {
+            "to": "symbolic",
+            "via": "extract",
+            "available": true,
+            "target": "rewrite_rule.completing-the-square"
+          }
         ]
       },
       "meta_operators": ["verification"],
@@ -664,7 +748,13 @@
         "form": "interval",
         "content": "interval-arithmetic certificates",
         "interfaces": [
-          { "to": "deductive", "via": "certify", "available": false, "target": "lemma.existence-from-interval-certificate", "note": "named but never performed in the notes" }
+          {
+            "to": "deductive",
+            "via": "certify",
+            "available": false,
+            "target": "lemma.existence-from-interval-certificate",
+            "note": "named but never performed in the notes"
+          }
         ]
       },
       "meta_operators": ["certification"],
@@ -759,7 +849,9 @@
       "confidence": 0.95,
       "representation": { "layer": "social", "form": "citation" },
       "social": {
-        "references": [{ "text": "type theories such as those underlying Coq or Lean", "kind": "software" }]
+        "references": [
+          { "text": "type theories such as those underlying Coq or Lean", "kind": "software" }
+        ]
       },
       "sources": [
         {
@@ -780,7 +872,10 @@
       "ecological": {
         "costs": [
           { "measure": "computational", "note": "coherence checking across ontologies" },
-          { "measure": "developer-effort", "note": "conceptual cost of keeping three notions of equality aligned" }
+          {
+            "measure": "developer-effort",
+            "note": "conceptual cost of keeping three notions of equality aligned"
+          }
         ]
       },
       "sources": [
@@ -837,7 +932,12 @@
       "to": "trajectory.metaontology-of-mathematical-practice",
       "relation": "motivates",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "A complete schema for mathematical knowledge must include it." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "A complete schema for mathematical knowledge must include it."
+        }
+      ]
     },
     {
       "id": "e.trajectory.metaontology-of-mathematical-practice.steers.theory.consolidated-schema",
@@ -845,7 +945,12 @@
       "to": "theory.consolidated-schema",
       "relation": "steers",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "What follows is a proposal for the full schema: five cognitive layers plus two contextual layers" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "What follows is a proposal for the full schema: five cognitive layers plus two contextual layers"
+        }
+      ]
     },
     {
       "id": "e.analogy.inspiration-is-individual-social-steering.dual_of.research_program.type-systems-and-morphism-catalogues",
@@ -853,7 +958,12 @@
       "to": "research_program.type-systems-and-morphism-catalogues",
       "relation": "dual_of",
       "confidence": 0.5,
-      "sources": [{ "file": "idea.md", "quote": "distributed across a community and encoded in citations, folklore, and shared heuristics" }],
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "distributed across a community and encoded in citations, folklore, and shared heuristics"
+        }
+      ],
       "notes": "Inferred pairing: the notes pair individual trajectory-setting with community research programs, but do not name this specific program as the dual."
     },
     {
@@ -863,7 +973,12 @@
       "relation": "analogous_to",
       "strength": 0.8,
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "they are the structural duals of two specific cognitive layers" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "they are the structural duals of two specific cognitive layers"
+        }
+      ]
     },
     {
       "id": "e.analogy.inspiration-is-individual-social-steering.supports.theory.consolidated-schema",
@@ -872,7 +987,12 @@
       "relation": "supports",
       "strength": 0.7,
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "recognizing this duality is what makes the schema feel complete rather than merely long" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "recognizing this duality is what makes the schema feel complete rather than merely long"
+        }
+      ]
     },
     {
       "id": "e.analogy.numeric-stability-mirrors-ecological-stability.supports.theory.consolidated-schema",
@@ -881,7 +1001,12 @@
       "relation": "supports",
       "strength": 0.7,
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "Numeric ↔ Ecological ... one mathematically, one environmentally" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Numeric ↔ Ecological ... one mathematically, one environmentally"
+        }
+      ]
     },
     {
       "id": "e.domain_mapping.cognitive-layers-to-contextual-analogs.steers.definition.social-layer",
@@ -889,7 +1014,9 @@
       "to": "definition.social-layer",
       "relation": "steers",
       "confidence": 0.6,
-      "sources": [{ "file": "idea.md", "quote": "Cognitive Layer | Social Analog | Ecological Analog" }]
+      "sources": [
+        { "file": "idea.md", "quote": "Cognitive Layer | Social Analog | Ecological Analog" }
+      ]
     },
     {
       "id": "e.invariance_hypothesis.descent-pattern-is-universal.generalizes.proto_pattern.completing-the-square",
@@ -897,7 +1024,12 @@
       "to": "proto_pattern.completing-the-square",
       "relation": "generalizes",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "The same pattern — fuzzy hunch propagating downward into symbolic form, deductive justification, and numeric implementation — recurs" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "The same pattern — fuzzy hunch propagating downward into symbolic form, deductive justification, and numeric implementation — recurs"
+        }
+      ]
     },
     {
       "id": "e.metaphor.three-sciences-in-the-same-clothing.motivates.theory.consolidated-schema",
@@ -905,7 +1037,9 @@
       "to": "theory.consolidated-schema",
       "relation": "motivates",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "These are not three styles of doing the same thing." }]
+      "sources": [
+        { "file": "idea.md", "quote": "These are not three styles of doing the same thing." }
+      ]
     },
     {
       "id": "e.proto_pattern.completing-the-square.formalizes.rewrite_rule.completing-the-square",
@@ -913,7 +1047,9 @@
       "to": "rewrite_rule.completing-the-square",
       "relation": "formalizes",
       "confidence": 0.95,
-      "sources": [{ "file": "idea.md", "quote": "At the symbolic layer, it becomes a concrete rewrite rule" }]
+      "sources": [
+        { "file": "idea.md", "quote": "At the symbolic layer, it becomes a concrete rewrite rule" }
+      ]
     },
     {
       "id": "e.proof.completing-the-square-preserves-equality.supports.rewrite_rule.completing-the-square",
@@ -922,7 +1058,9 @@
       "relation": "supports",
       "strength": 1,
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "a derivation showing that the rewrite preserves equality" }]
+      "sources": [
+        { "file": "idea.md", "quote": "a derivation showing that the rewrite preserves equality" }
+      ]
     },
     {
       "id": "e.model.stable-root-location.instantiates.rewrite_rule.completing-the-square",
@@ -938,7 +1076,12 @@
       "to": "rewrite_rule.galilean-frame-change",
       "relation": "formalizes",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "becomes, symbolically, a covariance requirement under x' = x − vt" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "becomes, symbolically, a covariance requirement under x' = x − vt"
+        }
+      ]
     },
     {
       "id": "e.proto_pattern.laws-independent-of-observer.formalizes.theorem.lorentz-invariance",
@@ -946,7 +1089,12 @@
       "to": "theorem.lorentz-invariance",
       "relation": "formalizes",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "deductively, the formal statement that physical laws are Lorentz-invariant" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "deductively, the formal statement that physical laws are Lorentz-invariant"
+        }
+      ]
     },
     {
       "id": "e.proto_pattern.laws-independent-of-observer.formalizes.bound.symplectic-integrator-invariants",
@@ -954,7 +1102,12 @@
       "to": "bound.symplectic-integrator-invariants",
       "relation": "formalizes",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "numerically, the requirement that stable integrators preserve the associated invariants" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "numerically, the requirement that stable integrators preserve the associated invariants"
+        }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.depends_on.definition.inspiration-layer",
@@ -962,7 +1115,12 @@
       "to": "definition.inspiration-layer",
       "relation": "depends_on",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "−2 Inspiration Layer — deductive, analogical, improvisational steering" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "−2 Inspiration Layer — deductive, analogical, improvisational steering"
+        }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.depends_on.definition.fuzzy-layer",
@@ -970,7 +1128,12 @@
       "to": "definition.fuzzy-layer",
       "relation": "depends_on",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "0 Fuzzy Layer — stabilizes improvisation into proto-operators and proto-structures" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "0 Fuzzy Layer — stabilizes improvisation into proto-operators and proto-structures"
+        }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.depends_on.definition.social-layer",
@@ -978,7 +1141,9 @@
       "to": "definition.social-layer",
       "relation": "depends_on",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "+S Social Layer — the distributed epistemic environment" }]
+      "sources": [
+        { "file": "idea.md", "quote": "+S Social Layer — the distributed epistemic environment" }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.depends_on.definition.ecological-layer",
@@ -986,7 +1151,12 @@
       "to": "definition.ecological-layer",
       "relation": "depends_on",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "+E Ecological Layer — the distributed physical/technological environment" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "+E Ecological Layer — the distributed physical/technological environment"
+        }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.depends_on.signature.mathematical-object-triple",
@@ -994,7 +1164,12 @@
       "to": "signature.mathematical-object-triple",
       "relation": "depends_on",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "an object layer tagging every mathematical entity with its ontology and cross-ontology interfaces" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "an object layer tagging every mathematical entity with its ontology and cross-ontology interfaces"
+        }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.assumes.axiom.symbolic-ontology-commitments",
@@ -1002,7 +1177,9 @@
       "to": "axiom.symbolic-ontology-commitments",
       "relation": "assumes",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "1 Symbolic Layer — formal rewrite systems; term graphs" }]
+      "sources": [
+        { "file": "idea.md", "quote": "1 Symbolic Layer — formal rewrite systems; term graphs" }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.assumes.axiom.deductive-ontology-commitments",
@@ -1010,7 +1187,9 @@
       "to": "axiom.deductive-ontology-commitments",
       "relation": "assumes",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "2 Deductive Layer — proof objects and derivation graphs" }]
+      "sources": [
+        { "file": "idea.md", "quote": "2 Deductive Layer — proof objects and derivation graphs" }
+      ]
     },
     {
       "id": "e.theory.consolidated-schema.assumes.axiom.numeric-ontology-commitments",
@@ -1026,7 +1205,12 @@
       "to": "model.unified-workspace-engine",
       "relation": "motivates",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "supports the morphisms between them, tracks social and ecological context as first-class metadata" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "supports the morphisms between them, tracks social and ecological context as first-class metadata"
+        }
+      ]
     },
     {
       "id": "e.model.unified-workspace-engine.instantiates.theory.consolidated-schema",
@@ -1034,7 +1218,9 @@
       "to": "theory.consolidated-schema",
       "relation": "instantiates",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "The ultimate practical goal of this schema is a system" }]
+      "sources": [
+        { "file": "idea.md", "quote": "The ultimate practical goal of this schema is a system" }
+      ]
     },
     {
       "id": "e.open_question.geometry-of-inspiration-and-fuzzy-space.motivates.research_program.type-systems-and-morphism-catalogues",
@@ -1050,7 +1236,12 @@
       "to": "axiom.deductive-ontology-commitments",
       "relation": "selects_for",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "determining what counts as a legitimate proof and which axioms are acceptable" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "determining what counts as a legitimate proof and which axioms are acceptable"
+        }
+      ]
     },
     {
       "id": "e.folklore.mathematics-is-a-single-edifice.contradicts.theory.consolidated-schema",
@@ -1059,7 +1250,12 @@
       "relation": "contradicts",
       "strength": 0.9,
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "Mathematics is conventionally treated as a single, homogeneous domain unified by a shared notion of truth." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Mathematics is conventionally treated as a single, homogeneous domain unified by a shared notion of truth."
+        }
+      ]
     },
     {
       "id": "e.research_program.type-systems-and-morphism-catalogues.selects_for.open_question.geometry-of-inspiration-and-fuzzy-space",
@@ -1067,7 +1263,12 @@
       "to": "open_question.geometry-of-inspiration-and-fuzzy-space",
       "relation": "selects_for",
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "several directions of further work follow naturally from it" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "several directions of further work follow naturally from it"
+        }
+      ]
     },
     {
       "id": "e.constraint.coherence-maintenance-cost.constrains.model.unified-workspace-engine",
@@ -1075,7 +1276,12 @@
       "to": "model.unified-workspace-engine",
       "relation": "constrains",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "any implementation must budget for explicitly rather than assume away" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "any implementation must budget for explicitly rather than assume away"
+        }
+      ]
     },
     {
       "id": "e.resource.tools-for-capturing-pre-formal-material.constrains.definition.fuzzy-layer",
@@ -1083,7 +1289,12 @@
       "to": "definition.fuzzy-layer",
       "relation": "constrains",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "makes it possible — for the first time — to treat it as a first-class ontological layer" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "makes it possible — for the first time — to treat it as a first-class ontological layer"
+        }
+      ]
     },
     {
       "id": "e.constraint.data-and-gpu-coexistence.supports.definition.ecological-layer",
@@ -1092,7 +1303,12 @@
       "relation": "supports",
       "strength": 0.7,
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "This layer explains facts that no purely cognitive or social account can" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "This layer explains facts that no purely cognitive or social account can"
+        }
+      ]
     },
     {
       "id": "e.axiom.deductive-ontology-commitments.cites.reference.coq-and-lean",
@@ -1100,7 +1316,9 @@
       "to": "reference.coq-and-lean",
       "relation": "cites",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "type theories such as those underlying Coq or Lean" }]
+      "sources": [
+        { "file": "idea.md", "quote": "type theories such as those underlying Coq or Lean" }
+      ]
     },
     {
       "id": "e.certificate.interval-arithmetic-existence-proof.supports.lemma.existence-from-interval-certificate",
@@ -1109,7 +1327,12 @@
       "relation": "supports",
       "strength": 0.6,
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "construct existence proofs from computation, e.g. interval-arithmetic certificates" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "construct existence proofs from computation, e.g. interval-arithmetic certificates"
+        }
+      ]
     },
     {
       "id": "e.bound.symplectic-integrator-invariants.tests.theorem.lorentz-invariance",
@@ -1117,7 +1340,12 @@
       "to": "theorem.lorentz-invariance",
       "relation": "tests",
       "confidence": 0.6,
-      "sources": [{ "file": "idea.md", "quote": "the requirement that stable integrators preserve the associated invariants (energy, momentum)" }],
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "the requirement that stable integrators preserve the associated invariants (energy, momentum)"
+        }
+      ],
       "notes": "Inferred: the notes present the numeric requirement as the downstream consequence, not explicitly as a test."
     }
   ],
@@ -1130,7 +1358,9 @@
       "state": "performed",
       "loss": "drops the informal motivation that the quadratic 'becomes simpler'",
       "confidence": 0.95,
-      "sources": [{ "file": "idea.md", "quote": "At the symbolic layer, it becomes a concrete rewrite rule" }]
+      "sources": [
+        { "file": "idea.md", "quote": "At the symbolic layer, it becomes a concrete rewrite rule" }
+      ]
     },
     {
       "id": "m.rewrite_rule.completing-the-square.embed.proof.completing-the-square-preserves-equality",
@@ -1140,7 +1370,9 @@
       "state": "performed",
       "obligations": ["c.logical.rewrite-preserves-provable-equality"],
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "At the deductive layer, it becomes a proof object" }]
+      "sources": [
+        { "file": "idea.md", "quote": "At the deductive layer, it becomes a proof object" }
+      ]
     },
     {
       "id": "m.rewrite_rule.completing-the-square.evaluate.model.stable-root-location",
@@ -1151,7 +1383,12 @@
       "loss": "exact algebraic identity is replaced by a floating-point procedure",
       "obligations": ["c.semantic.root-algorithm-respects-the-identity"],
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "it becomes an algorithm: a stable method for locating roots or vertex coordinates" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "it becomes an algorithm: a stable method for locating roots or vertex coordinates"
+        }
+      ]
     },
     {
       "id": "m.proto_pattern.laws-independent-of-observer.formalize_symbolic.rewrite_rule.galilean-frame-change",
@@ -1160,7 +1397,12 @@
       "to": "rewrite_rule.galilean-frame-change",
       "state": "performed",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "becomes, symbolically, a covariance requirement under x' = x − vt" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "becomes, symbolically, a covariance requirement under x' = x − vt"
+        }
+      ]
     },
     {
       "id": "m.proto_pattern.laws-independent-of-observer.formalize_deductive.theorem.lorentz-invariance",
@@ -1170,7 +1412,12 @@
       "state": "performed",
       "loss": "the hunch's generality is narrowed to a specific invariance group",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "deductively, the formal statement that physical laws are Lorentz-invariant" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "deductively, the formal statement that physical laws are Lorentz-invariant"
+        }
+      ]
     },
     {
       "id": "m.proto_pattern.laws-independent-of-observer.formalize_numeric.bound.symplectic-integrator-invariants",
@@ -1180,7 +1427,12 @@
       "state": "performed",
       "obligations": ["c.analytic.invariance-guarantees-integrator-stability"],
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "numerically, the requirement that stable integrators preserve the associated invariants" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "numerically, the requirement that stable integrators preserve the associated invariants"
+        }
+      ]
     },
     {
       "id": "m.theorem.lorentz-invariance.bound.bound.symplectic-integrator-invariants",
@@ -1190,7 +1442,12 @@
       "state": "intended",
       "obligations": ["c.analytic.invariance-guarantees-integrator-stability"],
       "confidence": 0.6,
-      "sources": [{ "file": "idea.md", "quote": "Proof → Numeric (construct computable bounds from a derivation)" }],
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Proof → Numeric (construct computable bounds from a derivation)"
+        }
+      ],
       "notes": "Inferred: the notes name the Proof → Numeric morphism generally and give the integrator requirement as the numeric consequence, but never construct the bound."
     },
     {
@@ -1200,7 +1457,12 @@
       "to": "lemma.existence-from-interval-certificate",
       "state": "intended",
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "Numeric → Proof (construct existence proofs from computation, e.g. interval-arithmetic certificates)" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Numeric → Proof (construct existence proofs from computation, e.g. interval-arithmetic certificates)"
+        }
+      ]
     },
     {
       "id": "m.analogy.inspiration-is-individual-social-steering.domain_mapping.domain_mapping.cognitive-layers-to-contextual-analogs",
@@ -1218,7 +1480,12 @@
       "to": "analogy.numeric-stability-mirrors-ecological-stability",
       "state": "performed",
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "the social and ecological layers are structural duals of the inspiration and numeric layers respectively" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "the social and ecological layers are structural duals of the inspiration and numeric layers respectively"
+        }
+      ]
     },
     {
       "id": "m.open_question.geometry-of-inspiration-and-fuzzy-space.gap_identification.knowledge_gap.no-schema-for-pre-formal-mathematics",
@@ -1227,7 +1494,12 @@
       "to": "knowledge_gap.no-schema-for-pre-formal-mathematics",
       "state": "performed",
       "confidence": 0.6,
-      "sources": [{ "file": "idea.md", "quote": "Both the inspiration layer and the fuzzy layer admit a notion of similarity or distance between objects" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Both the inspiration layer and the fuzzy layer admit a notion of similarity or distance between objects"
+        }
+      ]
     },
     {
       "id": "m.invariance_hypothesis.descent-pattern-is-universal.invariance_projection.rewrite_rule.completing-the-square",
@@ -1236,7 +1508,12 @@
       "to": "rewrite_rule.completing-the-square",
       "state": "performed",
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "fuzzy pattern, symbolic rule, deductive justification, numeric consequence" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "fuzzy pattern, symbolic rule, deductive justification, numeric consequence"
+        }
+      ]
     },
     {
       "id": "m.norm.proof-norms-determine-legitimacy.social_selection.axiom.deductive-ontology-commitments",
@@ -1245,7 +1522,12 @@
       "to": "axiom.deductive-ontology-commitments",
       "state": "performed",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "determining what counts as a legitimate proof and which axioms are acceptable" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "determining what counts as a legitimate proof and which axioms are acceptable"
+        }
+      ]
     },
     {
       "id": "m.constraint.coherence-maintenance-cost.ecological_constraint.model.unified-workspace-engine",
@@ -1253,9 +1535,17 @@
       "from": "constraint.coherence-maintenance-cost",
       "to": "model.unified-workspace-engine",
       "state": "intended",
-      "cost": { "measure": "developer-effort", "note": "the cost of coherence must be budgeted rather than assumed away" },
+      "cost": {
+        "measure": "developer-effort",
+        "note": "the cost of coherence must be budgeted rather than assumed away"
+      },
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "any implementation must budget for explicitly rather than assume away" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "any implementation must budget for explicitly rather than assume away"
+        }
+      ]
     },
     {
       "id": "m.theory.consolidated-schema.abstract.open_question.geometry-of-inspiration-and-fuzzy-space",
@@ -1264,7 +1554,12 @@
       "to": "open_question.geometry-of-inspiration-and-fuzzy-space",
       "state": "performed",
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "This schema is offered as a foundation rather than a finished theory" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "This schema is offered as a foundation rather than a finished theory"
+        }
+      ]
     }
   ],
   "coherence": [
@@ -1279,7 +1574,9 @@
       "requirement": "The completing-the-square rewrite must preserve the provable equality of the two quadratics.",
       "status": "discharged",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "a derivation showing that the rewrite preserves equality" }]
+      "sources": [
+        { "file": "idea.md", "quote": "a derivation showing that the rewrite preserves equality" }
+      ]
     },
     {
       "id": "c.semantic.root-algorithm-respects-the-identity",
@@ -1291,9 +1588,17 @@
       ],
       "requirement": "The numeric root-location algorithm must respect the symbolic identity it is derived from, within its error bound.",
       "status": "pending",
-      "cost": { "measure": "developer-effort", "note": "the notes never check the numeric realization against the identity" },
+      "cost": {
+        "measure": "developer-effort",
+        "note": "the notes never check the numeric realization against the identity"
+      },
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "Semantic coherence — numeric evaluation must respect symbolic identities." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Semantic coherence — numeric evaluation must respect symbolic identities."
+        }
+      ]
     },
     {
       "id": "c.analytic.invariance-guarantees-integrator-stability",
@@ -1305,9 +1610,17 @@
       ],
       "requirement": "The invariance statement must guarantee the preservation of energy and momentum that the stable-integrator requirement claims.",
       "status": "pending",
-      "cost": { "measure": "computational", "note": "coherence across ontologies has an unbudgeted cost in the notes" },
+      "cost": {
+        "measure": "computational",
+        "note": "coherence across ontologies has an unbudgeted cost in the notes"
+      },
       "confidence": 0.7,
-      "sources": [{ "file": "idea.md", "quote": "Analytic coherence — proofs must guarantee the convergence properties they claim." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Analytic coherence — proofs must guarantee the convergence properties they claim."
+        }
+      ]
     }
   ],
   "clusters": [
@@ -1380,21 +1693,36 @@
     {
       "kind": "missing_morphism",
       "description": "The notes name Symbolic → Proof, Numeric → Symbolic and Proof → Symbolic as first-class morphisms but perform none of them on a concrete object, so no transport could be recorded for them.",
-      "refs": ["conjecture.six-morphisms-are-the-missing-architecture", "signature.mathematical-object-triple"],
+      "refs": [
+        "conjecture.six-morphisms-are-the-missing-architecture",
+        "signature.mathematical-object-triple"
+      ],
       "layers": ["symbolic", "deductive", "numeric"],
-      "sources": [{ "file": "idea.md", "quote": "most systems implement one or two of them ad hoc, and none implement all six" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "most systems implement one or two of them ad hoc, and none implement all six"
+        }
+      ]
     },
     {
       "kind": "unattributed_claim",
       "description": "Historical claims about why calculus, probability theory, linear algebra and category theory emerged when they did are given without citation.",
       "refs": ["definition.ecological-layer", "constraint.data-and-gpu-coexistence"],
       "layers": ["social", "ecological"],
-      "sources": [{ "file": "idea.md", "quote": "why calculus emerged when physics demanded it, why probability theory emerged when gambling and insurance demanded it" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "why calculus emerged when physics demanded it, why probability theory emerged when gambling and insurance demanded it"
+        }
+      ]
     },
     {
       "kind": "ambiguous_statement",
       "description": "The dual pairing recorded between the inspiration-layer analogy and the stated research program is an inference; the notes assert the inspiration↔social duality at the level of layers, not of specific objects.",
-      "refs": ["e.analogy.inspiration-is-individual-social-steering.dual_of.research_program.type-systems-and-morphism-catalogues"],
+      "refs": [
+        "e.analogy.inspiration-is-individual-social-steering.dual_of.research_program.type-systems-and-morphism-catalogues"
+      ],
       "layers": ["inspiration", "social"]
     }
   ],

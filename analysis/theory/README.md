@@ -2,7 +2,7 @@
 
 A metaontology of mathematical practice — and a zero-dependency viewer for the graphs it produces.
 
-Working notes (markdown) are read by an extraction op (`analyze.op.md`) and turned into a `*.theory_graph.json` document
+Working notes (markdown) are read by an extraction op (`parse.op.md`) and turned into a `*.theory_graph.json` document
 conforming to
 `theory_graph.schema.ts`. The viewer in this directory (`index.html`, `app.js`,
 `graph.js`, `schema.js`, `styles.css`) renders that document as a layered graph with an inspector, filters, tables and a
@@ -18,11 +18,11 @@ notes/*.md ──▶ analyze.op.md ──▶ *.theory_graph.json ──▶ viewe
 ## Why
 
 Mathematics is not one ontology. `idea.md` argues that mathematical work runs across several regimes that disagree about
-what an object *is*, what *equality*
-means, and what counts as *evidence*:
+what an object _is_, what _equality_
+means, and what counts as _evidence_:
 
 | Layer            | An object is…                            | Existence            | Truth                      | Equality              |
-|------------------|------------------------------------------|----------------------|----------------------------|-----------------------|
+| ---------------- | ---------------------------------------- | -------------------- | -------------------------- | --------------------- |
 | `-2 inspiration` | a direction in the space of theories     | expressible          | n/a                        | same trajectory       |
 | `0 fuzzy`        | a hunch, pattern, sketch, proto-operator | expressible at all   | n/a (pre-truth-apt)        | similarity of shape   |
 | `1 symbolic`     | a term in a rewrite system               | well-formedness      | reaches a normal form      | convertibility        |
@@ -36,14 +36,14 @@ all five. `social` is the collective dual of `inspiration`; `ecological` is the 
 
 Three pieces of connective structure span the cognitive layers:
 
-* **Object layer** — every node carries an ontology tag, a `representation`
+- **Object layer** — every node carries an ontology tag, a `representation`
   and cross-ontology `interfaces`.
-* **Morphism layer** — named, first-class transports between ontologies (`extract`, `embed`, `evaluate`, `fit`, `bound`,
+- **Morphism layer** — named, first-class transports between ontologies (`extract`, `embed`, `evaluate`, `fit`, `bound`,
   `certify`, the
   `formalize_*` projections, `abstract`, the inspiration-layer analogy and trajectory morphisms, and the contextual
   `social_selection` /
   `ecological_constraint`).
-* **Coherence layer** — explicit, *costed* obligations: `semantic` (numeric evaluation respects symbolic identities),
+- **Coherence layer** — explicit, _costed_ obligations: `semantic` (numeric evaluation respects symbolic identities),
   `logical` (rewrites preserve provable truths), `analytic` (proofs guarantee the convergence they claim).
 
 ---
@@ -51,10 +51,10 @@ Three pieces of connective structure span the cognitive layers:
 ## Files
 
 | File                        | Role                                                                                                                                         |
-|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `idea.md`                   | The paper: the consolidated schema and the duality that closes it.                                                                           |
 | `theory_graph.schema.ts`    | Canonical types + constants + `validateTheoryGraph`, `findCycles`, `findMissingMorphisms`, `computeStats`. Dependency-free.                  |
-| `analyze.op.md`             | The extraction op: how to turn markdown notes into a `TheoryGraph`. Contains the kind/relation/morphism selection tables and the hard rules. |
+| `parse.op.md`             | The extraction op: how to turn markdown notes into a `TheoryGraph`. Contains the kind/relation/morphism selection tables and the hard rules. |
 | `schema.js`                 | Runtime ES6 mirror of the schema constants and validators, used by the viewer. Also `normalizeGraph()`.                                      |
 | `graph.js`                  | `GraphView`: SVG lane renderer, barycentric layout, pan/zoom/drag, highlight.                                                                |
 | `app.js`                    | Wiring: loading, `?src=` routing, filters, inspector, tables, diagnostics, export.                                                           |
@@ -75,11 +75,11 @@ python3 -m http.server 8000
 
 Three ways to load a graph:
 
-* **`?src=…`** — fetched on start, and kept in sync in the address bar so any view is linkable and browser back/forward
+- **`?src=…`** — fetched on start, and kept in sync in the address bar so any view is linkable and browser back/forward
   moves between visited graphs.
-* **Open file… / drag & drop** — anything dropped on the page is parsed. Local files clear `?src` (there is nothing to
+- **Open file… / drag & drop** — anything dropped on the page is parsed. Local files clear `?src` (there is nothing to
   link to).
-* **Fetch box** — paste a relative or absolute path.
+- **Fetch box** — paste a relative or absolute path.
 
 Quick-access samples are declared in `index.html` and wired automatically by
 `app.js`:
@@ -94,28 +94,28 @@ Quick-access samples are declared in `index.html` and wired automatically by
 
 ## What the viewer shows
 
-* **Lanes** — one column per layer in schema order:
+- **Lanes** — one column per layer in schema order:
   `social | inspiration | fuzzy | symbolic | deductive | numeric | ecological`. Vertical position is a barycentric
   ordering over the edge + morphism adjacency, so descent chains (hunch → rule → proof → benchmark) read across.
-* **Shapes** — triangle = inspiration, circle = fuzzy, rounded square = symbolic, square = deductive, diamond = numeric,
-  hexagon = contextual. Size scales with `confidence`; 
-  dashed outline = `proposed` / `pre_formal` / `unknown`; 
+- **Shapes** — triangle = inspiration, circle = fuzzy, rounded square = symbolic, square = deductive, diamond = numeric,
+  hexagon = contextual. Size scales with `confidence`;
+  dashed outline = `proposed` / `pre_formal` / `unknown`;
   faded = `refuted` / `abandoned` / `superseded`.
-* **Links** — grey logical/structural, amber evidential, red conflict, violet cross-layer (`formalizes` / `abstracts`),
-  teal contextual (`steers` / `selects_for` / `constrains`), dashed cyan morphisms, 
+- **Links** — grey logical/structural, amber evidential, red conflict, violet cross-layer (`formalizes` / `abstracts`),
+  teal contextual (`steers` / `selects_for` / `constrains`), dashed cyan morphisms,
   dotted pink coherence obligations chained across their `refs`.
-* **Inspector** — statement, `formal`, representation and its interfaces, attributes, shape/similarity, social and
+- **Inspector** — statement, `formal`, representation and its interfaces, attributes, shape/similarity, social and
   ecological context, incident edges / morphisms / obligations, and every `SourceRef` with its quote.
-* **Tables** — Nodes, Edges, Morphisms, Coherence, Clusters, Issues, Diagnostics, Stats.
-* **Diagnostics** — a JS port of `validateTheoryGraph`, `findCycles` (over
+- **Tables** — Nodes, Edges, Morphisms, Coherence, Clusters, Issues, Diagnostics, Stats.
+- **Diagnostics** — a JS port of `validateTheoryGraph`, `findCycles` (over
   `ACYCLIC_RELATIONS`) and the advisory `findMissingMorphisms`, including layer discipline (“`formalizes` must descend
   the cognitive axis”, “pre-truth-apt node carries a truth-apt status”, morphism signature violations).
-* **Export** — downloads the visible subgraph as a valid theory graph with recomputed `stats`.
+- **Export** — downloads the visible subgraph as a valid theory graph with recomputed `stats`.
 
 ### Shortcuts
 
 | key          | action                            |
-|--------------|-----------------------------------|
+| ------------ | --------------------------------- |
 | `f`          | fit to view                       |
 | `/`          | focus search                      |
 | `Esc`        | clear selection                   |
@@ -125,7 +125,7 @@ Quick-access samples are declared in `index.html` and wired automatically by
 
 ## Producing a graph
 
-Run `analyze.op.md` over a directory of markdown notes. The transform header
+Run `parse.op.md` over a directory of markdown notes. The transform header
 
 ```
 transforms: (.*).md -> $1.theory_graph.json
@@ -141,7 +141,7 @@ The op's procedure, in brief:
    `layer_rationale`.
 3. **Normalize** each statement to one self-contained declarative sentence.
 4. **Represent** — fill `representation` with layer, `form`, verbatim
-   `content`, and an `interfaces` entry for every projection the notes offer *or visibly want* (`available: false` for
+   `content`, and an `interfaces` entry for every projection the notes offer _or visibly want_ (`available: false` for
    the wanted-but-absent ones).
 5. **Deduplicate** across documents; a hunch and its formalization are **two**
    nodes in **two** layers joined by `formalizes`.
@@ -167,18 +167,18 @@ morphism    m.<from-slug>.<kind>.<to-slug>
 obligation  c.<kind>.<slug>
 ```
 
-`confidence` is *extraction* confidence (how sure you are the document says this), not the truth of the claim — truth
+`confidence` is _extraction_ confidence (how sure you are the document says this), not the truth of the claim — truth
 lives in `status` and in `strength`
 on supporting edges.
 
 ### Hard rules
 
-* Never introduce mathematics that is not in the notes.
-* Never drop a claim because it looks wrong; let `refutes` edges do the work.
-* Never promote a hunch: gestures stay `fuzzy` with `status: "pre_formal"`.
-* Never invent social or ecological context — no imagined citations, no assumed hardware.
-* Never silently collapse layers: a benchmark and the identity it checks are two nodes plus a `semantic` obligation.
-* Anything unresolvable goes into `unresolved`, not into invented nodes.
+- Never introduce mathematics that is not in the notes.
+- Never drop a claim because it looks wrong; let `refutes` edges do the work.
+- Never promote a hunch: gestures stay `fuzzy` with `status: "pre_formal"`.
+- Never invent social or ecological context — no imagined citations, no assumed hardware.
+- Never silently collapse layers: a benchmark and the identity it checks are two nodes plus a `semantic` obligation.
+- Anything unresolvable goes into `unresolved`, not into invented nodes.
 
 ---
 
@@ -281,16 +281,16 @@ on supporting edges.
 
 ## Notes and known quirks
 
-* Some older graphs park edges and morphisms inside `nodes[]`.
+- Some older graphs park edges and morphisms inside `nodes[]`.
   `normalizeGraph()` detects objects carrying `from`/`to`, moves them into
   `edges[]` / `morphisms[]`, and reports what it moved in **Diagnostics**.
-* `validateTheoryGraph` in `schema.js` is a faithful port of the TypeScript original; keep the two in sync when the
+- `validateTheoryGraph` in `schema.js` is a faithful port of the TypeScript original; keep the two in sync when the
   schema changes.
-* The viewer has no build step and no dependencies — plain ES modules, plain SVG, plain CSS.
+- The viewer has no build step and no dependencies — plain ES modules, plain SVG, plain CSS.
 
 ## Roadmap
 
-* Type disciplines per layer (inspiration and fuzzy objects especially).
-* An exhaustive morphism catalogue with operational semantics.
-* An explicit geometry over inspiration/fuzzy space, so hunches can be clustered, retrieved and extended.
-* A unified workspace engine: edit and author across all five cognitive layers, not just read them.
+- Type disciplines per layer (inspiration and fuzzy objects especially).
+- An exhaustive morphism catalogue with operational semantics.
+- An explicit geometry over inspiration/fuzzy space, so hunches can be clustered, retrieved and extended.
+- A unified workspace engine: edit and author across all five cognitive layers, not just read them.

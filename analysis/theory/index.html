@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Theory Graph Viewer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header id="topbar">
+      <h1>Theory&nbsp;Graph&nbsp;Viewer</h1>
+
+      <div class="loaders">
+        <label class="btn">
+          Open file…
+          <input id="file-input" type="file" accept=".json,application/json" hidden />
+        </label>
+        <input id="url-input" type="text" placeholder="…/x.theory_graph.json" spellcheck="false" />
+        <button id="url-load" class="btn">Fetch</button>
+        <!-- Samples: add/remove a button here; app.js wires them by data-src. -->
+        <span class="samples" id="samples">
+          <button class="btn" data-src="idea.theory_graph.json">This</button>
+          <button class="btn" data-src="../../numbers/primegen/docs/generator.theory_graph.json">
+            Primes/generator
+          </button>
+          <button class="btn" data-src="../../numbers/primegen/docs/algorithm.theory_graph.json">
+            Primes/algorithm
+          </button>
+          <button class="btn" data-src="../../quadratics/pentagon/docs/analysis.theory_graph.json">
+            Pentagon/analysis
+          </button>
+          <button
+            class="btn"
+            data-src="../../quadratics/pentagon/docs/experiment.theory_graph.json"
+          >
+            Pentagon/experiment
+          </button>
+        </span>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="doc-meta" id="doc-meta"></div>
+
+      <div class="tools">
+        <button id="btn-fit" class="btn" title="Fit to view (f)">Fit</button>
+        <button id="btn-relayout" class="btn" title="Recompute layout">Re-layout</button>
+        <button id="btn-export" class="btn" title="Download the visible subgraph">Export</button>
+      </div>
+    </header>
+
+    <main id="layout">
+      <aside id="sidebar">
+        <div class="panel">
+          <label class="field">
+            <span>Search</span>
+            <input
+              id="q"
+              type="search"
+              placeholder="name, id, statement, quote…"
+              spellcheck="false"
+            />
+          </label>
+          <label class="field">
+            <span>Min confidence <b id="conf-val">0.00</b></span>
+            <input id="conf" type="range" min="0" max="1" step="0.05" value="0" />
+          </label>
+        </div>
+
+        <details class="panel" open>
+          <summary>Layers</summary>
+          <div id="f-layers" class="chips"></div>
+        </details>
+
+        <details class="panel">
+          <summary>Node kinds</summary>
+          <div id="f-kinds" class="chips small"></div>
+        </details>
+
+        <details class="panel">
+          <summary>Status</summary>
+          <div id="f-status" class="chips small"></div>
+        </details>
+
+        <details class="panel">
+          <summary>Relations</summary>
+          <div id="f-relations" class="chips small"></div>
+        </details>
+
+        <details class="panel" open>
+          <summary>Overlays</summary>
+          <div class="checks">
+            <label><input type="checkbox" id="o-edges" checked /> edges</label>
+            <label><input type="checkbox" id="o-morphisms" checked /> morphisms</label>
+            <label><input type="checkbox" id="o-coherence" /> coherence</label>
+            <label><input type="checkbox" id="o-labels" checked /> labels</label>
+            <label><input type="checkbox" id="o-orphans" /> hide isolated</label>
+          </div>
+          <label class="field">
+            <span>Focus depth <b id="depth-val">off</b></span>
+            <input id="depth" type="range" min="0" max="4" step="1" value="0" />
+          </label>
+        </details>
+
+        <div class="panel legend" id="legend"></div>
+        <div class="panel counts" id="counts"></div>
+      </aside>
+
+      <section id="stage">
+        <div id="graph-host"></div>
+        <div id="empty">
+          <p>
+            <strong>Drop a <code>theory_graph.json</code> anywhere</strong>
+          </p>
+          <p>
+            …or open one with the button above, or append
+            <code>?src=../generator.theory_graph.json</code> to the URL.
+          </p>
+        </div>
+      </section>
+
+      <aside id="inspector">
+        <div class="placeholder">Select a node, edge, morphism or obligation.</div>
+      </aside>
+    </main>
+
+    <section id="bottom">
+      <nav id="tabs">
+        <button class="tab active" data-tab="nodes">Nodes</button>
+        <button class="tab" data-tab="edges">Edges</button>
+        <button class="tab" data-tab="morphisms">Morphisms</button>
+        <button class="tab" data-tab="coherence">Coherence</button>
+        <button class="tab" data-tab="clusters">Clusters</button>
+        <button class="tab" data-tab="issues">Issues</button>
+        <button class="tab" data-tab="diagnostics">Diagnostics</button>
+        <button class="tab" data-tab="stats">Stats</button>
+        <span class="grow"></span>
+        <button id="bottom-toggle" class="btn ghost" title="Collapse / expand">▾</button>
+      </nav>
+      <div id="tab-body"></div>
+    </section>
+
+    <div id="drop-veil"><span>Drop to load</span></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

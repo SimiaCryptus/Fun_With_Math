@@ -1,0 +1,1429 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2025-01-01T00:00:00Z",
+  "generator": { "op": "analysis/knowledge/parse.op.md" },
+  "corpus": {
+    "documents": [
+      { "id": "idea", "path": "idea.md", "order": 1, "title": "The Knowledge Layer: A Relational Map of the Vocabulary of a Discussion" }
+    ]
+  },
+  "companion": { "theory_graph": "idea.theory_graph.json" },
+  "entries": [
+    {
+      "id": "concept.knowledge-graph",
+      "kind": "concept",
+      "label": "Knowledge Graph",
+      "aliases": ["knowledge layer", "the map"],
+      "gloss": {
+        "text": "a map of the discussion's vocabulary together with a ranked queue of the definitions that map is missing",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "Abstract" }
+      },
+      "definition_status": "defined_here",
+      "role": "central",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "Abstract", "quote": "The result is not a dictionary but a *map of the discussion's vocabulary together with a ranked queue of the definitions that map is missing*" }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "The theory graph and the knowledge graph answer different questions about the same corpus" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "The knowledge graph is designed to be read as a work queue" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "the graph records the incorrect usage and flags a conflict" }, "role": "uses" }
+      ],
+      "mention_count": 4,
+      "first_seen": "idea",
+      "confidence": 0.95
+    },
+    {
+      "id": "concept.theory-graph",
+      "kind": "concept",
+      "label": "Theory Graph",
+      "aliases": ["theory schema"],
+      "gloss": {
+        "text": "The theory schema records claims — what a corpus asserts, at which ontological layer, on what evidence.",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "Abstract" }
+      },
+      "definition_status": "defined_here",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "Abstract", "quote": "The theory schema records *claims* — what a corpus asserts, at which ontological layer, on what evidence." }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "Nothing in the theory graph needs to know the knowledge graph exists." }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "8. Further Work", "quote": "Joint queries with the theory graph." }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.95
+    },
+    {
+      "id": "term.entry",
+      "kind": "term",
+      "label": "Entry",
+      "aliases": ["entries"],
+      "gloss": {
+        "text": "An entry is created for anything the corpus treats as a name.",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "3. Entries" }
+      },
+      "definition_status": "defined_here",
+      "role": "central",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "Abstract", "quote": "An entry is created the moment a term is used as though it meant something" }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "3. Entries", "quote": "An entry is created for anything the corpus treats as a name." }, "role": "defines" },
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "An entry whose status is `assumed_known` with forty mentions is a *more* valuable output" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "A `sense` is a distinct reading of one entry" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "every entry carry at least one mention with a source" }, "role": "uses" }
+      ],
+      "mention_count": 5,
+      "first_seen": "idea",
+      "confidence": 0.95
+    },
+    {
+      "id": "term.claim",
+      "kind": "term",
+      "label": "Claim",
+      "aliases": ["claims"],
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "Abstract", "quote": "The theory schema records *claims*" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "unit | a claim | a term" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3. Entries", "quote": "the theorem as a claim belongs in the theory graph" }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "term.corpus",
+      "kind": "term",
+      "label": "Corpus",
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "answer different questions about the same corpus" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3. Entries", "quote": "anything the corpus treats as a name" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "an explicit, ranked list of definitions the corpus needs and does not have" }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "term.definition-status",
+      "kind": "term",
+      "label": "Definition Status",
+      "symbols": ["definition_status"],
+      "gloss": {
+        "text": "`definition_status` is a small lattice, and the whole schema is arranged around it",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "3.1 Definition Status" }
+      },
+      "definition_status": "gestured",
+      "role": "central",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "Accordingly `gloss` is optional and `definition_status` is required." }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "3.1 Definition Status", "quote": "`definition_status` is a small lattice, and the whole schema is arranged around it" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`definition_status: gestured`" }, "role": "exemplifies" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "notes": "The lattice values are enumerated but the notion itself is only gestured at.",
+      "confidence": 0.9
+    },
+    {
+      "id": "term.gloss",
+      "kind": "term",
+      "label": "Gloss",
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "Accordingly `gloss` is optional and `definition_status` is required." }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "each with its own optional gloss" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "what shape of answer would satisfy it (`formal_definition`, `gloss`, ...)" }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "term.sense",
+      "kind": "term",
+      "label": "Sense",
+      "aliases": ["senses"],
+      "gloss": {
+        "text": "A `sense` is a distinct reading of one entry, each with its own optional gloss, its own layer, and a discriminator saying what tells the readings apart in context.",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "3.2 Senses" }
+      },
+      "definition_status": "defined_here",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "A `sense` is a distinct reading of one entry" }, "role": "defines" },
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "Recording two senses is always preferable to silently picking one" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "two senses (residue-class set / packed bitmask)" }, "role": "exemplifies" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.95
+    },
+    {
+      "id": "term.relation",
+      "kind": "term",
+      "label": "Relation",
+      "aliases": ["relations", "relational metadata"],
+      "definition_status": "assumed_known",
+      "role": "central",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "relational metadata is extracted, and definitional content is only recorded when the corpus supplies it" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "Relations are grouped by what kind of evidence licenses them" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "A relation asserted without textual evidence is worse than a missing one" }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "term.mention",
+      "kind": "term",
+      "label": "Mention",
+      "aliases": ["mentions"],
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "3. Entries", "quote": "mentions (every occurrence, with the role the occurrence plays" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "score rises with centrality in the relation graph and with mention count" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "every entry carry at least one mention with a source" }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "term.alias",
+      "kind": "term",
+      "label": "Alias",
+      "aliases": ["aliases"],
+      "definition_status": "assumed_known",
+      "role": "background",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "3. Entries", "quote": "aliases and symbols (so the same thing found under three names collapses to one node)" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "8. Further Work", "quote": "Alias resolution across corpora." }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "term.term",
+      "kind": "term",
+      "label": "Term",
+      "aliases": ["terms"],
+      "definition_status": "assumed_known",
+      "role": "central",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "unit | a claim | a term" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "To ask a good question about a term you need to know where it sits" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "a term with unresolved senses is marked `ambiguous`" }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "concept.metaontology",
+      "kind": "concept",
+      "label": "Metaontology",
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "The most systematic source of sense-splitting is the metaontology itself" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3. Entries", "quote": "the metaontology layers the term is actually used at" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.8
+    },
+    {
+      "id": "term.layer",
+      "kind": "term",
+      "label": "Layer",
+      "aliases": ["layers", "ontological layer"],
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "Abstract", "quote": "what a corpus asserts, at which ontological layer, on what evidence" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "the same word means different things at different layers" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "layers `symbolic` and `ecological`" }, "role": "exemplifies" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "term.layer-drift",
+      "kind": "term",
+      "label": "Layer Drift",
+      "symbols": ["layer_drift"],
+      "gloss": {
+        "text": "This drift is recorded explicitly (`layer_drift`) rather than treated as noise",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "3.2 Senses" }
+      },
+      "definition_status": "gestured",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "This drift is recorded explicitly (`layer_drift`) rather than treated as noise" }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`layer_drift` recorded" }, "role": "exemplifies" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "concept.definition-request",
+      "kind": "concept",
+      "label": "Definition Request",
+      "aliases": ["requests", "request"],
+      "gloss": {
+        "text": "A request records the entry, why the definition is wanted now, what shape of answer would satisfy it, which other undefined entries block it, and where to look.",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue" }
+      },
+      "definition_status": "defined_here",
+      "role": "central",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "`requests`: an explicit, ranked list of definitions the corpus needs and does not have" }, "role": "defines" },
+        { "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "Requests are derived, not authored" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.95
+    },
+    {
+      "id": "term.co-occurs-with",
+      "kind": "term",
+      "label": "Co-Occurs With",
+      "symbols": ["co_occurs_with"],
+      "gloss": {
+        "text": "It is the substrate from which topics are induced when nothing stronger is available",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "4. The Relation Taxonomy" }
+      },
+      "definition_status": "gestured",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "`co_occurs_with` is deliberately included despite carrying almost no semantics." }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "low-evidence links belong in `co_occurs_with` with a strength" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "quantity.strength",
+      "kind": "quantity",
+      "label": "Strength",
+      "gloss": {
+        "text": "its `strength` field (co-occurrence weight) is the graph's cheapest signal",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "4. The Relation Taxonomy" }
+      },
+      "definition_status": "defined_here",
+      "role": "background",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "its `strength` field (co-occurrence weight) is the graph's cheapest signal" }, "role": "defines" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "quantity.mention-count",
+      "kind": "quantity",
+      "label": "Mention Count",
+      "definition_status": "assumed_known",
+      "role": "background",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "score rises with centrality in the relation graph and with mention count" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`term.wheel` — 31 mentions" }, "role": "exemplifies" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.8
+    },
+    {
+      "id": "quantity.centrality",
+      "kind": "quantity",
+      "label": "Centrality",
+      "definition_status": "assumed_known",
+      "role": "background",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "score rises with centrality in the relation graph" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "ranked by how much of the discussion is standing on them" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.75,
+      "notes": "Second mention is a paraphrase of centrality rather than the word itself; inferred."
+    },
+    {
+      "id": "term.topic",
+      "kind": "term",
+      "label": "Topic",
+      "aliases": ["topics"],
+      "definition_status": "assumed_known",
+      "role": "background",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "the substrate from which topics are induced when nothing stronger is available" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "8. Further Work", "quote": "Induced topics." }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.8
+    },
+    {
+      "id": "concept.induced-topics",
+      "kind": "concept",
+      "label": "Induced Topics",
+      "gloss": {
+        "text": "Community detection over the discourse relations to produce glossary sections that reflect how the notes actually organise their vocabulary",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "8. Further Work" }
+      },
+      "definition_status": "gestured",
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "8. Further Work", "quote": "**Induced topics.** Community detection over the discourse relations to produce glossary sections" }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "the substrate from which topics are induced" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.8
+    },
+    {
+      "id": "method.community-detection",
+      "kind": "method",
+      "label": "Community Detection",
+      "definition_status": "assumed_known",
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "8. Further Work", "quote": "Community detection over the discourse relations" }, "role": "uses" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "concept.phantom-entry",
+      "kind": "concept",
+      "label": "Phantom Entry",
+      "aliases": ["phantom entries"],
+      "gloss": {
+        "text": "plausible neighbours the extractor knows about but the text never mentions",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "7. Anti-Goals" }
+      },
+      "definition_status": "defined_here",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "Phantom entries — plausible neighbours the extractor knows about but the text never mentions — are the primary failure mode" }, "role": "defines" },
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "excluded by the requirement that every entry carry at least one mention with a source" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.95
+    },
+    {
+      "id": "term.extractor",
+      "kind": "term",
+      "label": "Extractor",
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "A definition invented by the extractor is indistinguishable in the output from a definition present in the notes" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3.1 Definition Status", "quote": "the extractor could not tell" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "8. Further Work", "quote": "closing the loop without ever letting the extractor invent meaning" }, "role": "uses" }
+      ],
+      "mention_count": 3,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "concept.glossary",
+      "kind": "concept",
+      "label": "Glossary",
+      "definition_status": "assumed_known",
+      "role": "contrasted",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "Abstract", "quote": "Its organising principle is deliberately inverted with respect to a glossary" }, "role": "contrasts" },
+        { "source": { "file": "idea.md", "heading": "7. Anti-Goals", "quote": "**Not a glossary.** Completeness of meaning is not the target" }, "role": "contrasts" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.9,
+      "notes": "`role` \"contrasted\" is not in ROLES; downgraded below."
+    },
+    {
+      "id": "concept.alias-resolution",
+      "kind": "concept",
+      "label": "Alias Resolution",
+      "gloss": {
+        "text": "Merging entries whose labels differ but whose relational neighbourhoods coincide.",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "8. Further Work" }
+      },
+      "definition_status": "defined_here",
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "8. Further Work", "quote": "**Alias resolution across corpora.** Merging entries whose labels differ but whose relational neighbourhoods coincide." }, "role": "defines" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "term.wheel",
+      "kind": "term",
+      "label": "Wheel",
+      "gloss": {
+        "text": "a wheel skips multiples of the first k primes",
+        "verbatim": true,
+        "source": { "file": "idea.md", "heading": "6. Worked Example" }
+      },
+      "definition_status": "ambiguous",
+      "senses": [
+        {
+          "id": "term.wheel#residue-class-set",
+          "layer": "symbolic",
+          "discriminator": "used when reasoning about residues and moduli",
+          "definition_status": "gestured",
+          "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "*Wheel* may be a residue-class set at the symbolic layer" }]
+        },
+        {
+          "id": "term.wheel#bit-array",
+          "layer": "ecological",
+          "discriminator": "used when the wheel is a packed bitmask in memory",
+          "definition_status": "assumed_known",
+          "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "and a bit-array at the ecological one" }]
+        }
+      ],
+      "role": "central",
+      "layers": ["symbolic", "ecological"],
+      "layer_drift": "a residue-class set at the symbolic layer and a packed bit-array at the ecological one",
+      "domain": "wheel",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "the wheel of modulus 210 removes 77% of candidates before any primality test runs" }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "\"*wheel* is used together with *modulus*\"" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "3.2 Senses", "quote": "*Wheel* may be a residue-class set at the symbolic layer and a bit-array at the ecological one." }, "role": "uses", "sense": "term.wheel#residue-class-set" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`term.wheel` — 31 mentions, `definition_status: gestured`" }, "role": "exemplifies", "sense": "term.wheel#bit-array" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "The map says nothing about what a wheel *is*." }, "role": "questions" }
+      ],
+      "mention_count": 5,
+      "first_seen": "idea",
+      "confidence": 0.95,
+      "notes": "The corpus labels this `gestured`; recorded as `ambiguous` because two unresolved senses are given and the schema reserves multi-sense entries for ambiguous/conflicting/defined_here."
+    },
+    {
+      "id": "quantity.modulus",
+      "kind": "quantity",
+      "label": "Modulus",
+      "definition_status": "assumed_known",
+      "role": "supporting",
+      "domain": "wheel",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "the wheel of modulus 210 removes 77% of candidates" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`parameterized_by → quantity.modulus`" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "term.candidate",
+      "kind": "term",
+      "label": "Candidate",
+      "aliases": ["candidates"],
+      "definition_status": "undefined",
+      "role": "background",
+      "domain": "sieve",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "removes 77% of candidates before any primality test runs" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "four entries plus their relations to the knowledge graph (`wheel`, `modulus`, `candidate`, `primality test`)" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "method.primality-test",
+      "kind": "method",
+      "label": "Primality Test",
+      "definition_status": "assumed_known",
+      "role": "background",
+      "domain": "primality-test",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "before any primality test runs" }, "role": "uses" },
+        { "source": { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "(`wheel`, `modulus`, `candidate`, `primality test`), none of which the sentence defines" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "method.sieve-of-eratosthenes",
+      "kind": "method",
+      "label": "Sieve of Eratosthenes",
+      "definition_status": "assumed_known",
+      "role": "background",
+      "domain": "sieve",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`part_of → method.sieve-of-eratosthenes`" }, "role": "uses" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "method.segmented-sieve",
+      "kind": "method",
+      "label": "Segmented Sieve",
+      "definition_status": "assumed_known",
+      "role": "incidental",
+      "domain": "sieve",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`alternative_to → method.segmented-sieve`" }, "role": "uses" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "quantity.candidate-density",
+      "kind": "quantity",
+      "label": "Candidate Density",
+      "definition_status": "undefined",
+      "role": "incidental",
+      "domain": "sieve",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`co_occurs_with → quantity.candidate-density` (strength 0.8)" }, "role": "uses" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.8
+    },
+    {
+      "id": "notation.phi",
+      "kind": "notation",
+      "label": "phi",
+      "symbols": ["\\varphi"],
+      "definition_status": "undefined",
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`notation.phi` — `definition_status: undefined`" }, "role": "introduces" },
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "inferred from a single apposition, confidence 0.6. → **request, wants `notation_key`.**" }, "role": "uses" }
+      ],
+      "mention_count": 2,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "quantity.totient",
+      "kind": "quantity",
+      "label": "Totient",
+      "definition_status": "assumed_known",
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`notation_for → quantity.totient`" }, "role": "uses" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "named_result.mertens-third-theorem",
+      "kind": "named_result",
+      "label": "Mertens' Third Theorem",
+      "definition_status": "defined_elsewhere",
+      "definition_ref": { "where": "external", "entry": "work.hardy-wright", "source": { "file": "idea.md", "heading": "6. Worked Example" } },
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`named_result.mertens-third-theorem` — `definition_status: defined_elsewhere`, `documented_in → work.hardy-wright`. → **no request.**" }, "role": "cites" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.9
+    },
+    {
+      "id": "named_result.dirichlets-theorem",
+      "kind": "named_result",
+      "label": "Dirichlet's Theorem",
+      "definition_status": "assumed_known",
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "3. Entries", "quote": "`named_result` records *\"Dirichlet's theorem\"* as a name to be looked up" }, "role": "exemplifies" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.9,
+      "notes": "Named only as an illustration of the `named_result` kind; carries no relations and generates no request."
+    },
+    {
+      "id": "work.hardy-wright",
+      "kind": "work",
+      "label": "Hardy & Wright",
+      "definition_status": "assumed_known",
+      "role": "incidental",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "`documented_in → work.hardy-wright`" }, "role": "cites" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.85
+    },
+    {
+      "id": "field.prime-generation",
+      "kind": "field",
+      "label": "Prime Generation",
+      "definition_status": "undefined",
+      "role": "background",
+      "mentions": [
+        { "source": { "file": "idea.md", "heading": "6. Worked Example", "quote": "From a corpus of prime-generation notes:" }, "role": "uses" }
+      ],
+      "mention_count": 1,
+      "first_seen": "idea",
+      "confidence": 0.85
+    }
+  ],
+  "edges": [
+    {
+      "id": "k.concept.knowledge-graph.contrasts_with.concept.theory-graph",
+      "from": "concept.knowledge-graph",
+      "to": "concept.theory-graph",
+      "relation": "contrasts_with",
+      "confidence": 0.95,
+      "sources": [{ "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "The theory graph and the knowledge graph answer different questions about the same corpus" }]
+    },
+    {
+      "id": "k.concept.knowledge-graph.has_part.term.entry",
+      "from": "concept.knowledge-graph",
+      "to": "term.entry",
+      "relation": "has_part",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "3. Entries", "quote": "An entry is created for anything the corpus treats as a name." }]
+    },
+    {
+      "id": "k.concept.knowledge-graph.contrasts_with.concept.glossary",
+      "from": "concept.knowledge-graph",
+      "to": "concept.glossary",
+      "relation": "contrasts_with",
+      "confidence": 0.95,
+      "sources": [{ "file": "idea.md", "heading": "Abstract", "quote": "Its organising principle is deliberately inverted with respect to a glossary" }]
+    },
+    {
+      "id": "k.term.entry.has_part.term.sense",
+      "from": "term.entry",
+      "to": "term.sense",
+      "relation": "has_part",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "A `sense` is a distinct reading of one entry" }]
+    },
+    {
+      "id": "k.term.entry.has_part.term.mention",
+      "from": "term.entry",
+      "to": "term.mention",
+      "relation": "has_part",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "7. Anti-Goals", "quote": "every entry carry at least one mention with a source" }]
+    },
+    {
+      "id": "k.term.entry.has_part.term.alias",
+      "from": "term.entry",
+      "to": "term.alias",
+      "relation": "has_part",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "3. Entries", "quote": "aliases and symbols (so the same thing found under three names collapses to one node)" }]
+    },
+    {
+      "id": "k.term.entry.defined_in_terms_of.term.definition-status",
+      "from": "term.entry",
+      "to": "term.definition-status",
+      "relation": "defined_in_terms_of",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "Accordingly `gloss` is optional and `definition_status` is required." }]
+    },
+    {
+      "id": "k.term.gloss.part_of.term.entry",
+      "from": "term.gloss",
+      "to": "term.entry",
+      "relation": "part_of",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "an entry with a confident paraphrase" }]
+    },
+    {
+      "id": "k.concept.definition-request.defined_in_terms_of.term.entry",
+      "from": "concept.definition-request",
+      "to": "term.entry",
+      "relation": "defined_in_terms_of",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "A request records the entry, why the definition is wanted now" }]
+    },
+    {
+      "id": "k.concept.definition-request.measured_by.quantity.centrality",
+      "from": "concept.definition-request",
+      "to": "quantity.centrality",
+      "relation": "measured_by",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "score rises with centrality in the relation graph" }]
+    },
+    {
+      "id": "k.concept.definition-request.measured_by.quantity.mention-count",
+      "from": "concept.definition-request",
+      "to": "quantity.mention-count",
+      "relation": "measured_by",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "and with mention count" }]
+    },
+    {
+      "id": "k.term.co-occurs-with.is_a.term.relation",
+      "from": "term.co-occurs-with",
+      "to": "term.relation",
+      "relation": "is_a",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "`co_occurs_with` is deliberately included despite carrying almost no semantics." }]
+    },
+    {
+      "id": "k.term.co-occurs-with.measured_by.quantity.strength",
+      "from": "term.co-occurs-with",
+      "to": "quantity.strength",
+      "relation": "measured_by",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "its `strength` field (co-occurrence weight) is the graph's cheapest signal" }]
+    },
+    {
+      "id": "k.term.sense.presupposes.term.layer",
+      "from": "term.sense",
+      "to": "term.layer",
+      "relation": "presupposes",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "each with its own optional gloss, its own layer, and a discriminator" }]
+    },
+    {
+      "id": "k.term.layer-drift.defined_in_terms_of.term.layer",
+      "from": "term.layer-drift",
+      "to": "term.layer",
+      "relation": "defined_in_terms_of",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "the same word means different things at different layers" }]
+    },
+    {
+      "id": "k.concept.phantom-entry.defined_in_terms_of.term.entry",
+      "from": "concept.phantom-entry",
+      "to": "term.entry",
+      "relation": "defined_in_terms_of",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "7. Anti-Goals", "quote": "Phantom entries — plausible neighbours the extractor knows about but the text never mentions" }]
+    },
+    {
+      "id": "k.concept.alias-resolution.operates_on.term.entry",
+      "from": "concept.alias-resolution",
+      "to": "term.entry",
+      "relation": "operates_on",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "8. Further Work", "quote": "Merging entries whose labels differ but whose relational neighbourhoods coincide." }]
+    },
+    {
+      "id": "k.concept.induced-topics.produces.term.topic",
+      "from": "concept.induced-topics",
+      "to": "term.topic",
+      "relation": "produces",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "the substrate from which topics are induced" }]
+    },
+    {
+      "id": "k.method.community-detection.computes.concept.induced-topics",
+      "from": "method.community-detection",
+      "to": "concept.induced-topics",
+      "relation": "computes",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "8. Further Work", "quote": "Community detection over the discourse relations to produce glossary sections" }]
+    },
+    {
+      "id": "k.term.extractor.produces.concept.knowledge-graph",
+      "from": "term.extractor",
+      "to": "concept.knowledge-graph",
+      "relation": "produces",
+      "confidence": 0.75,
+      "sources": [{ "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "A definition invented by the extractor is indistinguishable in the output" }],
+      "notes": "Inferred: the notes never say outright that the extractor builds the graph, but treat it as the producing agent."
+    },
+    {
+      "id": "k.term.claim.co_occurs_with.concept.theory-graph",
+      "from": "term.claim",
+      "to": "concept.theory-graph",
+      "relation": "co_occurs_with",
+      "strength": 0.7,
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "unit | a claim | a term" }]
+    },
+    {
+      "id": "k.term.wheel.parameterized_by.quantity.modulus",
+      "from": "term.wheel",
+      "to": "quantity.modulus",
+      "relation": "parameterized_by",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`parameterized_by → quantity.modulus`" }]
+    },
+    {
+      "id": "k.term.wheel.part_of.method.sieve-of-eratosthenes",
+      "from": "term.wheel",
+      "to": "method.sieve-of-eratosthenes",
+      "relation": "part_of",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`part_of → method.sieve-of-eratosthenes`" }]
+    },
+    {
+      "id": "k.term.wheel.alternative_to.method.segmented-sieve",
+      "from": "term.wheel",
+      "to": "method.segmented-sieve",
+      "relation": "alternative_to",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`alternative_to → method.segmented-sieve`" }]
+    },
+    {
+      "id": "k.term.wheel.co_occurs_with.quantity.candidate-density",
+      "from": "term.wheel",
+      "to": "quantity.candidate-density",
+      "relation": "co_occurs_with",
+      "strength": 0.8,
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`co_occurs_with → quantity.candidate-density` (strength 0.8)" }]
+    },
+    {
+      "id": "k.notation.phi.notation_for.quantity.totient",
+      "from": "notation.phi",
+      "to": "quantity.totient",
+      "relation": "notation_for",
+      "confidence": 0.6,
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`notation_for → quantity.totient` inferred from a single apposition, confidence 0.6" }]
+    },
+    {
+      "id": "k.named_result.mertens-third-theorem.documented_in.work.hardy-wright",
+      "from": "named_result.mertens-third-theorem",
+      "to": "work.hardy-wright",
+      "relation": "documented_in",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`documented_in → work.hardy-wright`" }]
+    },
+    {
+      "id": "k.method.primality-test.applies_to.term.candidate",
+      "from": "method.primality-test",
+      "to": "term.candidate",
+      "relation": "applies_to",
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "removes 77% of candidates before any primality test runs" }]
+    },
+    {
+      "id": "k.field.prime-generation.co_occurs_with.term.wheel",
+      "from": "field.prime-generation",
+      "to": "term.wheel",
+      "relation": "co_occurs_with",
+      "strength": 0.6,
+      "confidence": 0.8,
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "From a corpus of prime-generation notes:" }]
+    },
+    {
+      "id": "k.term.term.co_occurs_with.term.entry",
+      "from": "term.term",
+      "to": "term.entry",
+      "relation": "co_occurs_with",
+      "strength": 0.7,
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "Abstract", "quote": "An entry is created the moment a term is used as though it meant something" }]
+    },
+    {
+      "id": "k.concept.metaontology.motivates.term.sense",
+      "from": "concept.metaontology",
+      "to": "term.sense",
+      "relation": "motivates",
+      "confidence": 0.9,
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "The most systematic source of sense-splitting is the metaontology itself" }]
+    },
+    {
+      "id": "k.term.layer.part_of.concept.metaontology",
+      "from": "term.layer",
+      "to": "concept.metaontology",
+      "relation": "part_of",
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "3. Entries", "quote": "the metaontology layers the term is actually used at" }]
+    },
+    {
+      "id": "k.term.corpus.co_occurs_with.term.entry",
+      "from": "term.corpus",
+      "to": "term.entry",
+      "relation": "co_occurs_with",
+      "strength": 0.6,
+      "confidence": 0.85,
+      "sources": [{ "file": "idea.md", "heading": "3. Entries", "quote": "An entry is created for anything the corpus treats as a name." }]
+    }
+  ],
+  "requests": [
+    {
+      "id": "q.wheel",
+      "entry": "term.wheel",
+      "reason": "\"Wheel\" is ambiguous after 5 mention(s), with a residue-class and a bitmask reading the notes never separate",
+      "wants": "disambiguation",
+      "priority": "high",
+      "score": 0.714,
+      "status": "open",
+      "sources": [
+        { "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "the wheel of modulus 210 removes 77% of candidates before any primality test runs" },
+        { "file": "idea.md", "heading": "3.2 Senses", "quote": "*Wheel* may be a residue-class set at the symbolic layer and a bit-array at the ecological one." }
+      ]
+    },
+    {
+      "id": "q.layer",
+      "entry": "term.layer",
+      "reason": "\"Layer\" is assumed known after 3 mention(s) and carries the whole sense-splitting story",
+      "wants": "gloss",
+      "priority": "medium",
+      "score": 0.446,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "the same word means different things at different layers" }]
+    },
+    {
+      "id": "q.definition-status",
+      "entry": "term.definition-status",
+      "reason": "\"Definition Status\" is gestured after 3 mention(s) despite being the required field",
+      "wants": "formal_definition",
+      "priority": "medium",
+      "score": 0.349,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "3.1 Definition Status", "quote": "`definition_status` is a small lattice, and the whole schema is arranged around it" }]
+    },
+    {
+      "id": "q.gloss",
+      "entry": "term.gloss",
+      "reason": "\"Gloss\" is assumed known after 3 mention(s)",
+      "wants": "gloss",
+      "priority": "medium",
+      "score": 0.349,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "Accordingly `gloss` is optional and `definition_status` is required." }]
+    },
+    {
+      "id": "q.relation",
+      "entry": "term.relation",
+      "reason": "\"Relation\" is assumed known after 3 mention(s)",
+      "wants": "gloss",
+      "priority": "medium",
+      "score": 0.349,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "Relations are grouped by what kind of evidence licenses them" }]
+    },
+    {
+      "id": "q.mention",
+      "entry": "term.mention",
+      "reason": "\"Mention\" is assumed known after 3 mention(s) and is the anti-phantom guarantee",
+      "wants": "gloss",
+      "priority": "medium",
+      "score": 0.349,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "3. Entries", "quote": "mentions (every occurrence, with the role the occurrence plays" }]
+    },
+    {
+      "id": "q.extractor",
+      "entry": "term.extractor",
+      "reason": "\"Extractor\" is assumed known after 3 mention(s)",
+      "wants": "gloss",
+      "priority": "medium",
+      "score": 0.349,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "A definition invented by the extractor is indistinguishable in the output" }]
+    },
+    {
+      "id": "q.claim",
+      "entry": "term.claim",
+      "reason": "\"Claim\" is assumed known after 3 mention(s) and is the unit of the companion graph",
+      "wants": "gloss",
+      "priority": "medium",
+      "score": 0.334,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "unit | a claim | a term" }]
+    },
+    {
+      "id": "q.term",
+      "entry": "term.term",
+      "reason": "\"Term\" is assumed known after 3 mention(s) and is the unit of this graph",
+      "wants": "gloss",
+      "priority": "medium",
+      "score": 0.334,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "2. Relations Before Definitions", "quote": "To ask a good question about a term you need to know where it sits" }]
+    },
+    {
+      "id": "q.corpus",
+      "entry": "term.corpus",
+      "reason": "\"Corpus\" is assumed known after 3 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.329,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "3. Entries", "quote": "anything the corpus treats as a name" }]
+    },
+    {
+      "id": "q.metaontology",
+      "entry": "concept.metaontology",
+      "reason": "\"Metaontology\" is assumed known after 2 mention(s) yet supplies the layer vocabulary",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.297,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "The most systematic source of sense-splitting is the metaontology itself" }]
+    },
+    {
+      "id": "q.co-occurs-with",
+      "entry": "term.co-occurs-with",
+      "reason": "\"Co-Occurs With\" is gestured after 2 mention(s)",
+      "wants": "formal_definition",
+      "priority": "low",
+      "score": 0.297,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "`co_occurs_with` is deliberately included despite carrying almost no semantics." }]
+    },
+    {
+      "id": "q.induced-topics",
+      "entry": "concept.induced-topics",
+      "reason": "\"Induced Topics\" is gestured after 2 mention(s) as future work",
+      "wants": "formal_definition",
+      "priority": "low",
+      "score": 0.297,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "8. Further Work", "quote": "**Induced topics.** Community detection over the discourse relations" }]
+    },
+    {
+      "id": "q.alias",
+      "entry": "term.alias",
+      "reason": "\"Alias\" is assumed known after 2 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "3. Entries", "quote": "aliases and symbols (so the same thing found under three names collapses to one node)" }]
+    },
+    {
+      "id": "q.layer-drift",
+      "entry": "term.layer-drift",
+      "reason": "\"Layer Drift\" is gestured after 2 mention(s)",
+      "wants": "formal_definition",
+      "priority": "low",
+      "score": 0.249,
+      "blocked_by": ["term.layer"],
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "This drift is recorded explicitly (`layer_drift`) rather than treated as noise" }]
+    },
+    {
+      "id": "q.glossary",
+      "entry": "concept.glossary",
+      "reason": "\"Glossary\" is assumed known after 2 mention(s) and is the thing this graph is defined against",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "7. Anti-Goals", "quote": "**Not a glossary.** Completeness of meaning is not the target" }]
+    },
+    {
+      "id": "q.topic",
+      "entry": "term.topic",
+      "reason": "\"Topic\" is assumed known after 2 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "4. The Relation Taxonomy", "quote": "the substrate from which topics are induced" }]
+    },
+    {
+      "id": "q.centrality",
+      "entry": "quantity.centrality",
+      "reason": "\"Centrality\" is assumed known after 2 mention(s) and drives the request score",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "score rises with centrality in the relation graph" }]
+    },
+    {
+      "id": "q.mention-count",
+      "entry": "quantity.mention-count",
+      "reason": "\"Mention Count\" is assumed known after 2 mention(s) and is half the request score",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "5. Definition Requests: the Map as a Queue", "quote": "and with mention count" }]
+    },
+    {
+      "id": "q.modulus",
+      "entry": "quantity.modulus",
+      "reason": "\"Modulus\" is assumed known after 2 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "the wheel of modulus 210 removes 77% of candidates" }]
+    },
+    {
+      "id": "q.candidate",
+      "entry": "term.candidate",
+      "reason": "\"Candidate\" is undefined after 2 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "removes 77% of candidates before any primality test runs" }]
+    },
+    {
+      "id": "q.primality-test",
+      "entry": "method.primality-test",
+      "reason": "\"Primality Test\" is assumed known after 2 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "1. Two Complementary Graphs", "quote": "before any primality test runs" }]
+    },
+    {
+      "id": "q.phi",
+      "entry": "notation.phi",
+      "reason": "\"phi\" is undefined after 2 mention(s) and its binding rests on a single apposition",
+      "wants": "notation_key",
+      "priority": "low",
+      "score": 0.249,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`notation.phi` — `definition_status: undefined`" }]
+    },
+    {
+      "id": "q.community-detection",
+      "entry": "method.community-detection",
+      "reason": "\"Community Detection\" is assumed known after 1 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.149,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "8. Further Work", "quote": "Community detection over the discourse relations" }]
+    },
+    {
+      "id": "q.sieve-of-eratosthenes",
+      "entry": "method.sieve-of-eratosthenes",
+      "reason": "\"Sieve of Eratosthenes\" is assumed known after 1 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.149,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`part_of → method.sieve-of-eratosthenes`" }]
+    },
+    {
+      "id": "q.segmented-sieve",
+      "entry": "method.segmented-sieve",
+      "reason": "\"Segmented Sieve\" is assumed known after 1 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.149,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`alternative_to → method.segmented-sieve`" }]
+    },
+    {
+      "id": "q.totient",
+      "entry": "quantity.totient",
+      "reason": "\"Totient\" is assumed known after 1 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.149,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`notation_for → quantity.totient`" }]
+    },
+    {
+      "id": "q.hardy-wright",
+      "entry": "work.hardy-wright",
+      "reason": "\"Hardy & Wright\" is assumed known after 1 mention(s) and is the only external source named",
+      "wants": "citation",
+      "priority": "low",
+      "score": 0.149,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`documented_in → work.hardy-wright`" }]
+    },
+    {
+      "id": "q.candidate-density",
+      "entry": "quantity.candidate-density",
+      "reason": "\"Candidate Density\" is undefined after 1 mention(s)",
+      "wants": "gloss",
+      "priority": "low",
+      "score": 0.139,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "`co_occurs_with → quantity.candidate-density` (strength 0.8)" }]
+    },
+    {
+      "id": "q.prime-generation",
+      "entry": "field.prime-generation",
+      "reason": "\"Prime Generation\" is undefined after 1 mention(s) and names the example corpus's subject",
+      "wants": "citation",
+      "priority": "low",
+      "score": 0.029,
+      "status": "open",
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "From a corpus of prime-generation notes:" }]
+    }
+  ],
+  "topics": [
+    {
+      "id": "topic.schema-vocabulary",
+      "name": "The Schema's Own Vocabulary",
+      "kind": "glossary_section",
+      "root": "concept.knowledge-graph",
+      "members": [
+        "concept.knowledge-graph",
+        "concept.theory-graph",
+        "term.entry",
+        "term.sense",
+        "term.gloss",
+        "term.definition-status",
+        "term.relation",
+        "term.mention",
+        "term.alias",
+        "term.term",
+        "term.claim",
+        "term.corpus",
+        "term.layer",
+        "term.layer-drift",
+        "concept.metaontology",
+        "concept.definition-request",
+        "term.co-occurs-with",
+        "quantity.strength",
+        "quantity.centrality",
+        "quantity.mention-count",
+        "term.topic",
+        "concept.phantom-entry",
+        "term.extractor",
+        "concept.glossary"
+      ],
+      "summary": "The apparatus the document defines or assumes while describing the knowledge layer."
+    },
+    {
+      "id": "topic.primegen-example",
+      "name": "Prime-Generation Worked Example",
+      "kind": "thread",
+      "root": "term.wheel",
+      "members": [
+        "field.prime-generation",
+        "term.wheel",
+        "quantity.modulus",
+        "term.candidate",
+        "method.primality-test",
+        "method.sieve-of-eratosthenes",
+        "method.segmented-sieve",
+        "quantity.candidate-density",
+        "notation.phi",
+        "quantity.totient",
+        "named_result.mertens-third-theorem",
+        "named_result.dirichlets-theorem",
+        "work.hardy-wright"
+      ],
+      "layers": ["symbolic", "ecological"],
+      "summary": "Vocabulary borrowed from the illustrative prime-generation corpus; none of it is explained here."
+    },
+    {
+      "id": "topic.further-work",
+      "name": "Further Work",
+      "kind": "prerequisite_chain",
+      "members": ["concept.alias-resolution", "concept.induced-topics", "method.community-detection"],
+      "summary": "Operations the document proposes but does not perform."
+    }
+  ],
+  "unresolved": [
+    {
+      "kind": "unbridged_entry",
+      "description": "central entry \"Knowledge Graph\" grounds no theory node: no companion theory graph was supplied, so no node ids could be cited without inventing them.",
+      "refs": ["concept.knowledge-graph"]
+    },
+    {
+      "kind": "unbridged_entry",
+      "description": "central entry \"Entry\" grounds no theory node for the same reason.",
+      "refs": ["term.entry"]
+    },
+    {
+      "kind": "unbridged_entry",
+      "description": "central entry \"Wheel\" grounds no theory node; the document claims it grounds nine, but names none of them.",
+      "refs": ["term.wheel"],
+      "sources": [{ "file": "idea.md", "heading": "6. Worked Example", "quote": "Grounds nine theory nodes." }]
+    },
+    {
+      "kind": "ambiguous_term",
+      "description": "\"wheel\" is a residue-class set when reasoning and a packed bit-array when timing; the document records the drift but never reconciles the readings.",
+      "refs": ["term.wheel"],
+      "layers": ["symbolic", "ecological"],
+      "sources": [{ "file": "idea.md", "heading": "3.2 Senses", "quote": "*Wheel* may be a residue-class set at the symbolic layer and a bit-array at the ecological one." }]
+    },
+    {
+      "kind": "orphan_entry",
+      "description": "\"Dirichlet's Theorem\" is named once as an illustration, has no relations and grounds nothing; kept for coverage, excluded from the queue.",
+      "refs": ["named_result.dirichlets-theorem"]
+    },
+    {
+      "kind": "undefined_term",
+      "description": "the glyph behind `notation.phi` is never written out in this document; the binding to the totient is inferred from a reported apposition in another corpus.",
+      "refs": ["notation.phi", "k.notation.phi.notation_for.quantity.totient"]
+    }
+  ],
+  "stats": {
+    "documents": 1,
+    "entries": 40,
+    "edges": 33,
+    "requests": 30,
+    "by_kind": {
+      "term": 17,
+      "notation": 1,
+      "concept": 8,
+      "quantity": 6,
+      "method": 4,
+      "named_result": 2,
+      "work": 1,
+      "field": 1
+    },
+    "by_group": { "language": 18, "content": 20, "context": 2 },
+    "by_relation": {
+      "contrasts_with": 2,
+      "has_part": 4,
+      "defined_in_terms_of": 4,
+      "part_of": 3,
+      "measured_by": 3,
+      "is_a": 1,
+      "presupposes": 1,
+      "operates_on": 1,
+      "produces": 2,
+      "computes": 1,
+      "co_occurs_with": 5,
+      "parameterized_by": 1,
+      "alternative_to": 1,
+      "notation_for": 1,
+      "documented_in": 1,
+      "applies_to": 1,
+      "motivates": 1
+    },
+    "by_relation_group": {
+      "lexical": 1,
+      "taxonomic": 8,
+      "definitional": 5,
+      "functional": 9,
+      "discourse": 9,
+      "provenance": 1
+    },
+    "by_definition_status": {
+      "defined_here": 8,
+      "defined_elsewhere": 1,
+      "assumed_known": 22,
+      "gestured": 4,
+      "ambiguous": 1,
+      "undefined": 4
+    },
+    "by_layer": { "symbolic": 1, "ecological": 1 },
+    "undefined_entries": 31,
+    "bridged_entries": 0,
+    "mentions": 88
+  }
+}

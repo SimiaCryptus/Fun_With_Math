@@ -26,15 +26,15 @@ A single JSON object conforming to `TheoryGraph` in
 Every node lives in exactly one **layer**. Five layers form the vertical cognitive axis; two are orthogonal
 contextual axes that modulate all five.
 
-| Layer            | What an object is                         | Existence            | Truth                        | Equality               |
-| ---------------- | ----------------------------------------- | -------------------- | ---------------------------- | ---------------------- |
-| `-2 inspiration` | a direction in the space of theories      | expressible          | n/a                          | same research trajectory |
-| `0 fuzzy`        | a pattern, hunch, sketch, proto-operator  | expressible at all   | n/a (pre-truth-apt)          | similarity of shape    |
-| `1 symbolic`     | a term in a rewrite system                | well-formedness      | reaches a normal form        | convertibility         |
-| `2 deductive`    | a node in a derivation graph              | derivability         | closure under inference      | provable equivalence   |
-| `3 numeric`      | a limit of computable approximations      | convergence          | stability under refinement   | within an error bound  |
-| `+S social`      | citation, norm, program, folklore         | held by a community  | community acceptance         | same convention        |
-| `+E ecological`  | constraint, resource, affordance, tool    | obtains in the world | survives real constraints    | same constraint        |
+| Layer            | What an object is                        | Existence            | Truth                      | Equality                 |
+| ---------------- | ---------------------------------------- | -------------------- | -------------------------- | ------------------------ |
+| `-2 inspiration` | a direction in the space of theories     | expressible          | n/a                        | same research trajectory |
+| `0 fuzzy`        | a pattern, hunch, sketch, proto-operator | expressible at all   | n/a (pre-truth-apt)        | similarity of shape      |
+| `1 symbolic`     | a term in a rewrite system               | well-formedness      | reaches a normal form      | convertibility           |
+| `2 deductive`    | a node in a derivation graph             | derivability         | closure under inference    | provable equivalence     |
+| `3 numeric`      | a limit of computable approximations     | convergence          | stability under refinement | within an error bound    |
+| `+S social`      | citation, norm, program, folklore        | held by a community  | community acceptance       | same convention          |
+| `+E ecological`  | constraint, resource, affordance, tool   | obtains in the world | survives real constraints  | same constraint          |
 
 `social` is the collective dual of `inspiration`; `ecological` is the collective dual of `numeric`. Use `dual_of`
 edges only when the notes actually pair them (e.g. an internal error bound and the machine budget that motivated it).
@@ -54,14 +54,14 @@ removes most composites" is `fuzzy` even though it is about a symbolic object.
 4. **Represent.** Fill `representation` with the object-layer triple: `layer`, a `form`
    (`"term-graph"`, `"rewrite-rule"`, `"proof-term"`, `"digit-stream"`, `"interval"`, `"benchmark-row"`,
    `"prose-sketch"`, `"table"`, …) and the verbatim `content` where the notes give one. Add an `interfaces` entry for
-   every cross-ontology projection the notes offer *or visibly want*; set `available: false` for the wanted-but-absent
+   every cross-ontology projection the notes offer _or visibly want_; set `available: false` for the wanted-but-absent
    ones and `lossy: true` where information is discarded.
 5. **Deduplicate across documents.** The same claim restated in another file is _one_ node with multiple entries in
    `sources` and any variant phrasings in `aliases`. Prefer the most precise phrasing as `statement`. A hunch and its
    later formalization are **two** nodes in **two** layers joined by `formalizes` — never one node.
 6. **Relate.** Emit an edge for every dependency the text asserts or clearly implies. Prefer explicit textual
    evidence; put the trigger phrase in the edge's `sources[].quote`.
-7. **Transport.** Whenever the notes carry the *same object* from one ontology into another, emit a `Morphism` in
+7. **Transport.** Whenever the notes carry the _same object_ from one ontology into another, emit a `Morphism` in
    `morphisms` (not just an edge). Record `state` (`performed` / `intended` / `failed`), `loss` and `cost` where the
    notes say. The descent pattern — fuzzy pattern → rewrite rule → justification → algorithm — is three morphisms and
    four nodes, and it deserves a `descent_chain` cluster.
@@ -100,25 +100,25 @@ removes most composites" is `fuzzy` even though it is about a symbolic object.
 
 ### 0 Fuzzy — pre-formal, pre-truth-apt
 
-| Signal in the text                                                          | `kind`          |
-| ----------------------------------------------------------------------------| --------------- |
-| an unformalized recurring shape ("gaps cluster after a big prime")          | `proto_pattern` |
-| a half-formed operation, no rule yet ("skip forward by something like …")   | `proto_operator`|
-| a partial derivation, arrow diagram, or "roughly, the argument is"          | `sketch`        |
-| "think of it as a …"                                                        | `metaphor`      |
-| "conjecture", "I suspect", "probably", "it seems that", "if this holds"     | `conjecture`    |
-| Unjustified rule of thumb, approximation, "good enough in practice"         | `heuristic`     |
-| "why does…", "unclear whether…", TODO                                       | `open_question` |
+| Signal in the text                                                        | `kind`           |
+| ------------------------------------------------------------------------- | ---------------- |
+| an unformalized recurring shape ("gaps cluster after a big prime")        | `proto_pattern`  |
+| a half-formed operation, no rule yet ("skip forward by something like …") | `proto_operator` |
+| a partial derivation, arrow diagram, or "roughly, the argument is"        | `sketch`         |
+| "think of it as a …"                                                      | `metaphor`       |
+| "conjecture", "I suspect", "probably", "it seems that", "if this holds"   | `conjecture`     |
+| Unjustified rule of thumb, approximation, "good enough in practice"       | `heuristic`      |
+| "why does…", "unclear whether…", TODO                                     | `open_question`  |
 
 ### 1 Symbolic — form
 
-| Signal in the text                                                    | `kind`         |
-| ----------------------------------------------------------------------| -------------- |
-| "let X be", "we call"                                                 | `definition`   |
-| pure notation introduction with no content                            | `notation`     |
-| an oriented identity / transformation actually applied to terms       | `rewrite_rule` |
-| the arity/type/signature of a construction                            | `signature`    |
-| a concrete generator, algorithm or parameterised construction         | `model`        |
+| Signal in the text                                              | `kind`         |
+| --------------------------------------------------------------- | -------------- |
+| "let X be", "we call"                                           | `definition`   |
+| pure notation introduction with no content                      | `notation`     |
+| an oriented identity / transformation actually applied to terms | `rewrite_rule` |
+| the arity/type/signature of a construction                      | `signature`    |
+| a concrete generator, algorithm or parameterised construction   | `model`        |
 
 ### 2 Deductive — truth
 
@@ -132,24 +132,24 @@ removes most composites" is `fuzzy` even though it is about a symbolic object.
 
 ### 3 Numeric — stability
 
-| Signal in the text                            | `kind`        |
-| ----------------------------------------------| ------------- |
-| Measurement, benchmark row, plot description  | `observation` |
-| A described run/setup producing observations  | `experiment`  |
-| An error, tail or complexity bound            | `bound`       |
+| Signal in the text                             | `kind`        |
+| ---------------------------------------------- | ------------- |
+| Measurement, benchmark row, plot description   | `observation` |
+| A described run/setup producing observations   | `experiment`  |
+| An error, tail or complexity bound             | `bound`       |
 | A computation offered as證 evidence of a claim | `certificate` |
 
 ### +S Social / +E Ecological
 
-| Signal in the text                                                       | `kind`             |
-| -------------------------------------------------------------------------| ------------------ |
-| External reference, paper, library, "as in Knuth"                        | `reference`        |
-| "we only accept…", methodological convention, acceptance criterion       | `norm`             |
-| A stated agenda, roadmap or open-problem list                            | `research_program` |
-| "everyone knows", unattributed shared belief                             | `folklore`         |
-| RAM/cache/time/cost limit, "must fit in L2", "no more than 5 min"        | `constraint`       |
-| Machine, dataset, library, tool actually used                            | `resource`         |
-| Code, dataset, table, figure referenced by the notes                     | `artifact`         |
+| Signal in the text                                                 | `kind`             |
+| ------------------------------------------------------------------ | ------------------ |
+| External reference, paper, library, "as in Knuth"                  | `reference`        |
+| "we only accept…", methodological convention, acceptance criterion | `norm`             |
+| A stated agenda, roadmap or open-problem list                      | `research_program` |
+| "everyone knows", unattributed shared belief                       | `folklore`         |
+| RAM/cache/time/cost limit, "must fit in L2", "no more than 5 min"  | `constraint`       |
+| Machine, dataset, library, tool actually used                      | `resource`         |
+| Code, dataset, table, figure referenced by the notes               | `artifact`         |
 
 Hedged language always wins over confident framing: a "theorem" the notes admit is unproved is a `conjecture` with
 `status: "proposed"`. Pre-truth-apt layers (`inspiration`, `fuzzy`) never take `status: "accepted"` or `"refuted"`;
@@ -187,38 +187,38 @@ Do not invent transitive edges: if A→B and B→C are stated, do not add A→C.
 
 ## Morphism selection
 
-Emit a `Morphism` when the *same object* is carried across ontologies. Signatures are enforced.
+Emit a `Morphism` when the _same object_ is carried across ontologies. Signatures are enforced.
 
-| Morphism              | From → To            | Trigger in the notes                                     |
-| --------------------- | -------------------- | -------------------------------------------------------- |
-| `extract`             | deductive → symbolic | reading a formula off a proof                            |
-| `embed`               | symbolic → deductive | adopting an identity as an axiom/lemma "for now"         |
-| `evaluate`            | symbolic → numeric   | plugging numbers in, timing the formula, tabulating it   |
-| `fit`                 | numeric → symbolic   | guessing a closed form from a table or plot              |
-| `bound`               | deductive → numeric  | turning a proof into a computable bound                  |
-| `certify`             | numeric → deductive  | a computation used as a proof (exhaustive check, interval) |
-| `formalize_symbolic`  | fuzzy → symbolic     | a pattern written down as a rule                         |
-| `formalize_deductive` | fuzzy → deductive    | a conjecture turned into a theorem/proof attempt         |
-| `formalize_numeric`   | fuzzy → numeric      | an intuition turned into an experiment                   |
-| `abstract`            | formal → fuzzy/insp. | a result that "makes me wonder whether…"                 |
-| `analogy_*`           | inspiration          | extending, inverting or fusing a resemblance             |
-| `trajectory_*`        | inspiration          | refining, branching or abandoning a direction            |
-| `domain_mapping`      | inspiration          | building the dictionary between two settings             |
-| `gap_identification`  | insp./fuzzy → insp.  | naming what is missing                                   |
-| `invariance_projection` | inspiration → any  | pushing "something is preserved" into a concrete layer   |
-| `social_selection`    | social → any         | a convention deciding which version is kept              |
-| `ecological_constraint` | ecological → any   | a hardware/time limit deciding which version is kept     |
+| Morphism                | From → To            | Trigger in the notes                                       |
+| ----------------------- | -------------------- | ---------------------------------------------------------- |
+| `extract`               | deductive → symbolic | reading a formula off a proof                              |
+| `embed`                 | symbolic → deductive | adopting an identity as an axiom/lemma "for now"           |
+| `evaluate`              | symbolic → numeric   | plugging numbers in, timing the formula, tabulating it     |
+| `fit`                   | numeric → symbolic   | guessing a closed form from a table or plot                |
+| `bound`                 | deductive → numeric  | turning a proof into a computable bound                    |
+| `certify`               | numeric → deductive  | a computation used as a proof (exhaustive check, interval) |
+| `formalize_symbolic`    | fuzzy → symbolic     | a pattern written down as a rule                           |
+| `formalize_deductive`   | fuzzy → deductive    | a conjecture turned into a theorem/proof attempt           |
+| `formalize_numeric`     | fuzzy → numeric      | an intuition turned into an experiment                     |
+| `abstract`              | formal → fuzzy/insp. | a result that "makes me wonder whether…"                   |
+| `analogy_*`             | inspiration          | extending, inverting or fusing a resemblance               |
+| `trajectory_*`          | inspiration          | refining, branching or abandoning a direction              |
+| `domain_mapping`        | inspiration          | building the dictionary between two settings               |
+| `gap_identification`    | insp./fuzzy → insp.  | naming what is missing                                     |
+| `invariance_projection` | inspiration → any    | pushing "something is preserved" into a concrete layer     |
+| `social_selection`      | social → any         | a convention deciding which version is kept                |
+| `ecological_constraint` | ecological → any     | a hardware/time limit deciding which version is kept       |
 
-A morphism the notes *want* but never perform is still recorded, with `state: "intended"`. A morphism that was tried
+A morphism the notes _want_ but never perform is still recorded, with `state: "intended"`. A morphism that was tried
 and failed is `state: "failed"` — it is usually the most informative thing on the page.
 
 ## Coherence obligations
 
-| Kind       | Between            | Requirement                                               |
-| ---------- | ------------------ | --------------------------------------------------------- |
-| `semantic` | numeric ↔ symbolic | numeric evaluation must respect symbolic identities       |
-| `logical`  | symbolic ↔ deductive | symbolic rewrites must preserve provable truths         |
-| `analytic` | deductive ↔ numeric | proofs must guarantee the convergence they claim         |
+| Kind       | Between              | Requirement                                         |
+| ---------- | -------------------- | --------------------------------------------------- |
+| `semantic` | numeric ↔ symbolic   | numeric evaluation must respect symbolic identities |
+| `logical`  | symbolic ↔ deductive | symbolic rewrites must preserve provable truths     |
+| `analytic` | deductive ↔ numeric  | proofs must guarantee the convergence they claim    |
 
 Record the `cost` of maintaining each one whenever the notes mention it (extra runtime, extra proof burden, "I stopped
 checking after 10^7"). Never assume coherence away; an unchecked obligation is `status: "pending"`, not absent.
@@ -276,9 +276,22 @@ checking after 10^7"). Never assume coherence away; an unchecked obligation is `
       "representation": {
         "layer": "fuzzy",
         "form": "prose-sketch",
-        "interfaces": [{ "to": "symbolic", "via": "formalize_symbolic", "available": true, "target": "axiom.candidates-coprime-to-wheel" }]
+        "interfaces": [
+          {
+            "to": "symbolic",
+            "via": "formalize_symbolic",
+            "available": true,
+            "target": "axiom.candidates-coprime-to-wheel"
+          }
+        ]
       },
-      "sources": [{ "file": "sieve-notes.md", "heading": "Wheel", "quote": "no point even looking at multiples of 2,3,5,7" }]
+      "sources": [
+        {
+          "file": "sieve-notes.md",
+          "heading": "Wheel",
+          "quote": "no point even looking at multiples of 2,3,5,7"
+        }
+      ]
     },
     {
       "id": "axiom.candidates-coprime-to-wheel",
@@ -287,9 +300,19 @@ checking after 10^7"). Never assume coherence away; an unchecked obligation is `
       "statement": "Every candidate emitted by the generator is coprime to 2·3·5·7.",
       "status": "accepted",
       "confidence": 0.9,
-      "representation": { "layer": "deductive", "form": "proposition", "content": "\\gcd(n, 210) = 1" },
+      "representation": {
+        "layer": "deductive",
+        "form": "proposition",
+        "content": "\\gcd(n, 210) = 1"
+      },
       "attributes": [{ "key": "wheel_modulus", "value": 210 }],
-      "sources": [{ "file": "sieve-notes.md", "heading": "Wheel", "quote": "we only ever emit residues coprime to 210" }]
+      "sources": [
+        {
+          "file": "sieve-notes.md",
+          "heading": "Wheel",
+          "quote": "we only ever emit residues coprime to 210"
+        }
+      ]
     },
     {
       "id": "constraint.l2-cache-budget",
@@ -299,7 +322,13 @@ checking after 10^7"). Never assume coherence away; an unchecked obligation is `
       "status": "accepted",
       "confidence": 0.7,
       "attributes": [{ "key": "l2_size", "value": 1, "unit": "MiB" }],
-      "sources": [{ "file": "sieve-notes.md", "heading": "Segmenting", "quote": "keep the segment under L2 or it falls off a cliff" }]
+      "sources": [
+        {
+          "file": "sieve-notes.md",
+          "heading": "Segmenting",
+          "quote": "keep the segment under L2 or it falls off a cliff"
+        }
+      ]
     }
   ],
   "edges": [
@@ -346,7 +375,11 @@ checking after 10^7"). Never assume coherence away; an unchecked obligation is `
       "name": "Wheel: Hunch to Benchmark",
       "kind": "descent_chain",
       "root": "proto_pattern.wheel-skips-composites",
-      "members": ["proto_pattern.wheel-skips-composites", "axiom.candidates-coprime-to-wheel", "constraint.l2-cache-budget"],
+      "members": [
+        "proto_pattern.wheel-skips-composites",
+        "axiom.candidates-coprime-to-wheel",
+        "constraint.l2-cache-budget"
+      ],
       "layers": ["fuzzy", "deductive", "ecological"]
     }
   ],
