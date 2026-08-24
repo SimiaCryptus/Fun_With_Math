@@ -241,7 +241,9 @@ function buildFilterChips() {
   const groupCount = counter(g.entries, (e) => K.groupOf(e));
   const kindCount = counter(g.entries, (e) => e.kind);
   const roleCount = counter(g.entries, (e) => e.role || '—');
-  const layerCount = counter(g.entries, (e) => (e.layers && e.layers.length ? e.layers : [K.NO_LAYER]));
+  const layerCount = counter(g.entries, (e) =>
+    e.layers && e.layers.length ? e.layers : [K.NO_LAYER]
+  );
   const relGroupCount = counter(g.edges || [], (e) => K.RELATION_GROUP[e.relation] || 'discourse');
 
   const mk = (hostSel, items, set) => {
@@ -290,7 +292,11 @@ function buildFilterChips() {
   );
   mk(
     '#f-groups',
-    K.ENTRY_GROUPS.filter((s) => groupCount.get(s)).map((s) => [s, groupCount.get(s), K.GROUP_COLOR[s]]),
+    K.ENTRY_GROUPS.filter((s) => groupCount.get(s)).map((s) => [
+      s,
+      groupCount.get(s),
+      K.GROUP_COLOR[s],
+    ]),
     f.groups
   );
   mk(
@@ -437,7 +443,8 @@ function applyFilters() {
   );
   view.setLabels(f.labels);
 
-  $('#counts').textContent = `${visible.size}/${g.entries.length} entries · ${links.length} relations shown`;
+  $('#counts').textContent =
+    `${visible.size}/${g.entries.length} entries · ${links.length} relations shown`;
   renderTab();
 }
 
@@ -458,7 +465,11 @@ function link(id, label) {
 }
 
 function badge(text, style) {
-  return el('span', { class: 'badge' + (style?.cls ? ' ' + style.cls : ''), style: style?.css }, text);
+  return el(
+    'span',
+    { class: 'badge' + (style?.cls ? ' ' + style.cls : ''), style: style?.css },
+    text
+  );
 }
 
 function kv(pairs) {
@@ -491,7 +502,9 @@ function renderInspector(id) {
   const host = $('#inspector');
   host.replaceChildren();
   if (!id || !state.index.has(id)) {
-    host.append(el('div', { class: 'placeholder' }, 'Select an entry, relation, request or topic.'));
+    host.append(
+      el('div', { class: 'placeholder' }, 'Select an entry, relation, request or topic.')
+    );
     return;
   }
   const { type, data } = state.index.get(id);
@@ -526,12 +539,18 @@ function renderEntryInspector(host, e) {
       el(
         'div',
         { class: 'gloss' + (e.gloss.provisional ? ' provisional' : '') },
-        el('div', { class: 'gloss-tag' }, e.gloss.verbatim ? 'verbatim from the corpus' : 'provisional paraphrase'),
+        el(
+          'div',
+          { class: 'gloss-tag' },
+          e.gloss.verbatim ? 'verbatim from the corpus' : 'provisional paraphrase'
+        ),
         e.gloss.text
       )
     );
   } else {
-    host.append(el('div', { class: 'gloss empty' }, 'No gloss — the corpus never says what this is.'));
+    host.append(
+      el('div', { class: 'gloss empty' }, 'No gloss — the corpus never says what this is.')
+    );
   }
 
   host.append(
@@ -573,7 +592,9 @@ function renderEntryInspector(host, e) {
             s.definition_status ? badge(s.definition_status) : null
           ),
           s.gloss ? el('p', {}, s.gloss.text) : null,
-          s.discriminator ? el('p', { class: 'discrim' }, `tell apart by: ${s.discriminator}`) : null
+          s.discriminator
+            ? el('p', { class: 'discrim' }, `tell apart by: ${s.discriminator}`)
+            : null
         )
       );
     }
@@ -625,7 +646,9 @@ function renderEntryInspector(host, e) {
   }
 
   if ((e.grounds || []).length) {
-    host.append(el('h3', {}, `Grounds (${e.grounds.length} theory node${e.grounds.length === 1 ? '' : 's'})`));
+    host.append(
+      el('h3', {}, `Grounds (${e.grounds.length} theory node${e.grounds.length === 1 ? '' : 's'})`)
+    );
     host.append(el('div', { class: 'mono' }, e.grounds.join('\n')));
   }
 
@@ -636,7 +659,11 @@ function renderEntryInspector(host, e) {
         'ul',
         { class: 'plain' },
         ...e.references.map((r) =>
-          el('li', {}, r.url ? el('a', { class: 'lnk', href: r.url, target: '_blank' }, r.text) : r.text)
+          el(
+            'li',
+            {},
+            r.url ? el('a', { class: 'lnk', href: r.url, target: '_blank' }, r.text) : r.text
+          )
         )
       )
     );
@@ -645,7 +672,12 @@ function renderEntryInspector(host, e) {
   if ((e.mentions || []).length) {
     host.append(el('h3', {}, `Mentions (${e.mentions.length})`));
     for (const m of e.mentions) {
-      host.append(sourceBlock(m.source || {}, [m.role, m.sense && m.sense.split('#')[1]].filter(Boolean).join(' · ')));
+      host.append(
+        sourceBlock(
+          m.source || {},
+          [m.role, m.sense && m.sense.split('#')[1]].filter(Boolean).join(' · ')
+        )
+      );
     }
   }
 
@@ -755,7 +787,11 @@ function selectItem(id, type, center = false) {
 function table(cols, rows, onRow) {
   const t = el('table', { class: 'grid' });
   t.append(
-    el('thead', {}, el('tr', {}, ...cols.map((c) => el('th', { class: c.mono ? 'mono' : null }, c.label))))
+    el(
+      'thead',
+      {},
+      el('tr', {}, ...cols.map((c) => el('th', { class: c.mono ? 'mono' : null }, c.label)))
+    )
   );
   const tb = el('tbody');
   for (const r of rows) {
@@ -766,7 +802,8 @@ function table(cols, rows, onRow) {
         el(
           'td',
           {
-            class: [c.mono ? 'mono' : null, c.trunc ? 'trunc' : null].filter(Boolean).join(' ') || null,
+            class:
+              [c.mono ? 'mono' : null, c.trunc ? 'trunc' : null].filter(Boolean).join(' ') || null,
             title: c.trunc ? String(v ?? '') : null,
           },
           v && v.nodeType ? v : fmt(v)
@@ -831,7 +868,10 @@ function renderTab() {
               get: (r) =>
                 el(
                   'span',
-                  { class: 'pill', style: `color:${K.RELATION_GROUP_COLOR[K.RELATION_GROUP[r.relation]]}` },
+                  {
+                    class: 'pill',
+                    style: `color:${K.RELATION_GROUP_COLOR[K.RELATION_GROUP[r.relation]]}`,
+                  },
                   K.RELATION_GROUP[r.relation] || '?'
                 ),
             },
@@ -863,7 +903,8 @@ function renderTab() {
               [
                 {
                   label: 'prio',
-                  get: (r) => el('span', { class: `pill prio-${r.priority || 'low'}` }, r.priority || '—'),
+                  get: (r) =>
+                    el('span', { class: `pill prio-${r.priority || 'low'}` }, r.priority || '—'),
                 },
                 { label: 'score', get: (r) => r.score, mono: true },
                 { label: 'entry', get: (r) => link(r.entry), trunc: true },
@@ -872,7 +913,11 @@ function renderTab() {
                 {
                   label: 'blocked by',
                   get: (r) =>
-                    el('span', {}, ...(r.blocked_by || []).flatMap((b, i) => [i ? ', ' : '', link(b)])),
+                    el(
+                      'span',
+                      {},
+                      ...(r.blocked_by || []).flatMap((b, i) => [i ? ', ' : '', link(b)])
+                    ),
                   trunc: true,
                 },
               ],
@@ -896,7 +941,11 @@ function renderTab() {
                 {
                   label: 'members',
                   get: (r) =>
-                    el('span', {}, ...(r.members || []).flatMap((m, i) => [i ? ', ' : '', link(m)])),
+                    el(
+                      'span',
+                      {},
+                      ...(r.members || []).flatMap((m, i) => [i ? ', ' : '', link(m)])
+                    ),
                   trunc: true,
                 },
                 { label: 'summary', get: (r) => r.summary, trunc: true },
@@ -918,7 +967,12 @@ function renderTab() {
                 { label: 'description', get: (r) => r.description, trunc: true },
                 {
                   label: 'refs',
-                  get: (r) => el('span', {}, ...(r.refs || []).flatMap((m, i) => [i ? ', ' : '', link(m, m)])),
+                  get: (r) =>
+                    el(
+                      'span',
+                      {},
+                      ...(r.refs || []).flatMap((m, i) => [i ? ', ' : '', link(m, m)])
+                    ),
                   trunc: true,
                 },
                 { label: 'layers', get: (r) => (r.layers || []).join(', '), mono: true },
@@ -952,12 +1006,20 @@ function renderTab() {
       }
       if (problems.length) {
         wrap.append(
-          el('ul', { class: 'plain' }, ...problems.map((p) => el('li', { class: 'sev-error mono' }, p)))
+          el(
+            'ul',
+            { class: 'plain' },
+            ...problems.map((p) => el('li', { class: 'sev-error mono' }, p))
+          )
         );
       }
       if (advisory.length) {
         wrap.append(
-          el('h3', { style: 'margin:12px 0 6px;font-size:11px;color:#8b98ab' }, `${advisory.length} advisory`)
+          el(
+            'h3',
+            { style: 'margin:12px 0 6px;font-size:11px;color:#8b98ab' },
+            `${advisory.length} advisory`
+          )
         );
         wrap.append(
           el(

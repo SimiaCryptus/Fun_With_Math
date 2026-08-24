@@ -54,7 +54,7 @@ Three pieces of connective structure span the cognitive layers:
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | `idea.md`                   | The paper: the consolidated schema and the duality that closes it.                                                                           |
 | `theory_graph.schema.ts`    | Canonical types + constants + `validateTheoryGraph`, `findCycles`, `findMissingMorphisms`, `computeStats`. Dependency-free.                  |
-| `parse.op.md`             | The extraction op: how to turn markdown notes into a `TheoryGraph`. Contains the kind/relation/morphism selection tables and the hard rules. |
+| `parse.op.md`               | The extraction op: how to turn markdown notes into a `TheoryGraph`. Contains the kind/relation/morphism selection tables and the hard rules. |
 | `schema.js`                 | Runtime ES6 mirror of the schema constants and validators, used by the viewer. Also `normalizeGraph()`.                                      |
 | `graph.js`                  | `GraphView`: SVG lane renderer, barycentric layout, pan/zoom/drag, highlight.                                                                |
 | `app.js`                    | Wiring: loading, `?src=` routing, filters, inspector, tables, diagnostics, export.                                                           |

@@ -93,7 +93,8 @@ export class GraphView {
 
     this._wirePanZoom();
     this.svg.addEventListener('click', (e) => {
-      if (e.target === this.svg || e.target.classList.contains('lane-rect')) this.select(null, true);
+      if (e.target === this.svg || e.target.classList.contains('lane-rect'))
+        this.select(null, true);
     });
   }
 
@@ -488,9 +489,13 @@ export class GraphView {
     );
     this.transform.k = Math.max(0.08, k);
     this.transform.x =
-      padding - minX * this.transform.k + (r.width - padding * 2 - (maxX - minX) * this.transform.k) / 2;
+      padding -
+      minX * this.transform.k +
+      (r.width - padding * 2 - (maxX - minX) * this.transform.k) / 2;
     this.transform.y =
-      padding - minY * this.transform.k + (r.height - padding * 2 - (maxY - minY) * this.transform.k) / 2;
+      padding -
+      minY * this.transform.k +
+      (r.height - padding * 2 - (maxY - minY) * this.transform.k) / 2;
     this._applyTransform();
   }
 

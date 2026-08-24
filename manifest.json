@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-22T22:51:18.731Z",
+  "generatedAt": "2026-08-23T03:27:22.679Z",
   "counts": {
     "lab": 18,
     "game": 6,
@@ -25,7 +25,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/Pentagon_Lattice_Geometry",
         "path": "quadratics/pentagon",
-        "commit": "daafb5a44840549b329f8ca6970029e4136422fe",
+        "commit": "214d8a98d3f0eabea4f6468070813f0d0e388aad",
         "submodule": true
       },
       "dir": "quadratics/pentagon",
@@ -289,7 +289,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/primegen",
         "path": "numbers/primegen",
-        "commit": "b18257a6fc71e446297abdf759d3d29144464cbf",
+        "commit": "506678c8c094e4fa7fae1f0b5f190319c4470c73",
         "branch": "main",
         "submodule": true
       },

@@ -7,21 +7,21 @@ notes/*.md ──▶ parse.op.md ──▶ *.knowledge_graph.json ──▶ view
                (LLM extraction)  (knowledge_graph.schema.ts)
 ```
 
-The theory graph records *claims*; this one records the *terms the claims are phrased in*, and — the point of the
+The theory graph records _claims_; this one records the _terms the claims are phrased in_, and — the point of the
 exercise — the ranked queue of definitions the corpus never supplies. See `idea.md` for the argument and
 `parse.op.md` for the extraction contract.
 
 ## Files
 
-| File                        | Role                                                                                                    |
-| --------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `idea.md`                   | The paper: relations before definitions, and why the map is a queue.                                    |
-| `knowledge_graph.schema.ts` | Canonical types + constants + validators, `findDefinitionGaps`, `computeStats`. Imports only layers.     |
-| `parse.op.md`               | The extraction op: entry kinds, the status lattice, the relation taxonomy, the hard rules.              |
-| `schema.js`                 | Runtime ES6 mirror used by the viewer. Also `normalizeGraph()`.                                          |
-| `graph.js`                  | `GraphView`: SVG lane renderer with switchable lanes, barycentric layout, pan/zoom/drag.                |
-| `app.js`                    | Wiring: loading, `?src=` routing, filters, inspector, tables, queue, export.                            |
-| `index.html` / `styles.css` | Shell and theme (the theme extends the theory viewer's).                                                |
+| File                        | Role                                                                                                 |
+| --------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `idea.md`                   | The paper: relations before definitions, and why the map is a queue.                                 |
+| `knowledge_graph.schema.ts` | Canonical types + constants + validators, `findDefinitionGaps`, `computeStats`. Imports only layers. |
+| `parse.op.md`               | The extraction op: entry kinds, the status lattice, the relation taxonomy, the hard rules.           |
+| `schema.js`                 | Runtime ES6 mirror used by the viewer. Also `normalizeGraph()`.                                      |
+| `graph.js`                  | `GraphView`: SVG lane renderer with switchable lanes, barycentric layout, pan/zoom/drag.             |
+| `app.js`                    | Wiring: loading, `?src=` routing, filters, inspector, tables, queue, export.                         |
+| `index.html` / `styles.css` | Shell and theme (the theme extends the theory viewer's).                                             |
 
 ## Run
 
@@ -39,14 +39,14 @@ Load a graph three ways: `?src=…` (kept in sync in the address bar, so views a
 
 - **Lanes** — switchable. Default is `definition status`
   (`defined_here | defined_elsewhere | gestured | assumed_known | ambiguous | conflicting | undefined | unknown`),
-  which reads left-to-right as *settled → owed*. Also available: group, entry kind, metaontology layer. Vertical
+  which reads left-to-right as _settled → owed_. Also available: group, entry kind, metaontology layer. Vertical
   position is a barycentric ordering over the relation adjacency.
 - **Nodes** — colour = definition status; shape = group (◇ language, ○ content, ⬡ context); size = mention count;
   dashed outline = needs a definition; faint ring = `role: central`.
 - **Links** — coloured by the evidence group that licenses them: lexical (violet), taxonomic (green), definitional
   (amber, thicker — this is what orders the queue), functional (blue), discourse (grey, dotted, faint), provenance
   (teal, dashed).
-- **Inspector** — label, aliases, symbols, gloss (badged *verbatim* or *provisional*, or explicitly absent),
+- **Inspector** — label, aliases, symbols, gloss (badged _verbatim_ or _provisional_, or explicitly absent),
   definition reference, senses with discriminators and layers, layer drift, incident relations, the entry's
   definition request, grounded theory nodes, references, and every mention with its quote.
 - **Tables** — Entries, Relations, **Requests**, Topics, Issues, Diagnostics, Stats.

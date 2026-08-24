@@ -15,7 +15,12 @@
           Open file…
           <input id="file-input" type="file" accept=".json,application/json" hidden />
         </label>
-        <input id="url-input" type="text" placeholder="…/x.knowledge_graph.json" spellcheck="false" />
+        <input
+          id="url-input"
+          type="text"
+          placeholder="…/x.knowledge_graph.json"
+          spellcheck="false"
+        />
         <button id="url-load" class="btn">Fetch</button>
         <!-- Samples: add/remove a button here; app.js wires them by data-src. -->
         <span class="samples" id="samples">
@@ -44,7 +49,12 @@
         <div class="panel">
           <label class="field">
             <span>Search</span>
-            <input id="q" type="search" placeholder="label, alias, symbol, quote…" spellcheck="false" />
+            <input
+              id="q"
+              type="search"
+              placeholder="label, alias, symbol, quote…"
+              spellcheck="false"
+            />
           </label>
           <label class="field">
             <span>Lanes</span>
@@ -111,7 +121,9 @@
       <section id="stage">
         <div id="graph-host"></div>
         <div id="empty">
-          <p><strong>Drop a <code>knowledge_graph.json</code> anywhere</strong></p>
+          <p>
+            <strong>Drop a <code>knowledge_graph.json</code> anywhere</strong>
+          </p>
           <p>
             …or open one with the button above, or append
             <code>?src=idea.knowledge_graph.json</code> to the URL.

@@ -8,8 +8,8 @@ related:
 
 # Map the vocabulary a set of notes is written in
 
-Identify every term, notation, named object, method, tool and prior work the notes *use as though it meant
-something* — with their relations, senses, mentions, definition status and the ranked queue of definitions the notes
+Identify every term, notation, named object, method, tool and prior work the notes _use as though it meant
+something_ — with their relations, senses, mentions, definition status and the ranked queue of definitions the notes
 never supply.
 
 ## Inputs
@@ -30,7 +30,7 @@ no code fences.
 
 **Record how terms relate before, and often instead of, what they mean.**
 
-An entry is created the moment a term is used as if it were load-bearing. Its *definition* is a separate, later,
+An entry is created the moment a term is used as if it were load-bearing. Its _definition_ is a separate, later,
 optional act.
 
 - `definition_status` is **required**. `gloss` is **optional by design**.
@@ -44,14 +44,14 @@ that map is missing.
 
 ## Relationship to the theory graph
 
-| | theory graph | knowledge graph |
-| --- | --- | --- |
-| unit | a claim | a term |
-| truth | central (`status`, `confidence`, evidence) | absent — entries are not truth-apt |
-| completeness | every claim traceable to a source | every load-bearing word has an entry |
-| failure mode | missing an argument | missing that a word was never explained |
+|              | theory graph                               | knowledge graph                         |
+| ------------ | ------------------------------------------ | --------------------------------------- |
+| unit         | a claim                                    | a term                                  |
+| truth        | central (`status`, `confidence`, evidence) | absent — entries are not truth-apt      |
+| completeness | every claim traceable to a source          | every load-bearing word has an entry    |
+| failure mode | missing an argument                        | missing that a word was never explained |
 
-The sentence *"the wheel of modulus 210 removes 77% of candidates before any primality test runs"* is **one** theory
+The sentence _"the wheel of modulus 210 removes 77% of candidates before any primality test runs"_ is **one** theory
 node and **four** entries (`wheel`, `modulus`, `candidate`, `primality test`), none of which it defines.
 
 The bridge is one-directional and optional: an entry may `grounds` the theory-node ids whose statements are phrased in
@@ -61,58 +61,58 @@ it. Never invent a theory node id you have not been given.
 
 ### Language — the word or glyph itself, independent of what it denotes
 
-| Signal in the text | `kind` |
-| --- | --- |
-| a word or phrase used as if it meant something | `term` |
-| a symbol, glyph or syntactic convention (`\varphi`, `n \mid m`, `⟨·,·⟩`) | `notation` |
-| an acronym or short form ("MR", "CRT", "SoE") | `abbreviation` |
+| Signal in the text                                                       | `kind`         |
+| ------------------------------------------------------------------------ | -------------- |
+| a word or phrase used as if it meant something                           | `term`         |
+| a symbol, glyph or syntactic convention (`\varphi`, `n \mid m`, `⟨·,·⟩`) | `notation`     |
+| an acronym or short form ("MR", "CRT", "SoE")                            | `abbreviation` |
 
 Notation entries exist precisely so that a symbol whose meaning is never stated is still visible on the map.
 
 ### Content — the things denoted
 
-| Signal in the text | `kind` |
-| --- | --- |
-| a structured idea with no single formal definition | `concept` |
-| a specific named object ("the zeta function", "the wheel-210 table") | `object` |
-| a class of objects ("group", "ring", "wheel") | `structure` |
-| a predicate objects satisfy ("squarefree", "B-smooth") | `property` |
-| a named map or transformation ("sieving", "lifting", "reduction mod p") | `operation` |
-| a named measurable ("density", "gap", "modulus", "throughput") | `quantity` |
-| ms, bits, candidates/s | `unit` |
+| Signal in the text                                                         | `kind`         |
+| -------------------------------------------------------------------------- | -------------- |
+| a structured idea with no single formal definition                         | `concept`      |
+| a specific named object ("the zeta function", "the wheel-210 table")       | `object`       |
+| a class of objects ("group", "ring", "wheel")                              | `structure`    |
+| a predicate objects satisfy ("squarefree", "B-smooth")                     | `property`     |
+| a named map or transformation ("sieving", "lifting", "reduction mod p")    | `operation`    |
+| a named measurable ("density", "gap", "modulus", "throughput")             | `quantity`     |
+| ms, bits, candidates/s                                                     | `unit`         |
 | a result referred to **by name** ("Dirichlet's theorem", "Mertens' third") | `named_result` |
-| a technique, algorithm or recipe, by name | `method` |
-| a named problem or task | `problem` |
+| a technique, algorithm or recipe, by name                                  | `method`       |
+| a named problem or task                                                    | `problem`      |
 
-`named_result` records the *name to be looked up*. The theorem **as a claim** belongs in the theory graph; do not
+`named_result` records the _name to be looked up_. The theorem **as a claim** belongs in the theory graph; do not
 restate its content here.
 
 ### Context — the surrounding apparatus
 
-| Signal in the text | `kind` |
-| --- | --- |
-| a subject area ("analytic number theory") | `field` |
-| software, language, library, machine ("gmp", "perf", "the M1") | `tool` |
-| file / data / interchange format, encoding | `format` |
-| a dataset actually used or referenced | `dataset` |
-| a named person | `person` |
-| a paper, book, page, thread, conversation | `work` |
-| a house rule, naming scheme, unit choice | `convention` |
+| Signal in the text                                             | `kind`       |
+| -------------------------------------------------------------- | ------------ |
+| a subject area ("analytic number theory")                      | `field`      |
+| software, language, library, machine ("gmp", "perf", "the M1") | `tool`       |
+| file / data / interchange format, encoding                     | `format`     |
+| a dataset actually used or referenced                          | `dataset`    |
+| a named person                                                 | `person`     |
+| a paper, book, page, thread, conversation                      | `work`       |
+| a house rule, naming scheme, unit choice                       | `convention` |
 
 ## Definition status
 
 The lattice the whole schema turns on. Assign exactly one per entry; senses may carry their own.
 
-| status | when |
-| --- | --- |
-| `defined_here` | the corpus states a definition ("let a *wheel* be the set of residues coprime to …") |
-| `defined_elsewhere` | the corpus points at one (citation, link, "see Hardy & Wright §22") |
-| `assumed_known` | used freely, never explained, and clearly expected to be understood |
-| `gestured` | the shape of the meaning is indicated but not pinned ("a wheel skips multiples of the first k primes") |
-| `ambiguous` | several readings are live and the corpus never selects one |
-| `conflicting` | the corpus defines it two incompatible ways |
-| `undefined` | used once or twice with no explanatory context at all |
-| `unknown` | you could not tell; set `confidence ≤ 0.5` and add an `unresolved` entry |
+| status              | when                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------ |
+| `defined_here`      | the corpus states a definition ("let a _wheel_ be the set of residues coprime to …")                   |
+| `defined_elsewhere` | the corpus points at one (citation, link, "see Hardy & Wright §22")                                    |
+| `assumed_known`     | used freely, never explained, and clearly expected to be understood                                    |
+| `gestured`          | the shape of the meaning is indicated but not pinned ("a wheel skips multiples of the first k primes") |
+| `ambiguous`         | several readings are live and the corpus never selects one                                             |
+| `conflicting`       | the corpus defines it two incompatible ways                                                            |
+| `undefined`         | used once or twice with no explanatory context at all                                                  |
+| `unknown`           | you could not tell; set `confidence ≤ 0.5` and add an `unresolved` entry                               |
 
 Only `defined_here` and `defined_elsewhere` are terminal. Everything else generates a `DefinitionRequest`.
 
@@ -128,8 +128,8 @@ Working notes reuse words. A `Sense` is a distinct reading of **one** entry, wit
 - A term with unresolved senses is `ambiguous`, **not** two entries the author would not recognise as separate.
 - Sense ids are `<entry-id>#<kebab-slug>`.
 
-The most systematic source of sense-splitting is the metaontology itself. *Equality* is convertibility symbolically,
-provable equivalence deductively, indistinguishability within a bound numerically. *Wheel* may be a residue-class set
+The most systematic source of sense-splitting is the metaontology itself. _Equality_ is convertibility symbolically,
+provable equivalence deductively, indistinguishability within a bound numerically. _Wheel_ may be a residue-class set
 at the `symbolic` layer and a packed bitmask at the `ecological` one. Put the layers in `layers` and say how the
 meaning shifts in `layer_drift`. Multi-layer entries **must** carry either `layer_drift` or `senses`.
 
@@ -137,7 +137,7 @@ meaning shifts in `layer_drift`. Multi-layer entries **must** carry either `laye
 
 1. **Sweep for names.** Read for nouns and glyphs, not for arguments. Anything the corpus treats as a name gets a
    candidate entry — including words you find obvious. Keep multiword phrases whole (`primality test`, not `primality`
-   + `test`).
+   - `test`).
 2. **Canonicalize.** One entry per thing. Surface variants (`wheel`, `wheels`, `wheel sieve` when used for the same
    thing) become `aliases`; symbols become `symbols`. A surface form may be claimed by exactly one entry — if two
    entries want it, that is an `alias_collision` / `notation_clash` and goes in `unresolved`.
@@ -153,7 +153,7 @@ meaning shifts in `layer_drift`. Multi-layer entries **must** carry either `laye
    and a `role`: `introduces`, `defines`, `uses`, `cites`, `contrasts`, `questions`, `renames`, `exemplifies`. Set
    `mention_count` to `mentions.length`. **Every entry needs at least one mention** — this is the rule that excludes
    phantom entries.
-8. **Layer.** Fill `layers` with the metaontology layers the term is *actually used at* in these notes, and
+8. **Layer.** Fill `layers` with the metaontology layers the term is _actually used at_ in these notes, and
    `layer_drift` when it shifts.
 9. **Relate.** Emit relations only where the surface text licenses them (see the taxonomy below), with the trigger
    phrase in `sources[].quote`. Anything weaker than that becomes `co_occurs_with` with a `strength`, never `is_a`.
@@ -232,7 +232,7 @@ edge      k.<from-slug>.<relation>.<to-slug>
 request   q.<entry-slug>               q.wheel
 ```
 
-Ids are stable across runs and never reused for a different thing. `confidence` is *your extraction confidence* — how
+Ids are stable across runs and never reused for a different thing. `confidence` is _your extraction confidence_ — how
 sure you are the corpus uses this word this way. It says nothing about whether the usage is correct. Anything inferred
 rather than read gets `confidence ≤ 0.5` and a `notes` field explaining the inference.
 
@@ -242,9 +242,9 @@ rather than read gets `confidence ≤ 0.5` and a `notes` field explaining the in
   to know about are the primary failure mode; the mention requirement exists to exclude them.
 - **No invented meaning.** No gloss without corpus wording. No citation the notes do not give. No definition imported
   from your own knowledge — that is what `requests` is for.
-- **No claims.** If you find yourself recording that something is *true*, you are writing the theory graph. Record the
+- **No claims.** If you find yourself recording that something is _true_, you are writing the theory graph. Record the
   name and stop.
-- **Not an ontology of mathematics.** Entries describe *this corpus's usage*. If the notes use a term incorrectly,
+- **Not an ontology of mathematics.** Entries describe _this corpus's usage_. If the notes use a term incorrectly,
   record the incorrect usage and flag a `conflicting_definitions` issue.
 - **Not over-linked.** A relation asserted without textual evidence is worse than a missing one.
 - **Never merge senses.** Two readings are two senses, or two entries, never one silent choice.
@@ -325,7 +325,11 @@ rather than read gets `confidence ≤ 0.5` and a `notes` field explaining the in
       "layers": ["symbolic"],
       "mentions": [
         {
-          "source": { "file": "sieve-notes.md", "heading": "Wheel", "quote": "we only ever emit residues coprime to 210" },
+          "source": {
+            "file": "sieve-notes.md",
+            "heading": "Wheel",
+            "quote": "we only ever emit residues coprime to 210"
+          },
           "role": "uses"
         }
       ],
@@ -352,7 +356,13 @@ rather than read gets `confidence ≤ 0.5` and a `notes` field explaining the in
       "priority": "high",
       "score": 0.85,
       "status": "open",
-      "sources": [{ "file": "sieve-notes.md", "heading": "Wheel", "quote": "no point even looking at multiples of 2,3,5,7" }]
+      "sources": [
+        {
+          "file": "sieve-notes.md",
+          "heading": "Wheel",
+          "quote": "no point even looking at multiples of 2,3,5,7"
+        }
+      ]
     }
   ],
   "unresolved": [

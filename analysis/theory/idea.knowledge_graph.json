@@ -9,7 +9,15 @@
         "path": "idea.md",
         "title": "A Consolidated Schema for Mathematical Knowledge: Toward a Metaontology of Mathematical Practice",
         "order": 1,
-        "dominant_layers": ["inspiration", "fuzzy", "symbolic", "deductive", "numeric", "social", "ecological"]
+        "dominant_layers": [
+          "inspiration",
+          "fuzzy",
+          "symbolic",
+          "deductive",
+          "numeric",
+          "social",
+          "ecological"
+        ]
       }
     ]
   },
@@ -23,7 +31,10 @@
       "gloss": {
         "text": "the metaontology that makes their differing commitments explicit and specifies the morphisms that let information move between them",
         "verbatim": true,
-        "source": { "file": "idea.md", "heading": "1. Introduction: Mathematics Is Not One Ontology" }
+        "source": {
+          "file": "idea.md",
+          "heading": "1. Introduction: Mathematics Is Not One Ontology"
+        }
       },
       "definition_status": "gestured",
       "role": "central",
@@ -516,7 +527,10 @@
           "gloss": {
             "text": "**Existence** means being a well-formed syntactic construct.",
             "verbatim": true,
-            "source": { "file": "idea.md", "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)" }
+            "source": {
+              "file": "idea.md",
+              "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)"
+            }
           }
         },
         {
@@ -600,7 +614,10 @@
           "gloss": {
             "text": "**Truth** means reachability of a normal form under rewrite rules.",
             "verbatim": true,
-            "source": { "file": "idea.md", "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)" }
+            "source": {
+              "file": "idea.md",
+              "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)"
+            }
           }
         },
         {
@@ -684,7 +701,10 @@
           "gloss": {
             "text": "**Equality** means convertibility — the existence of a rewrite path between two terms.",
             "verbatim": true,
-            "source": { "file": "idea.md", "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)" }
+            "source": {
+              "file": "idea.md",
+              "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)"
+            }
           }
         },
         {
@@ -1154,7 +1174,10 @@
       "gloss": {
         "text": "Treating structural resemblance itself as a deductive operator — not decorative metaphor, but a rigorous move",
         "verbatim": true,
-        "source": { "file": "idea.md", "heading": "4. The Inspiration Layer: A Deductive Meta-Navigator" }
+        "source": {
+          "file": "idea.md",
+          "heading": "4. The Inspiration Layer: A Deductive Meta-Navigator"
+        }
       },
       "definition_status": "defined_here",
       "role": "central",
@@ -1551,7 +1574,10 @@
       "gloss": {
         "text": "a system that represents objects across all five cognitive layers uniformly, supports the morphisms between them, tracks social and ecological context as first-class metadata",
         "verbatim": true,
-        "source": { "file": "idea.md", "heading": "9. Implications and Directions for Further Work" }
+        "source": {
+          "file": "idea.md",
+          "heading": "9. Implications and Directions for Further Work"
+        }
       },
       "definition_status": "gestured",
       "role": "supporting",
@@ -1601,7 +1627,12 @@
       "to": "concept.metaontology",
       "relation": "part_of",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "**2 Deductive Layer** — proof objects and derivation graphs" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "**2 Deductive Layer** — proof objects and derivation graphs"
+        }
+      ]
     },
     {
       "id": "k.concept.numeric-ontology.part_of.concept.metaontology",
@@ -1609,7 +1640,9 @@
       "to": "concept.metaontology",
       "relation": "part_of",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "**3 Numeric Layer** — approximation and simulation" }]
+      "sources": [
+        { "file": "idea.md", "quote": "**3 Numeric Layer** — approximation and simulation" }
+      ]
     },
     {
       "id": "k.concept.social-layer.part_of.concept.metaontology",
@@ -1617,7 +1650,12 @@
       "to": "concept.metaontology",
       "relation": "part_of",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "**\\+S Social Layer** — the distributed epistemic environment" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "**\\+S Social Layer** — the distributed epistemic environment"
+        }
+      ]
     },
     {
       "id": "k.concept.ecological-layer.part_of.concept.metaontology",
@@ -1625,7 +1663,12 @@
       "to": "concept.metaontology",
       "relation": "part_of",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "**\\+E Ecological Layer** — the distributed physical/technological environment" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "**\\+E Ecological Layer** — the distributed physical/technological environment"
+        }
+      ]
     },
     {
       "id": "k.concept.object-layer.part_of.concept.metaontology",
@@ -1633,7 +1676,12 @@
       "to": "concept.metaontology",
       "relation": "part_of",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "Connective structure spans all five cognitive layers: an object layer" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Connective structure spans all five cognitive layers: an object layer"
+        }
+      ]
     },
     {
       "id": "k.concept.morphism-layer.part_of.concept.metaontology",
@@ -1649,7 +1697,12 @@
       "to": "concept.metaontology",
       "relation": "part_of",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "and a coherence layer that makes the cost of maintaining consistency across ontologies explicit" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "and a coherence layer that makes the cost of maintaining consistency across ontologies explicit"
+        }
+      ]
     },
     {
       "id": "k.concept.duality.part_of.concept.metaontology",
@@ -1683,7 +1736,12 @@
       "to": "term.layer",
       "relation": "disambiguated_by",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "each carries its own notion of equality, existence, computation, error, time, and infinity" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "each carries its own notion of equality, existence, computation, error, time, and infinity"
+        }
+      ]
     },
     {
       "id": "k.term.truth.disambiguated_by.term.layer",
@@ -1691,7 +1749,12 @@
       "to": "term.layer",
       "relation": "disambiguated_by",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "three different answers to the questions \"what exists?\", \"what is equal to what?\"" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "three different answers to the questions \"what exists?\", \"what is equal to what?\""
+        }
+      ]
     },
     {
       "id": "k.term.equality.disambiguated_by.term.layer",
@@ -1707,7 +1770,9 @@
       "to": "structure.rewrite-system",
       "relation": "defined_in_terms_of",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "a mathematical object is a term in a rewrite system" }]
+      "sources": [
+        { "file": "idea.md", "quote": "a mathematical object is a term in a rewrite system" }
+      ]
     },
     {
       "id": "k.concept.symbolic-ontology.defined_in_terms_of.object.term-graph",
@@ -1723,7 +1788,12 @@
       "to": "object.proof-term",
       "relation": "defined_in_terms_of",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "Its primitive substrate consists of sequents, inference rules, proof terms" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Its primitive substrate consists of sequents, inference rules, proof terms"
+        }
+      ]
     },
     {
       "id": "k.concept.numeric-ontology.defined_in_terms_of.object.digit-generator",
@@ -1731,7 +1801,12 @@
       "to": "object.digit-generator",
       "relation": "defined_in_terms_of",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "Its primitive substrate consists of digit generators, series expansions" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Its primitive substrate consists of digit generators, series expansions"
+        }
+      ]
     },
     {
       "id": "k.concept.numeric-ontology.measured_by.quantity.error-bound",
@@ -1739,7 +1814,12 @@
       "to": "quantity.error-bound",
       "relation": "measured_by",
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "**Equality** means indistinguishability within an error bound." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "**Equality** means indistinguishability within an error bound."
+        }
+      ]
     },
     {
       "id": "k.operation.normalization.instance_of.term.meta-operator",
@@ -1747,7 +1827,12 @@
       "to": "term.meta-operator",
       "relation": "instance_of",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "_normalization_ (symbolic), _verification_ (proof), _refinement_ (numeric)" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "_normalization_ (symbolic), _verification_ (proof), _refinement_ (numeric)"
+        }
+      ]
     },
     {
       "id": "k.operation.verification.instance_of.term.meta-operator",
@@ -1795,7 +1880,9 @@
       "to": "tool.proof-assistant",
       "relation": "instance_of",
       "confidence": 0.6,
-      "sources": [{ "file": "idea.md", "quote": "type theories such as those underlying Coq or Lean" }],
+      "sources": [
+        { "file": "idea.md", "quote": "type theories such as those underlying Coq or Lean" }
+      ],
       "notes": "Inferred: the corpus lists Coq beside proof assistants but does not say Coq is one."
     },
     {
@@ -1804,7 +1891,9 @@
       "to": "tool.proof-assistant",
       "relation": "instance_of",
       "confidence": 0.6,
-      "sources": [{ "file": "idea.md", "quote": "type theories such as those underlying Coq or Lean" }],
+      "sources": [
+        { "file": "idea.md", "quote": "type theories such as those underlying Coq or Lean" }
+      ],
       "notes": "Inferred, as for Coq."
     },
     {
@@ -1813,7 +1902,12 @@
       "to": "term.ontology",
       "relation": "applies_to",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "Every operation that moves information between ontologies is a named morphism" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Every operation that moves information between ontologies is a named morphism"
+        }
+      ]
     },
     {
       "id": "k.concept.coherence-layer.applies_to.term.ontology",
@@ -1821,7 +1915,12 @@
       "to": "term.ontology",
       "relation": "applies_to",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "Because the three ontologies can each evolve independently, a schema needs an explicit coherence layer" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "Because the three ontologies can each evolve independently, a schema needs an explicit coherence layer"
+        }
+      ]
     },
     {
       "id": "k.method.completing-the-square.example_of.concept.descent-pattern",
@@ -1829,7 +1928,12 @@
       "to": "concept.descent-pattern",
       "relation": "example_of",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "The same pattern — fuzzy hunch propagating downward into symbolic form" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "The same pattern — fuzzy hunch propagating downward into symbolic form"
+        }
+      ]
     },
     {
       "id": "k.concept.principle-of-relativity.example_of.concept.descent-pattern",
@@ -1846,7 +1950,12 @@
       "relation": "co_occurs_with",
       "strength": 0.8,
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "the formal statement that physical laws are Lorentz-invariant" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "the formal statement that physical laws are Lorentz-invariant"
+        }
+      ]
     },
     {
       "id": "k.operation.analogical-deduction.part_of.concept.inspiration-layer",
@@ -1862,7 +1971,12 @@
       "to": "concept.inspiration-layer",
       "relation": "part_of",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "an inspiration-layer object … is a research trajectory, a domain mapping" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "an inspiration-layer object … is a research trajectory, a domain mapping"
+        }
+      ]
     },
     {
       "id": "k.concept.proto-operator.part_of.concept.fuzzy-layer",
@@ -1870,7 +1984,12 @@
       "to": "concept.fuzzy-layer",
       "relation": "part_of",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "stabilizes improvisation into proto-operators and proto-structures" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "stabilizes improvisation into proto-operators and proto-structures"
+        }
+      ]
     },
     {
       "id": "k.concept.social-layer.applies_to.concept.symbolic-ontology",
@@ -1878,7 +1997,12 @@
       "to": "concept.symbolic-ontology",
       "relation": "applies_to",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "It shapes the **symbolic layer** by determining which formalisms become canonical." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "It shapes the **symbolic layer** by determining which formalisms become canonical."
+        }
+      ]
     },
     {
       "id": "k.concept.ecological-layer.applies_to.concept.numeric-ontology",
@@ -1886,7 +2010,12 @@
       "to": "concept.numeric-ontology",
       "relation": "applies_to",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "which algorithms survive because they remain stable under real-world noise" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "which algorithms survive because they remain stable under real-world noise"
+        }
+      ]
     },
     {
       "id": "k.concept.fuzzy-layer.motivates.concept.symbolic-ontology",
@@ -1894,7 +2023,12 @@
       "to": "concept.symbolic-ontology",
       "relation": "motivates",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "**Fuzzy → Symbolic.** A pattern becomes a term, a rewrite rule, an algebraic signature." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "**Fuzzy → Symbolic.** A pattern becomes a term, a rewrite rule, an algebraic signature."
+        }
+      ]
     },
     {
       "id": "k.concept.fuzzy-layer.motivates.concept.deductive-ontology",
@@ -1902,7 +2036,12 @@
       "to": "concept.deductive-ontology",
       "relation": "motivates",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "**Fuzzy → Proof.** A conjecture becomes a theorem, a lemma, a derivation." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "**Fuzzy → Proof.** A conjecture becomes a theorem, a lemma, a derivation."
+        }
+      ]
     },
     {
       "id": "k.concept.fuzzy-layer.motivates.concept.numeric-ontology",
@@ -1910,7 +2049,12 @@
       "to": "concept.numeric-ontology",
       "relation": "motivates",
       "confidence": 0.9,
-      "sources": [{ "file": "idea.md", "quote": "**Fuzzy → Numeric.** An intuition becomes an experiment, a simulation, a convergence test." }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "**Fuzzy → Numeric.** An intuition becomes an experiment, a simulation, a convergence test."
+        }
+      ]
     },
     {
       "id": "k.concept.metaontology.motivates.concept.workspace-engine",
@@ -1918,7 +2062,12 @@
       "to": "concept.workspace-engine",
       "relation": "motivates",
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "The ultimate practical goal of this schema is a system — a \"workspace engine\"" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "The ultimate practical goal of this schema is a system — a \"workspace engine\""
+        }
+      ]
     },
     {
       "id": "k.field.proof-theory.co_occurs_with.field.symbolic-computation",
@@ -1927,7 +2076,9 @@
       "relation": "co_occurs_with",
       "strength": 0.6,
       "confidence": 0.8,
-      "sources": [{ "file": "idea.md", "quote": "Proof theory, symbolic computation, and numerical analysis" }]
+      "sources": [
+        { "file": "idea.md", "quote": "Proof theory, symbolic computation, and numerical analysis" }
+      ]
     },
     {
       "id": "k.tool.computer-algebra-system.co_occurs_with.tool.proof-assistant",
@@ -1936,7 +2087,9 @@
       "relation": "co_occurs_with",
       "strength": 0.7,
       "confidence": 0.85,
-      "sources": [{ "file": "idea.md", "quote": "wire a computer algebra system to a proof assistant" }]
+      "sources": [
+        { "file": "idea.md", "quote": "wire a computer algebra system to a proof assistant" }
+      ]
     },
     {
       "id": "k.tool.gpu.co_occurs_with.concept.ecological-layer",
@@ -1945,7 +2098,12 @@
       "relation": "co_occurs_with",
       "strength": 0.5,
       "confidence": 0.75,
-      "sources": [{ "file": "idea.md", "quote": "why deep learning emerged only once data and GPUs coexisted" }]
+      "sources": [
+        {
+          "file": "idea.md",
+          "quote": "why deep learning emerged only once data and GPUs coexisted"
+        }
+      ]
     },
     {
       "id": "k.object.p-adic-numbers.co_occurs_with.concept.ecological-layer",
@@ -1954,7 +2112,9 @@
       "relation": "co_occurs_with",
       "strength": 0.5,
       "confidence": 0.75,
-      "sources": [{ "file": "idea.md", "quote": "remain comparatively niche for want of ecological pressure" }]
+      "sources": [
+        { "file": "idea.md", "quote": "remain comparatively niche for want of ecological pressure" }
+      ]
     }
   ],
   "requests": [
@@ -1967,7 +2127,11 @@
       "score": 0.82,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "1. Introduction: Mathematics Is Not One Ontology", "quote": "Mathematics Is Not One Ontology" }
+        {
+          "file": "idea.md",
+          "heading": "1. Introduction: Mathematics Is Not One Ontology",
+          "quote": "Mathematics Is Not One Ontology"
+        }
       ]
     },
     {
@@ -1980,7 +2144,11 @@
       "blocked_by": ["term.ontology", "term.layer"],
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "1. Introduction: Mathematics Is Not One Ontology", "quote": "the _metaontology_ that makes their differing commitments explicit" }
+        {
+          "file": "idea.md",
+          "heading": "1. Introduction: Mathematics Is Not One Ontology",
+          "quote": "the _metaontology_ that makes their differing commitments explicit"
+        }
       ]
     },
     {
@@ -1993,7 +2161,11 @@
       "blocked_by": ["term.layer"],
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.1 The Deductive Ontology (Proof-Objects)", "quote": "**Existence** means derivability from axioms." }
+        {
+          "file": "idea.md",
+          "heading": "2.1 The Deductive Ontology (Proof-Objects)",
+          "quote": "**Existence** means derivability from axioms."
+        }
       ]
     },
     {
@@ -2006,7 +2178,11 @@
       "blocked_by": ["term.layer"],
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)", "quote": "**Truth** means reachability of a normal form under rewrite rules." }
+        {
+          "file": "idea.md",
+          "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)",
+          "quote": "**Truth** means reachability of a normal form under rewrite rules."
+        }
       ]
     },
     {
@@ -2019,7 +2195,11 @@
       "blocked_by": ["term.layer"],
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.3 The Numeric (Analytic) Ontology", "quote": "**Equality** means indistinguishability within an error bound." }
+        {
+          "file": "idea.md",
+          "heading": "2.3 The Numeric (Analytic) Ontology",
+          "quote": "**Equality** means indistinguishability within an error bound."
+        }
       ]
     },
     {
@@ -2031,7 +2211,11 @@
       "score": 0.61,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "Abstract", "quote": "an _inspiration layer_, a _fuzzy layer_, three _formal ontologies_" }
+        {
+          "file": "idea.md",
+          "heading": "Abstract",
+          "quote": "an _inspiration layer_, a _fuzzy layer_, three _formal ontologies_"
+        }
       ]
     },
     {
@@ -2043,7 +2227,11 @@
       "score": 0.55,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "7. The Duality That Completes the Schema", "quote": "recognizing this duality is what makes the schema feel complete" }
+        {
+          "file": "idea.md",
+          "heading": "7. The Duality That Completes the Schema",
+          "quote": "recognizing this duality is what makes the schema feel complete"
+        }
       ]
     },
     {
@@ -2055,7 +2243,11 @@
       "score": 0.52,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.5 A Unifying Object and Morphism Layer", "quote": "a small set of universal operators act across all three ontologies" }
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "a small set of universal operators act across all three ontologies"
+        }
       ]
     },
     {
@@ -2067,7 +2259,11 @@
       "score": 0.46,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "3.2 Worked Example: Completing the Square", "quote": "all follow the identical descent pattern" }
+        {
+          "file": "idea.md",
+          "heading": "3.2 Worked Example: Completing the Square",
+          "quote": "all follow the identical descent pattern"
+        }
       ]
     },
     {
@@ -2079,7 +2275,11 @@
       "score": 0.42,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)", "quote": "a mathematical object is a term in a rewrite system" }
+        {
+          "file": "idea.md",
+          "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)",
+          "quote": "a mathematical object is a term in a rewrite system"
+        }
       ]
     },
     {
@@ -2091,7 +2291,11 @@
       "score": 0.38,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.1 The Deductive Ontology (Proof-Objects)", "quote": "sequents, inference rules, proof terms, type judgments" }
+        {
+          "file": "idea.md",
+          "heading": "2.1 The Deductive Ontology (Proof-Objects)",
+          "quote": "sequents, inference rules, proof terms, type judgments"
+        }
       ]
     },
     {
@@ -2103,7 +2307,11 @@
       "score": 0.36,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.3 The Numeric (Analytic) Ontology", "quote": "digit generators, series expansions, interval refinement" }
+        {
+          "file": "idea.md",
+          "heading": "2.3 The Numeric (Analytic) Ontology",
+          "quote": "digit generators, series expansions, interval refinement"
+        }
       ]
     },
     {
@@ -2115,7 +2323,11 @@
       "score": 0.35,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.3 The Numeric (Analytic) Ontology", "quote": "indistinguishability within an error bound" }
+        {
+          "file": "idea.md",
+          "heading": "2.3 The Numeric (Analytic) Ontology",
+          "quote": "indistinguishability within an error bound"
+        }
       ]
     },
     {
@@ -2127,7 +2339,11 @@
       "score": 0.29,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)", "quote": "Its primitive substrate consists of term graphs" }
+        {
+          "file": "idea.md",
+          "heading": "2.2 The Symbolic Ontology (Rewrite-Objects)",
+          "quote": "Its primitive substrate consists of term graphs"
+        }
       ]
     },
     {
@@ -2139,7 +2355,11 @@
       "score": 0.32,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "8. The Consolidated Schema", "quote": "stabilizes improvisation into proto-operators and proto-structures" }
+        {
+          "file": "idea.md",
+          "heading": "8. The Consolidated Schema",
+          "quote": "stabilizes improvisation into proto-operators and proto-structures"
+        }
       ]
     },
     {
@@ -2151,7 +2371,11 @@
       "score": 0.31,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "4. The Inspiration Layer: A Deductive Meta-Navigator", "quote": "a research trajectory, a domain mapping, a suspected duality" }
+        {
+          "file": "idea.md",
+          "heading": "4. The Inspiration Layer: A Deductive Meta-Navigator",
+          "quote": "a research trajectory, a domain mapping, a suspected duality"
+        }
       ]
     },
     {
@@ -2163,7 +2387,11 @@
       "score": 0.24,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "9. Implications and Directions for Further Work", "quote": "a system — a \"workspace engine\"" }
+        {
+          "file": "idea.md",
+          "heading": "9. Implications and Directions for Further Work",
+          "quote": "a system — a \"workspace engine\""
+        }
       ]
     },
     {
@@ -2175,7 +2403,11 @@
       "score": 0.22,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.5 A Unifying Object and Morphism Layer", "quote": "_extraction_ (cross-ontology)" }
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "_extraction_ (cross-ontology)"
+        }
       ]
     },
     {
@@ -2187,7 +2419,11 @@
       "score": 0.22,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.5 A Unifying Object and Morphism Layer", "quote": "_approximation_ (numeric-from-symbolic)" }
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "_approximation_ (numeric-from-symbolic)"
+        }
       ]
     },
     {
@@ -2199,7 +2435,11 @@
       "score": 0.27,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.5 A Unifying Object and Morphism Layer", "quote": "_certification_ (proof-from-numeric)" }
+        {
+          "file": "idea.md",
+          "heading": "2.5 A Unifying Object and Morphism Layer",
+          "quote": "_certification_ (proof-from-numeric)"
+        }
       ]
     },
     {
@@ -2211,7 +2451,11 @@
       "score": 0.3,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "2.4 Why They Do Not Naturally Merge", "quote": "wire a computer algebra system to a proof assistant" }
+        {
+          "file": "idea.md",
+          "heading": "2.4 Why They Do Not Naturally Merge",
+          "quote": "wire a computer algebra system to a proof assistant"
+        }
       ]
     },
     {
@@ -2223,7 +2467,11 @@
       "score": 0.26,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "6. The Ecological Layer", "quote": "some formally elegant structures (p-adic numbers, for instance) remain comparatively niche" }
+        {
+          "file": "idea.md",
+          "heading": "6. The Ecological Layer",
+          "quote": "some formally elegant structures (p-adic numbers, for instance) remain comparatively niche"
+        }
       ]
     },
     {
@@ -2235,7 +2483,11 @@
       "score": 0.2,
       "status": "open",
       "sources": [
-        { "file": "idea.md", "heading": "5. The Social Layer", "quote": "category theory as a common language" }
+        {
+          "file": "idea.md",
+          "heading": "5. The Social Layer",
+          "quote": "category theory as a common language"
+        }
       ]
     }
   ],
@@ -2258,7 +2510,15 @@
         "concept.ecological-layer",
         "concept.duality"
       ],
-      "layers": ["inspiration", "fuzzy", "symbolic", "deductive", "numeric", "social", "ecological"],
+      "layers": [
+        "inspiration",
+        "fuzzy",
+        "symbolic",
+        "deductive",
+        "numeric",
+        "social",
+        "ecological"
+      ],
       "summary": "The vocabulary of the stack itself, plus the duality that pairs the two contextual layers with inspiration and numeric."
     },
     {
@@ -2336,7 +2596,13 @@
     {
       "kind": "unattributed_claim",
       "description": "Named prior art (Coq, Lean, computer algebra systems, category theory, p-adic numbers, deep learning) is invoked without a single citation; no `candidates` could be recorded for the context-group requests.",
-      "refs": ["tool.coq", "tool.lean", "tool.computer-algebra-system", "field.category-theory", "object.p-adic-numbers"],
+      "refs": [
+        "tool.coq",
+        "tool.lean",
+        "tool.computer-algebra-system",
+        "field.category-theory",
+        "object.p-adic-numbers"
+      ],
       "layers": ["social"]
     },
     {
@@ -2347,7 +2613,12 @@
     {
       "kind": "undefined_term",
       "description": "\"Meta-operator\" is introduced by enumeration only; the six operators are named but none is given an operational semantics, which the paper itself lists as further work.",
-      "refs": ["term.meta-operator", "operation.extraction", "operation.approximation", "operation.certification"]
+      "refs": [
+        "term.meta-operator",
+        "operation.extraction",
+        "operation.approximation",
+        "operation.certification"
+      ]
     }
   ],
   "stats": {

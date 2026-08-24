@@ -2,14 +2,14 @@
 
 ## **Abstract**
 
-The theory schema records *claims* — what a corpus asserts, at which ontological layer, on what evidence. It presupposes
+The theory schema records _claims_ — what a corpus asserts, at which ontological layer, on what evidence. It presupposes
 something it does not itself capture:
 the vocabulary those claims are phrased in. Every set of working notes leans on a large body of terms, notations, named
 objects, methods, tools, and prior work that it never defines, because the author already knows what they mean. This
 companion schema records that body. Its organising principle is deliberately inverted with respect to a glossary: **we
 record how terms relate before, and often instead of, what they mean.** An entry is created the moment a term is used as
 though it meant something; its definition is treated as a separate, later, optional act. The result is not a dictionary
-but a *map of the discussion's vocabulary together with a ranked queue of the definitions that map is missing* — an
+but a _map of the discussion's vocabulary together with a ranked queue of the definitions that map is missing_ — an
 index of what is assumed, what is ambiguous, and what a reader (or a tool)
 must be told next in order to proceed.
 
@@ -18,19 +18,19 @@ must be told next in order to proceed.
 The theory graph and the knowledge graph answer different questions about the same corpus:
 
 |              | theory graph                                                           | knowledge graph                                                          |
-|--------------|------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| ------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | unit         | a claim                                                                | a term                                                                   |
 | asks         | "what is being asserted, and how do assertions depend on one another?" | "what is being talked about, and how do the things talked about relate?" |
 | truth        | central (status, confidence, evidence)                                 | absent — entries are not truth-apt                                       |
-| completeness | every claim traceable to a source                                      | every *word used as if load-bearing* has an entry                        |
+| completeness | every claim traceable to a source                                      | every _word used as if load-bearing_ has an entry                        |
 | failure mode | missing an argument                                                    | missing that a word was never explained                                  |
 
-They are not layered one above the other; they are two projections of the same prose. A single sentence — *"the wheel of
-modulus 210 removes 77% of candidates before any primality test runs"* — contributes one claim to the theory graph and
+They are not layered one above the other; they are two projections of the same prose. A single sentence — _"the wheel of
+modulus 210 removes 77% of candidates before any primality test runs"_ — contributes one claim to the theory graph and
 four entries plus their relations to the knowledge graph (`wheel`, `modulus`,
 `candidate`, `primality test`), none of which the sentence defines.
 
-The bridge between them is one-directional and cheap: an entry may *ground* a set of theory nodes (the nodes whose
+The bridge between them is one-directional and cheap: an entry may _ground_ a set of theory nodes (the nodes whose
 statements use it). Nothing in the theory graph needs to know the knowledge graph exists.
 
 ## **2. Relations Before Definitions**
@@ -41,19 +41,19 @@ the corpus supplies it.**
 There are three reasons for this ordering.
 
 **It is honest.** A definition invented by the extractor is indistinguishable in the output from a definition present in
-the notes, and is far more likely to be wrong. A relation ("*wheel* is used together with *modulus*"; "*wheel* is a kind
-of *sieve optimisation*"; "*wheel* is never defined here") is directly observable in the text.
+the notes, and is far more likely to be wrong. A relation ("_wheel_ is used together with _modulus_"; "_wheel_ is a kind
+of _sieve optimisation_"; "_wheel_ is never defined here") is directly observable in the text.
 
 **It is cheap and stable.** Co-occurrence, apposition, taxonomic phrasing ("a wheel is a …"), and notational binding are
 surface phenomena. They survive re-extraction; paraphrased glosses drift on every run.
 
 **It is what a follow-up actually needs.** To ask a good question about a term you need to know where it sits, what
 depends on it, and what else is undefined around it — not a provisional summary that pre-empts the answer. The knowledge
-graph is designed to be read as a work queue: *these are the twelve terms this corpus assumes, ranked by how much of the
-discussion is standing on them.*
+graph is designed to be read as a work queue: _these are the twelve terms this corpus assumes, ranked by how much of the
+discussion is standing on them._
 
 Accordingly `gloss` is optional and `definition_status` is required. An entry whose status is `assumed_known` with forty
-mentions is a *more* valuable output than an entry with a confident paraphrase.
+mentions is a _more_ valuable output than an entry with a confident paraphrase.
 
 ## **3. Entries**
 
@@ -62,8 +62,8 @@ An entry is created for anything the corpus treats as a name. Kinds fall into th
 - **Language** — `term`, `notation`, `abbreviation`. The word or glyph itself, independent of what it denotes. Notation
   entries exist so that a symbol whose meaning is never stated is still visible in the map.
 - **Content** — `concept`, `object`, `structure`, `property`, `operation`,
-  `quantity`, `unit`, `named_result`, `method`, `problem`. The things denoted. Note that `named_result` records *"
-  Dirichlet's theorem"* as a name to be looked up; the theorem as a claim belongs in the theory graph.
+  `quantity`, `unit`, `named_result`, `method`, `problem`. The things denoted. Note that `named_result` records _"
+  Dirichlet's theorem"_ as a name to be looked up; the theorem as a claim belongs in the theory graph.
 - **Context** — `field`, `tool`, `format`, `dataset`, `person`, `work`,
   `convention`. The surrounding apparatus, and the natural attachment points for citations.
 
@@ -90,8 +90,8 @@ silently picking one, and a term with unresolved senses is marked `ambiguous`
 rather than split into two entries the author would not recognise as separate.
 
 The most systematic source of sense-splitting is the metaontology itself: the same word means different things at
-different layers. *Equality* is convertibility symbolically, provable equivalence deductively, and indistinguishability
-within a bound numerically. *Wheel* may be a residue-class set at the symbolic layer and a bit-array at the ecological
+different layers. _Equality_ is convertibility symbolically, provable equivalence deductively, and indistinguishability
+within a bound numerically. _Wheel_ may be a residue-class set at the symbolic layer and a bit-array at the ecological
 one. This drift is recorded explicitly (`layer_drift`) rather than treated as noise, because it is exactly the kind of
 thing a reader silently gets wrong.
 
@@ -135,7 +135,7 @@ forward references.
 From a corpus of prime-generation notes:
 
 - `term.wheel` — 31 mentions, `definition_status: gestured`
-  ("*a wheel skips multiples of the first k primes*"), two senses (residue-class set / packed bitmask), layers
+  ("_a wheel skips multiples of the first k primes_"), two senses (residue-class set / packed bitmask), layers
   `symbolic` and `ecological`,
   `layer_drift` recorded. Relations: `parameterized_by → quantity.modulus`,
   `part_of → method.sieve-of-eratosthenes`, `alternative_to → method.segmented-sieve`,
@@ -146,14 +146,14 @@ From a corpus of prime-generation notes:
 - `named_result.mertens-third-theorem` — `definition_status: defined_elsewhere`,
   `documented_in → work.hardy-wright`. → **no request.**
 
-The map says nothing about what a wheel *is*. It says precisely how much of the discussion will be misread by someone
+The map says nothing about what a wheel _is_. It says precisely how much of the discussion will be misread by someone
 who does not know.
 
 ## **7. Anti-Goals**
 
-- **Not a glossary.** Completeness of meaning is not the target; completeness of *coverage* is. Every load-bearing word
+- **Not a glossary.** Completeness of meaning is not the target; completeness of _coverage_ is. Every load-bearing word
   must appear; almost none need be explained.
-- **Not an ontology of mathematics.** Entries and relations describe *this corpus's usage*, not the subject. If the
+- **Not an ontology of mathematics.** Entries and relations describe _this corpus's usage_, not the subject. If the
   notes use a term incorrectly, the graph records the incorrect usage and flags a conflict.
 - **Not a summary.** No entry may be created for something the corpus does not name. Phantom entries — plausible
   neighbours the extractor knows about but the text never mentions — are the primary failure mode and are excluded by

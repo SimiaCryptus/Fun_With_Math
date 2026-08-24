@@ -357,7 +357,10 @@ export function validateKnowledgeGraph(g) {
     }
     if (
       e.definition_status === 'defined_elsewhere' &&
-      !(e.definition_ref && (e.definition_ref.citation || e.definition_ref.entry || e.definition_ref.node))
+      !(
+        e.definition_ref &&
+        (e.definition_ref.citation || e.definition_ref.entry || e.definition_ref.node)
+      )
     ) {
       problems.push(`"defined_elsewhere" on ${e.id} with no definition_ref target`);
     }
@@ -376,7 +379,9 @@ export function validateKnowledgeGraph(g) {
 
   // surface-form collisions
   const claim = (map, key, id) => {
-    const k = String(key || '').trim().toLowerCase();
+    const k = String(key || '')
+      .trim()
+      .toLowerCase();
     if (!k) return;
     map.set(k, [...(map.get(k) || []), id]);
   };
@@ -599,7 +604,8 @@ export function computeStats(g) {
     by_kind[e.kind] = (by_kind[e.kind] ?? 0) + 1;
     const grp = groupOf(e);
     by_group[grp] = (by_group[grp] ?? 0) + 1;
-    by_definition_status[e.definition_status] = (by_definition_status[e.definition_status] ?? 0) + 1;
+    by_definition_status[e.definition_status] =
+      (by_definition_status[e.definition_status] ?? 0) + 1;
     for (const l of e.layers || []) by_layer[l] = (by_layer[l] ?? 0) + 1;
     mentions += mentionCount(e);
     if (needsDefinition(e)) undefinedEntries++;
