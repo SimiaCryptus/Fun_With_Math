@@ -22,7 +22,11 @@
         max-width: min(430px, 86vw);
         padding: 12px 14px;
         border-radius: 12px;
-        font: 12px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif;
+        font:
+          12px/1.45 ui-sans-serif,
+          system-ui,
+          -apple-system,
+          sans-serif;
         color: #e8ecf4;
         background: rgba(12, 14, 20, 0.84);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -142,23 +146,23 @@
             min="1"
             max="200"
             step="1"
-            value="40"
+            value="1"
             title="Partition granularity — how big each sub-image gets before its parent dissolves"
           />
-          <span class="val" id="detailVal">40px</span>
+          <span class="val" id="detailVal">1px</span>
         </div>
         <div class="row">
           <label for="lod">LOD floor</label>
           <input
             id="lod"
             type="range"
-            min="2"
+            min="1"
             max="64"
             step="1"
-            value="12"
+            value="4"
             title="Smallest on-screen size a tile may be subdivided to — raise this if the frame rate drops"
           />
-          <span class="val" id="lodVal">12px</span>
+          <span class="val" id="lodVal">4px</span>
         </div>
         <div class="row">
           <label for="budget">Budget</label>
@@ -166,12 +170,12 @@
             id="budget"
             type="range"
             min="4"
-            max="80"
+            max="160"
             step="1"
-            value="28"
+            value="80"
             title="Quads per frame the adaptive LOD aims for"
           />
-          <span class="val" id="budgetVal">14.0k</span>
+          <span class="val" id="budgetVal">80.0k</span>
         </div>
         <div class="row">
           <label for="fade">Blend</label>
@@ -268,7 +272,6 @@
         <button id="calcCancel">Cancel</button>
       </div>
     </div>
-
 
     <div id="boot">
       <div class="card">
