@@ -22,6 +22,10 @@
     <mapping directory="$PROJECT_DIR$/numbers/primegen" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/QQN" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/QQN-Visuals" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-jax" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-optimizer" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-tf" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-torch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/optimization-mechanics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/physics/geometric-entropy" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/physics/gravity" vcs="Git" />

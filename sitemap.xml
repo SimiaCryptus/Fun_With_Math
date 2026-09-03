@@ -31,6 +31,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://math.cognotik.com/experiments/fractal_mosaic/</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://math.cognotik.com/experiments/magnet-lattice/</loc>
     <lastmod>2026-08-21</lastmod>
     <changefreq>monthly</changefreq>
@@ -116,241 +122,241 @@
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/bidirectional-markov-text-analyzer/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/chromatic-oklab-vs-naive-hsl/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/collatz-conjecture/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/constrained-mesh-enclosure-lab/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/fourier-series/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/fractal-learning/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/geometric-entropy/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/geometric-entropy/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/irrational-lattice/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/irrational-lattice/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/layered-cellular-automata/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/layered-cellular-automata/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/mandelbrot-set/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/nam-numbers-as-machines-2/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/nam-numbers-as-machines/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/no-three-in-line-a-visual-theory-explorer/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/no-three-in-line-explorer/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/optimization-mechanics-visualizer/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/pentagonal-lattice-geometry/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/pentagonal-lattice-geometry/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/pi-rcc-the-simplest-increment-x-sin-x/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/pid-regulated-cellular-automaton/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/pid-regulated-cellular-automaton/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/prime-number-sieve/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/quadratic-quasi-newton/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/rcc-rational-certificate-complexity/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/relativistic-2-body-gravity/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/relativistic-2-body-gravity/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/space-color-symmetry/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/space-color-symmetry/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/spacelike-knots/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/spacelike-knots/video.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/static-secrets/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/the-extension-ladder-one-way-to-watch-number-systems-grow/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/the-prime-sieve-as-a-stack-of-orthogonal-periodic-fields/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/companion/which-direction-where-on-the-curve/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/games/aol/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/games/aol/docs/metrics/loc_viewer.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/games/aol/privacy.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -380,13 +386,13 @@
   </url>
   <url>
     <loc>https://math.cognotik.com/games/vocal_parkour/web/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://math.cognotik.com/games/vocal_parkour/web/packages/vad-demo/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -422,7 +428,7 @@
   </url>
   <url>
     <loc>https://math.cognotik.com/numbers/primegen/</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -434,7 +440,7 @@
   </url>
   <url>
     <loc>https://math.cognotik.com/numbers/primegen/analysis/theory_browser.html</loc>
-    <lastmod>2026-08-21</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -483,6 +489,90 @@
   <url>
     <loc>https://math.cognotik.com/optimization/QQN/</loc>
     <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/adam/README.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/adam/results/</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/lbfgs/README.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/lbfgs/results/</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/README.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/reference/README.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/reference/results/</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/reports/results/</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/results/</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-jax/spline_demo.html</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-tf/reports/all/README.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-tf/reports/README.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-tf/reports/reference/README.html</loc>
+    <lastmod>2026-09-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://math.cognotik.com/optimization/QQN/qqn-tf/spline_demo.html</loc>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

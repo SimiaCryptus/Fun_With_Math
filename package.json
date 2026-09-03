@@ -37,23 +37,24 @@
   },
   "author": "SimiaCryptus",
   "dependencies": {
-    "canvas": "^3.2.3"
+    "canvas": "^3.2.3",
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "typescript": "^5.8.2",
-    "tsx": "^4.19.2",
     "@bubblewrap/cli": "^1.24.1",
     "@eslint/js": "^9.0.0",
+    "@types/node": "^22.10.2",
     "eslint": "^9.0.0",
     "globals": "^15.0.0",
     "htmlhint": "^1.1.4",
     "markdownlint-cli2": "^0.13.0",
+    "marked": "^12.0.0",
     "prettier": "^3.0.0",
     "stylelint": "^16.6.1",
     "stylelint-config-standard": "^36.0.1",
     "stylelint-prettier": "^5.0.0",
-    "marked": "^12.0.0"
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.2"
   },
   "engines": {
     "node": ">=20.11.0"

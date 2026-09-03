@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "generatedAt": "2026-08-23T03:27:22.679Z",
+  "generatedAt": "2026-09-03T12:04:24.023Z",
   "counts": {
-    "lab": 18,
+    "lab": 19,
     "game": 6,
     "essay": 6
   },
@@ -289,7 +289,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/primegen",
         "path": "numbers/primegen",
-        "commit": "506678c8c094e4fa7fae1f0b5f190319c4470c73",
+        "commit": "697ef31bfe7617d93b84c8e2b70d80434f258aef",
         "branch": "main",
         "submodule": true
       },
@@ -342,6 +342,26 @@
       },
       "dir": "experiments/fractal_learning",
       "source": "experiments/fractal_learning/entry.json"
+    },
+    {
+      "id": "fractal-mosaic",
+      "category": "lab",
+      "section": "featured",
+      "order": 13,
+      "icon": "FM",
+      "title": "Fractal Mosaic",
+      "href": "index.html",
+      "readme": "README.md",
+      "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "experiments/fractal-mosaic"
+      },
+      "dir": "experiments/fractal-mosaic",
+      "source": "experiments/fractal-mosaic/entry.json"
     },
     {
       "id": "optimization-mechanics",
@@ -600,7 +620,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/qqn",
         "path": "optimization/QQN",
-        "commit": "b81deaa3bf2de228e40d4a419b4cd96e65f0a223",
+        "commit": "a33cab791749999e97c646f431aa584de27155e7",
         "branch": "main",
         "submodule": true
       },

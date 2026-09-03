@@ -1,0 +1,11 @@
+{
+  "id": "fractal-mosaic",
+  "category": "lab",
+  "section": "featured",
+  "order": 13,
+  "icon": "FM",
+  "title": "Fractal Mosaic",
+  "href": "index.html",
+  "readme": "README.md",
+  "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album."
+}

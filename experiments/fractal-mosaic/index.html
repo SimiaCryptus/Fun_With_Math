@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <title>Recursive Photomosaic — Infinite Fractal Album</title>
+    <link rel="stylesheet" href="experiments-fractal_mosaic-index.css" />
+    <style>
+      /* --- "calculating subdivision" splash / precalc progress ----------- */
+      #calc {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%) translateY(8px);
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 300px;
+        max-width: min(430px, 86vw);
+        padding: 12px 14px;
+        border-radius: 12px;
+        font: 12px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif;
+        color: #e8ecf4;
+        background: rgba(12, 14, 20, 0.84);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(8px);
+        opacity: 0;
+        transition:
+          opacity 0.18s ease,
+          transform 0.18s ease;
+        z-index: 40;
+        pointer-events: none;
+      }
+      #calc.show {
+        display: flex;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+      }
+      #calc .r {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      #calc .sp {
+        flex: 0 0 auto;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.16);
+        border-top-color: var(--accent, #6ea8fe);
+        animation: calcspin 0.8s linear infinite;
+      }
+      @keyframes calcspin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      #calcMsg {
+        flex: 1;
+        opacity: 0.92;
+      }
+      #calcPct {
+        font-variant-numeric: tabular-nums;
+      }
+      #calcBar {
+        height: 6px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+      }
+      #calcBar i {
+        display: block;
+        height: 100%;
+        width: 0%;
+        border-radius: 99px;
+        background: var(--accent, #6ea8fe);
+        transition: width 0.12s linear;
+      }
+      #calcEta {
+        opacity: 0.6;
+        font-variant-numeric: tabular-nums;
+      }
+      #calcCancel {
+        display: none;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.06);
+        color: inherit;
+        border-radius: 8px;
+        padding: 4px 10px;
+        font: inherit;
+        cursor: pointer;
+      }
+      #calcCancel:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+
+    <div id="hud" class="panel">
+      <h1>Recursive Photomosaic</h1>
+      <div class="sub" id="albumLine">loading album…</div>
+      <div class="body">
+        <div class="row">
+          <label for="mode">Mode</label>
+          <select id="mode">
+            <option value="album">Album-driven</option>
+            <option value="hero">Hero-driven</option>
+          </select>
+        </div>
+        <div class="row" id="heroRow" style="display: none">
+          <label for="hero">Hero</label>
+          <select id="hero"></select>
+        </div>
+        <div class="row">
+          <label for="grid">Mosaic</label>
+          <select id="grid" title="How many sub-images recompose every photo"></select>
+        </div>
+        <div class="row">
+          <label for="seed">Seed</label>
+          <input
+            id="seed"
+            type="text"
+            spellcheck="false"
+            autocomplete="off"
+            style="flex: 1; min-width: 0"
+            title="Deterministic layout seed — the same seed always reproduces the same infinite fractal"
+          />
+        </div>
+        <div class="row">
+          <label for="detail">Sub-tile</label>
+          <input
+            id="detail"
+            type="range"
+            min="1"
+            max="200"
+            step="1"
+            value="40"
+            title="Partition granularity — how big each sub-image gets before its parent dissolves"
+          />
+          <span class="val" id="detailVal">40px</span>
+        </div>
+        <div class="row">
+          <label for="lod">LOD floor</label>
+          <input
+            id="lod"
+            type="range"
+            min="2"
+            max="64"
+            step="1"
+            value="12"
+            title="Smallest on-screen size a tile may be subdivided to — raise this if the frame rate drops"
+          />
+          <span class="val" id="lodVal">12px</span>
+        </div>
+        <div class="row">
+          <label for="budget">Budget</label>
+          <input
+            id="budget"
+            type="range"
+            min="4"
+            max="80"
+            step="1"
+            value="28"
+            title="Quads per frame the adaptive LOD aims for"
+          />
+          <span class="val" id="budgetVal">14.0k</span>
+        </div>
+        <div class="row">
+          <label for="fade">Blend</label>
+          <input id="fade" type="range" min="105" max="500" step="5" value="200" />
+          <span class="val" id="fadeVal">2.00×</span>
+        </div>
+        <div class="row">
+          <label for="jitter">Jitter</label>
+          <input id="jitter" type="range" min="0" max="100" step="1" value="50" />
+          <span class="val" id="jitterVal">50%</span>
+        </div>
+        <div class="row">
+          <label for="structure">Structure</label>
+          <input
+            id="structure"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="60"
+            title="How much the sub-image's internal contrast has to match the region it replaces"
+          />
+          <span class="val" id="structureVal">60%</span>
+        </div>
+        <div class="row">
+          <label for="diversity">Diversity</label>
+          <input id="diversity" type="range" min="0" max="100" step="1" value="55" />
+          <span class="val" id="diversityVal">55%</span>
+        </div>
+        <div class="row">
+          <label for="tint">Tint</label>
+          <input
+            id="tint"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="40"
+            title="Colour-correct each sub-image toward the exact colour of the region it stands in for"
+          />
+          <span class="val" id="tintVal">40%</span>
+        </div>
+        <div class="btns">
+          <button id="btnReset" title="Return to the origin (R)">Reset</button>
+          <button id="btnRandom" title="Jump somewhere new (J)">Jump</button>
+          <button id="btnShuffle" title="Generate a new random layout seed">Re-seed</button>
+          <button id="btnDive" title="Auto zoom (D)">Dive</button>
+          <button
+            id="btnPrecalc"
+            title="Build every photo's mosaic at the current grid up front (cancellable)"
+          >
+            Precalc
+          </button>
+          <button id="btnLink" title="Copy a link to this exact view">Link</button>
+        </div>
+        <div class="hint">
+          Drag to pan · scroll / pinch to zoom · every photo dissolves into a mosaic of other
+          photos, forever.<br />
+          <kbd>D</kbd> dive · <kbd>R</kbd> reset · <kbd>J</kbd> jump · <kbd>H</kbd> hide panel ·
+          <kbd>±</kbd> zoom
+        </div>
+      </div>
+    </div>
+
+    <div id="stats" class="panel">
+      <div>depth <b id="sDepth">0</b> · zoom <b id="sZoom">1×</b></div>
+      <div>grid <b id="sGrid">3×3</b> · <span>per photo</span> <b id="sPer">9</b></div>
+      <div>
+        <span>quads</span> <b id="sQuads">0</b> · <span>tiles</span> <b id="sTiles">0</b> ·
+        <span>tex</span> <b id="sTex">0</b> · <span>fps</span> <b id="sFps">0</b> · <span>lod</span>
+        <b id="sLod">1.00×</b>
+      </div>
+    </div>
+
+    <div id="depth">
+      <div class="inner">
+        <div>
+          <div class="n" id="dNum">0</div>
+          <div class="l">depth</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast"></div>
+    <div id="calc">
+      <div class="r">
+        <span class="sp"></span>
+        <span id="calcMsg">Calculating subdivision…</span>
+        <b id="calcPct">0%</b>
+      </div>
+      <div id="calcBar"><i></i></div>
+      <div class="r">
+        <span id="calcEta"></span>
+        <button id="calcCancel">Cancel</button>
+      </div>
+    </div>
+
+
+    <div id="boot">
+      <div class="card">
+        <h2>Recursive Photomosaic Fractal</h2>
+        <p id="bootMsg">Loading album assets…</p>
+        <div id="bar"><i></i></div>
+        <div id="bootExtra" style="display: none">
+          <p>
+            No <code>assets/manifest.json</code> was found, so a <b>procedural demo album</b> is
+            running instead.
+          </p>
+          <p>
+            Build a real album with:<br />
+            <code>node build_image_index.js --input ./photos --out ./assets</code>
+          </p>
+          <div class="file-row">
+            <label class="fake-btn" for="pick">Use photos from this device…</label>
+            <input id="pick" type="file" accept="image/*" multiple />
+            <button class="fake-btn" id="bootGo">Explore the demo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--
+  ============================================================================
+  Runtime. Organised as independent ES6 modules-in-one-file; each numbered
+  section (utils / album / index / world / camera / renderer / textures /
+  viewer / input / hud / boot) can be lifted verbatim into its own
+  `./js/<name>.js` module with `export` keywords and no other changes.
+  ============================================================================
+-->
+    <script src="experiments-fractal_mosaic-index.js" type="module"></script>
+  </body>
+</html>
