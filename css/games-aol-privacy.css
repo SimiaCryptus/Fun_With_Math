@@ -1,0 +1,276 @@
+/* ── Page shell ───────────────────────────────────────────── */
+body {
+  background: #000010;
+  color: #c0c0e0;
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow: auto !important;
+  overflow-y: auto !important;
+  display: block !important;
+  touch-action: auto !important;
+  overscroll-behavior: auto !important;
+}
+
+/* Subtle animated grid background — same vibe as the game */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Layout ───────────────────────────────────────────────── */
+.privacy-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.privacy-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.privacy-header .game-title {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  color: #00ffff;
+  text-shadow:
+    0 0 8px #00ffff,
+    0 0 24px #0088ff;
+  letter-spacing: 0.12em;
+  margin: 0 0 4px;
+}
+
+.privacy-header .page-subtitle {
+  font-size: 0.85rem;
+  color: #6060a0;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+.privacy-header .scanline-divider {
+  border: none;
+  border-top: 1px solid #00ffff44;
+  box-shadow: 0 0 6px #00ffff33;
+  margin: 0 auto;
+  width: 60%;
+}
+
+/* ── Status badges ────────────────────────────────────────── */
+.status-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 32px 0 40px;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  border: 1px solid;
+}
+
+.status-badge.good {
+  background: rgba(0, 255, 136, 0.08);
+  border-color: #00ff8866;
+  color: #00ff88;
+  text-shadow: 0 0 6px #00ff8866;
+}
+
+.status-badge.warn {
+  background: rgba(255, 170, 0, 0.08);
+  border-color: #ffaa0066;
+  color: #ffaa00;
+  text-shadow: 0 0 6px #ffaa0066;
+}
+
+/* ── Sections ─────────────────────────────────────────────── */
+.privacy-section {
+  margin-bottom: 36px;
+  padding: 24px 28px;
+  background: rgba(10, 10, 40, 0.7);
+  border: 1px solid #1a1a4a;
+  border-left: 3px solid #00ffff44;
+  border-radius: 4px;
+}
+
+.privacy-section.danger-zone {
+  border-left-color: #ff4444aa;
+  background: rgba(40, 5, 5, 0.5);
+}
+
+.privacy-section.neutral-zone {
+  border-left-color: #ffaa0088;
+  background: rgba(30, 20, 0, 0.4);
+}
+
+.privacy-section h2 {
+  font-size: 1rem;
+  color: #00ffff;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.privacy-section.danger-zone h2 {
+  color: #ff6666;
+  text-shadow: 0 0 6px #ff444466;
+}
+
+.privacy-section.neutral-zone h2 {
+  color: #ffcc44;
+  text-shadow: 0 0 6px #ffaa0044;
+}
+
+.privacy-section p {
+  margin: 0 0 12px;
+  line-height: 1.75;
+  font-size: 0.9rem;
+  color: #b0b0d0;
+}
+
+.privacy-section p:last-child {
+  margin-bottom: 0;
+}
+
+.privacy-section ul {
+  margin: 8px 0 12px 0;
+  padding-left: 20px;
+  color: #b0b0d0;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.privacy-section ul li::marker {
+  color: #00ffff88;
+}
+
+/* ── Highlighted callout ──────────────────────────────────── */
+.callout {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid #00ffff33;
+  border-radius: 3px;
+  padding: 12px 16px;
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  color: #80e0ff;
+  line-height: 1.7;
+}
+
+.callout.warn {
+  background: rgba(255, 170, 0, 0.06);
+  border-color: #ffaa0044;
+  color: #ffd080;
+}
+
+.callout.danger {
+  background: rgba(255, 50, 50, 0.07);
+  border-color: #ff444455;
+  color: #ff9999;
+}
+
+/* ── Inline code ──────────────────────────────────────────── */
+code {
+  background: rgba(0, 255, 255, 0.08);
+  border: 1px solid #00ffff22;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85em;
+  color: #66ddff;
+}
+
+/* ── Links ───────────overflow: scroll;─────────────────────────────────────── */
+a {
+  color: #00ccff;
+  text-decoration: none;
+  border-bottom: 1px solid #00ccff44;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+a:hover {
+  color: #00ffff;
+  border-color: #00ffff;
+  text-shadow: 0 0 6px #00ffff66;
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+.privacy-footer {
+  text-align: center;
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid #1a1a3a;
+  font-size: 0.78rem;
+  color: #404060;
+  line-height: 1.9;
+}
+
+.privacy-footer .back-link {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 24px;
+  border: 1px solid #00ffff44;
+  border-radius: 3px;
+  color: #00ccff;
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  transition: all 0.15s;
+}
+
+.privacy-footer .back-link:hover {
+  background: rgba(0, 255, 255, 0.08);
+  border-color: #00ffff;
+  color: #00ffff;
+  text-shadow: 0 0 8px #00ffff88;
+  box-shadow: 0 0 12px #00ffff22;
+}
+
+/* ── Glider decoration ────────────────────────────────────── */
+.glider-art {
+  font-size: 0.6rem;
+  line-height: 1.2;
+  color: #00ffff22;
+  text-align: right;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 540px) {
+  .privacy-wrap {
+    padding: 24px 14px 60px;
+  }
+  .privacy-section {
+    padding: 18px 16px;
+  }
+  .status-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+}

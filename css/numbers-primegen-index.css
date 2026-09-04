@@ -1,0 +1,16 @@
+#theory .tb-frame {
+  display: block;
+  width: 100%;
+  height: min(78vh, 900px);
+  border: 0;
+  background: #0b0e14;
+}
+.card[data-rr-card='theory-browser'] {
+  outline: 1px solid rgba(255, 208, 96, 0.35);
+}
+.card[data-rr-card='theory-browser'] .row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}

@@ -1,0 +1,89 @@
+body {
+  margin: 0;
+  font:
+    15px/1.5 system-ui,
+    sans-serif;
+  background: #080a16;
+  color: #fff;
+}
+main {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 32px;
+}
+button {
+  cursor: pointer;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #22d3ee;
+  background: #12324a;
+  color: #fff;
+  font-weight: 700;
+  margin: 4px 4px 4px 0;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+#indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 16px 0;
+}
+#dot {
+  font-size: 28px;
+}
+#label {
+  opacity: 0.85;
+}
+#log {
+  margin-top: 16px;
+  font-size: 12px;
+  opacity: 0.7;
+  white-space: pre-wrap;
+}
+voice-calibration {
+  margin: 16px 0;
+}
+.panel {
+  background: #0d1024;
+  border: 1px solid #2a2f4a;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+.panel h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+.kv {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 4px 12px;
+}
+.kv .k {
+  opacity: 0.6;
+}
+.kv .v {
+  font-weight: 700;
+}
+#word-scores {
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+  opacity: 0.85;
+  min-height: 18px;
+}
+.thresh {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+.thresh input {
+  flex: 1;
+}
