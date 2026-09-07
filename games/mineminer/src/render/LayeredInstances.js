@@ -20,6 +20,8 @@ export class LayeredInstances {
     this.meshes = [];
     this.baseOpacity = material.opacity;
     this.alwaysTransparent = material.transparent;
+     this.shadows = shadows;
+     this.renderOrder = renderOrder;
     this.layerFactor = new Float32Array(grid.height).fill(1);
     this.globalFactor = 1;
     for (let y = 0; y < grid.height; y++) {
@@ -62,28 +64,55 @@ export class LayeredInstances {
     mesh.instanceMatrix.needsUpdate = true;
   }
 
-  setLayerFocus(layer, dim = 0.15) {
-    for (let y = 0; y < this.meshes.length; y++) this.layerFactor[y] = layer < 0 || y === layer ? 1 : dim;
-    this.applyOpacity();
-  }
+   /**
+    * `dim` applies to layers below the focused one, `aboveDim` to layers stacked on
+    * top of it — those are the ones physically between the camera and the slice you
+    * asked to look at, so they fade harder.
+    */
+   setLayerFocus(layer, dim = 0.15, aboveDim = dim) {
+     for (let y = 0; y < this.meshes.length; y++) {
+       this.layerFactor[y] = layer < 0 || y === layer ? 1 : y > layer ? aboveDim : dim;
+     }
+     this.applyOpacity();
+   }
 
   setGlobalFactor(f) {
     this.globalFactor = f;
     this.applyOpacity();
   }
 
-  applyOpacity() {
-    this.meshes.forEach((mesh, y) => {
-      const mat = mesh.material;
-      const o = this.baseOpacity * this.layerFactor[y] * this.globalFactor;
-      mat.opacity = o;
-      const transparent = this.alwaysTransparent || o < 0.999;
-      if (mat.transparent !== transparent) {
-        mat.transparent = transparent;
-        mat.needsUpdate = true;
-      }
-    });
-  }
+   applyOpacity() {
+     for (let y = 0; y < this.meshes.length; y++) {
+       const mesh = this.meshes[y];
+       const mat = mesh.material;
+       const o = this.baseOpacity * this.layerFactor[y] * this.globalFactor;
+       const faded = o < this.baseOpacity - 1e-3; // dimmed by layer isolate or x-ray
+       mat.opacity = o;
+
+       const transparent = this.alwaysTransparent || o < 0.999;
+       if (mat.transparent !== transparent) {
+         mat.transparent = transparent;
+         mat.needsUpdate = true;
+       }
+
+       // A faded layer must never occlude what is behind it. Ghost cubes and digit
+       // sprites are depth-TESTED, so a dimmed slab that still writes depth hides the
+       // numbers of the layer you are trying to read — which is exactly what made
+       // multi-layer boards (and Alt x-ray) look broken.
+       const depthWrite = !this.alwaysTransparent && !faded;
+       if (mat.depthWrite !== depthWrite) {
+         mat.depthWrite = depthWrite;
+         mat.needsUpdate = true;
+       }
+
+       // Faded blocks also stop casting/receiving shadows, otherwise an isolated
+       // lower layer sits in the pitch-black shadow of the slab above it.
+       mesh.castShadow = this.shadows && !faded;
+       mesh.receiveShadow = this.shadows && !faded;
+       mesh.renderOrder = faded ? this.renderOrder + 1 : this.renderOrder;
+       mesh.visible = o > 0.005;
+     }
+   }
 
   dispose() {
     for (const mesh of this.meshes) {

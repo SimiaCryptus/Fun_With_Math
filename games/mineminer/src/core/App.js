@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { EventBus } from './EventBus.js';
-import { loadSettings, saveSettings, livesFromSetting } from './settings.js';
+import { loadSettings, saveSettings, livesFromSetting, weightsFromSettings } from './settings.js';
 import { rngFromSeed, randomSeedString } from './rng.js';
-import { Grid, MINED } from '../game/Grid.js';
+import { Grid, MINED, normaliseWeights } from '../game/Grid.js';
 import { Board } from '../game/Board.js';
 import { placeMines } from '../game/MineGenerator.js';
 import { LEVELS, customLevel } from '../game/LevelDefs.js';
@@ -20,6 +20,13 @@ import { Sfx } from '../audio/sfx.js';
 const HINT =
   'LMB strike · RMB mark · MMB probe · drag to orbit · 1-3 isolate layer · Alt x-ray · V miner view · Space menu';
 
+function parseWeights(p) {
+   // Legacy links used adj=26 / adj=6; the modern form is we=<edge>&wc=<corner>.
+   const legacy = Number(p.get('adj')) === 6 ? 0 : 1;
+   const num = (key) => (p.has(key) ? Number(p.get(key)) : legacy);
+   return normaliseWeights({ face: 1, edge: num('we'), corner: num('wc') });
+}
+
 function parseHash() {
   const raw = location.hash.replace(/^#/, '');
   if (!raw) return null;
@@ -31,13 +38,15 @@ function parseHash() {
     h: Number(p.get('h')) || 1,
     mines: Number(p.get('m')) || 1,
     seed: p.get('seed') || randomSeedString(),
-    adj: Number(p.get('adj')) || 26,
+     weights: parseWeights(p),
     level: p.get('level'),
   };
 }
 
-function buildHash(spec, seed, adjacency) {
-  const base = `w=${spec.w}&d=${spec.d}&h=${spec.h}&m=${spec.mines}&seed=${encodeURIComponent(seed)}&adj=${adjacency}`;
+function buildHash(spec, seed, weights) {
+   const base =
+     `w=${spec.w}&d=${spec.d}&h=${spec.h}&m=${spec.mines}` +
+     `&seed=${encodeURIComponent(seed)}&we=${weights.edge}&wc=${weights.corner}`;
   return spec.custom ? base : `${base}&level=${spec.id}`;
 }
 
@@ -106,7 +115,7 @@ export class App {
   startFromHash() {
     const p = parseHash();
     if (!p) return false;
-    if (p.adj === 6 || p.adj === 26) this.settings.adjacency = p.adj;
+     this.settings = { ...this.settings, edgeWeight: p.weights.edge, cornerWeight: p.weights.corner };
     const idx = LEVELS.findIndex(
       (l) => l.id === p.level && l.w === p.w && l.d === p.d && l.h === p.h && l.mines === p.mines,
     );
@@ -127,7 +136,7 @@ export class App {
     this.disposeBoard();
 
     const s = this.settings;
-    const grid = new Grid(spec.w, spec.d, spec.h, s.adjacency);
+     const grid = new Grid(spec.w, spec.d, spec.h, weightsFromSettings(s));
     placeMines(grid, spec.mines, rngFromSeed(seed));
     this.grid = grid;
     this.board = new Board(
@@ -160,7 +169,7 @@ export class App {
     this.highlighter.hide();
     this.overlay.hide();
 
-    history.replaceState(null, '', `#${buildHash(spec, seed, s.adjacency)}`);
+     history.replaceState(null, '', `#${buildHash(spec, seed, grid.weights)}`);
   }
 
   disposeBoard() {
@@ -498,7 +507,11 @@ export class App {
       this.view.syncAll();
       this.view.setLayerFocus(this.layerFocus);
     }
-    if (prev.adjacency !== next.adjacency || prev.lives !== next.lives) {
+     if (
+       prev.edgeWeight !== next.edgeWeight ||
+       prev.cornerWeight !== next.cornerWeight ||
+       prev.lives !== next.lives
+     ) {
       this.startBoard(this.spec, this.seed);
       this.hud.flash('Board restarted to apply the new rules');
       this.openSettings();

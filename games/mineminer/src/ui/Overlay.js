@@ -1,4 +1,6 @@
 import { fmtTime, esc } from './Hud.js';
+const WEIGHT_OPTS = [['1', 'Counts as 1'], ['0.5', 'Counts as ½'], ['0', 'Ignored']];
+
 
 function select(name, label, options, value) {
   const opts = options
@@ -71,7 +73,8 @@ export class Overlay {
     return {
       ...this.current,
       cascade: fd.get('cascade'),
-      adjacency: Number(fd.get('adjacency')),
+       edgeWeight: Number(fd.get('edgeWeight')),
+       cornerWeight: Number(fd.get('cornerWeight')),
       lives: fd.get('lives'),
       safeFirstStrike: form.safeFirstStrike.checked,
       strictMarks: form.strictMarks.checked,
@@ -89,7 +92,8 @@ export class Overlay {
       <h2>Paused · Settings</h2>
       <form class="settings">
         ${select('cascade', 'Cascade', [['on', 'On'], ['off', 'Off'], ['single-layer', 'Single layer']], settings.cascade)}
-        ${select('adjacency', 'Adjacency', [['26', '26 (Moore)'], ['6', '6 (faces only)']], settings.adjacency)}
+         ${select('edgeWeight', 'Edge neighbours (12)', WEIGHT_OPTS, settings.edgeWeight)}
+         ${select('cornerWeight', 'Corner neighbours (8)', WEIGHT_OPTS, settings.cornerWeight)}
         ${select('lives', 'Lives', [['1', '1'], ['3', '3'], ['inf', '∞ (Zen)']], settings.lives)}
         ${check('safeFirstStrike', 'Safe first strike', settings.safeFirstStrike)}
         ${check('strictMarks', 'Strict marks (limited to mine count)', settings.strictMarks)}
@@ -108,7 +112,11 @@ export class Overlay {
         <button class="btn" data-act="newseed">New seed (N)</button>
         <button class="btn" data-act="levels">Levels</button>
       </div>
-      <p class="sub" style="margin-top:14px">Adjacency and lives changes restart the current board.</p>
+       <p class="sub" style="margin-top:14px">
+         The 6 face-touching neighbours always count as 1. Edge- and corner-touching neighbours
+         can count as 1, ½ or nothing — half-weights show up as numbers like <code>3½</code>.
+         Changing them (or lives) restarts the current board.
+       </p>
     `);
   }
 

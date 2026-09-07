@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-07T18:30:27.201Z",
+  "generatedAt": "2026-09-07T20:21:14.061Z",
   "counts": {
     "lab": 19,
-    "game": 8,
+    "game": 9,
     "essay": 6
   },
   "entries": [
@@ -623,6 +623,27 @@
       },
       "dir": "games/number-crush",
       "source": "games/number-crush/entry.json"
+    },
+    {
+      "id": "mineminer",
+      "category": "game",
+      "section": "games",
+      "order": 9007199254740991,
+      "icon": "MM",
+      "title": "MineMiner",
+      "href": "index.html",
+      "readme": "README.md",
+      "launchLabel": "Open MineMiner",
+      "pitch": "A Minecraft-inspired implementation of Minesweeper, in the browser.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "games/mineminer"
+      },
+      "dir": "games/mineminer",
+      "source": "games/mineminer/entry.json"
     },
     {
       "id": "physical-visualizer",

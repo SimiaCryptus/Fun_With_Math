@@ -63,9 +63,11 @@ export class BlockRenderer {
   }
 
   setLayerFocus(layer) {
-    this.stone.setLayerFocus(layer);
-    this.marked.setLayerFocus(layer);
-    this.ore.setLayerFocus(layer);
+     // Stone above the isolated layer nearly disappears so the slice can be read
+     // from a top-down orbit; stone below stays as a faint spatial reference.
+     this.stone.setLayerFocus(layer, 0.14, 0.05);
+     this.marked.setLayerFocus(layer, 0.22, 0.08);
+     this.ore.setLayerFocus(layer, 0.22, 0.08);
   }
 
   setXray(on) {

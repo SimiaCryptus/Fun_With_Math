@@ -28,7 +28,7 @@ export class GhostRenderer {
   }
 
   setLayerFocus(layer) {
-    this.inst.setLayerFocus(layer, 0.12);
+     this.inst.setLayerFocus(layer, 0.12, 0.06);
   }
 
   dispose() {

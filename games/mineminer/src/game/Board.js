@@ -151,11 +151,13 @@ export class Board {
     }
     let marked = 0;
     const targets = [];
-    this.grid.forEachNeighbour(cell, (n) => {
-      if (state[n] === MARKED) marked++;
-      else if (state[n] === INTACT) targets.push(n);
-    });
-    if (marked !== counts[cell]) {
+     // Marks are summed with the same weights the number was built from, so a chord
+     // on a "3½" needs marks whose weights add up to 3.5.
+     this.grid.forEachNeighbour(cell, (n, w) => {
+       if (state[n] === MARKED) marked += w;
+       else if (state[n] === INTACT) targets.push(n);
+     });
+     if (Math.abs(marked - counts[cell]) > 1e-6) {
       r.reason = 'marks-mismatch';
       return r;
     }

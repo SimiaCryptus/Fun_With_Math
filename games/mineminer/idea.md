@@ -47,14 +47,27 @@ floor    ████████████████████   <- indes
 
 Proximity counts use the **full Moore neighbourhood in 3D**: all cells whose coordinates differ by at most 1 on each
 axis — up to **26 neighbours** (8 in-plane + 9 above + 9 below).
+The 26 neighbours split into three classes by how they touch the cell:
+| Class          | Cells | Offset Manhattan length | Weight            |
+|----------------|-------|-------------------------|-------------------|
+| Face-connected | 6     | 1                       | always `1`        |
+| Edge-connected | 12    | 2                       | `1` / `½` / `0`   |
+| Point-connected| 8     | 3                       | `1` / `½` / `0`   |
+A cell's number is the **weighted sum** of mines in its neighbourhood, so boards can read
+`3½` as easily as `3`. A class weighted `0` leaves the neighbourhood entirely — it is ignored by
+counts, by cascades, by safe-first-strike and by chording alike (so `edge=0, corner=0` *is* the old
+6-adjacency ruleset). Chording compares the weighted sum of the marks around a number, not the mark
+count.
+
 
 With `height = 1` this degenerates exactly to classic Minesweeper's 8 neighbours, which is why level 1 feels familiar.
 Every added layer roughly triples the information density of a single number, so mine ratios must drop as height grows
 (see §7).
 
-A HUD toggle `Adjacency: 26 / 6` lets advanced players switch to **face-only adjacency**
-(6 neighbours) as an alternate ruleset; it changes the puzzle character completely (much sparser information, more
-"sonar"-like). Default is 26.
+Two settings sliders (`Edge neighbours (12)` and `Corner neighbours (8)`, each `1 / ½ / 0`) let advanced players dial
+the information density: all-`1` is the classic Moore ruleset, `0/0` is face-only "sonar", and `½` weights make
+diagonal contacts *legible but distinguishable* from a solid face contact — a `2½` tells you far more than a `3` ever
+could. Default is `1 / 1`.
 
 ---
 
@@ -68,7 +81,7 @@ Each cell tracks two orthogonal facts:
 |-----------|---------------------------------|-------------------------------------------|
 | `content` | `EMPTY` \| `MINE`               | Is there ore in this cell? (hidden truth) |
 | `state`   | `INTACT` \| `MARKED` \| `MINED` | What the player has done to it            |
-| `count`   | `0..26`                         | Adjacent mineblocks (precomputed)         |
+| `count`   | `0..26`, in ½ steps             | Weighted adjacent mineblocks (precomputed)|
 | `known`   | `bool`                          | Has its number ever been shown?           |
 
 ### 3.2 Actions
@@ -221,10 +234,12 @@ Flat typed arrays for speed and trivial serialization:
 
     content : Uint8Array   // 0 EMPTY, 1 MINE
     state   : Uint8Array   // 0 INTACT, 1 MARKED, 2 MINED, 3 SCAR
-    counts  : Uint8Array   // 0..26
+     counts  : Float32Array // 0..26 in 0.5 steps (weighted)
 
 `neighbours26(i)` is precomputed once per board into a flat `Int32Array` of
-`26 * cellCount` entries (with `-1` for out-of-bounds), so hot loops never do bounds math.
+`26 * cellCount` entries (with `-1` for out-of-bounds), so hot loops never do bounds math. A parallel
+`slotWeights : Float32Array(26)` holds the weight of each neighbour slot (identical for every cell), so
+counting is `c += slotWeights[k]` instead of `c++`.
 
 ### 5.2 Mine placement
 

@@ -2,9 +2,8 @@ import * as THREE from 'three';
 import { MINE, MINED, SCAR } from '../game/Grid.js';
 import { BlockRenderer } from './BlockRenderer.js';
 import { GhostRenderer } from './GhostRenderer.js';
-import { DigitAtlas, GLYPH_X, numberColour } from './DigitAtlas.js';
+import { DigitAtlas, GLYPH_X, glyphForCount, numberColour } from './DigitAtlas.js';
 import { NumberSprites } from './NumberSprites.js';
-import { MarkRenderer } from './MarkRenderer.js';
 
 const _c = new THREE.Color();
 const _c2 = new THREE.Color();
@@ -22,7 +21,6 @@ export class BoardView {
     this.blocks = new BlockRenderer(scene, grid);
     this.ghosts = new GhostRenderer(scene, grid);
     this.digits = new NumberSprites(scene, grid, this.atlas);
-    this.marks = new MarkRenderer(scene, grid);
   }
 
   get minesRevealed() {
@@ -37,8 +35,6 @@ export class BoardView {
     const { grid } = this;
     const s = grid.state[i];
     this.blocks.syncCell(i);
-    this.marks.syncCell(i);
-    if (grid.y(i) > 0) this.marks.syncCell(i - grid.layerSize); // headroom of the mark below may change
 
     if (s === MINED) {
       if (grid.content[i] === MINE) {
@@ -50,7 +46,7 @@ export class BoardView {
           numberColour(n, _c);
           _c2.copy(_c).multiplyScalar(0.55);
           this.ghosts.show(i, _c2, 1);
-          this.digits.setGlyph(i, n, _c);
+           this.digits.setGlyph(i, glyphForCount(n), _c);
         } else {
           this.ghosts.show(i, ZERO_GHOST, 0.96);
           this.digits.hide(i);
@@ -77,7 +73,6 @@ export class BoardView {
     this.blocks.setLayerFocus(layer);
     this.ghosts.setLayerFocus(layer);
     this.digits.setLayerFocus(layer);
-    this.marks.setLayerFocus(layer);
   }
 
   setXray(on) {
@@ -88,7 +83,6 @@ export class BoardView {
     this.blocks.dispose();
     this.ghosts.dispose();
     this.digits.dispose();
-    this.marks.dispose();
     this.atlas.dispose();
   }
 }
