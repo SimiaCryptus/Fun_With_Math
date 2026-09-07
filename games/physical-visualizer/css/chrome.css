@@ -1,0 +1,22 @@
+/* Placeholder chrome. Skin sprites + bitmap fonts land in Phase 5; the ids/events stay the same. */
+.chrome {
+  position: fixed; left: 50%; bottom: calc(12px + var(--safe-b)); width: 550px; max-width: 96vw;
+  transform: translate(calc(-50% + var(--tilt-x) * 4px), calc(var(--tilt-y) * 4px)); /* parallax */
+  background: linear-gradient(#3a3a4a, #1e1e2e); border: 1px solid #6a6a80; border-radius: 3px;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, .6); user-select: none; z-index: 10;
+  transition: opacity .4s;
+}
+.chrome.hidden { opacity: 0; pointer-events: none; }
+.chrome .title {
+  height: 20px; padding: 0 8px; background: #101018; color: #0f0; overflow: hidden; white-space: nowrap;
+  border-bottom: 1px solid #444; line-height: 20px; font-size: 12px;
+}
+.chrome .row { display: flex; align-items: center; gap: 4px; padding: 6px; }
+.chrome button {
+  min-width: 44px; min-height: 36px; padding: 0 8px; background: #2a2a3a; border: 1px solid #55556a; border-radius: 2px;
+  color: #eee;
+}
+.chrome button:active { background: #444; }
+.chrome .time { min-width: 48px; text-align: center; color: #0f0; background: #000; padding: 4px; }
+.chrome input[type=range] { flex: 1; min-width: 60px; accent-color: #0c0; height: 36px; }
+.chrome .preset-name { flex: 1; text-align: center; color: #fc6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

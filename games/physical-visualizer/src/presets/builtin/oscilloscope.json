@@ -1,0 +1,13 @@
+{
+  "id": "oscilloscope",
+  "name": "Oscilloscope",
+  "author": "builtin",
+  "version": 1,
+  "warp": { "shader": "warp/zoom-rotate.frag", "decay": 0.9, "zoom": 0.6, "rotate": 0.3, "drift": 1.0 },
+  "comp": { "shader": "comp/oscilloscope.frag", "blend": "add" },
+  "post": { "aberration": "jerk*0.006" },
+  "params": [
+    { "name": "rainbow", "default": 0.3 },
+    { "name": "thickness", "default": 0.5 }
+  ]
+}

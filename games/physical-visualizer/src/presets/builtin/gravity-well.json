@@ -1,0 +1,16 @@
+{
+  "id": "gravity-well",
+  "name": "Gravity Well",
+  "author": "builtin",
+  "version": 1,
+  "requires": { "webgl": 2, "float": "half", "particles": true },
+  "sim": { "shader": "sim/particles-gravity.frag", "texSize": 128 },
+  "warp": { "shader": "warp/zoom-rotate.frag", "decay": 0.93, "zoom": 0.4, "rotate": 0.2, "drift": 1.5 },
+  "comp": { "shader": "comp/glitter.frag", "blend": "add" },
+  "post": { "aberration": "jerk*0.004" },
+  "params": [
+    { "name": "viscosity", "default": 0.35 },
+    { "name": "sparkle", "default": 0.8, "bind": "treb" }
+  ],
+  "motion": { "gravityScale": 1.4, "shakeImpulse": 6.0 }
+}

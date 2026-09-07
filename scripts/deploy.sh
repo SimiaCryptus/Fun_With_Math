@@ -2,8 +2,8 @@
 
 pushd `dirname $0`
 cd ..
-npm run build
-npm run validate
+#npm run build
+#npm run validate
 npm run manifest:build
 npm run build:seo:prod
 

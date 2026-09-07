@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f6f1e7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f1116" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="description"
+      content="0x800 — 2048 on a hexagonal board, in hexadecimal. Slide tiles six ways and build 0x800."
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="0x800" />
+    <title>0x800 — hexadecimal 2048 on a hex grid</title>
+    <script>
+      // Resolve the theme before first paint so there is no flash.
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('0x800:prefs') || '{}');
+          var t = p.theme || 'auto';
+          if (t === 'auto')
+            t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {
+          /* storage unavailable: keep default */
+        }
+      })();
+    </script>
+    <style>
+      /* critical: paint the right background before styles.css arrives */
+      html {
+        background: #f6f1e7;
+        color: #2a251d;
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      }
+      html[data-theme='dark'] {
+        background: #0f1116;
+        color: #e8e3d8;
+      }
+      html[data-theme='contrast'] {
+        background: #000;
+        color: #fff;
+      }
+      body {
+        margin: 0;
+      }
+    </style>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <header class="top">
+        <h1 class="logo"><span class="prefix">0x</span>800<small>hex 2048 · six ways</small></h1>
+        <div class="scores">
+          <button
+            class="panel"
+            id="score-panel"
+            type="button"
+            title="click to toggle HEX / DEC"
+            aria-label="score, click to toggle hexadecimal or decimal display"
+          >
+            <span class="panel-k">SCORE</span><span class="panel-v" id="score">0x0</span>
+            <span class="gain" id="gain" aria-hidden="true"></span>
+          </button>
+          <div class="panel" id="best-panel">
+            <span class="panel-k">BEST</span><span class="panel-v" id="best">0x0</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="meta" aria-hidden="true">
+        <span id="moves">moves 0x0</span>
+        <span id="time">00:00</span>
+        <span id="undos">undos 0x0</span>
+        <span id="seed" class="seed"></span>
+      </div>
+
+      <main class="stage" id="stage">
+        <div class="board" id="board" role="img" aria-label="empty board"></div>
+        <div class="overlay" id="overlay" hidden>
+          <div class="card" role="dialog" aria-modal="true" aria-labelledby="ov-title">
+            <p class="ov-kicker" id="ov-kicker"></p>
+            <h2 class="ov-title" id="ov-title"></h2>
+            <p class="ov-sub" id="ov-sub"></p>
+            <div class="ov-body" id="ov-body"></div>
+            <div class="ov-actions" id="ov-actions"></div>
+          </div>
+        </div>
+      </main>
+
+      <pre class="log" id="log" aria-hidden="true"></pre>
+
+      <div class="controls">
+        <div class="pad" id="pad" role="group" aria-label="move controls"></div>
+        <div class="actions">
+          <button class="btn" id="btn-new" type="button">new game <kbd>R</kbd></button>
+          <button class="btn" id="btn-help" type="button">help <kbd>?</kbd></button>
+          <button class="btn" id="btn-theme" type="button" aria-label="switch theme">
+            theme: auto
+          </button>
+        </div>
+      </div>
+
+      <div class="sr-only" id="live" aria-live="polite" aria-atomic="true"></div>
+    </div>
+    <noscript><p style="padding: 1rem">0x800 needs JavaScript to run.</p></noscript>
+    <script type="module" src="src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "id": "0x800",
+  "category": "game",
+  "section": "games",
+  "order": 1,
+  "icon": "800",
+  "title": "0x800",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Play 0x800",
+  "pitch": "It's 2048, except the board is a hexagon made of hexagons, tiles slide in six directions, and every value is written in base 16. No build step, no dependencies, works offline — build 0x800 (2048) to win."
+}

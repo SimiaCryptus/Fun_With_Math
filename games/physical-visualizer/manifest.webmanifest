@@ -1,0 +1,32 @@
+{
+  "name": "Physical Visualizer",
+  "short_name": "PhysViz",
+  "description": "Winamp-esque GPU music visualizer that reacts to sound and motion.",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#000000",
+  "theme_color": "#1e1e2e",
+  "start_url": "./index.html",
+  "scope": "./",
+  "icons": [
+    { "src": "./assets/icons/192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./assets/icons/512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./assets/icons/maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "file_handlers": [
+    {
+      "action": "./index.html?open",
+      "accept": { "audio/*": [".mp3", ".ogg", ".flac", ".m4a", ".wav"] }
+    }
+  ],
+  "share_target": {
+    "action": "./index.html?share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": { "files": [{ "name": "audio", "accept": ["audio/*"] }] }
+  },
+  "shortcuts": [
+    { "name": "Mic Mode", "url": "./index.html?src=mic" },
+    { "name": "Random Preset", "url": "./index.html?preset=random" }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "spectrum-bars",
+  "name": "Spectrum Bars",
+  "author": "builtin",
+  "version": 1,
+  "warp": { "shader": "warp/ripple.frag", "decay": 0.88, "zoom": 1.0, "rotate": 1.0, "drift": 1.0 },
+  "comp": { "shader": "comp/spectrum-bars.frag", "blend": "add" },
+  "post": { "aberration": "jerk*0.004" },
+  "params": [
+    { "name": "bars", "default": 0.35 }
+  ]
+}

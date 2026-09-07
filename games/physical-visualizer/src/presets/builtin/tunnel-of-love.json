@@ -1,0 +1,12 @@
+{
+  "id": "tunnel-of-love",
+  "name": "Tunnel of Love",
+  "author": "builtin",
+  "version": 1,
+  "warp": { "shader": "warp/zoom-rotate.frag", "decay": 0.93, "zoom": -1.2, "rotate": 0.6, "drift": 0.5 },
+  "comp": { "shader": "comp/tunnel.frag", "blend": "add" },
+  "post": { "aberration": "jerk*0.008" },
+  "params": [
+    { "name": "rings", "default": 0.5 }
+  ]
+}
