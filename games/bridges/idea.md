@@ -573,11 +573,19 @@ Save   = { config, moves: Int32Array, meta: { started, names, result } }
 ---
 
 ## 9. Roadmap
-> **Status:** M0–M2 are implemented (see `src/` and `tests/`): hex/square/
-> triangle/4.8.8/kagome tilings, rhombus/square/hexagon outlines, all three
-> edge modes, `strict`/`bridge`/`open` crossing modes with overpass meshes,
-> 2‑ and 3‑seat play, pie rule, URL sharing, merged single‑draw‑call board.
-> `priority` crossing mode, dual play, AI, tiebreaks and a11y are still open.
+> **Status:** M0–M2 plus parts of M3, M5 and M6 are implemented (see `src/`
+> and `tests/`): triangle (default) / hex / square / 4.8.8 / kagome / 3.4.6.4 /
+> snub square / 3.12.12 / 4.6.12 / Cairo / brick tilings, rhombus/square/hexagon
+> outlines, all three edge modes, `strict`/`bridge`/`open` crossing modes with
+> overpass meshes, 2‑ and 3‑seat play, pie rule, URL sharing, merged
+> single‑draw‑call board, Fischer clocks (untimed by default), per‑seat bots
+> (`easy` / `medium` / `hard`, in a Worker with main‑thread fallback) and a
+> damped orbit/pan/dolly camera rig.
+> Tiles whose group genuinely reaches an owned side get a painted rim
+> (striped once it spans both sides); this, link bars, theme and animations
+> are per‑device display settings in the settings dialog, separate from the
+> shareable game config.
+> `priority` crossing mode, dual play, MCTS+RAVE, tiebreaks and a11y are still open.
 
 
 **M0 — Skeleton (playable Hex).**

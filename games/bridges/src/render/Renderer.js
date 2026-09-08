@@ -1,14 +1,16 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { BoardMesh } from './BoardMesh.js';
 import { BridgeMesh } from './BridgeMesh.js';
+import { LinkMesh } from './LinkMesh.js';
+import { CameraRig } from './CameraRig.js';
 import { THEMES } from './Themes.js';
 
 /** Scene, camera rig, picking and render loop.  Knows nothing about rules. */
 export class Renderer {
-  constructor(canvas, themeName = 'slate') {
+  constructor(canvas, display = {}) {
     this.canvas = canvas;
-    this.theme = THEMES[themeName] ?? THEMES.slate;
+    this.display = { theme: 'slate', borders: 'anchored', links: true, animations: true, ...display };
+    this.theme = THEMES[this.display.theme] ?? THEMES.slate;
     this.gl = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     this.gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.gl.outputColorSpace = THREE.SRGBColorSpace;
@@ -16,11 +18,7 @@ export class Renderer {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(this.theme.background);
     this.camera = new THREE.PerspectiveCamera(40, 1, 0.1, 2000);
-    this.controls = new OrbitControls(this.camera, canvas);
-    Object.assign(this.controls, {
-      enableDamping: true, dampingFactor: 0.08, enablePan: false,
-      minPolarAngle: 0.15, maxPolarAngle: 1.25,
-    });
+    this.rig = new CameraRig(this.camera, canvas);
 
     const key = new THREE.DirectionalLight(0xffffff, 2.2);
     key.position.set(6, 12, 8);
@@ -57,20 +55,50 @@ export class Renderer {
 
   now() { return this.clock.getElapsedTime(); }
 
-  setBoard(board) {
+  /** Animations are a display setting, but `prefers-reduced-motion` always wins. */
+  get animate() { return this.display.animations !== false && !this.reducedMotion; }
+
+  setBoard(board, fit = true) {
     this.board = board;
     if (this.boardMesh) { this.boardMesh.geometry.dispose(); this.boardMesh.material.dispose(); }
     if (this.bridges) this.bridges.reset();
+    if (this.links) this.links.dispose();
     if (this.frame) for (const m of this.frame.children) m.geometry.dispose();
     this.boardGroup.clear();
 
     this.boardMesh = new BoardMesh(board, this.theme);
     this.bridges = new BridgeMesh(board, this.theme, this.boardMesh.height);
+    this.links = new LinkMesh(board, this.theme, this.boardMesh.height);
     this.frame = this._buildFrame(board);
-    this.boardGroup.add(this.boardMesh, this.bridges, this.frame);
+    this.boardGroup.add(this.boardMesh, this.bridges, this.links, this.frame);
     this.pickPlane.constant = -this.boardMesh.height;
     this.hover = -1;
-    this._fitCamera(board);
+    this._applyDisplay();
+    if (fit) this._fitCamera(board);
+  }
+
+  /**
+   * Apply display settings (theme, tile borders, link bars, animations).
+   * A theme change rebuilds the board meshes; pass `game` so state is restored.
+   */
+  setDisplay(display, game) {
+    const themeChanged = display.theme !== undefined && display.theme !== this.display.theme;
+    this.display = { ...this.display, ...display };
+    if (themeChanged) {
+      this.theme = THEMES[this.display.theme] ?? THEMES.slate;
+      this.scene.background.set(this.theme.background);
+      this.table.material.color.set(this.theme.table);
+      if (this.board) {
+        this.setBoard(this.board, false);
+        if (game) this.sync(game);
+      }
+    }
+    this._applyDisplay();
+  }
+
+  _applyDisplay() {
+    this.boardMesh?.setDisplay({ ...this.display, animations: this.animate });
+    if (this.links) this.links.visible = this.display.links !== false;
   }
 
   /** Full resync from game state (replay, undo, load). */
@@ -78,14 +106,19 @@ export class Renderer {
     if (!this.boardMesh) return;
     this.boardMesh.syncFrom(game);
     this.bridges.sync(game.bridges);
+    this.links.sync(game.links());
   }
 
   /** Incremental update for a single claim. */
   applyMove(game, result) {
     const t = this.now();
-    this.boardMesh.setCell(result.cell, result.player, t);
-    if (!this.reducedMotion) this.boardMesh.setLastClaim(this.board.cells[result.cell].centroid, t);
+    // without animations the claim lands already settled (claim time long past)
+    this.boardMesh.setCell(result.cell, result.player, this.animate ? t : -100);
+    if (this.animate) this.boardMesh.setLastClaim(this.board.cells[result.cell].centroid, t);
     for (const b of result.bridges) this.bridges.addBridge(b);
+    for (const [a, b, o] of result.links ?? []) this.links.addLink(a, b, o);
+    // a single claim can re-anchor a whole group, so repaint every border
+    this.boardMesh.setConnections(game.connectionCounts());
     if (game.phase !== 'playing') this.boardMesh.applyPhase(game);
   }
 
@@ -105,6 +138,9 @@ export class Renderer {
     this.boardMesh?.setHover(id);
     this.onHover?.(id);
   }
+
+  resetView() { this.rig.reset(); }
+  toggleTopDown() { this.rig.toggleTopDown(); }
 
   _buildFrame(board) {
     const group = new THREE.Group();
@@ -129,18 +165,17 @@ export class Renderer {
     const b = board.bbox;
     const cx = (b.minX + b.maxX) / 2, cy = (b.minY + b.maxY) / 2;
     const R = Math.max(b.maxX - b.minX, b.maxY - b.minY) / 2 + board.scale;
-    this.controls.target.set(cx, 0, -cy);
-    this.camera.position.set(cx, R * 2.2, -cy + R * 1.7);
-    this.controls.minDistance = R * 0.8;
-    this.controls.maxDistance = R * 6;
-    this.controls.update();
+    this.rig.fit(new THREE.Vector3(cx, 0, -cy), R);
     this.table.scale.set(R * 12, R * 12, 1);
     this.table.position.set(cx, -0.01, -cy);
   }
 
   _bindEvents() {
     let down = null;
-    this.canvas.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+    this.canvas.addEventListener('pointerdown', e => {
+      // only a plain left press can become a claim; other buttons / modifiers pan
+      down = e.button === 0 && !e.shiftKey && !e.ctrlKey ? [e.clientX, e.clientY] : null;
+    });
     this.canvas.addEventListener('pointerup', e => {
       if (!down) return;
       const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]);
@@ -161,8 +196,9 @@ export class Renderer {
 
   _loop() {
     requestAnimationFrame(this._loop);
-    this.controls.update();
-    this.boardMesh?.update(this.now());
+    const dt = Math.min(this.clock.getDelta(), 0.1);
+    this.rig.update(dt);
+    this.boardMesh?.update(this.clock.elapsedTime);
     this.gl.render(this.scene, this.camera);
   }
 }

@@ -70,7 +70,7 @@ export function cleanPolygon(poly, eps = 1e-7) {
 }
 
 /** Shrink a polygon toward its centroid by a fixed distance (visual grooves). */
-export function inset(poly, amount) {
+function radialInset(poly, amount) {
   const c = centroid(poly);
   return poly.map(p => {
     const d = sub(p, c);
@@ -79,6 +79,34 @@ export function inset(poly, amount) {
     return [c[0] + d[0] * f, c[1] + d[1] * f];
   });
 }
+/**
+  * Offset every edge inward by `amount` (mitred corners), so gaps stay uniform
+  * on irregular tiles and collinear vertices (brick midpoints) stay straight.
+  * Falls back to the radial shrink when the offset would invert the polygon.
+  */
+export function inset(poly, amount) {
+   const n = poly.length;
+   if (amount <= 0 || n < 3) return poly.map(p => [p[0], p[1]]);
+   const ccw = signedArea(poly) >= 0 ? 1 : -1;
+   const inward = (a, b) => {
+     const dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
+     return [-dy / l * ccw, dx / l * ccw];
+   };
+   const out = [];
+   for (let i = 0; i < n; i++) {
+     const p = poly[(i + n - 1) % n], c = poly[i], q = poly[(i + 1) % n];
+     const n1 = inward(p, c), n2 = inward(c, q);
+     let bx = n1[0] + n2[0], by = n1[1] + n2[1];
+     const bl = Math.hypot(bx, by);
+     if (bl < 1e-9) return radialInset(poly, amount);
+     bx /= bl; by /= bl;
+     const k = Math.min(amount / Math.max(0.35, bx * n1[0] + by * n1[1]), amount * 3);
+     out.push([c[0] + bx * k, c[1] + by * k]);
+   }
+   if (signedArea(out) * ccw <= 0 || area(out) >= area(poly)) return radialInset(poly, amount);
+   return out;
+}
+
 
 export function bboxOf(points) {
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;

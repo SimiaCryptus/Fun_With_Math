@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-07T20:21:14.061Z",
+  "generatedAt": "2026-09-08T19:24:53.160Z",
   "counts": {
     "lab": 19,
-    "game": 9,
+    "game": 10,
     "essay": 6
   },
   "entries": [
@@ -503,6 +503,27 @@
       },
       "dir": "games/0x800",
       "source": "games/0x800/entry.json"
+    },
+    {
+      "id": "bridges",
+      "category": "game",
+      "section": "games",
+      "order": 1,
+      "icon": "BR",
+      "title": "bridges",
+      "href": "index.html",
+      "readme": "README.md",
+      "launchLabel": "Play bridges",
+      "pitch": "A generalized version of the classic game 'Hex' using a variety of tesselations and board sizes. The goal is to connect the two opposite sides of the board with a continuous path of your pieces.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "games/bridges"
+      },
+      "dir": "games/bridges",
+      "source": "games/bridges/entry.json"
     },
     {
       "id": "vocal-parkour",

@@ -12,10 +12,26 @@ export const EDGE_MODES = ['whole', 'centroid', 'clip'];
 export const CROSSING_MODES = ['strict', 'bridge', 'open'];
 export const GOALS = ['opposite', 'fork'];
 export const VARIANTS = ['pie'];
+export const BORDER_MODES = ['off', 'anchored', 'spanning'];
+/** Who sits in a seat: a human or a bot level (difficulty = thinking budget). */
+export const BOTS = ['human', 'easy', 'medium', 'hard'];
+/** Clock presets: [main seconds, Fischer increment seconds]. */
+export const CLOCKS = {
+  none: [0, 0],
+  '1+0': [60, 0],
+  '3+2': [180, 2],
+  '5+0': [300, 0],
+  '5+3': [300, 3],
+  '10+5': [600, 5],
+  '15+10': [900, 10],
+  '30+0': [1800, 0],
+};
+export const clockLabel = (time, inc) =>
+  time > 0 ? `${time % 60 === 0 ? time / 60 : (time / 60).toFixed(1)}+${inc}` : 'none';
 
 export const DEFAULTS = Object.freeze({
   version: 1,
-  tiling: 'hex',
+  tiling: 'triangle',
   outline: 'rhombus',
   size: 11,
   players: 2,
@@ -24,12 +40,34 @@ export const DEFAULTS = Object.freeze({
   goal: 'opposite',
   variants: [],
   seed: 1,
-  theme: 'slate',
+  bots: [],          // per seat: human | easy | medium | hard (filled to `players`)
+  time: 0,           // main time per seat in seconds; 0 = untimed
+  increment: 0,      // Fischer increment per move in seconds
 });
+/**
+  * Display settings live outside the game config: they are per-device, never
+  * part of the shared URL, and changing them never restarts a game.
+  */
+export const DISPLAY_DEFAULTS = Object.freeze({
+   theme: 'slate',
+   borders: 'anchored', // paint tile borders: off | anchored (group reaches an owned side) | spanning (reaches both)
+   links: true,         // link bars between connected tiles
+   animations: true,    // claim rise, ripple, hover lift
+});
+export function normalizeDisplay(partial = {}, themeIds = ['slate']) {
+   const d = { ...DISPLAY_DEFAULTS, ...partial };
+   if (!themeIds.includes(d.theme)) d.theme = DISPLAY_DEFAULTS.theme;
+   if (!BORDER_MODES.includes(d.borders)) d.borders = DISPLAY_DEFAULTS.borders;
+   d.links = d.links !== false && d.links !== 'false';
+   d.animations = d.animations !== false && d.animations !== 'false';
+   return d;
+}
 
-export function normalize(partial = {}, tilingIds = ['hex']) {
+const clampInt = (v, lo, hi) => Math.min(hi, Math.max(lo, Math.round(Number(v)) || 0));
+
+export function normalize(partial = {}, tilingIds = ['triangle']) {
   const c = { ...DEFAULTS, ...partial };
-  if (!tilingIds.includes(c.tiling)) c.tiling = DEFAULTS.tiling;
+  if (!tilingIds.includes(c.tiling)) c.tiling = tilingIds.includes(DEFAULTS.tiling) ? DEFAULTS.tiling : tilingIds[0];
   if (!OUTLINES[c.outline]) c.outline = DEFAULTS.outline;
   c.size = Math.min(31, Math.max(3, Math.round(Number(c.size) || DEFAULTS.size)));
   if (!EDGE_MODES.includes(c.edgeMode)) c.edgeMode = DEFAULTS.edgeMode;
@@ -39,6 +77,10 @@ export function normalize(partial = {}, tilingIds = ['hex']) {
   c.players = OUTLINES[c.outline].sides / 2;
   c.variants = [...new Set((c.variants || []).filter(v => VARIANTS.includes(v)))];
   c.seed = (Number(c.seed) | 0) || 1;
+  const bots = Array.isArray(c.bots) ? c.bots : String(c.bots ?? '').split(',');
+  c.bots = Array.from({ length: c.players }, (_, i) => (BOTS.includes(bots[i]) ? bots[i] : 'human'));
+  c.time = clampInt(c.time, 0, 36000);
+  c.increment = c.time > 0 ? clampInt(c.increment, 0, 600) : 0;
   return c;
 }
 
@@ -77,6 +119,11 @@ export function toHash(cfg, moves = []) {
   if (cfg.goal !== DEFAULTS.goal) p.set('g', cfg.goal);
   if (cfg.variants.length) p.set('v', cfg.variants.join(','));
   if (cfg.seed !== DEFAULTS.seed) p.set('seed', String(cfg.seed));
+  if (cfg.bots.some(b => b !== 'human')) p.set('b', cfg.bots.join(','));
+  if (cfg.time > 0) {
+    p.set('k', String(cfg.time));
+    if (cfg.increment > 0) p.set('ki', String(cfg.increment));
+  }
   if (moves.length) p.set('m', encodeMoves(moves));
   return '#' + p.toString();
 }
@@ -92,6 +139,9 @@ export function fromHash(hash, tilingIds) {
   if (p.has('g')) partial.goal = p.get('g');
   if (p.has('v')) partial.variants = p.get('v').split(',').filter(Boolean);
   if (p.has('seed')) partial.seed = p.get('seed');
+  if (p.has('b')) partial.bots = p.get('b').split(',');
+  if (p.has('k')) partial.time = p.get('k');
+  if (p.has('ki')) partial.increment = p.get('ki');
   const moves = p.has('m') ? decodeMoves(p.get('m')) : [];
   return { config: normalize(partial, tilingIds), moves };
 }

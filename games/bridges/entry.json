@@ -1,0 +1,12 @@
+{
+  "id": "bridges",
+  "category": "game",
+  "section": "games",
+  "order": 1,
+  "icon": "BR",
+  "title": "bridges",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Play bridges",
+  "pitch": "A generalized version of the classic game 'Hex' using a variety of tesselations and board sizes. The goal is to connect the two opposite sides of the board with a continuous path of your pieces."
+}

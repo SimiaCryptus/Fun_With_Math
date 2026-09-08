@@ -1,8 +1,10 @@
-import { cleanPolygon } from './Polygon.js';
+import { cleanPolygon, ensureCCW } from './Polygon.js';
 
 /**
  * Turn a polygon soup into topology: shared vertex table + edge table.
  * An edge with two incident cells makes them adjacent; one cell = boundary.
+  * Every polygon is normalised to CCW so downstream (renderer walls, insets)
+  * never has to care how a tiling module happened to list its vertices.
  */
 export function weld(polys, { epsilon = 1e-6 } = {}) {
   const vmap = new Map();
@@ -11,7 +13,7 @@ export function weld(polys, { epsilon = 1e-6 } = {}) {
   const cells = [];
 
   for (const src of polys) {
-    const clean = cleanPolygon(src.poly, epsilon * 10);
+     const clean = ensureCCW(cleanPolygon(src.poly, epsilon * 10));
     if (clean.length < 3) continue;
     const vids = [];
     for (const p of clean) {
