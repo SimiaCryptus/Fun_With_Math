@@ -115,8 +115,14 @@ export class Renderer {
     // without animations the claim lands already settled (claim time long past)
     this.boardMesh.setCell(result.cell, result.player, this.animate ? t : -100);
     if (this.animate) this.boardMesh.setLastClaim(this.board.cells[result.cell].centroid, t);
+     if (result.captured?.length) {
+       // Go: captured stones sink back to unclaimed and take their link bars with them
+       for (const c of result.captured) this.boardMesh.setCell(c, -1, -100);
+       this.links.sync(game.links());
+     } else {
+       for (const [a, b, o] of result.links ?? []) this.links.addLink(a, b, o);
+     }
     for (const b of result.bridges) this.bridges.addBridge(b);
-    for (const [a, b, o] of result.links ?? []) this.links.addLink(a, b, o);
     // a single claim can re-anchor a whole group, so repaint every border
     this.boardMesh.setConnections(game.connectionCounts());
     if (game.phase !== 'playing') this.boardMesh.applyPhase(game);
@@ -145,9 +151,11 @@ export class Renderer {
   _buildFrame(board) {
     const group = new THREE.Group();
     const s = board.scale, h = this.boardMesh.height * 0.9, thick = 0.3 * s;
+     const neutral = board.meta?.goal === 'go'; // nobody owns a side in Go
     for (const side of board.sides) {
       const arc = board.arcs[side.id];
-      const col = new THREE.Color(this.theme.players[arc.owner] ?? '#888888').multiplyScalar(0.8);
+       const col = new THREE.Color(neutral ? this.theme.rail : (this.theme.players[arc.owner] ?? '#888888'))
+         .multiplyScalar(neutral ? 1 : 0.8);
       const dx = side.b[0] - side.a[0], dy = side.b[1] - side.a[1];
       const len = Math.hypot(dx, dy);
       const geo = new THREE.BoxGeometry(len + thick, h, thick);

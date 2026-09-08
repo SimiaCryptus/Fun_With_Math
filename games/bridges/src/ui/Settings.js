@@ -6,6 +6,19 @@ const CROSSING_HINT = {
   bridge: 'Diagonals connect, but crossings are resolved: the older link bridges over, the newer one is cut.',
   open: 'Every diagonal connects for everyone. Fast and chaotic.',
 };
+const GOAL_LABEL = {
+   opposite: 'opposite — connect your two sides',
+   fork: 'fork — connect all of your sides',
+   go: 'go — surround territory',
+};
+const GOAL_HINT = {
+   opposite: 'Claim cells; link the two sides that carry your colour. Claims are permanent.',
+   fork: 'Claim cells; link every side that carries your colour.',
+   go: 'Go on this tiling: groups without liberties (along shared edges) are captured, suicide is forbidden, ' +
+       'simple ko applies. Pass with the Pass button; when everyone has passed in turn the board is scored ' +
+       'by area (stones + surrounded empty cells). Dead stones are not removed — play them out. ' +
+       'The crossing rule is not used.',
+};
 
 const BORDER_LABEL = {
   off: 'off',
@@ -58,6 +71,7 @@ export class Settings {
     this.badge = el('span', { class: 'badge' });
     this.boardInfo = el('span', { class: 'hint' });
     this.crossingHint = el('p', { class: 'hint' });
+     this.goalHint = el('p', { class: 'hint' });
     this.borderHint = el('p', { class: 'hint' });
 
     const board = el('fieldset', {},
@@ -73,7 +87,8 @@ export class Settings {
       el('legend', { text: 'Rules' }),
       row('Crossings', select('crossingMode', CROSSING_MODES.map(m => [m, m]), cfgChanged)),
       this.crossingHint,
-      row('Goal', select('goal', GOALS.map(g => [g, g]), cfgChanged)),
+       row('Goal', select('goal', GOALS.map(g => [g, GOAL_LABEL[g] ?? g]), cfgChanged)),
+       this.goalHint,
       checkRow(check('pie', cfgChanged), 'Pie rule — player 2 may swap colours instead of making their first move'),
     );
     this.seatRows = [0, 1, 2].map(seat =>
@@ -132,6 +147,8 @@ export class Settings {
     f.edgeMode.value = cfg.edgeMode; f.crossingMode.value = cfg.crossingMode; f.goal.value = cfg.goal;
     f.pie.checked = cfg.variants.includes('pie');
     this.crossingHint.textContent = CROSSING_HINT[cfg.crossingMode] ?? '';
+     this.goalHint.textContent = GOAL_HINT[cfg.goal] ?? '';
+     f.crossingMode.disabled = cfg.goal === 'go'; // liberties are edge-only in Go
     this.seatRows.forEach((r, i) => {
       r.hidden = i >= cfg.players;
       f[`bot${i}`].value = cfg.bots?.[i] ?? 'human';
@@ -163,9 +180,11 @@ export class Settings {
     const clean = board.clean;
     this.badge.textContent = clean ? 'clean — no draws' : `pinched — degree ${board.maxDegree}`;
     this.badge.className = 'badge ' + (clean ? 'clean' : 'pinched');
-    this.boardInfo.textContent = `${board.cells.length} cells · ${board.chords.length} chords · ` +
-      (clean
-        ? 'every interior vertex touches 3 tiles, so a full board always has exactly one winner.'
-        : `diagonal contacts resolved by the "${config.crossingMode}" crossing rule.`);
+     this.boardInfo.textContent = config.goal === 'go'
+       ? `${board.cells.length} points · Go: liberties run along shared edges, so the vertex class does not matter.`
+       : `${board.cells.length} cells · ${board.chords.length} chords · ` +
+         (clean
+           ? 'every interior vertex touches 3 tiles, so a full board always has exactly one winner.'
+           : `diagonal contacts resolved by the "${config.crossingMode}" crossing rule.`);
   }
 }

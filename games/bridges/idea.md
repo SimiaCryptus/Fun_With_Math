@@ -159,6 +159,19 @@ Three players own opposite pairs of a hexagonal outline. Consequences:
 | `handicap: n` | Player 2 (or 2 and 3) pre‑place `n` cells. |
 | `blitz` | Per‑move / total clocks with Fischer increment. |
 | `simultaneousWin` | Only meaningful in `open` crossing mode: shared victory allowed. |
+### 2.6 Go (`goal: go`) — an alternate objective
+The same board graph hosts a territory game. With `goal: go`:
+- **Liberties** are edge‑adjacent empty cells; chords/crossing modes are ignored,
+   so every tiling (clean or pinched) is a legal Go board.
+- **Capture**: a group with no liberties is removed, whoever surrounds it
+   (works for 3 colours). Suicide is illegal. **Simple ko**: a lone stone that
+   captured exactly one stone may not be retaken at once.
+- **Passing** is allowed; the game ends when every colour has passed in turn.
+- **Area scoring**: stones + empty regions bordered by exactly one colour.
+   Largest area wins, ties draw. Dead stones are not removed — play them out.
+- Moves are still the truth: `PASS` is a move‑list marker (encoded `4094`),
+   undo is replay, links are shared as usual. Bots get a dedicated Go search
+   (`ai/go.js`): eye‑aware random / heuristic / flat Monte‑Carlo.
 
 ---
 
@@ -241,6 +254,7 @@ games/bridges/
       Connectivity.js        # DisjointSet + arc sentinels, incremental win check
       DisjointSet.js
       Goals.js               # opposite / fork / ring / any  (pluggable predicates)
+       Go.js                  # Go rules: liberties, capture, ko, passing, area score
       Chords.js              # per-vertex non-crossing chord bookkeeping (Bridge Rule)
       Score.js               # tiebreaks: longest chain, territory, elimination
       History.js             # move list, undo/redo, replay, branching analysis
@@ -585,6 +599,8 @@ Save   = { config, moves: Int32Array, meta: { started, names, result } }
 > (striped once it spans both sides); this, link bars, theme and animations
 > are per‑device display settings in the settings dialog, separate from the
 > shareable game config.
+> `goal: go` turns any board into a Go board (captures, ko, passing, area
+> scoring, 2–3 colours) with its own bot search.
 > `priority` crossing mode, dual play, MCTS+RAVE, tiebreaks and a11y are still open.
 
 

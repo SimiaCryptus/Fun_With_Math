@@ -1,6 +1,7 @@
 import { SWAP } from '../config.js';
 import { Evaluator } from './eval.js';
 import { Position } from './Position.js';
+import { chooseGoMove } from './go.js';
 
 /**
  * Move selection for the three bot levels.  Pure; runs in a Worker or in Node.
@@ -32,6 +33,7 @@ export function chooseMove(game, { level = 'medium', budgetMs = 300, seed = 1 } 
   const { board } = game;
   const me = game.turn;
   if (game.canSwap() && shouldSwap(board, game.moves[0])) return SWAP;
+   if (game.rules === 'go') return chooseGoMove(game, { level, budgetMs, rand });
 
   const ev = new Evaluator(board, game.config.crossingMode, game.players);
   const owner = game.owner.slice();

@@ -97,3 +97,12 @@ how long it is allowed to think, not a handicap), and games can be played
 on a Fischer clock (main time plus an increment per move; untimed by
 default). Drag to orbit the board, right‑drag or shift‑drag to pan, and
 scroll or pinch to zoom; `R` resets the view and `T` looks straight down.
+## Go on any tiling
+Set the **goal** to `go` in the settings and the same board becomes a Go
+board: place stones, capture groups that run out of liberties (liberties run
+along shared edges, so the crossing rule doesn't apply), no suicide, simple
+ko. Pass with the `Pass` button (or `P`); once everyone has passed in turn
+the board is scored by area — your stones plus the empty cells only you
+surround — and the largest area wins. Dead stones aren't removed, so play
+them out. It works with two or three colours, with the pie rule for balance,
+with clocks, and every bot level knows how to play it.

@@ -15,7 +15,7 @@ export function generateBoard(tiling, cfg) {
   const connected = largestComponent(kept);
   const topo = weld(connected, { epsilon: 1e-6 });
   return new Board(topo, region, {
-    tiling: tiling.id, size: cfg.size, players: cfg.players, clean: tiling.clean,
+     tiling: tiling.id, size: cfg.size, players: cfg.players, clean: tiling.clean, goal: cfg.goal,
   });
 }
 

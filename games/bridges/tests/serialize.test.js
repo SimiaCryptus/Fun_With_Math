@@ -1,14 +1,15 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalize, toHash, fromHash, encodeMoves, decodeMoves, SWAP } from '../src/config.js';
+import { normalize, toHash, fromHash, encodeMoves, decodeMoves, SWAP, PASS } from '../src/config.js';
 import { tilingIds } from '../src/tilings/registry.js';
 
-test('move strings round-trip, including the pie-rule swap', () => {
-  const moves = [0, 17, SWAP, 4094, 120, 3];
+test('move strings round-trip, including the pie-rule swap and passes', () => {
+   const moves = [0, 17, SWAP, 4093, PASS, 120, 3];
   const s = encodeMoves(moves);
   assert.equal(s.length, moves.length * 2);
   assert.deepEqual(decodeMoves(s), moves);
   assert.throws(() => encodeMoves([4095]));
+   assert.throws(() => encodeMoves([4094]));
 });
 
 test('config + moves round-trip through the URL hash', () => {

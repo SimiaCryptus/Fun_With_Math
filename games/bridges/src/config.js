@@ -2,6 +2,7 @@
 // State = config + move list; everything else is derived.
 
 export const SWAP = -1; // pie-rule marker inside a move list
+export const PASS = -2; // pass marker inside a move list (Go rules)
 
 export const OUTLINES = {
   rhombus: { sides: 4, label: 'Rhombus (Hex)' },
@@ -10,7 +11,8 @@ export const OUTLINES = {
 };
 export const EDGE_MODES = ['whole', 'centroid', 'clip'];
 export const CROSSING_MODES = ['strict', 'bridge', 'open'];
-export const GOALS = ['opposite', 'fork'];
+/** opposite / fork are connection games; go is territory (captures, passes, area scoring). */
+export const GOALS = ['opposite', 'fork', 'go'];
 export const VARIANTS = ['pie'];
 export const BORDER_MODES = ['off', 'anchored', 'spanning'];
 /** Who sits in a seat: a human or a bot level (difficulty = thinking budget). */
@@ -84,14 +86,17 @@ export function normalize(partial = {}, tilingIds = ['triangle']) {
   return c;
 }
 
-// Compact move string: 2 URL-safe base64 chars per move (cells < 4095; 4095 = swap).
+// Compact move string: 2 URL-safe base64 chars per move (cells <= 4093; 4094 = pass, 4095 = swap).
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
 export function encodeMoves(moves) {
   let s = '';
   for (const m of moves) {
-    const v = m === SWAP ? 4095 : m;
-    if (!Number.isInteger(v) || v < 0 || v > 4095) throw new Error(`move out of range: ${m}`);
+     let v;
+     if (m === SWAP) v = 4095;
+     else if (m === PASS) v = 4094;
+     else if (Number.isInteger(m) && m >= 0 && m <= 4093) v = m;
+     else throw new Error(`move out of range: ${m}`);
     s += B64[v >> 6] + B64[v & 63];
   }
   return s;
@@ -103,7 +108,7 @@ export function decodeMoves(s) {
     const hi = B64.indexOf(s[i]), lo = B64.indexOf(s[i + 1]);
     if (hi < 0 || lo < 0) break;
     const v = hi * 64 + lo;
-    out.push(v === 4095 ? SWAP : v);
+     out.push(v === 4095 ? SWAP : v === 4094 ? PASS : v);
   }
   return out;
 }

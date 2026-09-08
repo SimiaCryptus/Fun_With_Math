@@ -1,4 +1,4 @@
-import { DEFAULTS, SWAP, normalize, fromHash, toHash, normalizeDisplay } from './config.js';
+import { DEFAULTS, SWAP, PASS, normalize, fromHash, toHash, normalizeDisplay } from './config.js';
 import { tilings, tilingIds, tilingList } from './tilings/registry.js';
 import { generateBoard } from './tilings/Tiling.js';
 import { Game } from './engine/Game.js';
@@ -48,6 +48,7 @@ const hud = new HUD({
   theme: THEMES[display.theme],
   onUndo: () => undoMove(),
   onSwap: () => game.canSwap() && !isBotTurn() && game.swap(),
+   onPass: () => game.canPass() && !isBotTurn() && game.pass(),
   onNew: () => start(config, []),
   onCopy: () => navigator.clipboard?.writeText(location.href).then(() => hud.toast('Link copied')),
   onSettings: () => settings.open(),
@@ -116,8 +117,13 @@ function scheduleBot() {
       if (token !== thinkToken || game.phase !== 'playing') return;
       hud.setThinking(-1);
       if (move === SWAP && game.canSwap()) game.swap();
-      else if (move !== null && move !== SWAP && game.isLegal(move)) game.play(move);
-      else { const legal = game.legalCells(); if (legal.length) game.play(legal[0]); }
+       else if (move === PASS && game.canPass()) game.pass();
+       else if (Number.isInteger(move) && move >= 0 && game.isLegal(move)) game.play(move);
+       else {
+         const legal = game.legalCells();
+         if (legal.length) game.play(legal[0]);
+         else if (game.canPass()) game.pass();
+       }
     }, wait);
   }).catch(err => {
     console.error(err);
@@ -157,7 +163,7 @@ function start(cfg, moves) {
   board = b;
   game = new Game(board, config);
   game.on('move', res => {
-    if (!res.swap) renderer.applyMove(game, res);
+     if (!res.swap && !res.pass) renderer.applyMove(game, res);
     if (clock && clock.flagged < 0) {
       if (game.phase !== 'playing') clock.stop();
       else clock.switchTo(game.seatOf(game.turn), res.swap ? -1 : game.seatOf(res.player));
@@ -172,8 +178,11 @@ function start(cfg, moves) {
     scheduleBot();
   });
   game.on('end', ({ phase, winner }) => {
-    const name = `Player ${game.seatOf(winner) + 1}`;
-    hud.toast(phase === 'won' ? `${name} connected!` : phase === 'timeout' ? `${name} wins on time!` : 'Draw — board full');
+     const name = winner >= 0 ? `Player ${game.seatOf(winner) + 1}` : '';
+     const go = game.rules === 'go';
+     hud.toast(phase === 'timeout' ? `${name} wins on time!`
+       : phase === 'draw' ? (go ? 'Draw — scores tied' : 'Draw — board full')
+       : go ? `${name} wins on points!` : `${name} connected!`);
   });
   settings.setConfig(config);
   settings.setBoard(board, config);
@@ -189,6 +198,7 @@ window.addEventListener('keydown', e => {
   if (settings.isOpen) return; // Escape closes the dialog natively
   if (e.key === 'u') undoMove();
   if (e.key === 'n') start(config, []);
+   if (e.key === 'p' && game.canPass() && !isBotTurn()) game.pass();
   if (e.key === 's') settings.open();
 });
 
