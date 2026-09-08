@@ -1,0 +1,57 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { tilings, tilingIds } from '../src/tilings/registry.js';
+import { generateBoard } from '../src/tilings/Tiling.js';
+import { normalize } from '../src/config.js';
+
+const make = partial => {
+  const cfg = normalize(partial, tilingIds);
+  return generateBoard(tilings[cfg.tiling], cfg);
+};
+
+test('hex + rhombus reproduces the classic N×N Hex board', () => {
+  const N = 7;
+  const b = make({ tiling: 'hex', outline: 'rhombus', size: N });
+  assert.equal(b.cells.length, N * N);
+  assert.equal(b.euler, 1);
+  assert.ok(b.clean);
+  assert.equal(b.chords.length, 0);
+  for (const arc of b.arcs) assert.equal(arc.cells.length, N);
+  assert.equal(b.cells.filter(c => c.arcs.length === 2).length, 4, 'four corner cells');
+  for (const c of b.cells.filter(c => !c.boundary)) assert.equal(c.neighbors.length, 6);
+  assert.equal(b.arcs[0].owner, b.arcs[2].owner);
+  assert.notEqual(b.arcs[0].owner, b.arcs[1].owner);
+});
+
+test('bundled tilings weld into a disc with one- or two-sided edges', () => {
+  const combos = [
+    ['hex', 'rhombus'], ['hex', 'hexagon'], ['hex', 'square'],
+    ['square', 'square'], ['square', 'hexagon'],
+    ['triangle', 'rhombus'], ['truncSquare', 'rhombus'], ['truncSquare', 'square'],
+    ['triHex', 'rhombus'], ['triHex', 'hexagon'],
+  ];
+  for (const [t, o] of combos) {
+    const b = make({ tiling: t, outline: o, size: 6 });
+    assert.equal(b.euler, 1, `${t}/${o} Euler`);
+    for (const e of b.edges) assert.ok(e.cells.length >= 1 && e.cells.length <= 2, `${t}/${o} edge`);
+    for (const a of b.arcs) assert.ok(a.cells.length > 0, `${t}/${o} arc ${a.id}`);
+    assert.equal(b.players, o === 'hexagon' ? 3 : 2);
+  }
+});
+
+test('pinched tilings expose chords with interleaving conflicts', () => {
+  const sq = make({ tiling: 'square', outline: 'square', size: 5 });
+  assert.ok(!sq.clean);
+  assert.equal(sq.chords.length, 2 * 16, 'two chords per interior vertex');
+  for (const ch of sq.chords) assert.equal(ch.conflicts.length, 1);
+  const tri = make({ tiling: 'triangle', outline: 'rhombus', size: 4 });
+  assert.equal(tri.maxDegree, 6);
+  const v = tri.vertices.find(v => v.interior && v.degree === 6);
+  assert.equal(v.chords.length, 9); // C(6,2) - 6 consecutive pairs
+});
+
+test('clip edge mode produces a crisp convex edge without overlaps', () => {
+  const b = make({ tiling: 'hex', outline: 'square', size: 6, edgeMode: 'clip' });
+  assert.equal(b.euler, 1);
+  for (const e of b.edges) assert.ok(e.cells.length <= 2);
+});

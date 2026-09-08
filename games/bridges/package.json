@@ -1,0 +1,11 @@
+{
+  "name": "bridges",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Hex on arbitrary tilings — pure ES modules, three.js renderer",
+  "scripts": {
+    "test": "node --test tests/",
+    "serve": "npx --yes serve -l 8080 ."
+  }
+}

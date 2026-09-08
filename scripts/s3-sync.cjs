@@ -27,6 +27,7 @@ const {
   ListObjectsV2Command,
   PutObjectCommand,
   DeleteObjectsCommand,
+   PutBucketCorsCommand,
 } = require('@aws-sdk/client-s3');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -113,8 +114,30 @@ async function upload(key, filePath) {
   );
   console.log(`uploaded: ${key}`);
 }
+async function ensureCors() {
+   await s3.send(
+     new PutBucketCorsCommand({
+       Bucket: BUCKET,
+       CORSConfiguration: {
+         CORSRules: [
+           {
+             AllowedOrigins: ['*'],
+             AllowedMethods: ['GET', 'HEAD'],
+             AllowedHeaders: ['*'],
+             ExposeHeaders: ['ETag'],
+             MaxAgeSeconds: 3600,
+           },
+         ],
+       },
+     })
+   );
+   console.log('CORS configuration applied.');
+}
+
 
 async function main() {
+   await ensureCors();
+
   const localFiles = walk(ROOT);
   const remoteObjects = await listRemoteObjects();
 
