@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Solar Trader</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="viewport">
+    <canvas id="gl"></canvas>
+    <div id="labels"></div>
+  </div>
+
+  <header id="topbar">
+    <div class="grp">
+      <span class="lbl">DATE</span><span id="hud-date" class="val">—</span>
+    </div>
+    <div class="grp" id="time-controls">
+      <span class="lbl">WARP</span>
+      <button data-rate="0" class="tbtn active">II</button>
+      <button data-rate="1" class="tbtn">1d</button>
+      <button data-rate="4" class="tbtn">4d</button>
+      <button data-rate="16" class="tbtn">16d</button>
+      <button data-rate="64" class="tbtn">64d</button>
+    </div>
+    <div class="grp"><span class="lbl">CREDITS</span><span id="hud-credits" class="val">—</span></div>
+    <div class="grp"><span class="lbl">Δv</span><span id="hud-dv" class="val">—</span></div>
+    <div class="grp"><span class="lbl">PROP</span><span id="hud-fuel" class="val">—</span></div>
+    <div class="grp"><span class="lbl">HOLD</span><span id="hud-cargo" class="val">—</span></div>
+    <div class="grp"><span class="lbl">STATUS</span><span id="hud-status" class="val">—</span></div>
+    <div class="grp right">
+      <button id="btn-save" class="tbtn">SAVE</button>
+      <button id="btn-load" class="tbtn">LOAD</button>
+    </div>
+  </header>
+
+  <aside id="panel-left" class="panel">
+    <h2>NAVIGATION</h2>
+    <div id="nav-root"></div>
+  </aside>
+
+  <aside id="panel-right" class="panel">
+    <nav id="tabs">
+      <button class="tab active" data-tab="market">MARKET</button>
+      <button class="tab" data-tab="shipyard">SHIPYARD</button>
+      <button class="tab" data-tab="contracts">CONTRACTS</button>
+    </nav>
+    <div id="trade-root"></div>
+  </aside>
+
+  <footer id="logbar"><ul id="log"></ul></footer>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
