@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-08T20:39:26.819Z",
+  "generatedAt": "2026-09-08T23:57:37.421Z",
   "counts": {
     "lab": 19,
-    "game": 10,
+    "game": 11,
     "essay": 6
   },
   "entries": [
@@ -644,6 +644,27 @@
       },
       "dir": "games/number-crush",
       "source": "games/number-crush/entry.json"
+    },
+    {
+      "id": "madame-claude",
+      "category": "game",
+      "section": "games",
+      "order": 9007199254740991,
+      "icon": "MC",
+      "title": "Madame Claude",
+      "href": "index.html",
+      "readme": "README.md",
+      "launchLabel": "Open Madame Claude",
+      "pitch": "",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "games/madame-claude"
+      },
+      "dir": "games/madame-claude",
+      "source": "games/madame-claude/entry.json"
     },
     {
       "id": "mineminer",

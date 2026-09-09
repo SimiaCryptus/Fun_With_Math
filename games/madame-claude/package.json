@@ -1,0 +1,6 @@
+{
+  "name": "madame-claude",
+  "private": true,
+  "type": "module",
+  "description": "Marks js/ as ES modules so the render script can share the PRNG with the UI."
+}

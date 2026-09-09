@@ -1,0 +1,11 @@
+{
+  "id": "madame-claude",
+  "category": "game",
+  "section": "games",
+  "icon": "MC",
+  "title": "Madame Claude",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open Madame Claude",
+  "pitch": ""
+}

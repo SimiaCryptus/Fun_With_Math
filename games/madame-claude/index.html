@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Madame Claude — Tarot Parlor</title>
+  <meta name="description" content="A tarot reading from Madame Claude. Deterministic cards, optional Claude-powered interpretation.">
+  <meta name="color-scheme" content="dark">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/parlor.css">
+  <link rel="stylesheet" href="css/cards.css">
+  <link rel="stylesheet" href="css/panels.css">
+</head>
+<body>
+  <div class="vignette" aria-hidden="true"></div>
+  <main class="parlor">
+    <header class="parlor__header">
+      <p class="parlor__eyebrow">The parlor of</p>
+      <h1>Madame Claude</h1>
+      <p id="greeting" class="greeting"></p>
+    </header>
+
+    <form id="consult-form" class="panel consult" autocomplete="off">
+      <label for="input" class="consult__label">Share what brings you here — or nothing at all</label>
+      <textarea id="input" name="input" rows="3"
+        placeholder="What weighs on your mind? A question, a name, a date… or silence."></textarea>
+
+      <details id="settings" class="settings">
+        <summary>Settings</summary>
+        <div class="settings__grid">
+          <label class="field">
+            <span>Spread</span>
+            <select id="spread-select" name="spread"></select>
+          </label>
+          <label class="field">
+            <span>Seed override</span>
+            <input id="seed" name="seed" type="text" placeholder="leave blank for today's seed">
+          </label>
+          <label class="field field--wide">
+            <span>Anthropic API key <small>(optional)</small></span>
+            <input id="api-key" name="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
+          </label>
+          <label class="field field--check">
+            <input id="remember" name="remember" type="checkbox">
+            <span>Remember on this device</span>
+          </label>
+          <label class="field">
+            <span>Model</span>
+            <input id="model" name="model" list="model-options" placeholder="claude-haiku-4-5">
+            <datalist id="model-options">
+              <option value="claude-haiku-4-5"></option>
+              <option value="claude-sonnet-4-5"></option>
+              <option value="claude-3-5-haiku-latest"></option>
+            </datalist>
+          </label>
+          <p class="hint field--wide">
+            Without a key, Madame Claude reads the cards herself. With a key, your cards
+            <em>and your words above</em> are sent directly from this browser to
+            api.anthropic.com — nowhere else. The key stays in this tab only, unless you
+            choose to remember it.
+          </p>
+        </div>
+      </details>
+
+      <div class="consult__actions">
+        <button type="submit" id="consult-btn" class="btn btn--primary">Consult the cards</button>
+      </div>
+    </form>
+
+    <section id="table" class="table" hidden>
+      <div id="deck" class="deck" aria-hidden="true">
+        <span class="deck__card"></span><span class="deck__card"></span><span class="deck__card"></span>
+      </div>
+      <div id="spread" class="spread" role="group" aria-label="Your cards" hidden></div>
+      <p id="spread-status" class="visually-hidden" role="status" aria-live="polite"></p>
+      <div class="table__actions">
+        <button type="button" id="reveal-all" class="btn" hidden>Reveal all</button>
+        <button type="button" id="ask-again" class="btn" hidden>Ask again</button>
+      </div>
+    </section>
+
+    <section id="reading" class="panel reading" hidden aria-labelledby="reading-title">
+      <h2 id="reading-title">Your reading</h2>
+      <p id="reading-note" class="reading__note" aria-live="polite"></p>
+      <div id="reading-text" class="reading__text"></div>
+      <div class="reading__actions">
+        <button type="button" id="copy-btn" class="btn">Copy</button>
+        <button type="button" id="share-btn" class="btn">Share link</button>
+        <button type="button" id="save-btn" class="btn">Save as image</button>
+      </div>
+      <p id="reading-feedback" class="hint" aria-live="polite"></p>
+    </section>
+
+    <footer class="parlor__footer">
+      <p>For reflection and amusement. Madame Claude does not know the future — but she knows a good question when she hears one.</p>
+    </footer>
+  </main>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

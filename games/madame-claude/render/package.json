@@ -1,0 +1,18 @@
+{
+  "name": "madame-claude-render",
+  "private": true,
+  "type": "module",
+  "description": "Offline procedural card art renderer for Madame Claude.",
+  "scripts": {
+    "render": "node render.js",
+    "clean": "rimraf --glob ../assets/cards/*.png ../assets/cards/.render-manifest.json"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "sharp": "^0.33.4"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.7"
+  },
+  "engines": { "node": ">=18" }
+}
