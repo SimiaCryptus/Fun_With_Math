@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<title>Muddy Timeskipper</title>
+<style>
+  :root { --gunk:#3a2a12; --ooze:#7ab317; }
+  html,body { margin:0; height:100%; background:#120c05; overflow:hidden;
+              font-family:"Impact","Haettenschweiler",system-ui,sans-serif; color:#ffe9b0; }
+  #gl, #hud { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  #hud { pointer-events:none; }
+  #ui  { position:fixed; inset:0; pointer-events:none; }
+  #ui .row { position:absolute; bottom:18px; left:18px; display:flex; gap:10px; pointer-events:auto; }
+  button.gear {
+    font:700 18px/1 Impact, sans-serif; letter-spacing:1px; text-transform:uppercase;
+    background:var(--gunk); color:#ffe9b0; border:3px solid #000; border-radius:10px;
+    padding:10px 14px; box-shadow:0 4px 0 #000; cursor:pointer;
+  }
+  button.gear[aria-pressed="true"] { background:var(--ooze); color:#1a1200; transform:translateY(2px); }
+  button.gear:disabled { opacity:.45; cursor:not-allowed; }
+  #boot { position:fixed; inset:0; display:grid; place-items:center; background:#120c05;
+          text-align:center; z-index:10; }
+  #boot h1 { font-size:min(11vw,96px); margin:0; color:var(--ooze);
+             text-shadow:4px 4px 0 #000, 8px 8px 0 #5a3d12; transform:rotate(-3deg); }
+  #boot p  { max-width:44ch; line-height:1.4; font-family:system-ui; font-weight:600; }
+  #boot button { pointer-events:auto; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.164.1/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.164.1/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+  <canvas id="gl"></canvas>
+  <canvas id="hud"></canvas>
+  <div id="ui">
+    <div class="row" id="gearRow"></div>
+  </div>
+
+  <div id="boot">
+    <div>
+      <h1>MUDDY TIMESKIPPER</h1>
+      <p>W/&uarr; throttle &middot; S/&darr; brake &middot; A D steer &middot; SPACE handbrake<br>
+          <b>SHIFT</b> = SNAPBACK (only when you hit <b>88 MPH</b>) &middot; 1 2 3 = pick gear<br>
+          <b>C</b> = orbit camera (drag to look, wheel to zoom)</p>
+      <button class="gear" id="startBtn">START THE FILTH</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { boot } from './src/main.js';
+    document.getElementById('startBtn').addEventListener('click', async () => {
+      document.getElementById('boot').remove();
+      await boot({
+        glCanvas:  document.getElementById('gl'),
+        hudCanvas: document.getElementById('hud'),
+        gearRow:   document.getElementById('gearRow'),
+        trackId:   'sludge-speedway'
+      });
+    }, { once:true });
+  </script>
+</body>
+</html>

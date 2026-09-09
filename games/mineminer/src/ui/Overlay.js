@@ -1,4 +1,5 @@
 import { fmtTime, esc } from './Hud.js';
+import { LIVES_OPTIONS } from '../core/settings.js';
 const WEIGHT_OPTS = [['1', 'Counts as 1'], ['0.5', 'Counts as ½'], ['0', 'Ignored']];
 
 
@@ -79,6 +80,7 @@ export class Overlay {
       safeFirstStrike: form.safeFirstStrike.checked,
       strictMarks: form.strictMarks.checked,
       undo: form.undo.checked,
+       hideSatisfied: form.hideSatisfied.checked,
       colourblind: form.colourblind.checked,
       reducedMotion: form.reducedMotion.checked,
       effects: fd.get('effects'),
@@ -94,10 +96,11 @@ export class Overlay {
         ${select('cascade', 'Cascade', [['on', 'On'], ['off', 'Off'], ['single-layer', 'Single layer']], settings.cascade)}
          ${select('edgeWeight', 'Edge neighbours (12)', WEIGHT_OPTS, settings.edgeWeight)}
          ${select('cornerWeight', 'Corner neighbours (8)', WEIGHT_OPTS, settings.cornerWeight)}
-        ${select('lives', 'Lives', [['1', '1'], ['3', '3'], ['inf', '∞ (Zen)']], settings.lives)}
+         ${select('lives', 'Lives (mistakes allowed)', LIVES_OPTIONS, settings.lives)}
         ${check('safeFirstStrike', 'Safe first strike', settings.safeFirstStrike)}
         ${check('strictMarks', 'Strict marks (limited to mine count)', settings.strictMarks)}
         ${check('undo', 'Undo (Z)', settings.undo)}
+         ${check('hideSatisfied', 'Hide solved numbers', settings.hideSatisfied)}
         ${check('colourblind', 'Colourblind digits (underline 6 / 9)', settings.colourblind)}
         ${check('reducedMotion', 'Reduced motion', settings.reducedMotion)}
         ${select('effects', 'Effects', [['low', 'Low'], ['med', 'Medium'], ['high', 'High']], settings.effects)}
@@ -117,6 +120,12 @@ export class Overlay {
          can count as 1, ½ or nothing — half-weights show up as numbers like <code>3½</code>.
          Changing them (or lives) restarts the current board.
        </p>
+        <p class="sub">
+          Lives are mistakes you survive: each misfire or detonation costs one, and the run ends at
+          zero. A flawless run (no misfires, no detonations) still earns the extra star.
+          “Hide solved numbers” fades out a number once every block around it is cleared or marked
+          and the marks add up — it has nothing left to tell you.
+        </p>
     `);
   }
 
@@ -157,6 +166,7 @@ export class Overlay {
 
   showEnd(stats) {
     const cls = stats.won ? 'won' : 'lost';
+     const livesLeft = stats.lives === Infinity ? '∞' : stats.lives != null ? String(Math.max(0, stats.lives)) : null;
     this.open('end', `
       <div class="end ${cls}">
         <h2>${stats.won ? 'Vault cleared!' : 'Detonation'}</h2>
@@ -165,6 +175,7 @@ export class Overlay {
           <dt>Time</dt><dd>${fmtTime(stats.timeMs)}${stats.par ? ` <span class="sub">(par ${fmtTime(stats.par * 1000)})</span>` : ''}</dd>
           <dt>Misfires</dt><dd>${stats.misfires}</dd>
           <dt>Detonations</dt><dd>${stats.detonations}</dd>
+           ${livesLeft !== null ? `<dt>Lives left</dt><dd>${livesLeft}</dd>` : ''}
           <dt>Largest cascade</dt><dd>${stats.largestCascade} blocks</dd>
           <dt>Seed</dt><dd><code>${esc(stats.seed)}</code></dd>
         </dl>

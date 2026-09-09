@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { MINE, MINED, SCAR } from '../game/Grid.js';
+import { MINE, INTACT, MARKED, MINED, SCAR } from '../game/Grid.js';
 import { BlockRenderer } from './BlockRenderer.js';
 import { GhostRenderer } from './GhostRenderer.js';
 import { DigitAtlas, GLYPH_X, glyphForCount, numberColour } from './DigitAtlas.js';
@@ -15,8 +15,9 @@ const SCAR_DIGIT = new THREE.Color(0x8a2a2a);
 
 /** Aggregates every renderer for one board so App only talks to a single object. */
 export class BoardView {
-  constructor(scene, grid, { colourblind = false } = {}) {
+   constructor(scene, grid, { colourblind = false, hideSatisfied = true } = {}) {
     this.grid = grid;
+     this.hideSatisfied = hideSatisfied;
     this.atlas = new DigitAtlas({ colourblind });
     this.blocks = new BlockRenderer(scene, grid);
     this.ghosts = new GhostRenderer(scene, grid);
@@ -30,6 +31,47 @@ export class BoardView {
   set minesRevealed(v) {
     this.blocks.minesRevealed = v;
   }
+   /**
+    * A number is "satisfied" when nothing around it is unknown any more: every
+    * neighbour is cleared, marked, defused or scarred, AND the weights of the
+    * claimed mines add up to the number. Such a label carries no information, so
+    * it is hidden. If the marks contradict the number it stays visible — that is
+    * a real mistake the player still needs to see.
+    */
+   isSatisfied(i) {
+     if (!this.hideSatisfied) return false;
+     const { grid } = this;
+     if (grid.state[i] !== MINED || grid.content[i] === MINE) return false;
+     if (!(grid.counts[i] > 0)) return false;
+     let unknown = 0;
+     let claimed = 0;
+     grid.forEachNeighbour(i, (n, w) => {
+       const s = grid.state[n];
+       if (s === INTACT) unknown += w;
+       else if (s === MARKED || s === SCAR || (s === MINED && grid.content[n] === MINE)) claimed += w;
+     });
+     return unknown === 0 && Math.abs(claimed - grid.counts[i]) < 1e-6;
+   }
+   /** Adds `i` and its neighbourhood to `set`; satisfaction depends on neighbours. */
+   markDirty(i, set) {
+     set.add(i);
+     this.grid.forEachNeighbour(i, (n) => set.add(n));
+     return set;
+   }
+   syncDirty(set) {
+     for (const i of set) this.syncCell(i);
+     set.clear();
+   }
+   syncNeighbourhood(i) {
+     this.syncCell(i);
+     this.grid.forEachNeighbour(i, (n) => this.syncCell(n));
+   }
+   setHideSatisfied(on) {
+     if (this.hideSatisfied === on) return;
+     this.hideSatisfied = on;
+     this.syncAll();
+   }
+
 
   syncCell(i) {
     const { grid } = this;
@@ -42,7 +84,7 @@ export class BoardView {
         this.digits.setGlyph(i, GLYPH_X, DEFUSED_DIGIT);
       } else {
         const n = grid.counts[i];
-        if (n > 0) {
+         if (n > 0 && !this.isSatisfied(i)) {
           numberColour(n, _c);
           _c2.copy(_c).multiplyScalar(0.55);
           this.ghosts.show(i, _c2, 1);

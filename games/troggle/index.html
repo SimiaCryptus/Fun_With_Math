@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1016" />
+  <title>Troggle — Tridimensional Boggle</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.166.1/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div id="timer" class="timer" aria-label="time remaining">3:00</div>
+      <h1 id="title" class="title">Troggle 4³</h1>
+      <div class="topbar-right">
+        <div id="score" class="score" aria-label="score">★ 0</div>
+        <button id="btn-menu" class="icon-btn" title="Menu (M)" aria-label="Menu">☰</button>
+      </div>
+    </header>
+
+    <main id="stage" class="stage">
+      <canvas id="board" aria-label="Troggle cube" role="img"></canvas>
+
+      <div id="overlay-loading" class="overlay">
+        <div class="spinner" aria-hidden="true"></div>
+        <p>Rolling the cube…</p>
+      </div>
+      <div id="overlay-countdown" class="overlay hidden" aria-hidden="true"><span>3</span></div>
+
+      <div class="viewtools" role="group" aria-label="View tools">
+        <label class="rangetool">
+          <span id="peel-label">peel 0%</span>
+          <input id="peel-slider" type="range" min="0" max="100" step="1" value="0"
+                 aria-label="Peel amount" />
+        </label>
+        <div class="tool-row">
+          <button id="btn-front" class="tool" title="Front view (1)">front</button>
+          <button id="btn-top"   class="tool" title="Top view (2)">top</button>
+          <button id="btn-iso"   class="tool" title="Iso view (3)">iso</button>
+        </div>
+      </div>
+
+       <p class="hint-line" id="hint-line">tap letters to spell · drag to orbit · peel to see inside</p>
+    </main>
+
+    <div id="wordbar" class="wordbar">
+      <div id="chips" class="chips" aria-hidden="true"></div>
+      <input id="word-input" class="word-input" type="text" autocomplete="off"
+             autocapitalize="off" autocorrect="off" spellcheck="false"
+             placeholder="type a word…" aria-label="Type a word" />
+      <button id="btn-submit" class="icon-btn ok" title="Submit (Enter)" aria-label="Submit">✓</button>
+      <button id="btn-clear"  class="icon-btn no" title="Clear (Esc)" aria-label="Clear">✗</button>
+      <button id="btn-mic"    class="icon-btn mic" title="Speak" aria-label="Voice input">🎤</button>
+    </div>
+
+    <section class="found" id="found">
+      <button id="found-summary" class="found-summary" aria-expanded="true">
+        FOUND (<span id="found-count">0</span>) · <span id="found-points">0</span> pts
+      </button>
+      <ul id="found-list" class="found-list"></ul>
+    </section>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="assertive" aria-atomic="false"></div>
+  <div id="announcer" class="sr-only" aria-live="polite"></div>
+  <div id="sr-board" class="sr-only" aria-label="Board contents"></div>
+
+  <dialog id="lobby" class="sheet">
+    <form method="dialog" id="lobby-form">
+      <h2>Troggle</h2>
+      <p class="muted">Boggle in a cube. Walk a path through the block before the sand runs out.</p>
+
+      <label>Size
+        <select id="set-size">
+          <option value="3">3³ — 27 cubes</option>
+          <option value="4">4³ — 64 cubes</option>
+          <option value="5">5³ — 125 cubes</option>
+          <option value="6">6³ — 216 cubes</option>
+        </select>
+      </label>
+
+      <label>Adjacency
+        <select id="set-adjacency">
+          <option value="corner">corner — 26 neighbours (easiest)</option>
+          <option value="edge">edge — 18 neighbours</option>
+          <option value="face">face — 6 neighbours (hard)</option>
+        </select>
+      </label>
+
+      <label>Round length
+        <select id="set-duration">
+          <option value="90">90 s</option>
+          <option value="180">3 min</option>
+          <option value="300">5 min</option>
+          <option value="600">10 min</option>
+        </select>
+      </label>
+
+      <label class="check">
+        <input id="set-reduced" type="checkbox" /> Reduce motion
+      </label>
+
+      <label>Seed (optional)
+        <input id="seed-input" type="text" placeholder="troggle:4:corner:8f31c2ab" />
+      </label>
+
+      <div class="row">
+        <button id="btn-play" value="play" class="primary">Play</button>
+        <button id="btn-daily" value="daily" type="submit">Daily Cube</button>
+        <button id="btn-close-lobby" value="close" type="submit" class="ghost">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="results" class="sheet">
+    <h2>Time!</h2>
+    <p class="res-score"><span id="res-score">0</span> <small>points</small></p>
+    <p id="res-stats" class="muted"></p>
+    <div id="res-best"></div>
+    <h3>Missed <span id="res-missed-count" class="muted"></span></h3>
+    <ul id="res-missed" class="found-list missed"></ul>
+    <div class="row">
+      <button id="btn-again" class="primary">Play again</button>
+      <button id="btn-share">Share</button>
+      <button id="btn-lobby" class="ghost">Settings</button>
+    </div>
+  </dialog>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-08T23:57:37.421Z",
+  "generatedAt": "2026-09-09T14:45:39.460Z",
   "counts": {
     "lab": 19,
-    "game": 11,
+    "game": 12,
     "essay": 6
   },
   "entries": [
@@ -707,6 +707,27 @@
       },
       "dir": "games/physical-visualizer",
       "source": "games/physical-visualizer/entry.json"
+    },
+    {
+      "id": "troggle",
+      "category": "game",
+      "section": "games",
+      "order": 9007199254740991,
+      "icon": "TT",
+      "title": "Troggle",
+      "href": "index.html",
+      "readme": "README.md",
+      "launchLabel": "Open Troggle",
+      "pitch": "Tridimensional Boggle.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "games/troggle"
+      },
+      "dir": "games/troggle",
+      "source": "games/troggle/entry.json"
     },
     {
       "id": "qqn",

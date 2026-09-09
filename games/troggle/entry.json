@@ -1,0 +1,11 @@
+{
+  "id": "troggle",
+  "category": "game",
+  "section": "games",
+  "icon": "TT",
+  "title": "Troggle",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open Troggle",
+  "pitch": "Tridimensional Boggle."
+}

@@ -151,7 +151,10 @@ export class App {
       this.bus,
     );
     this.gameState = new GameState(this.bus, { level: spec });
-    this.view = new BoardView(this.rig.scene, grid, { colourblind: s.colourblind });
+     this.view = new BoardView(this.rig.scene, grid, {
+       colourblind: s.colourblind,
+       hideSatisfied: s.hideSatisfied,
+     });
     this.view.syncAll();
 
     this.rig.buildVault(grid);
@@ -202,7 +205,10 @@ export class App {
     const onLayer = (i) => focus < 0 || grid.y(i) === focus;
     const predicate =
       mode === 'probe'
-        ? (i) => onLayer(i) && (grid.isSolid(i) || (grid.state[i] === MINED && grid.counts[i] > 0))
+         ? (i) =>
+             onLayer(i) &&
+             (grid.isSolid(i) ||
+               (grid.state[i] === MINED && grid.counts[i] > 0 && !this.view?.isSatisfied(i)))
         : (i) => onLayer(i) && grid.isSolid(i);
     const hit = pick(this.rig.camera, this.ndc, grid, predicate, this.pickOut);
     return hit ? hit.cell : -1;
@@ -271,18 +277,22 @@ export class App {
   onAction(r) {
     const now = performance.now();
     const instant = this.settings.reducedMotion;
-    for (const c of r.changed) this.view.syncCell(c);
+     // Revealing / marking a cell can satisfy (or un-satisfy) up to 26 numbers
+     // around it, so every touched cell dirties its whole neighbourhood.
+     const dirty = new Set();
+     for (const c of r.changed) this.view.markDirty(c, dirty);
     let maxDelay = 0;
     for (const item of r.revealed) {
       const d = instant ? 0 : item.delay;
       if (d > maxDelay) maxDelay = d;
-      this.queueReveal(item.cell, now + d, now);
+       this.queueReveal(item.cell, now + d, now, dirty);
     }
     for (const item of r.defused) {
       const d = instant ? 0 : item.delay;
       if (d > maxDelay) maxDelay = d;
-      this.queueReveal(item.cell, now + d, now);
+       this.queueReveal(item.cell, now + d, now, dirty);
     }
+     this.view.syncDirty(dirty);
     switch (r.kind) {
       case 'cleared':
         this.sfx.crunch();
@@ -332,35 +342,45 @@ export class App {
     this.overlay.showEnd({
       ...stats,
       seed: this.seed,
+       lives: this.board?.lives,
       hasNext: !this.spec.custom && this.spec.index + 1 < LEVELS.length,
     });
   }
 
-  queueReveal(cell, at, now) {
-    if (at <= now) this.view.syncCell(cell);
-    else this.revealQueue.push({ cell, at });
+   queueReveal(cell, at, now, dirty = null) {
+     if (at > now) {
+       this.revealQueue.push({ cell, at });
+       return;
+     }
+     if (dirty) this.view.markDirty(cell, dirty);
+     else this.view.syncNeighbourhood(cell);
   }
 
   processReveals(now) {
     if (!this.revealQueue.length) return;
     let write = 0;
     let popped = 0;
+     const dirty = new Set();
     for (let i = 0; i < this.revealQueue.length; i++) {
       const item = this.revealQueue[i];
       if (item.at <= now) {
-        this.view.syncCell(item.cell);
+         this.view.markDirty(item.cell, dirty);
         popped++;
       } else {
         this.revealQueue[write++] = item;
       }
     }
     this.revealQueue.length = write;
+     this.view.syncDirty(dirty);
     if (popped && Math.random() < 0.25) this.sfx.crunch();
   }
 
   flushReveals() {
-    for (const item of this.revealQueue) this.view.syncCell(item.cell);
+     if (!this.revealQueue.length) return;
+     const dirty = new Set();
+     for (const item of this.revealQueue) this.view.markDirty(item.cell, dirty);
     this.revealQueue.length = 0;
+     this.view.syncDirty(dirty);
   }
 
   pushUndo() {
@@ -502,10 +522,15 @@ export class App {
     if (prev.colourblind !== next.colourblind && this.grid) {
       this.flushReveals();
       this.view.dispose();
-      this.view = new BoardView(this.rig.scene, this.grid, { colourblind: next.colourblind });
+       this.view = new BoardView(this.rig.scene, this.grid, {
+         colourblind: next.colourblind,
+         hideSatisfied: next.hideSatisfied,
+       });
       this.view.minesRevealed = this.board.status === 'lost';
       this.view.syncAll();
       this.view.setLayerFocus(this.layerFocus);
+     } else if (prev.hideSatisfied !== next.hideSatisfied) {
+       this.view?.setHideSatisfied(next.hideSatisfied);
     }
      if (
        prev.edgeWeight !== next.edgeWeight ||

@@ -1,5 +1,5 @@
 {
-  "lastUpdated" : "2026-09-08T23:57:36.399034273Z",
+  "lastUpdated" : "2026-09-09T14:47:46.173436916Z",
   "tasks" : {
     "quadratics/pentagon/docs/analysis.theory_graph.json" : {
       "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
@@ -119,6 +119,20 @@
       "sessionId" : "U-20260908-v7fzxnuE",
       "startedAt" : "2026-09-08T23:57:06.417112980Z",
       "completedAt" : "2026-09-08T23:57:36.399034273Z"
+    },
+    "games/muddy-timeskipper/README_REWRITE.md" : {
+      "target" : "games/muddy-timeskipper/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260909-OxQi2Rjd",
+      "startedAt" : "2026-09-09T14:45:22.156631643Z",
+      "completedAt" : "2026-09-09T14:45:50.421117924Z"
+    },
+    "games/troggle/README_REWRITE.md" : {
+      "target" : "games/troggle/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260909-Vozu50WI",
+      "startedAt" : "2026-09-09T14:47:09.219937750Z",
+      "completedAt" : "2026-09-09T14:47:46.173436916Z"
     }
   }
 }

@@ -1,5 +1,14 @@
 const KEY = 'mineminer.settings';
-const VERSION = 2;
+const VERSION = 3;
+
+/** value -> label. A "life" is a mistake (misfire or detonation) you survive. */
+export const LIVES_OPTIONS = [
+   ['1', '1 · no mistakes'],
+   ['2', '2 · 1 mistake forgiven'],
+   ['3', '3 · 2 mistakes forgiven'],
+   ['5', '5 · 4 mistakes forgiven'],
+   ['inf', '∞ (Zen)'],
+];
 
 export const DEFAULT_SETTINGS = Object.freeze({
   version: VERSION,
@@ -8,10 +17,13 @@ export const DEFAULT_SETTINGS = Object.freeze({
    // weighted 1 | 0.5 | 0 when summing a block's proximity number.
    edgeWeight: 1,
    cornerWeight: 1,
-  lives: '1', // '1' | '3' | 'inf'
+   // Number of mistakes the run survives. '2' = the first misfire/detonation is forgiven.
+   lives: '2', // '1' | '2' | '3' | '5' | 'inf'
   safeFirstStrike: true,
   strictMarks: true,
   undo: true,
+   // Numbers whose neighbourhood is fully resolved stop being drawn.
+   hideSatisfied: true,
   effects: 'med', // 'low' | 'med' | 'high'
   volume: 0.6,
   colourblind: false,
