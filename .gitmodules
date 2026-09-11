@@ -143,3 +143,7 @@
 	path = games/squirrely
 	url = https://github.com/Simiacryptus/squirrely.git
 	branch = main
+[submodule "games/troggle"]
+	path = games/troggle
+	url = https://github.com/Simiacryptus/troggle.git
+	branch = main
