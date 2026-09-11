@@ -131,3 +131,7 @@
 	path = games/madame-claude
 	url = https://github.com/Simiacryptus/madame-claude.git
 	branch = main
+[submodule "games/mineminer"]
+	path = games/mineminer
+	url = https://github.com/Simiacryptus/mineminer.git
+	branch = main
