@@ -115,3 +115,7 @@
 [submodule "games/vocal_parkour"]
 	path = games/vocal_parkour
 	url = git@github.com:SimiaCryptus/SonicParkour.git
+[submodule "experiments/fractal-mosaic"]
+	path = experiments/fractal-mosaic
+	url = https://github.com/Simiacryptus/fractal-mosaic.git
+	branch = main
