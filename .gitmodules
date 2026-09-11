@@ -119,3 +119,7 @@
 	path = experiments/fractal-mosaic
 	url = https://github.com/Simiacryptus/fractal-mosaic.git
 	branch = main
+[submodule "games/0x800"]
+	path = games/0x800
+	url = https://github.com/Simiacryptus/0x800.git
+	branch = main
