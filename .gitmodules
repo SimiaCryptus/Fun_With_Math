@@ -135,3 +135,7 @@
 	path = games/mineminer
 	url = https://github.com/Simiacryptus/mineminer.git
 	branch = main
+[submodule "games/physical-visualizer"]
+	path = games/physical-visualizer
+	url = https://github.com/Simiacryptus/physical-visualizer.git
+	branch = main
