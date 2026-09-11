@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-10T21:22:34.081Z",
+  "generatedAt": "2026-09-11T13:37:32.536Z",
   "counts": {
     "lab": 19,
     "game": 13,
@@ -73,7 +73,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/pid-ca",
         "path": "ca/pid-ca",
-        "commit": "3603ea7135a0c5001feed182f3de8fe483634c2a",
+        "commit": "611f74756653f1fb9b12f9e5eca9efa3d9bec40c",
         "branch": "main",
         "submodule": true
       },
@@ -218,7 +218,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/markov-analysis",
         "path": "ca/markov-analysis",
-        "commit": "0ad5eae7c9814fa97087045d31b137265e4afabd",
+        "commit": "9e42a18cf636456dbe1673c20ecc4fcb05d23a45",
         "branch": "main",
         "submodule": true
       },
@@ -265,7 +265,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/static-secrets",
         "path": "tools/static-secrets",
-        "commit": "fae395825f50c6b6d05f4cdc7795424f6ddba6ca",
+        "commit": "01b7523b91c1e9d50ffeed03f6b29640e3058cd1",
         "branch": "main",
         "submodule": true
       },
@@ -289,7 +289,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/primegen",
         "path": "numbers/primegen",
-        "commit": "697ef31bfe7617d93b84c8e2b70d80434f258aef",
+        "commit": "f2c97b0ffc67b5034a96aaad76f989b7ef62e40f",
         "branch": "main",
         "submodule": true
       },
@@ -354,11 +354,14 @@
       "readme": "README.md",
       "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/fractal-mosaic",
+        "remote": "https://github.com/Simiacryptus/fractal-mosaic.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "experiments/fractal-mosaic"
+        "slug": "Simiacryptus/fractal-mosaic",
+        "path": "experiments/fractal-mosaic",
+        "commit": "f79ac5061c4d3a0d86300913a4b749ca823ad475",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "experiments/fractal-mosaic",
       "source": "experiments/fractal-mosaic/entry.json"
@@ -428,7 +431,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/no3sieve",
         "path": "experiments/no3sieve",
-        "commit": "995d250eeed866bf6f6cd9c4b9bfc32dd1690533",
+        "commit": "931f80895e6da456995de7314501e4d42dcd0738",
         "branch": "main",
         "submodule": true
       },
@@ -477,7 +480,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/Arcade_of_Life",
         "path": "games/aol",
-        "commit": "c14edeb2bc746ab3103a4b81b54154f39f2fbd42",
+        "commit": "62a528201c4588b128f7f75372c594ec02f1aa9c",
         "submodule": true
       },
       "dir": "games/aol",
@@ -495,11 +498,14 @@
       "launchLabel": "Play 0x800",
       "pitch": "It's 2048, except the board is a hexagon made of hexagons, tiles slide in six directions, and every value is written in base 16. No build step, no dependencies, works offline — build 0x800 (2048) to win.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/0x800",
+        "remote": "https://github.com/Simiacryptus/0x800.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/0x800"
+        "slug": "Simiacryptus/0x800",
+        "path": "games/0x800",
+        "commit": "2eb572996e1808b0c1a563bbeaea44a56e4292b0",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/0x800",
       "source": "games/0x800/entry.json"
@@ -510,17 +516,20 @@
       "section": "games",
       "order": 1,
       "icon": "BR",
-      "title": "bridges",
+      "title": "Bridges",
       "href": "index.html",
       "readme": "README.md",
       "launchLabel": "Play bridges",
       "pitch": "A generalized version of the classic game 'Hex' using a variety of tesselations and board sizes. The goal is to connect the two opposite sides of the board with a continuous path of your pieces.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/bridges",
+        "remote": "https://github.com/Simiacryptus/bridges.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/bridges"
+        "slug": "Simiacryptus/bridges",
+        "path": "games/bridges",
+        "commit": "bea67a64b1b19fdafc30864627010f32537b88e5",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/bridges",
       "source": "games/bridges/entry.json"
@@ -542,7 +551,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/SonicParkour",
         "path": "games/vocal_parkour",
-        "commit": "7816a9fc0c65df0b8b14af26d78cf2558df515bb",
+        "commit": "86d628684aa86ed4f5eb64995baed0420b127e84",
         "submodule": true
       },
       "dir": "games/vocal_parkour",
@@ -655,13 +664,16 @@
       "href": "index.html",
       "readme": "README.md",
       "launchLabel": "Open Madame Claude",
-      "pitch": "",
+      "pitch": "An agentic fortune teller (bring your own Anthropic API Key)",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/madame-claude",
+        "remote": "https://github.com/Simiacryptus/madame-claude.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/madame-claude"
+        "slug": "Simiacryptus/madame-claude",
+        "path": "games/madame-claude",
+        "commit": "62cf625d10bf28bae8615aadfb2a64194ebce4e3",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/madame-claude",
       "source": "games/madame-claude/entry.json"
@@ -676,13 +688,16 @@
       "href": "index.html",
       "readme": "README.md",
       "launchLabel": "Open MineMiner",
-      "pitch": "A Minecraft-inspired implementation of Minesweeper, in the browser.",
+      "pitch": "A Minecraft-inspired implementation of Minesweeper extended into 3D.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/mineminer",
+        "remote": "https://github.com/Simiacryptus/mineminer.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/mineminer"
+        "slug": "Simiacryptus/mineminer",
+        "path": "games/mineminer",
+        "commit": "1291c4c4472a3bbee558296345b7a3aa9e4e7076",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/mineminer",
       "source": "games/mineminer/entry.json"
@@ -699,11 +714,14 @@
       "launchLabel": "Open Physical Visualizer",
       "pitch": "A music visualizer you can hold in your hand. Play a song and feedback-heavy imagery pulses on every kick drum — then tilt the phone and the glitter on screen slides downhill like it has real weight, or shake it to shatter into the next scene. Wrapped around it all is a pixel-exact, skinnable homage to a late-1990s desktop music player, complete with spectrum display, equalizer, and playlist, running entirely offline in your browser.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/physical-visualizer",
+        "remote": "https://github.com/Simiacryptus/physical-visualizer.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/physical-visualizer"
+        "slug": "Simiacryptus/physical-visualizer",
+        "path": "games/physical-visualizer",
+        "commit": "39228e5b4d192045b7c3adc887d7f138318e3720",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/physical-visualizer",
       "source": "games/physical-visualizer/entry.json"
@@ -718,13 +736,16 @@
       "href": "index.html",
       "readme": "README.md",
       "launchLabel": "Open Squirrely",
-      "pitch": "A game about crossing the highway and filling tree hollows.",
+      "pitch": "A game about crossing the highway and filling tree hollows, with reactive personality-based traffic.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/squirrely",
+        "remote": "https://github.com/Simiacryptus/squirrely.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/squirrely"
+        "slug": "Simiacryptus/squirrely",
+        "path": "games/squirrely",
+        "commit": "b37acc0e7acca37de5e775f827856340182a0a21",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/squirrely",
       "source": "games/squirrely/entry.json"
@@ -739,13 +760,16 @@
       "href": "index.html",
       "readme": "README.md",
       "launchLabel": "Open Troggle",
-      "pitch": "Tridimensional Boggle.",
+      "pitch": "Tridimensional Boggle: Find words in a 3D grid of letters. The longer the word, the more points you score!",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/troggle",
+        "remote": "https://github.com/Simiacryptus/troggle.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/troggle"
+        "slug": "Simiacryptus/troggle",
+        "path": "games/troggle",
+        "commit": "bc8f73e7b8e58c1a53328829af50f6847da218b3",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/troggle",
       "source": "games/troggle/entry.json"
@@ -767,7 +791,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/qqn",
         "path": "optimization/QQN",
-        "commit": "52cf2478d59eaf1a7b145aa8ccfea6b34e440d02",
+        "commit": "285c9854bcd9aa7c0cdc09283f3a20f3bccd1c9c",
         "branch": "main",
         "submodule": true
       },
