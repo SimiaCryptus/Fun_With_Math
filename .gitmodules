@@ -123,3 +123,7 @@
 	path = games/0x800
 	url = https://github.com/Simiacryptus/0x800.git
 	branch = main
+[submodule "games/bridges"]
+	path = games/bridges
+	url = https://github.com/Simiacryptus/bridges.git
+	branch = main
