@@ -1,0 +1,11 @@
+{
+  "id": "squirrely",
+  "category": "game",
+  "section": "games",
+  "icon": "SQ",
+  "title": "Squirrely",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open Squirrely",
+  "pitch": "A game about crossing the highway and filling tree hollows."
+}

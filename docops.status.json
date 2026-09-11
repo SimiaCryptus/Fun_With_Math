@@ -1,5 +1,5 @@
 {
-  "lastUpdated" : "2026-09-09T14:47:46.173436916Z",
+  "lastUpdated" : "2026-09-10T21:20:17.136039461Z",
   "tasks" : {
     "quadratics/pentagon/docs/analysis.theory_graph.json" : {
       "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
@@ -133,6 +133,20 @@
       "sessionId" : "U-20260909-Vozu50WI",
       "startedAt" : "2026-09-09T14:47:09.219937750Z",
       "completedAt" : "2026-09-09T14:47:46.173436916Z"
+    },
+    "games/emergensim/README_REWRITE.md" : {
+      "target" : "games/emergensim/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260910-u1OOpbSj",
+      "startedAt" : "2026-09-10T21:19:48.945663912Z",
+      "completedAt" : "2026-09-10T21:20:17.051800156Z"
+    },
+    "games/squirrely/README_REWRITE.md" : {
+      "target" : "games/squirrely/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260910-0cceRH8M",
+      "startedAt" : "2026-09-10T21:19:48.942481381Z",
+      "completedAt" : "2026-09-10T21:20:17.136039461Z"
     }
   }
 }

@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-09T14:45:39.460Z",
+  "generatedAt": "2026-09-10T21:22:34.081Z",
   "counts": {
     "lab": 19,
-    "game": 12,
+    "game": 13,
     "essay": 6
   },
   "entries": [
@@ -709,6 +709,27 @@
       "source": "games/physical-visualizer/entry.json"
     },
     {
+      "id": "squirrely",
+      "category": "game",
+      "section": "games",
+      "order": 9007199254740991,
+      "icon": "SQ",
+      "title": "Squirrely",
+      "href": "index.html",
+      "readme": "README.md",
+      "launchLabel": "Open Squirrely",
+      "pitch": "A game about crossing the highway and filling tree hollows.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "games/squirrely"
+      },
+      "dir": "games/squirrely",
+      "source": "games/squirrely/entry.json"
+    },
+    {
       "id": "troggle",
       "category": "game",
       "section": "games",
@@ -746,7 +767,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/qqn",
         "path": "optimization/QQN",
-        "commit": "a33cab791749999e97c646f431aa584de27155e7",
+        "commit": "52cf2478d59eaf1a7b145aa8ccfea6b34e440d02",
         "branch": "main",
         "submodule": true
       },
