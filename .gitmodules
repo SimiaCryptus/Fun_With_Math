@@ -139,3 +139,7 @@
 	path = games/physical-visualizer
 	url = https://github.com/Simiacryptus/physical-visualizer.git
 	branch = main
+[submodule "games/squirrely"]
+	path = games/squirrely
+	url = https://github.com/Simiacryptus/squirrely.git
+	branch = main
