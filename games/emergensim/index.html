@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROTOCOL // Tactical Emergency Simulation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/hud.css">
+  <link rel="stylesheet" href="css/autopsy.css">
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+  </script>
+</head>
+<body>
+  <div id="sim-app">
+    <main id="viewport-container" role="region" aria-label="Tactical Simulation Map"></main>
+
+    <header id="hud-header" class="hud-panel">
+      <div class="hud-group">
+        <select id="scenario-select" class="hud-select" aria-label="Scenario"></select>
+        <span class="hud-badge" id="hud-turn-counter">TURN: 01</span>
+        <span class="hud-badge muted" id="hud-phase">PLAYER INPUT</span>
+      </div>
+      <div class="hud-group">
+        <span class="hud-meter-label">ALARM:</span>
+        <span class="hud-indicator" id="hud-alarm-status">SILENT</span>
+        <span class="hud-meter-label">RESPONDERS:</span>
+        <span class="hud-badge" id="hud-responder-eta">ETA -- TURNS</span>
+        <button class="action-btn small" id="btn-undo" title="Undo / rewind one turn (U)">⟲ Undo</button>
+        <button class="action-btn small" id="btn-autopsy" title="Open autopsy (I)">Autopsy</button>
+      </div>
+    </header>
+
+    <aside id="hud-status" class="hud-panel" aria-label="Status">
+      <div class="status-card" id="status-player"></div>
+      <div class="status-card" id="status-population"></div>
+      <div class="status-card" id="status-hazards"></div>
+      <div class="status-card" id="status-objectives"></div>
+      <div class="status-card hint">
+        Arrows/WASD move · QEZX diagonal · click a tile to path there · drag to pan · wheel to zoom · [ ] view floor · PgUp/PgDn stairs
+      </div>
+    </aside>
+
+    <aside id="hud-social-log" class="hud-panel" aria-label="Social log">
+      <h3>SOCIAL TELEMETRY</h3>
+      <ul id="social-log-list"></ul>
+    </aside>
+
+    <footer id="hud-action-bar" class="hud-panel">
+      <div id="ap-ledger-container" aria-label="Action Points Available">
+        <span class="ap-title">AP:</span>
+        <span id="ap-pips"></span>
+      </div>
+      <nav id="action-palette" aria-label="Tactical Actions"></nav>
+    </footer>
+
+    <div id="turn-banner" class="banner-hidden"></div>
+    <div id="hud-toast" aria-live="polite"></div>
+    <div id="dialog-overlay-layer" aria-live="polite"></div>
+    <section id="autopsy-modal" class="modal-hidden" aria-modal="true" role="dialog"></section>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
