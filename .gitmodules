@@ -127,3 +127,7 @@
 	path = games/bridges
 	url = https://github.com/Simiacryptus/bridges.git
 	branch = main
+[submodule "games/madame-claude"]
+	path = games/madame-claude
+	url = https://github.com/Simiacryptus/madame-claude.git
+	branch = main
