@@ -151,3 +151,7 @@
 	path = games/marching-orders
 	url = https://github.com/Simiacryptus/marching-orders.git
 	branch = main
+[submodule "physics/chaos-garden"]
+	path = physics/chaos-garden
+	url = https://github.com/Simiacryptus/chaos-garden.git
+	branch = main
