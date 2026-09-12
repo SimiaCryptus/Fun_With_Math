@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chaos Garden — CG</title>
+  <link rel="stylesheet" href="./style.css" />
+  <script>
+    // The import map must exist before the first module script executes (§7.3).
+    // A committed vendor copy of three.js is selected when running from file://.
+    (function () {
+      var local = location.protocol === 'file:';
+      var base = local ? './vendor/three@0.169.0/' : 'https://unpkg.com/three@0.169.0/';
+      var map = { imports: { 'three': base + 'build/three.module.js', 'three/addons/': base + 'examples/jsm/' } };
+      document.write('<script type="importmap">' + JSON.stringify(map) + '<\/script>');
+    })();
+  </script>
+  <script type="module" src="./main.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header id="toolbar" aria-label="Modes and transport"></header>
+    <aside id="tools" aria-label="Paint tools"></aside>
+    <main id="stage">
+      <canvas id="gl" aria-label="Plan view of the channel" tabindex="0"></canvas>
+      <div id="hud"></div>
+    </main>
+    <aside id="side" aria-label="Measurements"></aside>
+    <footer id="depth" aria-label="Depth and solver parameters"></footer>
+  </div>
+  <div id="notify" role="status" aria-live="polite"></div>
+  <noscript>Chaos Garden needs JavaScript and WebGL2.</noscript>
+</body>
+</html>
