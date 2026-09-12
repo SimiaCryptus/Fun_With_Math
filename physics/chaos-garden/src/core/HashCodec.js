@@ -49,8 +49,8 @@ export function decodeState(hash) {
   } catch { return null; }
 }
 export function fnv1a(str) { let h = 0x811c9dc5; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(16).padStart(8, '0'); }
-/** runHash = H(designHash ‖ params ‖ seed ‖ solverVersion) */
+/** runHash = H(designHash ‖ params ‖ seed ‖ solverVersion). tier/backend are machine choices; the backend (and GPU vendor) enter via solverVersion. */
 export function runHash({ design, params, solverVersion }) {
-  const p = { ...params }; const seed = p.seed; delete p.tier;
+   const p = { ...params }; const seed = p.seed; delete p.tier; delete p.backend;
   return fnv1a(`${fnv1a(design)}|${JSON.stringify(p)}|${seed}|${solverVersion}`);
 }

@@ -24,15 +24,21 @@ export class MetricsSuite {
   }
   get settled() { return this.solver.t - this.tStart >= this.settleTime; }
   get settleProgress() { return Math.min(1, (this.solver.t - this.tStart) / this.settleTime); }
-  tick() {
-    this.n++;
+  /**
+   * One measurement tick. `steps` is the number of solver steps since the previous tick (1 on the CPU;
+   * a whole frame batch on asynchronous backends). Cadences fire when a multiple is crossed, so the
+   * schedule is unchanged for steps = 1.
+   */
+  tick(steps = 1) {
+    const n0 = this.n; this.n += steps;
+    const crossed = (c) => Math.floor(this.n / c) > Math.floor(n0 / c);
     this.bulk = bulkInvariants(this.solver);
-    if (this.lyap) this.lyap.tick(this.solver, this.twin);
-    this.mi.accumulate(this.solver);
-    if (this.n % this.cadence.entropy === 0) this.entropy = vorticityEntropy(this.solver, this.win);
-    if (this.n % this.cadence.spectra === 0) { this.spectra = computeSpectra(this.solver, this.win); this.spectra.breadth = breadthFromFlux(this.spectra.k, this.spectra.Pi); }
-    if (this.n % this.cadence.mi === 0) this.miValue = this.mi.compute();
-    if (this.settled && this.n % this.cadence.average === 0) {
+    if (this.lyap) this.lyap.tick(this.solver, this.twin, steps);
+    this.mi.accumulate(this.solver, steps);
+    if (crossed(this.cadence.entropy)) this.entropy = vorticityEntropy(this.solver, this.win);
+    if (crossed(this.cadence.spectra)) { this.spectra = computeSpectra(this.solver, this.win); this.spectra.breadth = breadthFromFlux(this.spectra.k, this.spectra.Pi); }
+    if (crossed(this.cadence.mi)) this.miValue = this.mi.compute();
+    if (this.settled && crossed(this.cadence.average)) {
       this._acc('lambda', this.lyap?.lambda); this._acc('Hw', this.entropy?.Hw); this._acc('Hang', this.entropy?.Hang);
       this._acc('I', this.miValue); this._acc('breadth', this.spectra?.breadth); this._acc('Q', this.bulk.Q);
     }

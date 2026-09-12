@@ -18,6 +18,7 @@ export class DepthSlider {
         <label>z± <select data-k="walls">${opt('walls')}</select></label>
         <label><input type="checkbox" data-k="twin"> twin</label>
         <label>tier <select data-k="tier">${opt('tier')}</select></label>
+         <label>backend <select data-k="backend">${opt('backend')}</select></label>
         <span class="readout" data-v="info"></span>
         <span class="badge settle" data-v="settle">settling</span>
       </div>`;
@@ -31,13 +32,15 @@ export class DepthSlider {
   setGrid(grid) { this.grid = grid; this.refreshScales(); }
   sync() {
     const p = this.params; this.range.value = toS(p.get('H')); this.out.value = p.get('H').toFixed(3);
-    for (const k of ['Re', 'inflow', 'spanwise', 'walls', 'tier']) this.el.querySelector(`[data-k=${k}]`).value = p.get(k);
+     for (const k of ['Re', 'inflow', 'spanwise', 'walls', 'tier', 'backend']) this.el.querySelector(`[data-k=${k}]`).value = p.get(k);
     this.el.querySelector('[data-k=twin]').checked = p.get('twin'); this.drawMarkers(p.get('H'));
   }
   refreshScales() { if (!this.grid) return; this.scales = this.barrier.geometricScales(this.grid.hy); this.drawMarkers(this.params.get('H')); }
   setInfo({ grid, solver, tierName }) {
     const Re = this.params.get('Re'), Reh = Re * grid.H;
-    this.el.querySelector('[data-v=info]').textContent = `${TIERS[tierName]?.label || tierName} · ${grid.Nx}×${grid.Ny}×${grid.Nz}${grid.quasi2D ? ' (quasi-2D floor)' : ''} · Re_h ${Reh.toFixed(0)} · k_h ${grid.kh.toFixed(1)} · Δt ${solver.dt.toExponential(2)} · ${solver.report.diffusion}`;
+     const r = solver.report;
+      const res = r.residual != null ? ` · res ${r.residual.toExponential(1)}` : '';
+      this.el.querySelector('[data-v=info]').textContent = `${TIERS[tierName]?.label || tierName} · ${solver.backend} · ${grid.Nx}×${grid.Ny}×${grid.Nz}${grid.quasi2D ? ' (quasi-2D floor)' : ''} · Re_h ${Reh.toFixed(0)} · k_h ${grid.kh.toFixed(1)} · Δt ${solver.dt.toExponential(2)} · ${r.diffusion} · p-iters ${r.pIters}/${solver.pIters}${res}`;
   }
   setSettled(settled, progress) { const b = this.el.querySelector('[data-v=settle]'); b.textContent = settled ? 'measuring' : `settling ${(progress * 100).toFixed(0)}%`; b.classList.toggle('ok', settled); }
   /** Crossover: k_h = π/(H·Ly) equals k_ℓ = 2π/ℓ when H* = ℓ/(2·Ly). */

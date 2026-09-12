@@ -8,7 +8,8 @@ import { saveSlot, loadSlot, listSlots, exportJSON, importJSON, download } from 
 import { JobRunner } from './JobRunner.js';
 import { Grid } from '../sim/Grid.js';
 import { BarrierField } from '../sim/BarrierField.js';
-import { Solver, SOLVER_VERSION } from '../sim/Solver.js';
+import { Solver } from '../sim/Solver.js';
+import { GpuContext } from '../sim/gpu/GpuContext.js';
 import { TwinSolver } from '../sim/TwinSolver.js';
 import { rewindProbe } from '../sim/Rewinder.js';
 import { MetricsSuite } from '../metrics/Suite.js';
@@ -24,7 +25,7 @@ import { MetricsPanel } from '../ui/Panels/MetricsPanel.js';
 
 const MODES = ['paint', 'run', 'sweep', 'rewind', 'evolve', 'scope'];
 const SIM_KEYS = ['H', 'Re', 'inflow', 'spanwise', 'walls', 'seed', 'twin', 'perturb'];
-const TIER_ORDER = ['A', 'B', 'C', 'D'];
+const TIER_ORDER = ['G', 'A', 'B', 'C', 'D'];
 const logspace = (a, b, n) => Array.from({ length: n }, (_, i) => +Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * i / (n - 1)).toPrecision(4));
 
 /** Lifecycle, mode switching and the main loop (§7.1). UI is a projection of Params + Solver state. */
@@ -32,17 +33,28 @@ export class App {
   constructor({ bus, params, tierInfo, dom }) {
     Object.assign(this, { bus, params, tierInfo, dom });
     this.mode = null; this.task = null; this._lastUi = 0; this._hashTimer = 0; this._prevLayer = 'vorticity';
+    this._metricsDirtyAt = -1; // barrier edits re-solidify at once; the metric suite (twin re-perturb) re-arms after the stroke settles
+    this._gpuBusy = false; // an asynchronous-backend batch is awaiting its readback
     this._sweeping = false; this._evolving = false; this.sweepResults = null; this.lastScore = null; this.lastLabel = '';
     this._frame = this._frame.bind(this);
   }
-  get tierName() { const t = this.params.get('tier'); return t === 'auto' ? this.tierInfo.tier : t; }
+  /** WebGPU is used whenever a device exists and the `backend` param does not opt out. */
+  get gpu() { return this.params.get('backend') !== 'cpu' && !!GpuContext.current; }
+  get tierName() {
+    let t = this.params.get('tier'); if (t === 'auto') t = this.tierInfo.tier;
+    if (TIERS[t]?.gpu && !this.gpu) t = 'A'; // the GPU tier is CPU-hostile; degrade to the largest CPU tier
+    return t;
+  }
   get tierOverride() { return this.params.get('tier') !== 'auto'; }
-  /** Batch evaluations (sweep / evolve) run one tier smaller than the live view so they finish in seconds. */
-  get evalTier() { return TIER_ORDER[Math.max(TIER_ORDER.indexOf(this.tierName), 2)]; }
+  /** Batch evaluations (sweep / evolve) run on the CPU reference solver, one tier smaller than the live view, so they finish in seconds. */
+  get evalTier() { return TIER_ORDER[Math.max(TIER_ORDER.indexOf(this.tierName), TIER_ORDER.indexOf('C'))]; }
+  /** Solver version string for run hashes; the GPU vendor/architecture is folded in (§5.6). */
+  get solverVersion() { const s = this.solver; return s.backend === 'webgpu' ? `${s.version}@${GpuContext.current?.label || 'gpu'}` : s.version; }
 
   async init() {
     const { dom, bus, params } = this;
     this.notify = new Notify(dom.notify);
+    if (GpuContext.current) GpuContext.current.onFail = (reason) => this._gpuFailed(reason);
     const saved = decodeState(location.hash);
     if (saved) params.set(saved.params, { silent: true });
     const tier = TIERS[this.tierName], [Nx, Ny] = tier.grid;
@@ -62,7 +74,7 @@ export class App {
     this._buildSim();
     this._wire();
     this.setMode('paint');
-    this.notify.show(`Tier ${tier.label} — ${this.tierInfo.reason}${this.tierInfo.caps.webgl2 ? '' : ' · no WebGL2'}`);
+    this.notify.show(`Tier ${tier.label} — ${this.tierInfo.reason} · solver ${this.solver.backend}${this.tierInfo.caps.webgl2 ? '' : ' · no WebGL2'}`);
     if (saved) this.notify.show('Design and parameters restored from URL');
     requestAnimationFrame(this._frame);
   }
@@ -70,8 +82,8 @@ export class App {
   _buildSim() {
     const tier = TIERS[this.tierName], p = this.params.all;
     this.grid = Grid.forTier(tier, p.H);
-    this.solver?.dispose();
-    this.solver = new Solver(this.grid, p, { pIters: tier.pIters });
+    this.solver?.dispose(); this.twin?.dispose(); this._gpuBusy = false;
+    this.solver = Solver.create(this.grid, p, { pIters: tier.pIters, gpu: this.gpu });
     this.solver.setBarriers(this.barrier);
     this.twin = p.twin && tier.twin ? new TwinSolver(this.solver) : null;
     this.metrics = new MetricsSuite(this.solver, this.twin);
@@ -81,7 +93,7 @@ export class App {
     this.depth.setInfo({ grid: this.grid, solver: this.solver, tierName: this.tierName });
     this.recorder.reset();
     this.task = null;
-    log.info('sim built', { grid: [this.grid.Nx, this.grid.Ny, this.grid.Nz], dt: this.solver.dt, twin: !!this.twin, tier: this.tierName });
+    log.info('sim built', { grid: [this.grid.Nx, this.grid.Ny, this.grid.Nz], dt: this.solver.dt, twin: !!this.twin, tier: this.tierName, backend: this.solver.backend });
   }
 
   _buildHud() {
@@ -101,7 +113,7 @@ export class App {
     bus.on('ui:mode', (m) => this.setMode(m));
     bus.on('ui:action', (a) => this.action(a));
     bus.on('params:change', ({ changed }) => {
-      if (changed.includes('tier')) { this._writeHash(); this.notify.show('Tier changed — reloading with the new grid'); setTimeout(() => location.reload(), 150); return; }
+      if (changed.includes('tier') || changed.includes('backend')) { this._writeHash(); this.notify.show('Tier / backend changed — reloading with the new grid'); setTimeout(() => location.reload(), 150); return; }
       if (changed.some((k) => SIM_KEYS.includes(k))) { this._buildSim(); this.notify.show(`Solver rebuilt (${changed.join(', ')}); re-settling`); }
       if (changed.includes('inkBudget')) this.brush.updateInk();
       this._scheduleHash();
@@ -149,34 +161,64 @@ export class App {
   _frame(now) {
     requestAnimationFrame(this._frame);
     try {
-      if (this.barrier.version !== this.solver.barrierVersion) { this.solver.setBarriers(this.barrier); this.metrics.reset(); }
+      if (this.barrier.version !== this.solver.barrierVersion) { this.solver.setBarriers(this.barrier); this._metricsDirtyAt = now; }
+      if (this._metricsDirtyAt >= 0 && now - this._metricsDirtyAt > 250 && !this._gpuBusy) { this._metricsDirtyAt = -1; this.metrics.reset(); }
+      this.solver.wantTracers = this.view.layer === 'dye'; // async backend reads all tracers back only when drawn (the outlet plane for Î is always read)
       if (this.task) this._pumpTask();
+      else if (this.solver.isAsync) this._stepAsync(now);
       else { const n = this.clock.tick(now); for (let s = 0; s < n; s++) this._step(); }
       this.renderer.upload(this.view.compose(this.solver));
       this.renderer.render();
       if (now - this._lastUi > 250) { this._lastUi = now; this._updateUi(); }
-    } catch (err) {
-      log.error('frame', String(err?.stack || err)); this.clock.pause(); this.task = null; this.toolbar.setRunning(false);
-      this.notify.show('Simulation error: ' + (err?.message || err), { kind: 'bad', timeout: 8000 });
-    }
+    } catch (err) { this._onError(err); }
   }
-  _step() {
-    const r = this.solver.step(); this.twin?.step(); this.metrics.tick();
-    if (this.solver.stepCount % 4 === 0) {
+  _onError(err) {
+    log.error('frame', String(err?.stack || err)); this.clock.pause(); this.task = null; this.toolbar.setRunning(false);
+    this.notify.show('Simulation error: ' + (err?.message || err), { kind: 'bad', timeout: 8000 });
+  }
+  /** Synchronous (CPU) step: measure after every Δt. */
+  _step() { const r = this.solver.step(); this.twin?.step(); this._afterSteps(1, r); }
+  /**
+   * Asynchronous (WebGPU) stepping: submit this frame's steps, then measure once the readback lands.
+   * While a batch is in flight the clock keeps accumulating, so a slow readback shows up as the usual
+   * spiral-of-death slowdown rather than a Δt change (§10.3).
+   */
+  _stepAsync(now) {
+    if (this._gpuBusy) return;
+    const n = this.clock.tick(now); if (!n) return;
+    let r; for (let s = 0; s < n; s++) { r = this.solver.step(); this.twin?.step(); }
+    const solver = this.solver; this._gpuBusy = true;
+    Promise.all([solver.sync(), this.twin?.sync()])
+      .then(() => { if (solver === this.solver) this._afterSteps(n, r); }, (err) => { if (solver === this.solver) this._onError(err); })
+      .finally(() => { if (solver === this.solver) this._gpuBusy = false; });
+  }
+  _afterSteps(n, r) {
+    this.metrics.tick(n);
+    const sc = this.solver.stepCount;
+    if (Math.floor(sc / 4) > Math.floor((sc - n) / 4)) {
       const b = this.metrics.bulk, raw = this.metrics.raw();
       this.recorder.push({ t: r.t, E: b.E, Z: b.Z, P: b.P, eps: b.eps, divNorm: b.divNorm, Q: b.Q, lambda: raw.lambda, Hw: raw.Hw, Hang: raw.Hang, I: raw.I, breadth: raw.breadth, settled: this.metrics.settled ? 1 : 0 });
     }
   }
-  /** Cooperative pump for on-demand generators (rewind) — ~14 ms per frame keeps the UI live. */
+  /** Cooperative pump for on-demand generators (rewind) — ~14 ms per frame keeps the UI live. A yielded promise (GPU readback) pauses the pump until it settles. */
   _pumpTask() {
-    const task = this.task, t0 = performance.now(); let r;
-    do { r = task.gen.next(); if (!r.done && r.value) task.progress = r.value; } while (!r.done && performance.now() - t0 < 14);
+    const task = this.task;
+    if (task.error) { const e = task.error; this.task = null; throw e; }
+    if (task.waiting) return;
+    const t0 = performance.now(); let r;
+    do {
+      r = task.gen.next();
+      if (!r.done && r.value) {
+        if (typeof r.value.then === 'function') { task.waiting = true; r.value.then(() => { task.waiting = false; }, (err) => { task.error = err; task.waiting = false; }); return; }
+        task.progress = r.value;
+      }
+    } while (!r.done && performance.now() - t0 < 14);
     if (r.done) { this.task = null; task.done(r.value); }
   }
 
   _updateUi() {
     const m = this.metrics, res = m.currentScore(), raw = m.raw(), s = this.solver, b = m.bulk;
-    const label = scoreString(res, { solverVersion: SOLVER_VERSION, tier: this.tierName, tierOverride: this.tierOverride, precision: Solver.precision });
+    const label = scoreString(res, { solverVersion: s.version, tier: this.tierName, tierOverride: this.tierOverride, precision: s.precision });
     this.lastScore = res; this.lastLabel = label;
     this.toolbar.setScore(res, label);
     this.depth.setSettled(m.settled, m.settleProgress);
@@ -194,7 +236,7 @@ export class App {
   startRewind(N = 200) {
     if (this.task) return;
     const gen = rewindProbe(this.solver, N);
-    this.task = { label: 'rewind', progress: { phase: 'forward', progress: 0 }, gen, done: (res) => {
+    this.task = { label: 'rewind', progress: { phase: 'forward', progress: 0 }, gen, waiting: false, error: null, done: (res) => {
       this.metrics.setRewind(res.D_rev); this.lastRewind = res; this.panel.setRewind(res); this.bus.emit('rewind:done', res);
       this.notify.show(`Rewind: D_rev = ${res.D_rev.toExponential(2)} over ${N} steps (${res.flowThroughs.toFixed(2)} flow-throughs)`);
     } };
@@ -205,15 +247,18 @@ export class App {
   _jobBase() { return { tierName: this.evalTier, params: this.params.all, w: this.barrier.Nx, h: this.barrier.Ny, settleTime: 3, measureTime: 1.5, rewindN: 80 }; }
   async runSweep(ladder = logspace(0.02, 0.6, 7)) {
     if (this._sweeping) return; this._sweeping = true;
-    const base = { ...this._jobBase(), mask: Uint8Array.from(this.barrier.mask) }, results = [];
-    this.panel.showSweep(results, ladder);
-    this.notify.show(`Sweeping ${ladder.length} depths at tier ${base.tierName} in the background…`);
+    const base = { ...this._jobBase(), mask: Uint8Array.from(this.barrier.mask) }, n = ladder.length;
+    const results = new Array(n).fill(null), prog = new Float64Array(n); let done = 0;
+    const partial = () => results.filter(Boolean); // indexed by rung ⇒ always in ladder order regardless of completion order
+    this.panel.showSweep([], ladder);
+    this.notify.show(`Sweeping ${n} depths at tier ${base.tierName} (cpu) on ${this.jobs.concurrency} worker(s)…`);
     try {
-      for (let i = 0; i < ladder.length && this.mode === 'sweep'; i++) {
-        const r = await this.jobs.run({ ...base, H: ladder[i] }, (p) => this.panel.setJobProgress(`sweep H=${ladder[i].toFixed(3)} (${i + 1}/${ladder.length})`, p));
-        results.push(r); this.panel.showSweep(results, ladder); this.bus.emit('sweep:progress', { i, n: ladder.length, result: r });
-      }
-      if (results.length === ladder.length) { this.sweepResults = results; this.bus.emit('sweep:done', results); this.notify.show('Sweep complete — fingerprint plotted in the Metrics panel'); }
+      // All rungs are dispatched at once; JobRunner queues them across its pool. Leaving Sweep mode cancels them.
+      await Promise.all(ladder.map((H, i) => this.jobs.run({ ...base, H }, (p) => {
+        prog[i] = p; let s = 0; for (let q = 0; q < n; q++) s += prog[q];
+        this.panel.setJobProgress(`sweep ${done}/${n} rungs done`, s / n);
+      }).then((r) => { results[i] = r; done++; this.panel.showSweep(partial(), ladder); this.bus.emit('sweep:progress', { i, n, result: r }); })));
+      this.sweepResults = results; this.bus.emit('sweep:done', results); this.notify.show('Sweep complete — fingerprint plotted in the Metrics panel');
     } catch (err) { if (err?.message !== 'cancelled') { log.error('sweep', String(err)); this.notify.show('Sweep failed: ' + err.message, { kind: 'bad' }); } }
     finally { this._sweeping = false; this.panel.setJobProgress(null); }
   }
@@ -224,17 +269,19 @@ export class App {
     const w = this.barrier.Nx, h = this.barrier.Ny, budget = this.brush.budgetCells, pc = this.barrier.protectedCols;
     const rng = new Rng((this.params.get('seed') ^ 0x5eed5eed) >>> 0), base = this._jobBase(), lineage = [];
     const evalMask = (mask, tag) => this.jobs.run({ ...base, mask }, (p) => this.panel.setJobProgress(`evolve ${tag}`, p));
-    this.notify.show(`Evolve: (1+${lambda}) search at tier ${base.tierName}, ${generations} generations`);
+    this.notify.show(`Evolve: (1+${lambda}) search at tier ${base.tierName} (cpu), ${generations} generations, ${this.jobs.concurrency} worker(s)`);
     try {
       let parentMask = Uint8Array.from(this.barrier.mask), parent = await evalMask(parentMask, 'parent');
       lineage.push({ gen: 0, score: parent.score, note: 'parent', flags: parent.flags }); this.panel.setEvolve(lineage);
       for (let gen = 1; gen <= generations && this.mode === 'evolve'; gen++) {
-        for (let c = 0; c < lambda && this.mode === 'evolve'; c++) {
-          const child = mutateMask(parentMask, w, h, budget, pc, rng), r = await evalMask(child, `g${gen}/${c + 1}`);
-          const better = r.valid && r.score > parent.score;
-          lineage.push({ gen, score: r.score, note: better ? 'accepted' : 'rejected', flags: r.flags }); this.panel.setEvolve(lineage);
-          if (better) { parent = r; parentMask = child; this.brush.pushUndo(); this.barrier.setMask(child); this.brush.commit(); }
-        }
+        // Draw all λ children first (sequential RNG ⇒ deterministic lineage), evaluate them concurrently, keep the best improver.
+        const children = Array.from({ length: lambda }, () => mutateMask(parentMask, w, h, budget, pc, rng));
+        const rs = await Promise.all(children.map((c, i) => evalMask(c, `g${gen}/${i + 1}`)));
+        let best = -1;
+        rs.forEach((r, i) => { if (r.valid && r.score > parent.score && (best < 0 || r.score > rs[best].score)) best = i; });
+        rs.forEach((r, i) => lineage.push({ gen, score: r.score, note: i === best ? 'accepted' : 'rejected', flags: r.flags }));
+        this.panel.setEvolve(lineage);
+        if (best >= 0) { parent = rs[best]; parentMask = children[best]; this.brush.pushUndo(); this.barrier.setMask(parentMask); this.brush.commit(); }
       }
       this.notify.show(`Evolve finished: best S=${parent.score.toFixed(1)} (tier ${base.tierName})`);
     } catch (err) { if (err?.message !== 'cancelled') { log.error('evolve', String(err)); this.notify.show('Evolve failed: ' + err.message, { kind: 'bad' }); } }
@@ -243,11 +290,11 @@ export class App {
 
   /* ---------------- persistence (§9.4) ---------------- */
   designHash() { return fnv1a(encodeMask(this.barrier.mask, this.barrier.Nx, this.barrier.Ny)); }
-  runHash() { return runHash({ design: encodeMask(this.barrier.mask, this.barrier.Nx, this.barrier.Ny), params: this.params.all, solverVersion: SOLVER_VERSION }); }
+  runHash() { return runHash({ design: encodeMask(this.barrier.mask, this.barrier.Nx, this.barrier.Ny), params: this.params.all, solverVersion: this.solverVersion }); }
   designState() { return { params: this.params.all, w: this.barrier.Nx, h: this.barrier.Ny, design: encodeMask(this.barrier.mask, this.barrier.Nx, this.barrier.Ny), score: this.lastScore?.score ?? null, scoreString: this.lastLabel }; }
   applyDesignState(o) {
     if (o.design) { const d = decodeMask(o.design); this.brush.pushUndo(); this.barrier.resampleFrom(d.mask, d.w, d.h); this.brush.commit(); }
-    if (o.params) { const { tier, ...rest } = o.params; this.params.set(rest); }
+    if (o.params) { const { tier, backend, ...rest } = o.params; this.params.set(rest); } // tier/backend are machine choices, not design
   }
   _writeHash() { const h = '#' + encodeState({ params: this.params.all, mask: this.barrier.mask, w: this.barrier.Nx, h: this.barrier.Ny }); history.replaceState(null, '', h); return h; }
   _scheduleHash() { clearTimeout(this._hashTimer); this._hashTimer = setTimeout(() => this._writeHash(), 400); }
@@ -268,15 +315,22 @@ export class App {
     inp.onchange = async () => { const f = inp.files?.[0]; if (!f) return; try { this.applyDesignState(importJSON(await f.text())); this.notify.show(`Imported ${f.name}`); } catch (err) { this.notify.show('Import failed: ' + err.message, { kind: 'bad' }); } };
     inp.click();
   }
+  /** The WebGPU device was lost or a kernel failed validation: fall back to the CPU solver (the session flag set by GpuContext keeps the reload on CPU). */
+  _gpuFailed(reason) {
+    this.notify.show('WebGPU backend failed — reloading on the CPU solver: ' + reason, { kind: 'bad', timeout: 8000 });
+    this._writeHash(); setTimeout(() => location.reload(), 1500);
+  }
   about() {
+    const s = this.solver;
     const lines = [
-      `Chaos Garden — solver ${SOLVER_VERSION} (${Solver.backend}, ${Solver.precision}), weights ${WEIGHTS_VERSION}, tier ${this.tierName}${this.tierOverride ? ' (override)' : ''}`,
+      `Chaos Garden — solver ${s.version} (${s.backend}, ${s.precision}), weights ${WEIGHTS_VERSION}, tier ${this.tierName}${this.tierOverride ? ' (override)' : ''}`,
       '', 'The 2D mask is extruded through the slab; only the depth H changes. Incompressible 3D flow: clamped MacCormack advection, explicit/Jacobi viscosity, red-black SOR projection. No vorticity confinement, no artificial forcing.',
+      '', 'Backends: the WebGPU solver runs the same stencils as the CPU reference with the same fixed Δt and iteration counts; its pressure solve performs exactly the tier\'s number of SOR sweeps (the CPU may exit early on residual), so scores are only comparable within one backend. Set backend = cpu to force the reference.',
       '', 'Score components (published normalizers, not session ranges):', ...Object.entries(DEFINITIONS).map(([k, v]) => `• ${k}: ${v}`),
       `• gate: min(1, Q/${NORMALIZERS.Qmin}); runs with ‖∇·u‖ > ${NORMALIZERS.epsDiv} are struck through.`,
       '', 'Keys: 1–6 modes · Space play/pause · . single step · [ ] depth (Shift = fine) · B/L/P brush/line/poly · Ctrl+Z / Ctrl+Shift+Z undo/redo · R reset flow · S sweep · W rewind · G overlays · ? this panel',
       'Keyboard painting: focus the canvas, arrows move the caret (Shift ×4), Enter stamps, Backspace erases.',
-      '', 'Caveats: CPU reference solver at reduced resolution; sweeps and evolution run at tier ' + this.evalTier + '. Scores are comparable only within the same solver version and tier.',
+      '', 'Caveats: sweeps and evolution run the CPU reference solver at tier ' + this.evalTier + '. Scores are comparable only within the same solver version, backend and tier.',
     ];
     this.notify.popover('About / methodology', lines.join('\n'));
   }

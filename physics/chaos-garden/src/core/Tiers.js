@@ -1,9 +1,10 @@
 /**
- * Capability probe → tier. The current build runs the CPU reference solver, so tiers
- * are CPU-sized; the GPU tiers of §10.1 map onto the same letters once the atlas
- * passes land. `grid` is [Nx, Ny, NzMax]; Nz is derived from H (Grid.forTier).
+ * Capability probe → tier. `grid` is [Nx, Ny, NzMax]; Nz is derived from H (Grid.forTier).
+ * A–D are CPU-sized; G is the WebGPU tier and is only selectable when a device is available
+ * (App maps G → A otherwise). Batch evaluations (sweep/evolve) always run the CPU solver at tier ≥ C.
  */
 export const TIERS = {
+  G: { grid: [192, 96, 16], pIters: 80, twin: true,  target: 60, label: 'G (webgpu)', gpu: true },
   A: { grid: [128, 64, 12], pIters: 60, twin: true,  target: 30, label: 'A (cpu-large)' },
   B: { grid: [96, 48, 8],   pIters: 50, twin: true,  target: 30, label: 'B (cpu)' },
   C: { grid: [64, 32, 6],   pIters: 40, twin: true,  target: 30, label: 'C (cpu-small)' },
@@ -43,8 +44,14 @@ export function benchmark(ms = 120) {
   return { sweeps, ms: dt, cellsPerMs: (sweeps * N) / dt };
 }
 
+/** `caps.webgpu` is the result of GpuContext.init(): the GPU tier is chosen whenever a device (with compiled kernels) exists. */
 export function selectTier(caps, bench) {
-  const c = bench.cellsPerMs;
-  let tier = c > 9000 ? 'A' : c > 5000 ? 'B' : c > 2000 ? 'C' : 'D';
-  return { tier, reason: `bench ${Math.round(c)} cells/ms`, backend: 'cpu' };
+  const c = bench.cellsPerMs, gpu = caps.webgpu;
+  if (gpu?.available) {
+    const who = [gpu.vendor, gpu.architecture].filter(Boolean).join(' ') || 'ready';
+    return { tier: 'G', reason: `WebGPU ${who} · bench ${Math.round(c)} cells/ms`, backend: 'webgpu' };
+  }
+  const tier = c > 9000 ? 'A' : c > 5000 ? 'B' : c > 2000 ? 'C' : 'D';
+  const why = gpu?.reason ? ` · no WebGPU (${gpu.reason})` : ' · no WebGPU';
+  return { tier, reason: `bench ${Math.round(c)} cells/ms${why}`, backend: 'cpu' };
 }

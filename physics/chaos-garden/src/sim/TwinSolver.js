@@ -1,16 +1,23 @@
 import { CpuSolver } from './CpuSolver.js';
-/** Perturbed twin sharing barriers and parameters; used by the Lyapunov estimator (§6.4). */
+/**
+ * Perturbed twin sharing barriers and parameters; used by the Lyapunov estimator (§6.4).
+ * Built with the same backend class as the main solver; on the GPU it shares the geometry buffers and
+ * is copied / perturbed / renormalised device-side so it tracks the main solver's *device* state.
+ */
 export class TwinSolver {
   constructor(main, opts = {}) {
     this.main = main; this.cadence = opts.cadence ?? 1; this.count = 0;
-    this.solver = new CpuSolver(main.grid, main.params, { pIters: main.pIters, tracerCount: 0 });
+    const Ctor = typeof main.constructor === 'function' ? main.constructor : CpuSolver;
+    this.solver = new Ctor(main.grid, main.params, { pIters: main.pIters, tracerCount: 0, geometryFrom: main });
     this.copyFrom();
   }
   copyFrom() {
     const s = this.solver, m = this.main;
     s.solid = m.solid; s.hasSolid = m.hasSolid;
+    s.pNb = m.pNb; s.pInv = m.pInv; // share the Poisson gather tables; main rebuilds them in place on setBarriers
     s.u.set(m.u); s.v.set(m.v); s.w.set(m.w); s.p.set(m.p); s.inletNoise.set(m.inletNoise);
     s.t = m.t; s.stepCount = m.stepCount;
+    s.copyStateFrom?.(m); // async backend: device-side copy, so the twin starts from the current state, not the last readback
   }
   /** Add δ₀·ζ with ζ a horizontally divergence-free (streamfunction) field of unit rms. */
   perturb(rng, delta0) {
@@ -25,9 +32,12 @@ export class TwinSolver {
       zu[n] = du; zv[n] = dv; ss += du * du + dv * dv; n2++;
     }
     const sc = delta0 / Math.sqrt(ss / Math.max(1, n2));
-    for (let n = 0; n < g.N; n++) { s.u[n] += sc * zu[n]; s.v[n] += sc * zv[n]; }
+    if (s.addVelocity) s.addVelocity(zu, zv, sc);
+    else for (let n = 0; n < g.N; n++) { s.u[n] += sc * zu[n]; s.v[n] += sc * zv[n]; }
   }
   step() { if (++this.count % this.cadence === 0) this.solver.step(); }
+  /** Promise (or null on the CPU) that resolves when the twin's arrays are current. */
+  sync() { return this.solver.sync(); }
   /** rms separation over fluid cells */
   diffNorm() {
     const s = this.solver, m = this.main; let ss = 0, n2 = 0;
@@ -37,5 +47,7 @@ export class TwinSolver {
   renormalize(delta0) {
     const d = this.diffNorm(); if (!(d > 0)) return; const sc = delta0 / d, s = this.solver, m = this.main;
     for (let n = 0; n < m.grid.N; n++) { s.u[n] = m.u[n] + sc * (s.u[n] - m.u[n]); s.v[n] = m.v[n] + sc * (s.v[n] - m.v[n]); s.w[n] = m.w[n] + sc * (s.w[n] - m.w[n]); }
+    s.blendToward?.(m, sc);
   }
+  dispose() { this.solver.dispose(); }
 }

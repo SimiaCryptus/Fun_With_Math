@@ -1,6 +1,6 @@
 import { Rng } from '../core/Rng.js';
 
-export const SOLVER_VERSION = '0.3.0-cpu';
+export const SOLVER_VERSION = '0.4.0-cpu'; // 0.4: gather-table SOR with deterministic residual exit, shared-stencil tracer advection
 
 /**
  * Reference incompressible solver on a thin slab (§5). Collocated grid, clamped
@@ -13,6 +13,7 @@ export class CpuSolver {
     this.grid = grid; this.params = { ...params };
     this.U0 = 1; this.nu = 1 / params.Re;
     this.pIters = opts.pIters ?? 40; this.sor = opts.sor ?? 1.5; this.jacobiIters = 16;
+     this.pTol = opts.pTol ?? 1e-6; // SOR stops when max|Δp| in a sweep drops below this (state-dependent ⇒ deterministic, §5.4)
     this.cfl = 0.5; this.dt = this.cfl * Math.min(grid.hx, grid.hy) / this.U0;
     this.K = opts.tracerCount ?? 16;
     this.periodicY = params.spanwise !== 'freeslip';
@@ -23,8 +24,10 @@ export class CpuSolver {
     this.ua = f(); this.va = f(); this.wa = f();
     this.ub = f(); this.vb = f(); this.wb = f();
     this.mn = [f(), f(), f()]; this.mx = [f(), f(), f()];
-    this.p = f(); this.div = f(); this.wx = f(); this.wy = f(); this.wz = f();
+     this.p = new Float32Array(N + 1); // +1: sentinel cell (index N) that is always 0, gathered for missing/solid neighbours
+     this.div = f(); this.wx = f(); this.wy = f(); this.wz = f();
     this.solid = new Uint8Array(N); this.hasSolid = false; this.barrierVersion = -1;
+     this.pNb = new Int32Array(6 * N); this.pInv = new Float32Array(N); this._buildPressureCoeffs();
     this.tracers = []; this.tracerTmp = [];
     for (let c = 0; c < this.K; c++) { this.tracers.push(f()); this.tracerTmp.push(f()); }
     this.inletNoise = new Float32Array(grid.Ny * grid.Nz);
@@ -34,11 +37,45 @@ export class CpuSolver {
     this.reset(params.seed);
   }
   profile(k) { const z = (k + 0.5) / this.grid.Nz; return this.params.inflow === 'parabolic' ? 6 * z * (1 - z) : 1; }
+   /** Backend identity folded into score strings and run hashes. */
+   get backend() { return 'cpu'; }
+   get precision() { return 'f32'; }
+   get version() { return SOLVER_VERSION.replace(/cpu$/, this.backend); }
+   /**
+    * Asynchronous backends return a promise from sync() that resolves once the CPU-visible arrays reflect
+    * every submitted step, and need upload() after the arrays are edited. The CPU solver *is* the state.
+    */
+   get isAsync() { return false; }
+   sync() { return null; }
+   upload() { /* CPU arrays are the state */ }
   setBarriers(bf) {
     bf.extrude(this.grid, this.solid);
     let any = 0;
     for (let n = 0; n < this.grid.N; n++) if (this.solid[n]) { any = 1; this.u[n] = this.v[n] = this.w[n] = this.p[n] = 0; for (const T of this.tracers) T[n] = 0; }
     this.hasSolid = !!any; this.barrierVersion = bf.version;
+     this._buildPressureCoeffs();
+   }
+   /**
+    * Poisson gather table + inverse diagonal. Missing or solid neighbours point at the sentinel zero
+    * cell (index N) and are dropped from the diagonal (homogeneous Neumann); the outlet column keeps
+    * p = 0 (Dirichlet reference). Depends only on geometry, so it is rebuilt only when barriers change.
+    */
+   _buildPressureCoeffs() {
+     const g = this.grid, Nx = g.Nx, Ny = g.Ny, Nz = g.Nz, N = g.N, sy = Nx, sz = Nx * Ny, per = this.periodicY, solid = this.solid;
+     const cx = 1 / (g.hx * g.hx), cy = 1 / (g.hy * g.hy), cz = 1 / (g.hz * g.hz), nb = this.pNb, inv = this.pInv;
+     nb.fill(N); inv.fill(0);
+     for (let k = 0; k < Nz; k++) for (let j = 0; j < Ny; j++) for (let i = 1; i < Nx - 1; i++) {
+       const n = i + j * sy + k * sz; if (solid[n]) continue;
+       const m = 6 * n; let d = 0;
+       if (i > 1 && !solid[n - 1]) { nb[m] = n - 1; d += cx; }
+       if (i === Nx - 2) d += cx; else if (!solid[n + 1]) { nb[m + 1] = n + 1; d += cx; }
+       const jm = j === 0 ? (per ? n + (Ny - 1) * sy : -1) : n - sy, jp = j === Ny - 1 ? (per ? n - (Ny - 1) * sy : -1) : n + sy;
+       if (jm >= 0 && !solid[jm]) { nb[m + 2] = jm; d += cy; }
+       if (jp >= 0 && !solid[jp]) { nb[m + 3] = jp; d += cy; }
+       if (k > 0 && !solid[n - sz]) { nb[m + 4] = n - sz; d += cz; }
+       if (k < Nz - 1 && !solid[n + sz]) { nb[m + 5] = n + sz; d += cz; }
+       inv[n] = d > 0 ? 1 / d : 0;
+     }
   }
   reset(seed = this.params.seed) {
     const g = this.grid, rng = new Rng(seed); this.rng = rng;
@@ -121,7 +158,7 @@ export class CpuSolver {
   }
   _advectTracers(dt) {
     const K = this.K; if (!K) return;
-    const g = this.grid, Nx = g.Nx, Ny = g.Ny, Nz = g.Nz, sy = Nx, sz = Nx * Ny;
+     const g = this.grid, Nx = g.Nx, Ny = g.Ny, Nz = g.Nz, sy = Nx, sz = Nx * Ny, per = this.periodicY;
     const u = this.u, v = this.v, w = this.w, solid = this.solid, zsT = this.zsT, T = this.tracers, O = this.tracerTmp;
     const ax = dt / g.hx, ay = dt / g.hy, az = dt / g.hz;
     for (let k = 0; k < Nz; k++) for (let j = 0; j < Ny; j++) {
@@ -133,8 +170,25 @@ export class CpuSolver {
         const x = i + 0.5, y = j + 0.5, z = k + 0.5;
         const xm = x - 0.5 * ax * u[n], ym = y - 0.5 * ay * v[n], zm = z - 0.5 * az * w[n];
         const um = this.sample(u, xm, ym, zm, zsT, 1, false), vm = this.sample(v, xm, ym, zm, zsT, -1, false), wm = this.sample(w, xm, ym, zm, -1, 1, false);
-        const xb = x - ax * um, yb = y - ay * vm, zb = z - az * wm;
-        for (let c = 0; c < K; c++) O[c][n] = this.sample(T[c], xb, yb, zb, 1, 1, false);
+         // Resolve the trilinear stencil of the back-traced point once; all K channels share it (was K full samples per cell).
+         // Scalars use zero-gradient ghosts (sign +1), so clamping to the outermost cell centre reproduces sample()'s result.
+         let fx = x - ax * um - 0.5, fy = y - ay * vm - 0.5, fz = z - az * wm - 0.5;
+         if (fx < 0) fx = 0; else if (fx > Nx - 1) fx = Nx - 1;
+         if (fz < 0) fz = 0; else if (fz > Nz - 1) fz = Nz - 1;
+         let i0 = Math.floor(fx); if (i0 > Nx - 2) i0 = Nx - 2;
+         let k0 = Math.floor(fz); if (k0 > Nz - 2) k0 = Nz - 2;
+         const tx = fx - i0, tz = fz - k0;
+         let ja, jb, ty;
+         if (per) { const j0 = Math.floor(fy); ty = fy - j0; ja = ((j0 % Ny) + Ny) % Ny; jb = ja === Ny - 1 ? 0 : ja + 1; }
+         else { if (fy < 0) fy = 0; else if (fy > Ny - 1) fy = Ny - 1; let j0 = Math.floor(fy); if (j0 > Ny - 2) j0 = Ny - 2; ty = fy - j0; ja = j0; jb = j0 + 1; }
+         const b00 = i0 + ja * sy + k0 * sz, b10 = i0 + jb * sy + k0 * sz, b01 = b00 + sz, b11 = b10 + sz;
+         for (let c = 0; c < K; c++) {
+           const f = T[c];
+           const x00 = f[b00] + tx * (f[b00 + 1] - f[b00]), x10 = f[b10] + tx * (f[b10 + 1] - f[b10]);
+           const x01 = f[b01] + tx * (f[b01 + 1] - f[b01]), x11 = f[b11] + tx * (f[b11 + 1] - f[b11]);
+           const y0 = x00 + ty * (x10 - x00), y1 = x01 + ty * (x11 - x01);
+           O[c][n] = y0 + tz * (y1 - y0);
+         }
       }
     }
     this.tracers = O; this.tracerTmp = T;
@@ -194,29 +248,25 @@ export class CpuSolver {
     return mx;
   }
   _pressure() {
-    const g = this.grid, Nx = g.Nx, Ny = g.Ny, Nz = g.Nz, sy = Nx, sz = Nx * Ny, per = this.periodicY;
-    const p = this.p, rhs = this.div, solid = this.solid, om = this.sor, idt = 1 / this.dt;
+     const g = this.grid, Nx = g.Nx, Ny = g.Ny, Nz = g.Nz, sy = Nx, sz = Nx * Ny;
+     const p = this.p, rhs = this.div, nb = this.pNb, inv = this.pInv, om = this.sor, idt = 1 / this.dt, tol = this.pTol;
     const cx = 1 / (g.hx * g.hx), cy = 1 / (g.hy * g.hy), cz = 1 / (g.hz * g.hz);
-    for (let it = 0; it < this.pIters; it++) for (let color = 0; color < 2; color++) {
-      for (let k = 0; k < Nz; k++) for (let j = 0; j < Ny; j++) {
+     let it = 0;
+     for (; it < this.pIters; it++) {
+       let maxUp = 0; // largest SOR correction this sweep, fixed order ⇒ deterministic
+       for (let color = 0; color < 2; color++) for (let k = 0; k < Nz; k++) for (let j = 0; j < Ny; j++) {
         const row = j * sy + k * sz;
         for (let i = 1 + ((1 + j + k + color) & 1); i < Nx - 1; i += 2) {
-          const n = row + i; if (solid[n]) continue;
-          let s = 0, d = 0;
-          if (i > 1 && !solid[n - 1]) { s += cx * p[n - 1]; d += cx; }
-          if (i === Nx - 2) d += cx; else if (!solid[n + 1]) { s += cx * p[n + 1]; d += cx; }
-          if (per) {
-            const jm = n + (j === 0 ? (Ny - 1) * sy : -sy), jp = n + (j === Ny - 1 ? -(Ny - 1) * sy : sy);
-            if (!solid[jm]) { s += cy * p[jm]; d += cy; } if (!solid[jp]) { s += cy * p[jp]; d += cy; }
-          } else {
-            if (j > 0 && !solid[n - sy]) { s += cy * p[n - sy]; d += cy; } if (j < Ny - 1 && !solid[n + sy]) { s += cy * p[n + sy]; d += cy; }
-          }
-          if (k > 0 && !solid[n - sz]) { s += cz * p[n - sz]; d += cz; } if (k < Nz - 1 && !solid[n + sz]) { s += cz * p[n + sz]; d += cz; }
-          if (d === 0) continue;
-          const pn = (s - rhs[n] * idt) / d; p[n] += om * (pn - p[n]);
+           const n = row + i, id = inv[n]; if (id === 0) continue; // solid or fully enclosed
+           const m = 6 * n;
+           const s = cx * (p[nb[m]] + p[nb[m + 1]]) + cy * (p[nb[m + 2]] + p[nb[m + 3]]) + cz * (p[nb[m + 4]] + p[nb[m + 5]]);
+           const d = om * ((s - rhs[n] * idt) * id - p[n]); p[n] += d;
+           const ad = d < 0 ? -d : d; if (ad > maxUp) maxUp = ad;
         }
       }
+       if (maxUp < tol) { it++; break; }
     }
+     this.report.pIters = it;
   }
   _project() {
     const g = this.grid, Nx = g.Nx, Ny = g.Ny, Nz = g.Nz, sy = Nx, sz = Nx * Ny, per = this.periodicY;
@@ -260,8 +310,8 @@ export class CpuSolver {
     this._advectVel(this.u, this.v, this.w, this.ua, this.va, this.wa, dt, 1, true);
     this._advectVel(this.ua, this.va, this.wa, this.ub, this.vb, this.wb, dt, -1, false);
     const { u, v, w, ua, va, wa, ub, vb, wb, solid } = this, [mn0, mn1, mn2] = this.mn, [mx0, mx1, mx2] = this.mx;
-    for (let n = 0; n < N; n++) {
-      const i = n % Nx; if (i === 0 || i === Nx - 1 || solid[n]) continue;
+     for (let row = 0; row < N; row += Nx) for (let n = row + 1; n < row + Nx - 1; n++) { // rows are contiguous in x: no modulo per cell
+       if (solid[n]) continue;
       let c = ua[n] + 0.5 * (u[n] - ub[n]); ua[n] = c < mn0[n] ? mn0[n] : c > mx0[n] ? mx0[n] : c;
       c = va[n] + 0.5 * (v[n] - vb[n]); va[n] = c < mn1[n] ? mn1[n] : c > mx1[n] ? mx1[n] : c;
       c = wa[n] + 0.5 * (w[n] - wb[n]); wa[n] = c < mn2[n] ? mn2[n] : c > mx2[n] ? mx2[n] : c;
@@ -277,7 +327,7 @@ export class CpuSolver {
     const divMax = this._divergence(this.div);
     this._curl();
     this.t += dt; this.stepCount++;
-    const r = this.report; r.t = this.t; r.divMax = divMax; r.divNorm = divMax * g.hx / this.U0; r.pIters = this.pIters;
+     const r = this.report; r.t = this.t; r.divMax = divMax; r.divNorm = divMax * g.hx / this.U0; // r.pIters is set by _pressure
     return r;
   }
   snapshot() {

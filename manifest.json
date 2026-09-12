@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-11T17:00:27.454Z",
+  "generatedAt": "2026-09-12T18:47:40.360Z",
   "counts": {
-    "lab": 19,
-    "game": 13,
+    "lab": 20,
+    "game": 14,
     "essay": 6
   },
   "entries": [
@@ -463,6 +463,26 @@
       "source": "experiments/3inline/entry.json"
     },
     {
+      "id": "chaos-garden",
+      "category": "lab",
+      "section": "featured",
+      "order": 9007199254740991,
+      "icon": "CG",
+      "title": "Chaos Garden",
+      "href": "index.html",
+      "readme": "README.md",
+      "pitch": "An in-browser, gamified fluid dynamics simulation",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "physics/chaos-garden"
+      },
+      "dir": "physics/chaos-garden",
+      "source": "physics/chaos-garden/entry.json"
+    },
+    {
       "id": "arcade-of-life",
       "category": "game",
       "section": "games",
@@ -504,7 +524,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/0x800",
         "path": "games/0x800",
-        "commit": "2eb572996e1808b0c1a563bbeaea44a56e4292b0",
+        "commit": "dc4e1af507fee90830632a2381bee3f5aa4f9d23",
         "branch": "main",
         "submodule": true
       },
@@ -529,7 +549,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/bridges",
         "path": "games/bridges",
-        "commit": "5929a55aa8ce2fed08424a86c3856d2e00b07462",
+        "commit": "9b877b212109dcaec7c82cd764e5584f31eb1c32",
         "branch": "main",
         "submodule": true
       },
@@ -633,6 +653,30 @@
       "source": "games/arithmatic-dynamics/entry.json"
     },
     {
+      "id": "marching-orders",
+      "category": "game",
+      "section": "games",
+      "order": 5,
+      "icon": "MO",
+      "title": "Marching Orders",
+      "href": "index.html",
+      "readme": "README.md",
+      "launchLabel": "Open Marching Orders",
+      "pitch": "A Lemmings-inspired voxel siege game where you control troops that march, turn, step, and fall to reach objectives. Plan your strategy with signs, crates, and various troop types to overcome obstacles and achieve victory.",
+      "repo": {
+        "url": "https://github.com/Simiacryptus/marching-orders",
+        "remote": "https://github.com/Simiacryptus/marching-orders.git",
+        "host": "github.com",
+        "slug": "Simiacryptus/marching-orders",
+        "path": "games/marching-orders",
+        "commit": "8be9f9ab5932ddac631baa1cedfdedf0e69feaff",
+        "branch": "main",
+        "submodule": true
+      },
+      "dir": "games/marching-orders",
+      "source": "games/marching-orders/entry.json"
+    },
+    {
       "id": "number-crush",
       "category": "game",
       "section": "games",
@@ -650,7 +694,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/number-crush",
         "path": "games/number-crush",
-        "commit": "91dfb15ddbfdd0d7a77665f1aac7a0ddd0426fac",
+        "commit": "f6ec2399fb17c70fcf0530b10ae14988a6db8554",
         "branch": "main",
         "submodule": true
       },
@@ -675,7 +719,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/madame-claude",
         "path": "games/madame-claude",
-        "commit": "21375a238264c2d7ce8d231cfc2ccbf2d624f0be",
+        "commit": "4c964fd878fb078e24911b8622fb9345356a131c",
         "branch": "main",
         "submodule": true
       },
@@ -700,7 +744,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/mineminer",
         "path": "games/mineminer",
-        "commit": "2d03480105a9e29b12d31f5b76b53c64b3f9123e",
+        "commit": "2c0037e5ff0ffa33e5634eed6125b88f968834bc",
         "branch": "main",
         "submodule": true
       },
@@ -749,7 +793,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/squirrely",
         "path": "games/squirrely",
-        "commit": "606a9138ea88946b3a6cc46d1e029dc2552c3deb",
+        "commit": "fb05bf03a19598651a2e6d1527d6e81044f9c97d",
         "branch": "main",
         "submodule": true
       },
@@ -774,7 +818,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/troggle",
         "path": "games/troggle",
-        "commit": "eb3cb0e3c8ea417dbe8a843b872b7ab9f5e251df",
+        "commit": "11d6cd2900c92128c9f0ef4d8d2329fb9815c08b",
         "branch": "main",
         "submodule": true
       },

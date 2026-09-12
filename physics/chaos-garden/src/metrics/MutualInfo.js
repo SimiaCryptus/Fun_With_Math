@@ -2,13 +2,15 @@
 export class MutualInfo {
   constructor(K) { this.K = K; this.joint = new Float64Array(K * K); this.forget = 0.998; }
   reset() { this.joint.fill(0); }
-  accumulate(solver) {
+   /** `steps` > 1 folds a batch of identical-state ticks into one update (asynchronous backends). */
+   accumulate(solver, steps = 1) {
     const K = this.K; if (!K) return;
     const g = solver.grid, Nx = g.Nx, Ny = g.Ny, i = Nx - 2, sy = Nx, sz = Nx * Ny, J = this.joint;
-    for (let n = 0; n < J.length; n++) J[n] *= this.forget;
+     const f = steps === 1 ? this.forget : Math.pow(this.forget, steps);
+     for (let n = 0; n < J.length; n++) J[n] *= f;
     for (let k = 0; k < g.Nz; k++) for (let j = 0; j < Ny; j++) {
       const idx = i + j * sy + k * sz; if (solver.solid[idx]) continue;
-      const flux = solver.u[idx]; if (flux <= 0) continue;
+       const flux = solver.u[idx] * steps; if (flux <= 0) continue;
       const o = Math.floor(j * K / Ny);
       for (let c = 0; c < K; c++) J[c * K + o] += solver.tracers[c][idx] * flux;
     }

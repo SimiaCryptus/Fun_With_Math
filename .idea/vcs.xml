@@ -14,6 +14,7 @@
     <mapping directory="$PROJECT_DIR$/games/arithmatic-dynamics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/bridges" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/madame-claude" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/games/marching-orders" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/mineminer" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/number-crush" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/physical-visualizer" vcs="Git" />

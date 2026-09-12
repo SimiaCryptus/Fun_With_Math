@@ -7,6 +7,7 @@
  * @property {'noslip'|'freeslip'} walls
  * @property {number} seed     uint32
  * @property {'auto'|'A'|'B'|'C'|'D'} tier
+  * @property {'auto'|'cpu'|'webgpu'} backend
  * @property {boolean} twin    enable Lyapunov twin
  * @property {number} inkBudget solid-fraction cap
  * @property {number} perturb  inflow perturbation amplitude
@@ -18,13 +19,14 @@ export const SCHEMA = {
   spanwise:  { type: 'enum', values: ['periodic', 'freeslip'], default: 'periodic', label: 'Spanwise y± boundary' },
   walls:     { type: 'enum', values: ['noslip', 'freeslip'], default: 'noslip', label: 'Wall z± boundary' },
   seed:      { type: 'number', min: 0, max: 4294967295, default: 1337, step: 1, integer: true, label: 'Run seed' },
-  tier:      { type: 'enum', values: ['auto', 'A', 'B', 'C', 'D'], default: 'auto', label: 'Quality tier' },
+   tier:      { type: 'enum', values: ['auto', 'G', 'A', 'B', 'C', 'D'], default: 'auto', label: 'Quality tier' },
+   backend:   { type: 'enum', values: ['auto', 'cpu', 'webgpu'], default: 'auto', label: 'Compute backend' },
   twin:      { type: 'boolean', default: true, label: 'Lyapunov twin solver' },
   inkBudget: { type: 'number', min: 0.02, max: 0.5, default: 0.22, step: 0.01, label: 'Ink budget (solid fraction cap)' },
   perturb:   { type: 'number', min: 0, max: 0.1, default: 0.01, step: 0.001, label: 'Inflow perturbation amplitude' },
 };
 /** Short keys used by HashCodec to keep URL fragments compact. */
-export const SHORT_KEYS = { H: 'H', Re: 'R', inflow: 'i', spanwise: 's', walls: 'w', seed: 'd', tier: 't', twin: 'T', inkBudget: 'b', perturb: 'p' };
+export const SHORT_KEYS = { H: 'H', Re: 'R', inflow: 'i', spanwise: 's', walls: 'w', seed: 'd', tier: 't', backend: 'g', twin: 'T', inkBudget: 'b', perturb: 'p' };
 
 export function defaults() { const d = {}; for (const k in SCHEMA) d[k] = SCHEMA[k].default; return d; }
 
