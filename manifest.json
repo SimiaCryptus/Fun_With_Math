@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-11T13:37:32.536Z",
+  "generatedAt": "2026-09-11T17:00:27.454Z",
   "counts": {
     "lab": 19,
     "game": 13,
@@ -495,6 +495,7 @@
       "title": "0x800",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_0x800.mp4",
       "launchLabel": "Play 0x800",
       "pitch": "It's 2048, except the board is a hexagon made of hexagons, tiles slide in six directions, and every value is written in base 16. No build step, no dependencies, works offline — build 0x800 (2048) to win.",
       "repo": {
@@ -519,6 +520,7 @@
       "title": "Bridges",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/Demo_Bridges.mp4",
       "launchLabel": "Play bridges",
       "pitch": "A generalized version of the classic game 'Hex' using a variety of tesselations and board sizes. The goal is to connect the two opposite sides of the board with a continuous path of your pieces.",
       "repo": {
@@ -527,7 +529,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/bridges",
         "path": "games/bridges",
-        "commit": "bea67a64b1b19fdafc30864627010f32537b88e5",
+        "commit": "5929a55aa8ce2fed08424a86c3856d2e00b07462",
         "branch": "main",
         "submodule": true
       },
@@ -639,6 +641,7 @@
       "title": "Number Crush",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_number_crush.mp4",
       "launchLabel": "Open Number Crush",
       "pitch": "A match-and-clear puzzle game that swaps color-matching for arithmetic. Draw connected lines across a hexagonal grid of numbered tiles to satisfy the level's rule — a target sum, a shared factor, a consecutive run, or matching values. Tiles clear and cascade into combos, the board reshuffles rather than deadlocking, and it's colorblind-friendly by design since the information lives in the digits.",
       "repo": {
@@ -663,6 +666,7 @@
       "title": "Madame Claude",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_Madame_Claude.mp4",
       "launchLabel": "Open Madame Claude",
       "pitch": "An agentic fortune teller (bring your own Anthropic API Key)",
       "repo": {
@@ -671,7 +675,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/madame-claude",
         "path": "games/madame-claude",
-        "commit": "62cf625d10bf28bae8615aadfb2a64194ebce4e3",
+        "commit": "21375a238264c2d7ce8d231cfc2ccbf2d624f0be",
         "branch": "main",
         "submodule": true
       },
@@ -687,6 +691,7 @@
       "title": "MineMiner",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_mineminer.mp4",
       "launchLabel": "Open MineMiner",
       "pitch": "A Minecraft-inspired implementation of Minesweeper extended into 3D.",
       "repo": {
@@ -695,7 +700,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/mineminer",
         "path": "games/mineminer",
-        "commit": "1291c4c4472a3bbee558296345b7a3aa9e4e7076",
+        "commit": "2d03480105a9e29b12d31f5b76b53c64b3f9123e",
         "branch": "main",
         "submodule": true
       },
@@ -735,6 +740,7 @@
       "title": "Squirrely",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_squirrely.mp4",
       "launchLabel": "Open Squirrely",
       "pitch": "A game about crossing the highway and filling tree hollows, with reactive personality-based traffic.",
       "repo": {
@@ -743,7 +749,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/squirrely",
         "path": "games/squirrely",
-        "commit": "b37acc0e7acca37de5e775f827856340182a0a21",
+        "commit": "606a9138ea88946b3a6cc46d1e029dc2552c3deb",
         "branch": "main",
         "submodule": true
       },
@@ -759,6 +765,7 @@
       "title": "Troggle",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_troggle.mp4",
       "launchLabel": "Open Troggle",
       "pitch": "Tridimensional Boggle: Find words in a 3D grid of letters. The longer the word, the more points you score!",
       "repo": {
@@ -767,7 +774,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/troggle",
         "path": "games/troggle",
-        "commit": "bc8f73e7b8e58c1a53328829af50f6847da218b3",
+        "commit": "eb3cb0e3c8ea417dbe8a843b872b7ab9f5e251df",
         "branch": "main",
         "submodule": true
       },

@@ -40,7 +40,7 @@ const ig = ignore().add([
   '.pnpm/**',
   'public/**',
   '.lake/**',
-  'videos/**',
+  // 'videos/**',
   'docs/**',
   'scripts/**',
   'package.json',

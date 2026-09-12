@@ -1,5 +1,5 @@
 {
-  "lastUpdated" : "2026-09-10T21:20:17.136039461Z",
+  "lastUpdated" : "2026-09-12T00:29:50.449045968Z",
   "tasks" : {
     "quadratics/pentagon/docs/analysis.theory_graph.json" : {
       "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
@@ -147,6 +147,13 @@
       "sessionId" : "U-20260910-0cceRH8M",
       "startedAt" : "2026-09-10T21:19:48.942481381Z",
       "completedAt" : "2026-09-10T21:20:17.136039461Z"
+    },
+    "games/marching-orders/README_REWRITE.md" : {
+      "target" : "games/marching-orders/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260911-b7ZnsHEl",
+      "startedAt" : "2026-09-12T00:29:21.604532620Z",
+      "completedAt" : "2026-09-12T00:29:50.449045968Z"
     }
   }
 }

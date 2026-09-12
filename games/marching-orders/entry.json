@@ -1,0 +1,13 @@
+{
+  "id": "marching-orders",
+  "category": "game",
+  "section": "games",
+  "order": 5,
+  "icon": "MO",
+  "title": "Marching Orders",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open Marching Orders",
+  "video": "/videos/demo_marching_orders.mp4",
+  "pitch": "A Lemmings-inspired voxel siege game where you control troops that march, turn, step, and fall to reach objectives. Plan your strategy with signs, crates, and various troop types to overcome obstacles and achieve victory."
+}
