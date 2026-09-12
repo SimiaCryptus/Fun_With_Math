@@ -147,3 +147,7 @@
 	path = games/troggle
 	url = https://github.com/Simiacryptus/troggle.git
 	branch = main
+[submodule "games/marching-orders"]
+	path = games/marching-orders
+	url = https://github.com/Simiacryptus/marching-orders.git
+	branch = main
