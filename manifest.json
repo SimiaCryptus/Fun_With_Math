@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-13T14:02:19.550Z",
+  "generatedAt": "2026-09-13T15:34:31.930Z",
   "counts": {
     "lab": 20,
     "game": 14,
@@ -479,7 +479,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/chaos-garden",
         "path": "physics/chaos-garden",
-        "commit": "becf8e7fefee067fa789ffdd44c1746ae66420af",
+        "commit": "ce6b9692c39cf11dcd25c47130d02b66c6d2acde",
         "branch": "main",
         "submodule": true
       },
@@ -673,7 +673,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/marching-orders",
         "path": "games/marching-orders",
-        "commit": "bbb5150d915d1bedcc313cdae3575b67e3520956",
+        "commit": "31e1601b4b1d3d2c1c2ba14b66aac945ecd35bd3",
         "branch": "main",
         "submodule": true
       },
