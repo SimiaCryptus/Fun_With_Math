@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-13T00:17:42.574Z",
+  "generatedAt": "2026-09-13T14:02:19.550Z",
   "counts": {
     "lab": 20,
     "game": 14,
@@ -471,6 +471,7 @@
       "title": "Chaos Garden",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/ns_flow_demo.mp4",
       "pitch": "An in-browser, gamified fluid dynamics simulation",
       "repo": {
         "url": "https://github.com/Simiacryptus/chaos-garden",
@@ -478,7 +479,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/chaos-garden",
         "path": "physics/chaos-garden",
-        "commit": "13d9c83b581987f4ecd888e782ed6b2196c33eae",
+        "commit": "becf8e7fefee067fa789ffdd44c1746ae66420af",
         "branch": "main",
         "submodule": true
       },
@@ -672,7 +673,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/marching-orders",
         "path": "games/marching-orders",
-        "commit": "30ebf3ae19c51b50dcdcb446f4eb9070e19bb5ae",
+        "commit": "bbb5150d915d1bedcc313cdae3575b67e3520956",
         "branch": "main",
         "submodule": true
       },
