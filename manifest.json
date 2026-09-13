@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-12T18:47:40.360Z",
+  "generatedAt": "2026-09-13T00:17:42.574Z",
   "counts": {
     "lab": 20,
     "game": 14,
@@ -473,11 +473,14 @@
       "readme": "README.md",
       "pitch": "An in-browser, gamified fluid dynamics simulation",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/chaos-garden",
+        "remote": "https://github.com/Simiacryptus/chaos-garden.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "physics/chaos-garden"
+        "slug": "Simiacryptus/chaos-garden",
+        "path": "physics/chaos-garden",
+        "commit": "13d9c83b581987f4ecd888e782ed6b2196c33eae",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "physics/chaos-garden",
       "source": "physics/chaos-garden/entry.json"
@@ -669,7 +672,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/marching-orders",
         "path": "games/marching-orders",
-        "commit": "8be9f9ab5932ddac631baa1cedfdedf0e69feaff",
+        "commit": "30ebf3ae19c51b50dcdcb446f4eb9070e19bb5ae",
         "branch": "main",
         "submodule": true
       },
