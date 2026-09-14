@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────
-       Mathematical Explorations — Home page styles
+        Cognotik Games — Home page styles
        Layered atmosphere: animated aurora + grid overlay + canvas
        particles, glassmorphism panels, refined typography.
        ───────────────────────────────────────────────────────────── */
@@ -1173,4 +1173,56 @@ html {
   .back-to-top {
     transition: none;
   }
+}
+/* ─────────────────────────────────────────────────────────────
+      Games-only build adjustments
+      ───────────────────────────────────────────────────────────── */
+/* With a single category the tab strip is noise; collapse it when the
+    site config asked for it, or when only one tab was rendered. */
+body[data-single-category] .cat-tabs,
+.cat-tabs:has(> *:only-child) {
+   display: none;
+}
+/* "Surprise me" is a <button> sitting among <a class="nav-link"> items —
+    strip the native chrome so it matches its neighbours exactly. */
+.nav-random {
+   background: none;
+   border: none;
+   padding: 0;
+   font: inherit;
+   color: var(--text-muted);
+   cursor: pointer;
+   transition: color 0.2s ease;
+}
+.nav-random:hover,
+.nav-random:focus-visible {
+   color: var(--text);
+}
+.nav-random .arrow {
+   display: inline-block;
+   transition: transform 0.25s ease;
+}
+.nav-random:hover .arrow {
+   transform: translateX(3px);
+}
+/* The hero is short now that there is no research preamble. */
+.hero-compact {
+   padding: 3.5rem 1.5rem 2rem;
+}
+.hero-hint {
+   color: var(--text-muted);
+   font-family: var(--font-mono);
+   font-size: 0.75rem;
+   letter-spacing: 0.08em;
+   margin-top: 1.25rem;
+   opacity: 0.7;
+}
+.hero-hint kbd {
+   font-family: var(--font-mono);
+   font-size: 0.72rem;
+   padding: 0.1em 0.4em;
+   border: 1px solid rgba(255, 255, 255, 0.14);
+   border-radius: 4px;
+   background: rgba(255, 255, 255, 0.05);
+   color: var(--text);
 }

@@ -1,58 +1,10 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-14T13:49:44.483Z",
+  "generatedAt": "2026-09-14T13:56:30.538Z",
   "counts": {
-    "lab": 2,
     "game": 14
   },
   "entries": [
-    {
-      "id": "static-secrets",
-      "category": "lab",
-      "section": "featured",
-      "order": 10,
-      "icon": "🔒",
-      "title": "Static Secrets",
-      "href": "index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
-      "readme": "README.md",
-      "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key.",
-      "repo": {
-        "url": "https://github.com/Simiacryptus/static-secrets",
-        "remote": "https://github.com/Simiacryptus/static-secrets.git",
-        "host": "github.com",
-        "slug": "Simiacryptus/static-secrets",
-        "path": "tools/static-secrets",
-        "commit": "01b7523b91c1e9d50ffeed03f6b29640e3058cd1",
-        "branch": "main",
-        "submodule": true
-      },
-      "dir": "tools/static-secrets",
-      "source": "tools/static-secrets/entry.json"
-    },
-    {
-      "id": "chromatic",
-      "category": "lab",
-      "section": "featured",
-      "order": 15,
-      "icon": "CH",
-      "title": "Chromatic — OKLab vs Naive HSL",
-      "href": "index.html",
-      "readme": "README.md",
-      "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
-      "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem.",
-      "repo": {
-        "url": "https://github.com/Simiacryptus/chromatic",
-        "remote": "https://github.com/Simiacryptus/chromatic.git",
-        "host": "github.com",
-        "slug": "Simiacryptus/chromatic",
-        "path": "tools/chromatic",
-        "commit": "7bddd29f43f0766c94e6ce64e136f2d503683bc8",
-        "branch": "main",
-        "submodule": true
-      },
-      "dir": "tools/chromatic",
-      "source": "tools/chromatic/entry.json"
-    },
     {
       "id": "arcade-of-life",
       "category": "game",

@@ -10,6 +10,6 @@ npm run build:seo:prod
 node scripts/s3-sync.cjs --prune
 
 aws cloudfront create-invalidation \
-  --distribution-id E2V4URD2KDRZ6N \
+  --distribution-id E3GDFNEREGH448 \
   --paths "/*"
 popd

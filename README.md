@@ -5,7 +5,7 @@ installation required. Each lab is a small piece of in-browser mathematical rese
 visualization; most began as a question I'd carried for years — sometimes decades — that simply never had the
 tooling to be finished and shared.
 
-🔗 **Live site:** [math.cognotik.com](https://math.cognotik.com/)
+🔗 **Live site:** [games.cognotik.com](https://games.cognotik.com/)
 
 ---
 

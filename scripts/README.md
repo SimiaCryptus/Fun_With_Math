@@ -36,7 +36,7 @@ Options:
 ```bash
 node scripts/generate-seo-pages.js \
   --out companion \
-  --base https://math.cognotik.com \
+  --base https://games.cognotik.com \
   --site-name "Mathematical Explorations" \
   --author "SimiaCryptus"
 ```
@@ -44,7 +44,7 @@ node scripts/generate-seo-pages.js \
 | Flag          | Default                     | Description                      |
 | ------------- | --------------------------- | -------------------------------- |
 | `--out`       | `companion`                 | Output folder (relative to root) |
-| `--base`      | `https://math.cognotik.com` | Canonical base URL               |
+| `--base`      | `https://games.cognotik.com` | Canonical base URL               |
 | `--root`      | `process.cwd()`             | Project root                     |
 | `--site-name` | `Mathematical Explorations` | Used in titles / OG / JSON-LD    |
 | `--author`    | `SimiaCryptus`              | `author` meta + JSON-LD author   |

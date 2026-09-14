@@ -14,7 +14,7 @@
  *   node scripts/s3-sync.cjs [--prune]
  *
  * Env:
- *   DEPLOY_BUCKET - override target bucket (default: math.cognotik.com)
+ *   DEPLOY_BUCKET - override target bucket (default: games.cognotik.com)
  */
 
 const fs = require('fs');
@@ -31,7 +31,7 @@ const {
 } = require('@aws-sdk/client-s3');
 
 const ROOT = path.resolve(__dirname, '..');
-const BUCKET = process.env.DEPLOY_BUCKET || 'math.cognotik.com';
+const BUCKET = process.env.DEPLOY_BUCKET || 'games.cognotik.com';
 const PRUNE = process.argv.includes('--prune');
 
 const ig = ignore().add([

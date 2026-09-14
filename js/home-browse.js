@@ -682,7 +682,7 @@
    * ---------------------------------------------------------- */
 
   function emitItemList() {
-    const base = 'https://math.cognotik.com/';
+    const base = 'https://games.cognotik.com/';
     const script = document.createElement('script');
     script.type = 'application/ld+json';
     script.textContent = JSON.stringify({

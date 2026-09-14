@@ -20,7 +20,7 @@ const baseArgIdx = process.argv.indexOf('--base');
 const BASE_URL = (
   baseArgIdx !== -1 && process.argv[baseArgIdx + 1]
     ? process.argv[baseArgIdx + 1]
-    : 'https://math.cognotik.com'
+    : 'https://games.cognotik.com'
 ).replace(/\/+$/, '');
 
 // Directories we never want to crawl.

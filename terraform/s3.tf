@@ -63,7 +63,7 @@
     resource "aws_s3_object" "index" {
       bucket       = aws_s3_bucket.website.id
       key          = "index.html"
-      content      = "<html><head><title>math.cognotik.com</title></head><body><h1>Welcome to math.cognotik.com</h1></body></html>"
+      content      = "<html><head><title>games.cognotik.com</title></head><body><h1>Welcome to games.cognotik.com</h1></body></html>"
       content_type = "text/html"
     }
 

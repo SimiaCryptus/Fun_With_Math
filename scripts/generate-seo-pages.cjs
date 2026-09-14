@@ -17,7 +17,7 @@
 
      Usage:
        node scripts/generate-seo-pages.js
-       node scripts/generate-seo-pages.js --out site/seo --base https://math.cognotik.com
+       node scripts/generate-seo-pages.js --out site/seo --base https://games.cognotik.com
 
      Dependencies (devDependencies):
        marked            — Markdown → HTML
@@ -39,7 +39,7 @@
     const args = {
       root: process.cwd(),
       out: 'companion',
-      base: 'https://math.cognotik.com',
+      base: 'https://games.cognotik.com',
       siteName: 'Mathematical Explorations',
       author: 'SimiaCryptus',
     };
@@ -66,7 +66,7 @@
   Options:
     --root <dir>        Project root (default: cwd)
     --out <dir>         Output folder, relative to root (default: companion)
-    --base <url>        Canonical base URL (default: https://math.cognotik.com)
+    --base <url>        Canonical base URL (default: https://games.cognotik.com)
     --site-name <str>   Site name for OG / titles
     --author <str>      Author meta value
     -h, --help          Show this help`);

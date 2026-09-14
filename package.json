@@ -33,7 +33,7 @@
     "prebuild": "npm run format",
     "build": "npm run assets",
     "build:seo": "node scripts/generate-seo-pages.cjs",
-    "build:seo:prod": "node scripts/generate-seo-pages.cjs --out companion --base https://math.cognotik.com"
+    "build:seo:prod": "node scripts/generate-seo-pages.cjs --out companion --base https://games.cognotik.com"
   },
   "author": "SimiaCryptus",
   "dependencies": {

@@ -10,14 +10,14 @@
     <meta name="author" content="SimiaCryptus" />
     <meta
       name="keywords"
-      content="mathematical visualization, interactive math, computational mathematics, pentagon lattice, irrational lattice, cellular automata, knot theory, geometric entropy, fractal learning, quasi-Newton optimization, number theory, in-browser math research"
+       content="browser games, math games, puzzle games, free online games, no install games, HTML5 games, javascript games, logic puzzles, strategy games, arcade, indie games"
     />
     <meta
       name="description"
-      content="Mathematical Explorations — original mathematical experiments and visualizations. Multi-sheeted polygon covers, algebraic noise lattices, causal knot metrics, and other browser-native math research."
+       content="Cognotik Games — a small arcade of original browser games. Puzzles, strategy, and arcade toys built on mathematical ideas. No installs, no accounts; everything runs in your browser."
     />
-    <title>Mathematical Explorations</title>
-    <link rel="canonical" href="https://math.cognotik.com/" />
+     <title>Cognotik Games — Original Browser Games</title>
+    <link rel="canonical" href="https://games.cognotik.com/" />
     <meta name="theme-color" content="#0a0a14" />
     <meta name="color-scheme" content="dark light" />
     <!-- Favicons / site icon -->
@@ -28,30 +28,30 @@
     <link rel="shortcut icon" href="icon.png" />
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Mathematical Explorations" />
+     <meta property="og:site_name" content="Cognotik Games" />
     <meta
       property="og:title"
-      content="Mathematical Explorations — Interactive Math Research in the Browser"
+       content="Cognotik Games — Original Browser Games"
     />
     <meta
       property="og:description"
-      content="Original interactive experiments in geometry, number theory, and dynamical systems. Multi-sheeted polygon covers, algebraic noise lattices, causal knot metrics, and more — runs entirely in your browser."
+       content="A small arcade of original browser games — puzzles, strategy, and arcade toys grown out of mathematical ideas. Pick one and play; it all runs in your browser."
     />
-    <meta property="og:url" content="https://math.cognotik.com/" />
-    <meta property="og:image" content="https://math.cognotik.com/og-image.png" />
+    <meta property="og:url" content="https://games.cognotik.com/" />
+    <meta property="og:image" content="https://games.cognotik.com/og-image.png" />
     <meta
       property="og:image:alt"
-      content="Mathematical Explorations — interactive mathematical visualizations"
+       content="Cognotik Games — original browser games"
     />
     <meta property="og:locale" content="en_US" />
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Mathematical Explorations — Interactive Math Research" />
+     <meta name="twitter:title" content="Cognotik Games — Original Browser Games" />
     <meta
       name="twitter:description"
-      content="Original interactive experiments in geometry, number theory, and dynamical systems — each lab is a small piece of in-browser mathematical research."
+       content="A small arcade of original browser games — puzzles, strategy, and arcade toys. No installs, no accounts, just play."
     />
-    <meta name="twitter:image" content="https://math.cognotik.com/og-image.png" />
+    <meta name="twitter:image" content="https://games.cognotik.com/og-image.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -66,14 +66,21 @@
     <!-- Prime the manifest fetch as early as possible -->
     <link rel="preload" href="manifest.json" as="fetch" crossorigin="anonymous" />
     <script src="/lib/marked.min.js"></script>
-    <!-- MathJax configuration must be set before the library loads -->
-    <script src="js/index.js"></script>
-    <script
-      id="MathJax-script"
-      async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+     <script src="js/index.js"></script>
+     <!--
+       Games-only build. `home-browse.js` reads this before rendering and
+       restricts the manifest-driven index to game entries (any entry whose
+       category is not in `categories` is dropped, and the category tab strip
+       collapses to a single implicit group).
+     -->
+     <script>
+       window.SITE_CONFIG = {
+         siteName: 'Cognotik Games',
+         categories: ['game'],
+         defaultCategory: 'game',
+         hideCategoryTabs: true,
+       };
+     </script>
     <!-- Structured data: WebSite + Organization; the ItemList is emitted at
          runtime by js/home-browse.js straight from manifest.json. -->
     <script type="application/ld+json">
@@ -82,35 +89,35 @@
         "@graph": [
           {
             "@type": "WebSite",
-            "@id": "https://math.cognotik.com/#website",
-            "url": "https://math.cognotik.com/",
-            "name": "Mathematical Explorations",
-            "description": "Original interactive experiments in geometry, number theory, and dynamical systems — in-browser mathematical research.",
+            "@id": "https://games.cognotik.com/#website",
+            "url": "https://games.cognotik.com/",
+             "name": "Cognotik Games",
+             "description": "A small arcade of original browser games — puzzles, strategy, and arcade toys that run entirely in your browser.",
             "inLanguage": "en",
             "potentialAction": {
               "@type": "SearchAction",
               "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": "https://math.cognotik.com/?q={search_term_string}"
+                "urlTemplate": "https://games.cognotik.com/?q={search_term_string}"
               },
               "query-input": "required name=search_term_string"
             },
-            "publisher": { "@id": "https://math.cognotik.com/#org" }
+            "publisher": { "@id": "https://games.cognotik.com/#org" }
           },
           {
             "@type": "Organization",
-            "@id": "https://math.cognotik.com/#org",
-            "name": "Mathematical Explorations",
-            "url": "https://math.cognotik.com/",
+            "@id": "https://games.cognotik.com/#org",
+             "name": "Cognotik Games",
+            "url": "https://games.cognotik.com/",
             "sameAs": ["https://github.com/SimiaCryptus/Fun_With_Math", "https://aol.cognotik.com/"]
           },
           {
             "@type": "CollectionPage",
-            "@id": "https://math.cognotik.com/#webpage",
-            "url": "https://math.cognotik.com/",
-            "name": "Mathematical Explorations",
-            "isPartOf": { "@id": "https://math.cognotik.com/#website" },
-            "about": "Interactive mathematical experiments and visualizations"
+            "@id": "https://games.cognotik.com/#webpage",
+            "url": "https://games.cognotik.com/",
+             "name": "Cognotik Games",
+            "isPartOf": { "@id": "https://games.cognotik.com/#website" },
+             "about": "Original browser games: puzzles, strategy, and arcade toys"
           }
         ]
       }
@@ -128,38 +135,20 @@
     <nav>
       <!-- primary navigation -->
       <a class="brand" href="index.html">
-        <span class="brand-glyph">∑</span>
-        <span class="brand-text">Mathematical Explorations</span>
+         <span class="brand-glyph">⚄</span>
+         <span class="brand-text">Cognotik Games</span>
       </a>
       <span class="spacer"></span>
-      <a class="nav-link nav-section-link" href="#browse" data-jump-cat="lab">Labs</a>
-      <a class="nav-link nav-section-link" href="#browse" data-jump-cat="game">Games</a>
-      <a class="nav-link nav-section-link" href="#browse" data-jump-cat="essay">Essays</a>
-      <a
-        class="nav-link"
-        href="glossary/"
-        target="_blank"
-        rel="noopener"
-        aria-label="Visit the Mathematical Explorations Glossary — companion reference for concepts and notation used in the labs"
-        >Glossary <span class="arrow">↗</span></a
-      >
-      <a
-        class="nav-link"
-        href="analysis/theory/index.html"
-        target="_blank"
-        rel="noopener"
-        aria-label="Open the Theory Browser — analysis viewer for the underlying mathematical write-ups"
-        >Theory <span class="arrow">↗</span></a
-      >
-      <a class="nav-link" href="analysis/knowledge/index.html" target="_blank" rel="noopener"
-        >Knowledge <span class="arrow">↗</span></a
-      >
+       <a class="nav-link nav-section-link" href="#browse" data-jump-cat="game">All games</a>
+       <button type="button" class="nav-link nav-random" id="randomGame" title="Play something random">
+         Surprise me <span class="arrow">⤳</span>
+       </button>
       <a
         class="nav-link"
         href="https://github.com/SimiaCryptus/Fun_With_Math"
         target="_blank"
         rel="noopener"
-        aria-label="View Mathematical Explorations source on GitHub"
+         aria-label="View the Cognotik Games source on GitHub"
         >GitHub <span class="arrow">↗</span></a
       >
     </nav>
@@ -167,68 +156,30 @@
     <section class="hero hero-compact">
       <div class="hero-badge">
         <span class="hero-badge-dot"></span>
-        Interactive experiments · runs entirely in the browser
+         Free to play · no installs · runs entirely in the browser
       </div>
-
-      <div
-        class="hero-embed"
-        data-pidca
-        data-pidca-controls="none"
-        data-pidca-autoplay="true"
-        data-pidca-lazy="true"
-        data-pidca-interactive="false"
-        data-pidca-status="false"
-      >
-        <script type="application/json" data-pidca-config>
-          {
-            "gridWidth": 332,
-            "gridHeight": 113,
-            "boundary": "fixed",
-            "radius": 2,
-            "neighborMetric": "sum",
-            "targetMode": "text",
-            "target": 0,
-            "textFieldText": "MATHEMATICAL\nEXPLORATIONS",
-            "textFieldFit": 95,
-            "textFieldValue": 4.2,
-            "kp": -0.22,
-            "ki": 0.01,
-            "kd": -0.27,
-            "integralMin": -5,
-            "integralMax": 5,
-            "stateMin": -1,
-            "seed": 544851,
-            "vRest": -43.5,
-            "vThreshold": -43.5,
-            "vClose": -62,
-            "kCoupling": 0.042
-          }
-        </script>
-      </div>
-      <script type="module" src="./js/embed.js"></script>
 
       <p class="hero-lede">
-        Original interactive experiments in geometry, number theory, and dynamical systems — each
-        lab a small piece of in-browser mathematical research, not a textbook visualization. Most
-        began as questions carried for years; AI-assisted tooling supplied the leverage to close the
-        loops and publish. The questions, intuitions, and results are human.
+         A small arcade of original games — puzzles, strategy boards, and arcade toys, most of them
+         grown out of a mathematical idea that turned out to be fun to play with. Nothing to install,
+         no accounts, no ads: pick one and start playing.
       </p>
 
       <p class="hero-hint"><kbd>/</kbd> to search · <kbd>Esc</kbd> to clear</p>
     </section>
 
     <!-- ── Browse: search / filter / sort ─────────────────────── -->
-    <section id="browse" class="browse" aria-label="Browse all experiments">
+     <section id="browse" class="browse" aria-label="Browse all games">
       <div class="browse-bar" id="browseBar">
         <div class="browse-row browse-row-main">
           <div class="search-field">
             <span class="search-icon" aria-hidden="true">⌕</span>
-            <label class="sr-only" for="searchInput">Search experiments</label>
+             <label class="sr-only" for="searchInput">Search games</label>
             <input
               id="searchInput"
               type="search"
               class="search-input"
-              placeholder="Search titles, topics, tags…"
+               placeholder="Search games by title, genre, tag…"
               autocomplete="off"
               spellcheck="false"
             />
@@ -253,7 +204,7 @@
               <option value="curated">Curated</option>
               <option value="az">Title A–Z</option>
               <option value="za">Title Z–A</option>
-              <option value="media">Has demo video</option>
+               <option value="media">Has gameplay video</option>
             </select>
             <div class="view-toggle" role="group" aria-label="Layout density">
               <button type="button" data-view="grid" class="view-btn" title="Gallery view">
@@ -267,14 +218,14 @@
         </div>
 
         <div class="browse-row browse-row-tags" id="tagRow" hidden>
-          <span class="tag-row-label">Topics</span>
+           <span class="tag-row-label">Genres</span>
           <div class="tag-chips" id="tagChips"></div>
           <button type="button" class="tag-more" id="tagMore" hidden>more ▾</button>
         </div>
 
         <div class="browse-row browse-row-status">
           <p class="browse-status" id="browseStatus" role="status" aria-live="polite">
-            Loading manifest…
+             Loading games…
           </p>
           <button type="button" class="reset-btn" id="resetFilters" hidden>Reset filters</button>
         </div>
@@ -286,16 +237,16 @@
 
       <div class="empty-state" id="emptyState" hidden>
         <p class="empty-glyph" aria-hidden="true">∅</p>
-        <p class="empty-title">No entries match that query.</p>
+         <p class="empty-title">No games match that query.</p>
         <p class="empty-sub">Try a broader term, or clear the active filters.</p>
         <button type="button" class="reset-btn" id="emptyReset">Reset filters</button>
       </div>
 
       <noscript>
         <p class="browse-status">
-          This index is rendered from <a href="manifest.json">manifest.json</a> and requires
-          JavaScript. The individual experiments live under <code>/experiments</code>,
-          <code>/games</code>, and <code>/essays</code>.
+           This index is rendered from <a href="manifest.json">manifest.json</a> and requires
+           JavaScript. The games themselves live under <code>/games</code> and each one has its own
+           playable page.
         </p>
       </noscript>
     </section>
@@ -310,11 +261,11 @@
         &middot; no build step, no dependencies beyond a couple of CDN-loaded libraries
       </p>
       <p style="opacity: 0.75; font-size: 0.9em; max-width: 60ch; margin: 1em auto">
-        Human insight, finished with AI-assisted tooling. A lifetime of mathematical curiosity that
-        finally had the means to be explored to its conclusion and published — not machine-generated
-        content, but human results made reachable.
+         Every game here is original — designed, tuned, and played by hand, with AI-assisted tooling
+         used the way a workshop uses power tools. No trackers, no accounts, no in-app anything:
+         your saves stay in your own browser.
       </p>
-      <p class="footer-mark">∑</p>
+       <p class="footer-mark">⚄</p>
     </footer>
     <!-- Back-to-top shortcut -->
     <button
@@ -346,5 +297,15 @@
     </div>
 
     <script src="js/home-browse.js"></script>
+     <script>
+       // "Surprise me" — jump to a random game card rendered from the manifest.
+       document.getElementById('randomGame')?.addEventListener('click', () => {
+         const links = Array.from(
+           document.querySelectorAll('#entryGroups a[data-entry-launch], #entryGroups .entry-card a[href]')
+         ).filter((a) => a.getAttribute('href') && !a.getAttribute('href').startsWith('#'));
+         if (!links.length) return;
+         window.location.href = links[Math.floor(Math.random() * links.length)].href;
+       });
+     </script>
   </body>
 </html>

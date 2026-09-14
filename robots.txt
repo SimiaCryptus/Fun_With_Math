@@ -9,4 +9,4 @@ Disallow: /package.json
 Disallow: /package-lock.json
 
 # Sitemap location
-Sitemap: https://math.cognotik.com/sitemap.xml
+Sitemap: https://games.cognotik.com/sitemap.xml

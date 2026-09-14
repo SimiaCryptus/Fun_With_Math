@@ -1,7 +1,7 @@
 variable "domain_name" {
       description = "The full domain name for the website"
       type        = string
-      default     = "math.cognotik.com"
+      default     = "games.cognotik.com"
     }
 
     variable "hosted_zone_id" {
