@@ -1,0 +1,10 @@
+{
+  "name": "3d-checkers",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npx http-server -c-1 -p 8080 .",
+    "test": "node --test tests/engine/engine.test.js"
+  }
+}

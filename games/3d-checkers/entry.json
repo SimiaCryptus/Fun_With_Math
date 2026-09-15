@@ -1,0 +1,11 @@
+{
+  "id": "3d-checkers",
+  "category": "game",
+  "section": "games",
+  "icon": "3D",
+  "title": "3D Checkers",
+  "href": "index.html",
+  "readme": "README.md",
+  "launchLabel": "Open 3D Checkers",
+  "pitch": "A 3D implementation of the classic game of Checkers."
+}
