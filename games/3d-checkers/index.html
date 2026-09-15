@@ -51,7 +51,7 @@
     </aside>
 
     <div class="hint">
-      drag: orbit · wheel: zoom · E explode · X x-ray · [ ] level · F flip · 1–5 cameras
+       drag: orbit · wheel: zoom · E explode · X x-ray · [ ] level · F flip · T theme · 1–5 cameras
     </div>
 
     <div id="view-controls">
@@ -77,6 +77,7 @@
         <button data-preset="iso">Iso</button>
         <button data-preset="side">Side</button>
       </div>
+       <button id="btn-style" title="Colours, transparency, lighting &amp; themes (T cycles themes)">Style…</button>
     </div>
 
     <div id="toast"></div>
@@ -150,6 +151,22 @@
         </div>
       </form>
     </div>
+     <div id="style" class="modal hidden">
+       <form id="style-form" class="dialog style-dialog">
+         <h2>Appearance</h2>
+         <div class="row">
+           <span>Theme</span>
+           <select name="theme"></select>
+         </div>
+         <!-- Fieldsets of colour / range / checkbox controls are generated from STYLE_FIELDS -->
+         <div id="style-groups"></div>
+         <div class="actions">
+           <button type="button" id="style-reset">Reset to theme</button>
+           <button type="button" id="style-close" class="primary">Done</button>
+         </div>
+       </form>
+     </div>
+
 
     <div id="gameover" class="modal hidden">
       <div class="dialog">

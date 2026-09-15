@@ -17,6 +17,8 @@ import { initSidePanel } from './ui/SidePanel.js';
 import { initViewControls } from './ui/ViewControls.js';
 import { toast } from './ui/Toast.js';
 import { showGameOver, confirmDialog } from './ui/Modals.js';
+import { initStylePanel } from './ui/StylePanel.js';
+import { DEFAULT_THEME } from './core/themes.js';
 
 const DEFAULTS = {
   mode: 'cpu', humanSide: 0, difficulty: 'medium', setup: 'standard',
@@ -25,6 +27,8 @@ const DEFAULTS = {
    redName: 'Red', blackName: 'Black',
    // 0-player (CPU vs CPU) autoplay
    redDifficulty: 'medium', blackDifficulty: 'medium', autoDelay: 500,
+    // appearance: preset theme name + per-setting overrides (see core/themes.js)
+    theme: DEFAULT_THEME, style: {},
 };
 
 const bus = new EventBus();
@@ -63,6 +67,15 @@ function refreshHighlights() {
   if (lastMove) highlights.setLastMove(lastMove, posOf);
 }
 function onViewChanged() { view.dirty = true; refreshHighlights(); controls.sync(); }
+/** Push a resolved style (theme + user overrides) into every renderer module. */
+function applyStyle(style) {
+   scene.setStyle(style);
+   lattice.setStyle(style);
+   pieces.setStyle(style);
+   highlights.setStyle(style);
+   view.dirty = true;
+   refreshHighlights(); // re-tint any markers / trails already on screen
+}
 
 function setExplode(target, animate = true) {
   store.set('explode', target);
@@ -196,6 +209,9 @@ new Picker(canvas, scene.camera, {
 
 // ---- UI ------------------------------------------------------------------------------
 const controls = initViewControls({ view, scene, setExplode, setFocusLevel, setXray, setGap });
+const stylePanel = initStylePanel({ store, onApply: applyStyle });
+applyStyle(stylePanel.current());
+document.getElementById('btn-style')?.addEventListener('click', () => stylePanel.show());
 const menu = initMenu({ store, onStart: (config) => { menu.canCancel = true; game.newGame(config); } });
 
 initSidePanel({
@@ -233,7 +249,13 @@ addEventListener('keydown', (e) => {
     case 'p': case 'P': game.toggleAutoplay(); break;
     case '.': game.stepMove(); break;
     case 'f': case 'F': scene.flip(); break;
-    case 'Escape': if (game.selection) game.clearSelection(); else if (menu.isOpen() && menu.canCancel) menu.hide(); else menu.show(); break;
+     case 't': case 'T': stylePanel.cycle(); break;
+     case 'Escape':
+       if (stylePanel.isOpen()) stylePanel.hide();
+       else if (game.selection) game.clearSelection();
+       else if (menu.isOpen() && menu.canCancel) menu.hide();
+       else menu.show();
+       break;
     case '1': scene.setPreset('red'); break;
     case '2': scene.setPreset('black'); break;
     case '3': scene.setPreset('top'); break;

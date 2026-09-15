@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-const COLORS = { move: new THREE.Color(0x5cff9a), capture: new THREE.Color(0xffb347), final: new THREE.Color(0xa8ffd0) };
 const LIFT = -0.3;
 const MAX_MARKERS = 256;
 
@@ -14,6 +13,14 @@ export class HighlightLayer {
   constructor(scene) {
     this.group = new THREE.Group();
     scene.add(this.group);
+    // Instance state (not module constants) so themes can recolour highlights live.
+    // Markers/lines already on screen keep their tint until the caller re-shows them.
+    this.colors = {
+      move: new THREE.Color(0x5cff9a), capture: new THREE.Color(0xffb347),
+      final: new THREE.Color(0xa8ffd0), lastMove: new THREE.Color(0x6fa8ff),
+    };
+    this.opacity = 0.9;
+
     const ring = new THREE.TorusGeometry(0.3, 0.045, 10, 32);
     ring.rotateX(Math.PI / 2);
     this.markers = new THREE.InstancedMesh(ring, new THREE.MeshBasicMaterial({ color: 0xffffff }), MAX_MARKERS);
@@ -21,15 +28,12 @@ export class HighlightLayer {
     // destinations — the lattice voxels themselves are deliberately not pickable
     // because they occlude each other far too much in the compact view.
     const pad = new THREE.CylinderGeometry(0.42, 0.42, 0.05, 32);
-    this.pads = new THREE.InstancedMesh(
-      pad,
-      new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4, depthWrite: false }),
-      MAX_MARKERS,
-    );
+    this.padMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4, depthWrite: false });
+    this.pads = new THREE.InstancedMesh(pad, this.padMaterial, MAX_MARKERS);
     this.pads.userData.cells = new Int16Array(MAX_MARKERS);
     for (let i = 0; i < MAX_MARKERS; i++) {
-      this.markers.setColorAt(i, COLORS.move);
-      this.pads.setColorAt(i, COLORS.move);
+      this.markers.setColorAt(i, this.colors.move);
+      this.pads.setColorAt(i, this.colors.move);
     }
     this.markers.count = 0;
     this.pads.count = 0;
@@ -37,6 +41,16 @@ export class HighlightLayer {
     this.lines = [];
     this.lastLine = null;
     this._m = new THREE.Matrix4();
+  }
+
+  /** Apply the highlight-related parts of a resolved style (see core/themes.js). */
+  setStyle(s) {
+    this.colors.move.set(s.moveColor);
+    this.colors.capture.set(s.captureColor);
+    this.colors.final.set(s.finalColor);
+    this.colors.lastMove.set(s.lastMoveColor);
+    this.opacity = s.highlightOpacity;
+    this.padMaterial.opacity = 0.45 * s.highlightOpacity;
   }
 
   /** Meshes the Picker may raycast against (destination pads). */
@@ -66,7 +80,7 @@ export class HighlightLayer {
         const b = posOf(c.path[i]); b.y += LIFT;
         arcPoints(a, b, pts);
       }
-      if (pts.length) this.lines.push(this.addLine(pts, COLORS[kind], 0.9));
+      if (pts.length) this.lines.push(this.addLine(pts, this.colors[kind], this.opacity));
     }
     let n = 0;
     for (const [idx, kind] of seen) {
@@ -75,8 +89,8 @@ export class HighlightLayer {
       this._m.makeTranslation(p.x, p.y, p.z);
       this.markers.setMatrixAt(n, this._m);
       this.pads.setMatrixAt(n, this._m);
-      this.markers.setColorAt(n, COLORS[kind]);
-      this.pads.setColorAt(n, COLORS[kind]);
+      this.markers.setColorAt(n, this.colors[kind]);
+      this.pads.setColorAt(n, this.colors[kind]);
       this.pads.userData.cells[n] = idx;
       n++;
     }
@@ -101,7 +115,7 @@ export class HighlightLayer {
       const b = posOf(move.path[i]); b.y += LIFT;
       arcPoints(a, b, pts);
     }
-    this.lastLine = this.addLine(pts, 0x6fa8ff, 0.6);
+    this.lastLine = this.addLine(pts, this.colors.lastMove, this.opacity * 0.67);
   }
 
   clearLastMove() {

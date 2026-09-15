@@ -259,7 +259,6 @@ Plain DOM overlay above the canvas (no framework).
   depth-cued ghosting for X-ray (`transparent`, `depthWrite: false`, sorted).
 - Background: neutral gradient room, blurred; strong contrast so the lattice reads well.
 - Cell labels (optional): small billboard text `c14` on hover / always-on.
-- Themes (stretch): Classic Wood, Glass/Neon (well suited to a translucent lattice), Marble.
 - Post-processing (toggleable): FXAA/SMAA, mild bloom for highlights.
 - Sound (optional): slide, capture thud, kinging chime, game-over; muted until first
   interaction.
@@ -383,3 +382,7 @@ three.js via import map from a CDN (no bundler):
 - Hard-mode time budget (~2s) vs reachable depth given a ~100 branching factor; should
   the budget scale with device speed?
 - Draw rule: 40 moves without capture/man-move may be too short for a 192-piece game.
+- Themes: preset library (`core/themes.js` — Midnight, Classic Wood, Glass & Neon, Frosted
+   Glass, Marble, Ivory & Ebony, Emerald Felt, High Contrast) plus per-setting overrides
+   (colours, lattice/highlight opacity, piece finish, king glow, lighting rig, exposure,
+   shadows, fog) edited live in the Appearance panel (`ui/StylePanel.js`) and persisted.

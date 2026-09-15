@@ -50,6 +50,16 @@ interesting feature — is making that interior legible:
 You play by clicking pieces and destinations, exactly as you would on a flat
 board; the software takes care of showing you what's legal, including
 mid-chain jumps that carry a piece through several levels in one turn.
+## Make it look the way you like
+The **Style…** button (or `T` to cycle) opens an appearance panel with a
+library of preset themes — Midnight, Classic Wood, Glass & Neon, Frosted
+Glass, Marble, Ivory & Ebony, Emerald Felt and a High Contrast mode — and
+every setting behind them is individually adjustable: background and cell
+colours, lattice transparency, piece colours and finish (matte to metallic),
+king glow, highlight colours, and the full lighting rig (ambient sky/ground,
+key and fill lights, exposure, shadows, depth fog). Changes apply live and
+are remembered between sessions; "Reset to theme" returns to the preset.
+
 
 ## Playing against another person or the computer
 

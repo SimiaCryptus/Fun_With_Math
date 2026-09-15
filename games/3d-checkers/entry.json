@@ -7,5 +7,6 @@
   "href": "index.html",
   "readme": "README.md",
   "launchLabel": "Open 3D Checkers",
+  "video": "/videos/demo_checkers.mp4",
   "pitch": "A 3D implementation of the classic game of Checkers."
 }

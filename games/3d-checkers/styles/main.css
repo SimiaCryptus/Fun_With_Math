@@ -81,3 +81,14 @@ select option, select optgroup { background-color: #1c2029; color: var(--fg); }
 .dialog .actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 fieldset { border: 1px solid rgba(255,255,255,.12); border-radius: 8px; margin: 8px 0; padding: 6px 12px; line-height: 1.8; }
 legend { font-size: 12px; opacity: .7; }
+/* Appearance dialog (themes + style settings) */
+.style-dialog { max-height: calc(100vh - 40px); overflow: auto; min-width: 400px; }
+.style-dialog fieldset { line-height: 1.4; }
+.style-dialog label.row { margin: 4px 0; font-size: 13px; cursor: default; }
+.style-dialog label.row > span:first-child { flex: 1; }
+.style-dialog input[type=range] { width: 150px; }
+.style-dialog input[type=color] {
+   width: 44px; height: 24px; padding: 0; border: 1px solid rgba(255,255,255,.2); border-radius: 4px;
+   background: transparent; cursor: pointer;
+}
+.style-dialog output { width: 36px; text-align: right; font-size: 11px; opacity: .7; font-variant-numeric: tabular-nums; }

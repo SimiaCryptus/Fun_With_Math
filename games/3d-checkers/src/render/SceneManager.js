@@ -17,7 +17,8 @@ export class SceneManager {
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x15181f);
-    this.scene.fog = new THREE.Fog(0x15181f, 40, 110);
+    this.fog = new THREE.Fog(0x15181f, 40, 110);
+    this.scene.fog = this.fog;
 
     this.camera = new THREE.PerspectiveCamera(42, 1, 0.1, 300);
     this.camera.position.set(...PRESETS.red);
@@ -28,16 +29,18 @@ export class SceneManager {
     this.controls.minDistance = 5;
     this.controls.maxDistance = 80;
 
-    this.scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x2a2320, 0.9));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.7);
-    sun.position.set(10, 20, 8);
-    sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
-    Object.assign(sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 60 });
-    this.scene.add(sun);
-    const fill = new THREE.DirectionalLight(0x9db4ff, 0.4);
-    fill.position.set(-8, 6, -12);
-    this.scene.add(fill);
+    // Lights are kept as fields so themes can recolour / re-weight them live.
+    this.hemi = new THREE.HemisphereLight(0xdfe8ff, 0x2a2320, 0.9);
+    this.scene.add(this.hemi);
+    this.sun = new THREE.DirectionalLight(0xffffff, 1.7);
+    this.sun.position.set(10, 20, 8);
+    this.sun.castShadow = true;
+    this.sun.shadow.mapSize.set(2048, 2048);
+    Object.assign(this.sun.shadow.camera, { left: -16, right: 16, top: 16, bottom: -16, near: 1, far: 60 });
+    this.scene.add(this.sun);
+    this.fill = new THREE.DirectionalLight(0x9db4ff, 0.4);
+    this.fill.position.set(-8, 6, -12);
+    this.scene.add(this.fill);
 
     this.updaters = new Set();
     this.presetScale = 1; // camera presets are tuned for an 8-wide board
@@ -63,6 +66,34 @@ export class SceneManager {
     this.controls.update();
     for (const fn of this.updaters) fn(dt);
     this.renderer.render(this.scene, this.camera);
+  }
+
+  /** Apply the background, fog, lighting and exposure parts of a resolved style. */
+  setStyle(s) {
+    const bg = new THREE.Color(s.background);
+    this.scene.background.copy(bg);
+    this.fog.color.copy(bg);
+    this.scene.fog = s.fog ? this.fog : null;
+
+    this.hemi.color.set(s.skyColor);
+    this.hemi.groundColor.set(s.groundColor);
+    this.hemi.intensity = s.ambientIntensity;
+    this.sun.color.set(s.sunColor);
+    this.sun.intensity = s.sunIntensity;
+    this.fill.color.set(s.fillColor);
+    this.fill.intensity = s.fillIntensity;
+    this.renderer.toneMappingExposure = s.exposure;
+
+    const shadows = !!s.shadows;
+    if (this.renderer.shadowMap.enabled !== shadows) {
+      this.renderer.shadowMap.enabled = shadows;
+      // Shadow support is compiled into the shaders — force a rebuild of every material.
+      this.scene.traverse((o) => {
+        if (!o.material) return;
+        for (const m of [].concat(o.material)) m.needsUpdate = true;
+      });
+    }
+    this.sun.castShadow = shadows;
   }
 
   moveCameraTo(pos, duration = 700) {

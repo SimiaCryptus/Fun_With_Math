@@ -17,26 +17,30 @@ export class PieceView {
   constructor(scene) {
     this.manGeo = lathe(MAN_PROFILE);
     this.kingGeo = lathe(KING_PROFILE);
-    this.mats = {
-      red: new THREE.MeshStandardMaterial({ color: 0xc93b30, roughness: 0.4, metalness: 0.15 }),
-      black: new THREE.MeshStandardMaterial({ color: 0x2b2b32, roughness: 0.45, metalness: 0.25 }),
-    };
+    const mk = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.42, metalness: 0.2 });
+    // Kings get their own material so themes can give them an emissive "glow".
+    this.mats = { red: mk(0xc93b30), black: mk(0x2b2b32) };
+    this.mats.redKing = this.mats.red.clone();
+    this.mats.blackKing = this.mats.black.clone();
+    this.ghost = 0.2; // brightness of pieces outside the focused level / X-ray set
+
     this.meshes = {};
-    const spec = [[RED_MAN, this.manGeo, 'red'], [RED_KING, this.kingGeo, 'red'],
-      [BLACK_MAN, this.manGeo, 'black'], [BLACK_KING, this.kingGeo, 'black']];
+    const spec = [[RED_MAN, this.manGeo, 'red'], [RED_KING, this.kingGeo, 'redKing'],
+      [BLACK_MAN, this.manGeo, 'black'], [BLACK_KING, this.kingGeo, 'blackKing']];
     for (const [type, geo, mat] of spec) {
-       const im = new THREE.InstancedMesh(geo, this.mats[mat], MAX_CELLS);
+      const im = new THREE.InstancedMesh(geo, this.mats[mat], MAX_CELLS);
       im.castShadow = true;
       im.receiveShadow = true;
-       im.userData.cells = new Int16Array(MAX_CELLS);
+      im.userData.cells = new Int16Array(MAX_CELLS);
       im.userData.type = type;
-       for (let i = 0; i < MAX_CELLS; i++) im.setColorAt(i, new THREE.Color(1, 1, 1));
+      for (let i = 0; i < MAX_CELLS; i++) im.setColorAt(i, new THREE.Color(1, 1, 1));
       im.count = 0;
       scene.add(im);
       this.meshes[type] = im;
     }
-     this.board = new Uint8Array(MAX_CELLS);
+    this.board = new Uint8Array(MAX_CELLS);
     this.hidden = new Set();
+    this.dirty = true;
     this._m = new THREE.Matrix4();
     this._p = new THREE.Vector3();
     this._c = new THREE.Color();
@@ -45,7 +49,23 @@ export class PieceView {
   get pickables() { return Object.values(this.meshes); }
   cellOf(mesh, instanceId) { return mesh.userData.cells[instanceId]; }
   geometryFor(piece) { return piece === RED_KING || piece === BLACK_KING ? this.kingGeo : this.manGeo; }
-  materialFor(piece) { return piece <= RED_KING ? this.mats.red : this.mats.black; }
+  materialFor(piece) { return this.meshes[piece]?.material ?? this.mats.red; }
+
+  /** Apply the piece-related parts of a resolved style (see core/themes.js). */
+  setStyle(s) {
+    for (const [key, color] of [['red', s.redColor], ['black', s.blackColor]]) {
+      const man = this.mats[key], king = this.mats[`${key}King`];
+      for (const m of [man, king]) {
+        m.color.set(color);
+        m.roughness = s.pieceRoughness;
+        m.metalness = s.pieceMetalness;
+      }
+      king.emissive.set(s.kingGlowColor);
+      king.emissiveIntensity = s.kingGlow * 0.35;
+    }
+    this.ghost = s.ghostLevel;
+    this.dirty = true;
+  }
 
   setBoard(board, hidden) {
     this.board = board;
@@ -67,7 +87,7 @@ export class PieceView {
       const c = this._c.setScalar(1);
       if (view.selected === idx) c.setRGB(1.9, 1.8, 1.4);
       else if (view.hover === idx) c.setScalar(1.35);
-      else if (LatticeView.isGhosted(view, idx)) c.setScalar(0.22);
+      else if (LatticeView.isGhosted(view, idx)) c.setScalar(this.ghost);
       mesh.setColorAt(i, c);
     }
     for (const mesh of this.pickables) {
