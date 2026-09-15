@@ -1,103 +1,103 @@
-[submodule "numbers/NAM"]
+[submodule "NAM"]
 	path = numbers/NAM
 	url = https://github.com/Simiacryptus/nam.git
 	branch = main
-[submodule "numbers/PI_RCC"]
+[submodule "PI_RCC"]
 	path = numbers/PI_RCC
 	url = https://github.com/Simiacryptus/pi-rcc.git
 	branch = main
-[submodule "optimization/QQN"]
+[submodule "QQN"]
 	path = optimization/QQN
 	url = https://github.com/Simiacryptus/qqn.git
 	branch = main
-[submodule "optimization/QQN-Visuals"]
+[submodule "QQN-Visuals"]
 	path = optimization/QQN-Visuals
 	url = https://github.com/Simiacryptus/qqn-visuals.git
 	branch = main
-[submodule "numbers/RCC"]
+[submodule "RCC"]
 	path = numbers/RCC
 	url = https://github.com/Simiacryptus/rcc.git
 	branch = main
-[submodule "numbers/TEL"]
+[submodule "TEL"]
 	path = numbers/TEL
 	url = https://github.com/Simiacryptus/tel.git
 	branch = main
-[submodule "experiments/3inline"]
+[submodule "3inline"]
 	path = experiments/3inline
 	url = https://github.com/Simiacryptus/3inline.git
 	branch = main
-[submodule "tools/chromatic"]
+[submodule "chromatic"]
 	path = tools/chromatic
 	url = https://github.com/Simiacryptus/chromatic.git
 	branch = main
-[submodule "experiments/fractal_learning"]
+[submodule "fractal_learning"]
 	path = experiments/fractal_learning
 	url = https://github.com/Simiacryptus/fractal-learning.git
 	branch = main
-[submodule "physics/geometric-entropy"]
+[submodule "geometric-entropy"]
 	path = physics/geometric-entropy
 	url = https://github.com/Simiacryptus/geometric-entropy.git
 	branch = main
-[submodule "physics/gravity"]
+[submodule "gravity"]
 	path = physics/gravity
 	url = https://github.com/Simiacryptus/gravity.git
 	branch = main
-[submodule "quadratics/irrational_lattice"]
+[submodule "irrational_lattice"]
 	path = quadratics/irrational_lattice
 	url = https://github.com/Simiacryptus/irrational-lattice.git
 	branch = main
-[submodule "ca/layered_ca"]
+[submodule "layered_ca"]
 	path = ca/layered_ca
 	url = https://github.com/Simiacryptus/layered-ca.git
 	branch = main
-[submodule "ca/markov-analysis"]
+[submodule "markov-analysis"]
 	path = ca/markov-analysis
 	url = https://github.com/Simiacryptus/markov-analysis.git
 	branch = main
-[submodule "physics/mesh"]
+[submodule "mesh"]
 	path = physics/mesh
 	url = https://github.com/Simiacryptus/mesh.git
 	branch = main
-[submodule "numbers/nam-calculator"]
+[submodule "nam-calculator"]
 	path = numbers/nam-calculator
 	url = https://github.com/Simiacryptus/nam-calculator.git
 	branch = main
-[submodule "experiments/no3sieve"]
+[submodule "no3sieve"]
 	path = experiments/no3sieve
 	url = https://github.com/Simiacryptus/no3sieve.git
 	branch = main
-[submodule "optimization/optimization-mechanics"]
+[submodule "optimization-mechanics"]
 	path = optimization/optimization-mechanics
 	url = https://github.com/Simiacryptus/optimization-mechanics.git
 	branch = main
-[submodule "ca/pid-ca"]
+[submodule "pid-ca"]
 	path = ca/pid-ca
 	url = https://github.com/Simiacryptus/pid-ca.git
 	branch = main
-[submodule "numbers/primegen"]
+[submodule "primegen"]
 	path = numbers/primegen
 	url = https://github.com/Simiacryptus/primegen.git
 	branch = main
-[submodule "physics/spacelike-knots"]
+[submodule "spacelike-knots"]
 	path = physics/spacelike-knots
 	url = https://github.com/Simiacryptus/spacelike-knots.git
 	branch = main
-[submodule "tools/static-secrets"]
+[submodule "static-secrets"]
 	path = tools/static-secrets
 	url = https://github.com/Simiacryptus/static-secrets.git
 	branch = main
-[submodule "physics/symmetry_simple"]
+[submodule "symmetry_simple"]
 	path = physics/symmetry_simple
 	url = https://github.com/Simiacryptus/symmetry-simple.git
 	branch = main
-[submodule "quadratics/pentagon"]
+[submodule "pentagon"]
 	path = quadratics/pentagon
 	url = git@github.com:SimiaCryptus/Pentagon_Lattice_Geometry.git
-[submodule "experiments/fractal-mosaic"]
+[submodule "fractal-mosaic"]
 	path = experiments/fractal-mosaic
 	url = https://github.com/Simiacryptus/fractal-mosaic.git
 	branch = main
-[submodule "physics/chaos-garden"]
+[submodule "chaos-garden"]
 	path = physics/chaos-garden
 	url = https://github.com/Simiacryptus/chaos-garden.git
 	branch = main
