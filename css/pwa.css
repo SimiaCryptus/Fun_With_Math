@@ -1,0 +1,119 @@
+/* PWA chrome: install button, update toast, offline banner. */
+
+.pwa-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font: inherit;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  padding: 0.35em 0.85em;
+}
+
+.pwa-install:hover {
+  border-color: rgb(122 162 255 / 60%);
+  color: #e8e8f0;
+}
+
+.pwa-install[hidden] {
+  display: none;
+}
+
+.pwa-offline {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 80;
+  padding: 0.55rem 1rem;
+  text-align: center;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  color: #0a0a14;
+  background: linear-gradient(135deg, #ffd479, #ffb37a);
+}
+
+.pwa-toast {
+  position: fixed;
+  inset: auto 1rem 1rem auto;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: min(92vw, 30rem);
+  padding: 0.75rem 0.85rem 0.75rem 1.1rem;
+  font-size: 0.92rem;
+  color: #e8e8f0;
+  background: rgb(18 18 31 / 96%);
+  border: 1px solid #23233a;
+  border-radius: 14px;
+  box-shadow: 0 18px 44px rgb(0 0 0 / 45%);
+  backdrop-filter: blur(8px);
+  animation: pwa-toast-in 0.24s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwa-toast {
+    animation: none;
+  }
+}
+
+@keyframes pwa-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pwa-toast-text {
+  flex: 1;
+}
+
+.pwa-toast-btn {
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  color: #0a0a14;
+  background: linear-gradient(135deg, #7aa2ff, #b78aff);
+  border: 0;
+  border-radius: 9px;
+  padding: 0.4em 0.9em;
+}
+
+.pwa-toast-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.pwa-toast-dismiss {
+  font: inherit;
+  cursor: pointer;
+  color: #a0a0b8;
+  background: none;
+  border: 0;
+  padding: 0.2em 0.35em;
+  line-height: 1;
+}
+
+.pwa-toast-dismiss:hover {
+  color: #e8e8f0;
+}
+
+.pwa-toast[hidden],
+.pwa-offline[hidden] {
+  display: none;
+}
+
+/* In standalone mode there is no browser UI — reclaim the safe areas. */
+.pwa-standalone body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pwa-standalone nav {
+  padding-top: calc(0.75rem + env(safe-area-inset-top));
+}

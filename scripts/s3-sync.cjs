@@ -110,10 +110,31 @@ async function upload(key, filePath) {
       Key: key,
       Body: fs.readFileSync(filePath),
       ContentType: contentType,
+       CacheControl: cacheControlFor(key),
     })
   );
   console.log(`uploaded: ${key}`);
 }
+/**
+  * PWA-aware cache headers.
+  *
+  * The service worker and the two manifests must never be served stale, or
+  * clients get pinned to an old deploy. Hash-free assets are revalidated
+  * cheaply; generated icons are immutable in practice.
+  */
+function cacheControlFor(key) {
+   if (key === 'sw.js' || key.endsWith('/sw.js')) {
+     return 'no-cache, no-store, must-revalidate';
+   }
+   if (key === 'app.webmanifest' || key === 'manifest.json' || key.endsWith('.html')) {
+     return 'no-cache';
+   }
+   if (key.startsWith('icons/') || /\.(woff2?|ttf)$/i.test(key)) {
+     return 'public, max-age=604800';
+   }
+   return 'public, max-age=3600';
+}
+
 async function ensureCors() {
    await s3.send(
      new PutBucketCorsCommand({

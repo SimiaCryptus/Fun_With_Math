@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, follow" />
+    <title>Offline — Cognotik Games</title>
+    <meta name="theme-color" content="#0a0a14" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="manifest" href="/app.webmanifest" />
+    <style>
+      :root {
+        --bg: #0a0a14;
+        --ink: #e8e8f0;
+        --muted: #a0a0b8;
+        --accent: #7aa2ff;
+        --accent2: #b78aff;
+        --border: #23233a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 2rem 1.25rem;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        text-align: center;
+      }
+
+      .glyph {
+        font-size: 3.4rem;
+        color: var(--accent2);
+        margin: 0 0 0.5rem;
+      }
+
+      h1 {
+        font-size: 1.7rem;
+        margin: 0 0 0.6rem;
+      }
+
+      p {
+        color: var(--muted);
+        max-width: 46ch;
+        margin: 0 auto 1.6rem;
+      }
+
+      .row {
+        display: flex;
+        gap: 0.6rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      button,
+      a.btn {
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        padding: 0.65rem 1.15rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        color: var(--ink);
+        background: transparent;
+      }
+
+      button.primary {
+        color: #0a0a14;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+      }
+
+      .state {
+        margin-top: 1.4rem;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="glyph" aria-hidden="true">⚄</p>
+      <h1>You're offline</h1>
+      <p>
+        This page isn't in your device cache yet. Games you've already opened still work offline —
+        head back to the arcade and pick one of those.
+      </p>
+      <div class="row">
+        <button type="button" class="primary" id="retry">Try again</button>
+        <a class="btn" href="/">Back to the arcade</a>
+      </div>
+      <p class="state" id="state">Waiting for a connection…</p>
+    </main>
+    <script>
+      const state = document.getElementById('state');
+      const sync = () => {
+        state.textContent = navigator.onLine
+          ? 'Connection restored — reloading…'
+          : 'Waiting for a connection…';
+        if (navigator.onLine) location.reload();
+      };
+      window.addEventListener('online', sync);
+      document.getElementById('retry').addEventListener('click', () => location.reload());
+      sync();
+    </script>
+  </body>
+</html>

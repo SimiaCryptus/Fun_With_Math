@@ -20,11 +20,23 @@
     <link rel="canonical" href="https://games.cognotik.com/" />
     <meta name="theme-color" content="#0a0a14" />
     <meta name="color-scheme" content="dark light" />
+     <!-- ── PWA ────────────────────────────────────────────────
+          NOTE: the installable app manifest is `app.webmanifest`.
+          `manifest.json` is the *content* manifest consumed by
+          js/home-browse.js — the two are unrelated. -->
+     <link rel="manifest" href="/app.webmanifest" />
+     <meta name="application-name" content="Cognotik Games" />
+     <meta name="mobile-web-app-capable" content="yes" />
+     <meta name="apple-mobile-web-app-capable" content="yes" />
+     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+     <meta name="apple-mobile-web-app-title" content="Cognotik Games" />
+     <meta name="msapplication-TileColor" content="#0a0a14" />
+     <meta name="msapplication-TileImage" content="/icons/icon-144.png" />
     <!-- Favicons / site icon -->
     <link rel="icon" type="image/png" href="icon.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="icon.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="icon.png" />
+     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <link rel="shortcut icon" href="icon.png" />
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -63,10 +75,13 @@
     <link rel="stylesheet" href="css/home.css" />
     <link rel="stylesheet" href="css/videos.css" />
     <link rel="stylesheet" href="css/browse.css" />
+     <link rel="stylesheet" href="css/pwa.css" />
     <!-- Prime the manifest fetch as early as possible -->
     <link rel="preload" href="manifest.json" as="fetch" crossorigin="anonymous" />
     <script src="/lib/marked.min.js"></script>
      <script src="js/index.js"></script>
+      <!-- Service-worker registration, install prompt, update toast -->
+      <script src="js/pwa.js" defer></script>
      <!--
        Games-only build. `home-browse.js` reads this before rendering and
        restricts the manifest-driven index to game entries (any entry whose
@@ -143,6 +158,15 @@
        <button type="button" class="nav-link nav-random" id="randomGame" title="Play something random">
          Surprise me <span class="arrow">⤳</span>
        </button>
+        <button
+          type="button"
+          class="nav-link pwa-install"
+          id="pwaInstall"
+          title="Install Cognotik Games on this device"
+          hidden
+        >
+          Install <span class="arrow">⬇</span>
+        </button>
       <a
         class="nav-link"
         href="https://github.com/SimiaCryptus/Fun_With_Math"
@@ -295,17 +319,43 @@
         <div class="modal-body" id="modalBody"></div>
       </div>
     </div>
+     <!-- PWA: update prompt + offline indicator (driven by js/pwa.js) -->
+     <div class="pwa-toast" id="pwaUpdateToast" role="status" aria-live="polite" hidden>
+       <span class="pwa-toast-text">A new version of the arcade is ready.</span>
+       <button type="button" class="pwa-toast-btn" id="pwaReload">Reload</button>
+       <button type="button" class="pwa-toast-dismiss" id="pwaUpdateDismiss" aria-label="Dismiss">
+         ✕
+       </button>
+     </div>
+     <div class="pwa-offline" id="pwaOffline" role="status" aria-live="polite" hidden>
+       You're offline — games you've already opened still play.
+     </div>
+
 
     <script src="js/home-browse.js"></script>
      <script>
-       // "Surprise me" — jump to a random game card rendered from the manifest.
-       document.getElementById('randomGame')?.addEventListener('click', () => {
-         const links = Array.from(
-           document.querySelectorAll('#entryGroups a[data-entry-launch], #entryGroups .entry-card a[href]')
-         ).filter((a) => a.getAttribute('href') && !a.getAttribute('href').startsWith('#'));
-         if (!links.length) return;
-         window.location.href = links[Math.floor(Math.random() * links.length)].href;
-       });
+        // "Surprise me" — jump to a random game card rendered from the manifest.
+        // Also reachable as a PWA app shortcut via /?random=1, in which case we
+        // poll briefly until home-browse.js has painted the cards.
+        (() => {
+          const pick = () => {
+            const links = Array.from(
+              document.querySelectorAll(
+                '#entryGroups a[data-entry-launch], #entryGroups .entry-card a[href]'
+              )
+            ).filter((a) => a.getAttribute('href') && !a.getAttribute('href').startsWith('#'));
+            if (!links.length) return false;
+            window.location.href = links[Math.floor(Math.random() * links.length)].href;
+            return true;
+          };
+          document.getElementById('randomGame')?.addEventListener('click', pick);
+          if (new URLSearchParams(location.search).get('random') === '1') {
+            let tries = 0;
+            const timer = setInterval(() => {
+              if (pick() || ++tries > 40) clearInterval(timer);
+            }, 150);
+          }
+        })();
      </script>
   </body>
 </html>

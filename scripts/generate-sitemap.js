@@ -33,7 +33,12 @@ const IGNORE_DIRS = new Set([
   'scripts',
   '.idea',
   '.vscode',
+   'android-twa',
+   'terraform',
 ]);
+// Individual files that should never appear in the sitemap
+// (PWA fallbacks and other noindex pages).
+const IGNORE_FILES = new Set(['offline.html']);
 
 // Only these extensions become URLs.
 const HTML_EXT = new Set(['.html', '.htm']);
@@ -47,6 +52,7 @@ async function walk(dir, acc = []) {
       if (IGNORE_DIRS.has(entry.name)) continue;
       await walk(full, acc);
     } else if (HTML_EXT.has(path.extname(entry.name).toLowerCase())) {
+       if (IGNORE_FILES.has(entry.name)) continue;
       acc.push(full);
     }
   }
