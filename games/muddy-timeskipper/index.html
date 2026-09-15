@@ -19,6 +19,12 @@
   }
   button.gear[aria-pressed="true"] { background:var(--ooze); color:#1a1200; transform:translateY(2px); }
   button.gear:disabled { opacity:.45; cursor:not-allowed; }
+#home {
+   position:fixed; top:14px; left:18px; z-index:5; pointer-events:auto;
+   font:700 14px/1 Impact, sans-serif; letter-spacing:1px; text-transform:uppercase;
+   background:var(--gunk); color:#ffe9b0; border:3px solid #000; border-radius:10px;
+   padding:8px 12px; box-shadow:0 4px 0 #000; text-decoration:none;
+}
   #boot { position:fixed; inset:0; display:grid; place-items:center; background:#120c05;
           text-align:center; z-index:10; }
   #boot h1 { font-size:min(11vw,96px); margin:0; color:var(--ooze);
@@ -36,6 +42,7 @@
 </script>
 </head>
 <body>
+<a id="home" href="/">&larr; Home</a>
   <canvas id="gl"></canvas>
   <canvas id="hud"></canvas>
   <div id="ui">

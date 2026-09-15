@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-15T13:34:59.341Z",
+  "generatedAt": "2026-09-15T15:46:57.437Z",
   "counts": {
     "game": 15
   },
@@ -233,14 +233,18 @@
       "title": "3D Checkers",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_checkers.mp4",
       "launchLabel": "Open 3D Checkers",
       "pitch": "A 3D implementation of the classic game of Checkers.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/3d-checkers",
+        "remote": "https://github.com/Simiacryptus/3d-checkers.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/3d-checkers"
+        "slug": "Simiacryptus/3d-checkers",
+        "path": "games/3d-checkers",
+        "commit": "5c323c47ff88af39a472a3717f83cdbe9bf86692",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/3d-checkers",
       "source": "games/3d-checkers/entry.json"

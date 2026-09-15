@@ -33,6 +33,12 @@
   background: #111827; letter-spacing: 0.04em;
 }
 .hud-badge.muted { color: var(--text-muted); }
+#hud-home-link {
+   text-decoration: none;
+   color: var(--text-main);
+   cursor: pointer;
+}
+#hud-home-link:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
 .hud-meter-label { color: var(--text-muted); }
 .hud-indicator { padding: 3px 8px; border-radius: 3px; background: #1f2937; color: var(--text-muted); }
 .hud-indicator.active { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid var(--accent-amber); animation: pulse 1.4s infinite; }

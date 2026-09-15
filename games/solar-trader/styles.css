@@ -45,6 +45,7 @@ body { font-family: var(--mono); font-size: 12px; color: var(--fg); }
 }
 .tbtn:hover { color: var(--fg); border-color: var(--cyan); }
 .tbtn.active { color: var(--bg); background: var(--cyan); border-color: var(--cyan); }
+#btn-home { text-decoration: none; display: inline-block; }
 
 .panel {
   position: fixed; top: 34px; bottom: 92px; width: 328px;
