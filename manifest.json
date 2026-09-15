@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-14T14:06:15.076Z",
+  "generatedAt": "2026-09-15T19:07:34.584Z",
   "counts": {
     "lab": 20,
     "essay": 6
@@ -120,7 +120,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/spacelike-knots",
         "path": "physics/spacelike-knots",
-        "commit": "fa3ff7c55318c0e541e1d156a6a6a21a69294a9a",
+        "commit": "c341828e87fd90a2d2a356846f83bb23c8946668",
         "branch": "main",
         "submodule": true
       },
@@ -264,7 +264,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/static-secrets",
         "path": "tools/static-secrets",
-        "commit": "01b7523b91c1e9d50ffeed03f6b29640e3058cd1",
+        "commit": "fae395825f50c6b6d05f4cdc7795424f6ddba6ca",
         "branch": "main",
         "submodule": true
       },
@@ -288,7 +288,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/primegen",
         "path": "numbers/primegen",
-        "commit": "f2c97b0ffc67b5034a96aaad76f989b7ef62e40f",
+        "commit": "697ef31bfe7617d93b84c8e2b70d80434f258aef",
         "branch": "main",
         "submodule": true
       },
@@ -502,7 +502,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/qqn",
         "path": "optimization/QQN",
-        "commit": "285c9854bcd9aa7c0cdc09283f3a20f3bccd1c9c",
+        "commit": "52cf2478d59eaf1a7b145aa8ccfea6b34e440d02",
         "branch": "main",
         "submodule": true
       },
