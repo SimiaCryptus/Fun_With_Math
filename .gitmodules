@@ -1,24 +1,24 @@
-[submodule "essays/NAM"]
+[submodule "numbers/NAM"]
 	path = numbers/NAM
 	url = https://github.com/Simiacryptus/nam.git
 	branch = main
-[submodule "essays/PI_RCC"]
+[submodule "numbers/PI_RCC"]
 	path = numbers/PI_RCC
 	url = https://github.com/Simiacryptus/pi-rcc.git
 	branch = main
-[submodule "essays/QQN"]
+[submodule "optimization/QQN"]
 	path = optimization/QQN
 	url = https://github.com/Simiacryptus/qqn.git
 	branch = main
-[submodule "essays/QQN-Visuals"]
+[submodule "optimization/QQN-Visuals"]
 	path = optimization/QQN-Visuals
 	url = https://github.com/Simiacryptus/qqn-visuals.git
 	branch = main
-[submodule "essays/RCC"]
+[submodule "numbers/RCC"]
 	path = numbers/RCC
 	url = https://github.com/Simiacryptus/rcc.git
 	branch = main
-[submodule "essays/TEL"]
+[submodule "numbers/TEL"]
 	path = numbers/TEL
 	url = https://github.com/Simiacryptus/tel.git
 	branch = main
@@ -26,7 +26,7 @@
 	path = experiments/3inline
 	url = https://github.com/Simiacryptus/3inline.git
 	branch = main
-[submodule "experiments/chromatic"]
+[submodule "tools/chromatic"]
 	path = tools/chromatic
 	url = https://github.com/Simiacryptus/chromatic.git
 	branch = main
@@ -34,31 +34,31 @@
 	path = experiments/fractal_learning
 	url = https://github.com/Simiacryptus/fractal-learning.git
 	branch = main
-[submodule "experiments/geometric-entropy"]
+[submodule "physics/geometric-entropy"]
 	path = physics/geometric-entropy
 	url = https://github.com/Simiacryptus/geometric-entropy.git
 	branch = main
-[submodule "experiments/gravity"]
+[submodule "physics/gravity"]
 	path = physics/gravity
 	url = https://github.com/Simiacryptus/gravity.git
 	branch = main
-[submodule "experiments/irrational_lattice"]
+[submodule "quadratics/irrational_lattice"]
 	path = quadratics/irrational_lattice
 	url = https://github.com/Simiacryptus/irrational-lattice.git
 	branch = main
-[submodule "experiments/layered_ca"]
+[submodule "ca/layered_ca"]
 	path = ca/layered_ca
 	url = https://github.com/Simiacryptus/layered-ca.git
 	branch = main
-[submodule "experiments/markov-analysis"]
+[submodule "ca/markov-analysis"]
 	path = ca/markov-analysis
 	url = https://github.com/Simiacryptus/markov-analysis.git
 	branch = main
-[submodule "experiments/mesh"]
+[submodule "physics/mesh"]
 	path = physics/mesh
 	url = https://github.com/Simiacryptus/mesh.git
 	branch = main
-[submodule "experiments/nam-calculator"]
+[submodule "numbers/nam-calculator"]
 	path = numbers/nam-calculator
 	url = https://github.com/Simiacryptus/nam-calculator.git
 	branch = main
@@ -66,90 +66,36 @@
 	path = experiments/no3sieve
 	url = https://github.com/Simiacryptus/no3sieve.git
 	branch = main
-[submodule "experiments/optimization-mechanics"]
+[submodule "optimization/optimization-mechanics"]
 	path = optimization/optimization-mechanics
 	url = https://github.com/Simiacryptus/optimization-mechanics.git
 	branch = main
-[submodule "experiments/pid-ca"]
+[submodule "ca/pid-ca"]
 	path = ca/pid-ca
 	url = https://github.com/Simiacryptus/pid-ca.git
 	branch = main
-[submodule "experiments/primegen"]
+[submodule "numbers/primegen"]
 	path = numbers/primegen
 	url = https://github.com/Simiacryptus/primegen.git
 	branch = main
-[submodule "experiments/spacelike-knots"]
+[submodule "physics/spacelike-knots"]
 	path = physics/spacelike-knots
 	url = https://github.com/Simiacryptus/spacelike-knots.git
 	branch = main
-[submodule "experiments/static-secrets"]
+[submodule "tools/static-secrets"]
 	path = tools/static-secrets
 	url = https://github.com/Simiacryptus/static-secrets.git
 	branch = main
-[submodule "experiments/symmetry_simple"]
+[submodule "physics/symmetry_simple"]
 	path = physics/symmetry_simple
 	url = https://github.com/Simiacryptus/symmetry-simple.git
-	branch = main
-[submodule "games/arithmatic-dynamics"]
-	path = games/arithmatic-dynamics
-	url = https://github.com/Simiacryptus/arithmatic-dynamics.git
-	branch = main
-[submodule "games/number-crush"]
-	path = games/number-crush
-	url = https://github.com/Simiacryptus/number-crush.git
-	branch = main
-[submodule "games/stereo-tac-toe"]
-	path = games/stereo-tac-toe
-	url = https://github.com/Simiacryptus/stereo-tac-toe.git
-	branch = main
-[submodule "games/wordsearch"]
-	path = games/wordsearch
-	url = https://github.com/Simiacryptus/wordsearch.git
 	branch = main
 [submodule "quadratics/pentagon"]
 	path = quadratics/pentagon
 	url = git@github.com:SimiaCryptus/Pentagon_Lattice_Geometry.git
-[submodule "games/aol"]
-	path = games/aol
-	url = https://github.com/SimiaCryptus/Arcade_of_Life/
-[submodule "games/vocal_parkour"]
-	path = games/vocal_parkour
-	url = git@github.com:SimiaCryptus/SonicParkour.git
 [submodule "experiments/fractal-mosaic"]
 	path = experiments/fractal-mosaic
 	url = https://github.com/Simiacryptus/fractal-mosaic.git
-	branch = main
-[submodule "games/0x800"]
-	path = games/0x800
-	url = https://github.com/Simiacryptus/0x800.git
-	branch = main
-[submodule "games/bridges"]
-	path = games/bridges
-	url = https://github.com/Simiacryptus/bridges.git
-	branch = main
-[submodule "games/madame-claude"]
-	path = games/madame-claude
-	url = https://github.com/Simiacryptus/madame-claude.git
-	branch = main
-[submodule "games/mineminer"]
-	path = games/mineminer
-	url = https://github.com/Simiacryptus/mineminer.git
-	branch = main
-[submodule "games/physical-visualizer"]
-	path = games/physical-visualizer
-	url = https://github.com/Simiacryptus/physical-visualizer.git
-	branch = main
-[submodule "games/squirrely"]
-	path = games/squirrely
-	url = https://github.com/Simiacryptus/squirrely.git
-	branch = main
-[submodule "games/troggle"]
-	path = games/troggle
-	url = https://github.com/Simiacryptus/troggle.git
-	branch = main
-[submodule "games/marching-orders"]
-	path = games/marching-orders
-	url = https://github.com/Simiacryptus/marching-orders.git
 	branch = main
 [submodule "physics/chaos-garden"]
 	path = physics/chaos-garden
