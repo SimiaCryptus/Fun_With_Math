@@ -155,3 +155,7 @@
 	path = physics/chaos-garden
 	url = https://github.com/Simiacryptus/chaos-garden.git
 	branch = main
+[submodule "games/3d-checkers"]
+	path = games/3d-checkers
+	url = https://github.com/Simiacryptus/3d-checkers.git
+	branch = main
