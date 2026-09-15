@@ -9,20 +9,6 @@
     <mapping directory="$PROJECT_DIR$/experiments/fractal-mosaic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal_learning" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/no3sieve" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/0x800" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/aol" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/arithmatic-dynamics" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/bridges" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/madame-claude" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/marching-orders" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/mineminer" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/number-crush" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/physical-visualizer" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/squirrely" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/stereo-tac-toe" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/troggle" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/vocal_parkour" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/games/wordsearch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/NAM" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/PI_RCC" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/RCC" vcs="Git" />
@@ -31,10 +17,6 @@
     <mapping directory="$PROJECT_DIR$/numbers/primegen" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/QQN" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/QQN-Visuals" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-jax" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-optimizer" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-tf" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-torch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/optimization-mechanics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/physics/chaos-garden" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/physics/geometric-entropy" vcs="Git" />
