@@ -24,7 +24,8 @@
     game: {
       label: 'Games',
       short: 'Games',
-      blurb: 'Playable sister projects built on the same browser-native tooling.',
+      blurb:
+        'Playable sister projects built on the same browser-native tooling — now hosted at games.cognotik.com.',
     },
     essay: {
       label: 'Essays',
