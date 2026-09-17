@@ -101,3 +101,7 @@
 	path = physics/chaos-garden
 	url = https://github.com/Simiacryptus/chaos-garden.git
 	branch = main
+[submodule "experiments/magnet-lattice"]
+	path = experiments/magnet-lattice
+	url = https://github.com/Simiacryptus/magnet-lattice.git
+	branch = main
