@@ -105,3 +105,7 @@
 	path = experiments/magnet-lattice
 	url = https://github.com/Simiacryptus/magnet-lattice.git
 	branch = main
+[submodule "experiments/pastaponics"]
+	path = experiments/pastaponics
+	url = https://github.com/Simiacryptus/pastaponics.git
+	branch = main
