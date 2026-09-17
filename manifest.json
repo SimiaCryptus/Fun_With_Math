@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-15T16:05:34.625Z",
+  "generatedAt": "2026-09-17T00:43:01.654Z",
   "counts": {
-    "game": 15
+    "game": 14
   },
   "entries": [
     {
@@ -128,16 +128,16 @@
       "source": "games/wordsearch/entry.json"
     },
     {
-      "id": "stereo-tac-toe",
+      "id": "stereo-arcade",
       "category": "game",
       "section": "games",
       "order": 3,
       "icon": "ST",
-      "title": "Stereo-Tac-Toe",
+      "title": "Stereo Arcade",
       "href": "index.html",
       "readme": "README.md",
-      "launchLabel": "Open Stereo-Tac-Toe",
-      "pitch": "A fully playable game of tic-tac-toe hidden inside a Magic Eye autostereogram. The board, cursor, and marks live entirely in the depth of a shimmering field of noise — relax your eyes to fuse the image and play. Everything derives from a single depth buffer, with live controls for eye separation, pattern width, noise style, and depth contrast (press <kbd>D</kbd> to peek at the raw depth map).",
+      "launchLabel": "Open Stereo Arcade",
+      "pitch": "A fully playable game collection of classic arcade games, including Tic-Tac-Toe, Pong, and others, embedded in an autostereogram",
       "repo": {
         "url": "https://github.com/Simiacryptus/stereo-tac-toe",
         "remote": "https://github.com/Simiacryptus/stereo-tac-toe.git",
@@ -150,30 +150,6 @@
       },
       "dir": "games/stereo-tac-toe",
       "source": "games/stereo-tac-toe/entry.json"
-    },
-    {
-      "id": "arithmatic-dynamics",
-      "category": "game",
-      "section": "games",
-      "order": 4,
-      "icon": "AD",
-      "title": "Arithmetic Dynamics",
-      "href": "index.html",
-      "readme": "README.md",
-      "launchLabel": "Open Arithmetic Dynamics",
-      "pitch": "A touch-first puzzle game that teaches the mechanics of arithmetic — not by drilling facts, but by letting kids bend, break, and recombine numbers until a problem collapses into its simplest shape. Every move (split, swap, group, combine, cancel) is guaranteed to preserve value, so children can experiment freely as fluency emerges quietly through play.",
-      "repo": {
-        "url": "https://github.com/Simiacryptus/arithmatic-dynamics",
-        "remote": "https://github.com/Simiacryptus/arithmatic-dynamics.git",
-        "host": "github.com",
-        "slug": "Simiacryptus/arithmatic-dynamics",
-        "path": "games/arithmatic-dynamics",
-        "commit": "1c20a25393cb73df3b59a89d20c0e892632b5990",
-        "branch": "main",
-        "submodule": true
-      },
-      "dir": "games/arithmatic-dynamics",
-      "source": "games/arithmatic-dynamics/entry.json"
     },
     {
       "id": "marching-orders",

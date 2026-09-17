@@ -12,8 +12,13 @@
   'use strict';
 
   const MANIFEST_URL = 'manifest.json';
+   /** Site-level overrides declared inline in index.html. */
+   const SITE = window.SITE_CONFIG || {};
   /** Cards shown per group before the "show all" affordance appears. */
-  const PREVIEW_COUNT = 6;
+   const PREVIEW_COUNT = Number.isFinite(SITE.previewCount) ? SITE.previewCount : 48;
+   /** Categories this build is allowed to surface (null = everything). */
+   const ALLOWED_CATEGORIES =
+     Array.isArray(SITE.categories) && SITE.categories.length ? new Set(SITE.categories) : null;
 
   const CATEGORY_META = {
     lab: {
@@ -33,6 +38,9 @@
     },
   };
   const CATEGORY_ORDER = ['lab', 'game', 'essay'];
+   /** Default (and therefore un-serialized) category filter. */
+   const DEFAULT_CAT =
+     SITE.defaultCategory && CATEGORY_META[SITE.defaultCategory] ? SITE.defaultCategory : 'all';
   const SECTION_ORDER = {
     lab: ['featured', 'essays', 'demos'],
     game: ['games'],
@@ -225,7 +233,7 @@
     const params = new URLSearchParams(location.search);
     state.q = params.get('q') || '';
     const cat = params.get('cat');
-    state.cat = cat && (cat === 'all' || CATEGORY_META[cat]) ? cat : 'all';
+     state.cat = cat && (cat === 'all' || CATEGORY_META[cat]) ? cat : DEFAULT_CAT;
     state.sort = ['curated', 'az', 'za', 'media'].includes(params.get('sort'))
       ? params.get('sort')
       : 'curated';
@@ -236,7 +244,7 @@
   function writeUrlState() {
     const params = new URLSearchParams();
     if (state.q) params.set('q', state.q);
-    if (state.cat !== 'all') params.set('cat', state.cat);
+     if (state.cat !== DEFAULT_CAT) params.set('cat', state.cat);
     if (state.sort !== 'curated') params.set('sort', state.sort);
     if (state.view !== 'grid') params.set('view', state.view);
     if (state.tags.size) params.set('tag', Array.from(state.tags).join(','));
@@ -252,6 +260,12 @@
    * ---------------------------------------------------------- */
 
   function renderCatTabs() {
+     // Single-purpose builds (e.g. the games-only fork) hide the tab strip.
+     if (SITE.hideCategoryTabs) {
+       el.catTabs.hidden = true;
+       el.catTabs.innerHTML = '';
+       return;
+     }
     const counts = { all: ENTRIES.length };
     for (const e of ENTRIES) counts[e.category] = (counts[e.category] || 0) + 1;
 
@@ -346,7 +360,7 @@
 
     return `
       <article class="entry-card" data-id="${escapeHtml(entry.id)}" tabindex="0"
-               role="button" aria-label="Read notes for ${escapeHtml(entry.title)}">
+                role="button" aria-label="Details for ${escapeHtml(entry.title)}">
         <div class="entry-card-top">
           <span class="entry-icon" aria-hidden="true">${escapeHtml(entry.icon)}</span>
           <div class="entry-heads">
@@ -357,10 +371,19 @@
         ${mediaHtml}
         ${pitch}
         <div class="entry-foot">
-          ${badges.join('')}
-          <a class="entry-open" href="${escapeHtml(entry.href)}"
-             ${entry.external ? 'target="_blank" rel="noopener"' : ''}
-             aria-label="${escapeHtml(entry.launchLabel)}">Open <span class="arrow">→</span></a>
+           <div class="entry-badges">${badges.join('')}</div>
+           <div class="entry-actions">
+             <button type="button" class="entry-share" data-share="${escapeHtml(entry.id)}"
+                     title="Share ${escapeHtml(entry.title)}"
+                     aria-label="Share ${escapeHtml(entry.title)}">
+               <span aria-hidden="true">⇪</span>
+             </button>
+             <a class="entry-play" data-entry-launch href="${escapeHtml(entry.href)}"
+                ${entry.external ? 'target="_blank" rel="noopener"' : ''}
+                aria-label="${escapeHtml(entry.launchLabel)}">
+               <span class="play-glyph" aria-hidden="true">▶</span> Play
+             </a>
+           </div>
         </div>
       </article>`;
   }
@@ -410,6 +433,7 @@
         })).filter((g) => g.items.length);
 
     // 4. paint
+     const bare = groups.length === 1 && (SITE.hideCategoryTabs || flat);
     el.groups.innerHTML = groups
       .map((g) => {
         const collapsed = !flat && !state.expanded.has(g.key) && g.items.length > PREVIEW_COUNT;
@@ -419,13 +443,16 @@
                Show all ${g.items.length} ${escapeHtml(g.label.toLowerCase())} ▾
              </button>`
           : '';
+         const head = bare
+           ? ''
+           : `<header class="entry-group-head">
+                <h2>${escapeHtml(g.label)}</h2>
+                <span class="entry-group-count">${g.items.length}</span>
+                ${g.blurb ? `<p class="entry-group-sub">${escapeHtml(g.blurb)}</p>` : ''}
+              </header>`;
         return `
-          <section class="entry-group" id="group-${escapeHtml(g.key)}">
-            <header class="entry-group-head">
-              <h2>${escapeHtml(g.label)}</h2>
-              <span class="entry-group-count">${g.items.length}</span>
-              ${g.blurb ? `<p class="entry-group-sub">${escapeHtml(g.blurb)}</p>` : ''}
-            </header>
+           <section class="entry-group${bare ? ' is-bare' : ''}" id="group-${escapeHtml(g.key)}">
+             ${head}
             <div class="entry-grid">
               ${shown.map((e) => cardMarkup(e, terms)).join('')}
             </div>
@@ -438,10 +465,10 @@
     el.empty.hidden = rows.length !== 0;
 
     el.status.innerHTML = rows.length
-      ? `<strong>${rows.length}</strong> of ${ENTRIES.length} entries${
+       ? `<strong>${rows.length}</strong> of ${ENTRIES.length} games${
           filtersActive() ? ' · filtered' : ''
         }`
-      : `no matches in ${ENTRIES.length} entries`;
+       : `no matches in ${ENTRIES.length} games`;
 
     el.reset.hidden = !filtersActive();
     document.body.classList.toggle('view-list', state.view === 'list');
@@ -518,6 +545,123 @@
   }
 
   /* ---------------------------------------------------------- *
+    * Sharing
+    * ---------------------------------------------------------- */
+   const absUrl = (href) => {
+     try {
+       return new URL(href, location.href).href;
+     } catch (_) {
+       return href;
+     }
+   };
+   const SHARE_TARGETS = [
+     {
+       label: 'X',
+       href: (u, t) =>
+         `https://twitter.com/intent/tweet?url=${encodeURIComponent(u)}&text=${encodeURIComponent(t)}`,
+     },
+     {
+       label: 'Bluesky',
+       href: (u, t) => `https://bsky.app/intent/compose?text=${encodeURIComponent(`${t} ${u}`)}`,
+     },
+     {
+       label: 'Reddit',
+       href: (u, t) =>
+         `https://www.reddit.com/submit?url=${encodeURIComponent(u)}&title=${encodeURIComponent(t)}`,
+     },
+     {
+       label: 'Facebook',
+       href: (u) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(u)}`,
+     },
+     {
+       label: 'Email',
+       href: (u, t) =>
+         `mailto:?subject=${encodeURIComponent(t)}&body=${encodeURIComponent(`${t} — ${u}`)}`,
+     },
+   ];
+   let shareMenuEl = null;
+   function toast(msg) {
+     let t = $('#shareToast');
+     if (!t) {
+       t = document.createElement('div');
+       t.id = 'shareToast';
+       t.className = 'share-toast';
+       t.setAttribute('role', 'status');
+       t.setAttribute('aria-live', 'polite');
+       document.body.appendChild(t);
+     }
+     t.textContent = msg;
+     t.classList.add('is-visible');
+     clearTimeout(t._timer);
+     t._timer = setTimeout(() => t.classList.remove('is-visible'), 2200);
+   }
+   async function copyLink(url) {
+     try {
+       await navigator.clipboard.writeText(url);
+       toast('Link copied to clipboard');
+     } catch (_) {
+       window.prompt('Copy this link', url);
+     }
+   }
+   function onDocClickShare(ev) {
+     if (shareMenuEl && !shareMenuEl.contains(ev.target)) closeShareMenu();
+   }
+   function closeShareMenu() {
+     if (shareMenuEl) {
+       shareMenuEl.remove();
+       shareMenuEl = null;
+     }
+     document.removeEventListener('click', onDocClickShare, true);
+   }
+   function openShareMenu({ title, url }, anchor) {
+     closeShareMenu();
+     const menu = document.createElement('div');
+     menu.className = 'share-menu';
+     menu.innerHTML = `
+       <p class="share-menu-title">Share “${escapeHtml(title)}”</p>
+       <div class="share-menu-links">
+         ${SHARE_TARGETS.map(
+           (t) =>
+             `<a class="share-link" target="_blank" rel="noopener"
+                 href="${escapeHtml(t.href(url, title))}">${escapeHtml(t.label)}</a>`
+         ).join('')}
+       </div>
+       <button type="button" class="share-copy">Copy link</button>`;
+     document.body.appendChild(menu);
+     shareMenuEl = menu;
+     const r = anchor
+       ? anchor.getBoundingClientRect()
+       : { bottom: window.innerHeight / 2, left: window.innerWidth / 2, width: 0 };
+     const mw = menu.offsetWidth;
+     const left = Math.max(12, Math.min(r.left + r.width / 2 - mw / 2, window.innerWidth - mw - 12));
+     menu.style.left = `${left}px`;
+     menu.style.top = `${Math.min(r.bottom + 10, window.innerHeight - menu.offsetHeight - 12)}px`;
+     menu.querySelector('.share-copy').addEventListener('click', () => {
+       copyLink(url);
+       closeShareMenu();
+     });
+     menu.addEventListener('click', (ev) => {
+       if (ev.target.closest('a')) closeShareMenu();
+     });
+     setTimeout(() => document.addEventListener('click', onDocClickShare, true), 0);
+   }
+   async function shareEntry(entry, anchor) {
+     const url = absUrl(entry ? entry.href : location.pathname);
+     const title = entry ? entry.title : SITE.siteName || document.title;
+     const text = entry
+       ? stripHtml(entry.pitch).trim().slice(0, 140) || `Play ${entry.title}`
+       : 'A small arcade of original browser games — free, no installs.';
+     if (navigator.share) {
+       try {
+         await navigator.share({ title, text, url });
+         return;
+       } catch (err) {
+         if (err && err.name === 'AbortError') return;
+       }
+     }
+     openShareMenu({ title, text, url }, anchor);
+   }
+   /* ---------------------------------------------------------- *
    * Modal
    * ---------------------------------------------------------- */
 
@@ -568,11 +712,13 @@
   }
 
   let lastFocus = null;
+   let currentEntry = null;
 
   async function openModal(id) {
     const entry = BY_ID.get(id);
     if (!entry) return;
     lastFocus = document.activeElement;
+     currentEntry = entry;
 
     el.modalIcon.textContent = entry.icon;
     el.modalTitle.textContent = entry.title;
@@ -621,12 +767,52 @@
       el.modalMedia.innerHTML = '';
     }
 
-    el.modalBody.innerHTML = entry.pitch
-      ? `<p class="entry-pitch" style="-webkit-line-clamp:unset;display:block">${entry.pitch}</p>`
-      : '';
-    if (entry.readme) {
-      el.modalBody.insertAdjacentHTML('beforeend', '<p class="readme-loading">Loading notes…</p>');
-    }
+     el.modalBody.innerHTML = `
+       ${entry.pitch ? `<div class="modal-pitch">${entry.pitch}</div>` : ''}
+       <div class="modal-actions">
+         <a class="entry-play is-large" data-entry-launch href="${escapeHtml(entry.href)}"
+            ${entry.external ? 'target="_blank" rel="noopener"' : ''}
+            aria-label="${escapeHtml(entry.launchLabel)}">
+           <span class="play-glyph" aria-hidden="true">▶</span> Play now
+         </a>
+         <button type="button" class="entry-share is-wide" data-share="${escapeHtml(entry.id)}">
+           <span aria-hidden="true">⇪</span> Share
+         </button>
+       </div>
+       ${
+         entry.readme
+           ? `<details class="modal-notes">
+                <summary>Notes, rules &amp; how it works</summary>
+                <div class="modal-notes-body">
+                  <p class="readme-loading">Loading notes…</p>
+                </div>
+              </details>`
+           : ''
+       }`;
+
+     const modalShareBtn = el.modalBody.querySelector('.entry-share');
+     if (modalShareBtn) {
+       modalShareBtn.addEventListener('click', () => shareEntry(entry, modalShareBtn));
+     }
+
+     // The README is secondary now: only fetch it when the reader asks.
+     const notes = el.modalBody.querySelector('.modal-notes');
+     if (notes) {
+       notes.addEventListener('toggle', async () => {
+         if (!notes.open || notes.dataset.loaded) return;
+         notes.dataset.loaded = '1';
+         const body = notes.querySelector('.modal-notes-body');
+         const md = await fetchReadme(entry.readme);
+         if (md == null) {
+           body.innerHTML = `<p class="readme-loading">Notes unavailable — <a href="${escapeHtml(
+             entry.readme
+           )}">open the raw file</a>.</p>`;
+           return;
+         }
+         body.innerHTML = renderMarkdown(md, entry);
+         typesetModal();
+       });
+     }
 
     el.overlay.classList.add('open');
     el.overlay.setAttribute('aria-hidden', 'false');
@@ -634,23 +820,6 @@
     el.modalCard.scrollTop = 0;
     el.modalClose.focus();
 
-    if (entry.readme) {
-      const md = await fetchReadme(entry.readme);
-      if (!el.overlay.classList.contains('open')) return;
-      const loading = el.modalBody.querySelector('.readme-loading');
-      if (loading) loading.remove();
-      if (md == null) {
-        el.modalBody.insertAdjacentHTML(
-          'beforeend',
-          `<p class="readme-loading">Notes unavailable — <a href="${escapeHtml(
-            entry.readme
-          )}">open the raw file</a>.</p>`
-        );
-      } else {
-        el.modalBody.insertAdjacentHTML('beforeend', renderMarkdown(md, entry));
-        typesetModal();
-      }
-    }
   }
 
   function typesetModal() {
@@ -674,6 +843,8 @@
     document.body.classList.remove('modal-open');
     el.modalBody.innerHTML = '';
     el.modalMedia.innerHTML = '';
+     currentEntry = null;
+     closeShareMenu();
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
@@ -791,6 +962,13 @@
         render();
         return;
       }
+       const shareBtn = ev.target.closest('.entry-share');
+       if (shareBtn) {
+         ev.preventDefault();
+         ev.stopPropagation();
+         shareEntry(BY_ID.get(shareBtn.dataset.share), shareBtn);
+         return;
+       }
       if (ev.target.closest('a, button')) return;
       const card = ev.target.closest('.entry-card');
       if (card) openModal(card.dataset.id);
@@ -808,6 +986,14 @@
     el.overlay.addEventListener('click', (ev) => {
       if (ev.target === el.overlay) closeModal();
     });
+     if (el.modalShare) {
+       el.modalShare.addEventListener('click', () => shareEntry(currentEntry, el.modalShare));
+     }
+     // Share the arcade itself from the top nav.
+     const shareSite = $('#shareSite');
+     if (shareSite) {
+       shareSite.addEventListener('click', () => shareEntry(null, shareSite));
+     }
 
     // Nav category jumps
     $$('[data-jump-cat]').forEach((a) => {
@@ -823,6 +1009,10 @@
     // Global keys
     document.addEventListener('keydown', (ev) => {
       if (ev.key === 'Escape') {
+         if (shareMenuEl) {
+           closeShareMenu();
+           return;
+         }
         if (el.overlay.classList.contains('open')) closeModal();
         else if (document.activeElement === el.search && state.q) {
           el.search.value = '';
@@ -889,6 +1079,7 @@
       modalMedia: $('#modalMedia'),
       modalBody: $('#modalBody'),
       modalLaunch: $('#modalLaunch'),
+       modalShare: $('#modalShare'),
       modalClose: $('#modalClose'),
     });
 
@@ -922,9 +1113,12 @@
 
     ENTRIES = (manifest.entries || [])
       .filter((e) => e && !e.hidden && e.href && e.title)
+       .filter((e) => !ALLOWED_CATEGORIES || ALLOWED_CATEGORIES.has(e.category || 'lab'))
       .map(normalizeEntry);
     ENTRIES.sort(curatedCompare);
     for (const e of ENTRIES) BY_ID.set(e.id, e);
+     if (SITE.hideCategoryTabs) document.body.setAttribute('data-single-category', '');
+
 
     renderCatTabs();
     renderTagChips();

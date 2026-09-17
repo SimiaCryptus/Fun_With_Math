@@ -158,6 +158,9 @@
        <button type="button" class="nav-link nav-random" id="randomGame" title="Play something random">
          Surprise me <span class="arrow">⤳</span>
        </button>
+       <button type="button" class="nav-link nav-random" id="shareSite" title="Share this arcade">
+         Share <span class="arrow">⇪</span>
+       </button>
         <button
           type="button"
           class="nav-link pwa-install"
@@ -196,9 +199,9 @@
      <section id="browse" class="browse" aria-label="Browse all games">
       <div class="browse-bar" id="browseBar">
         <div class="browse-row browse-row-main">
-          <div class="search-field">
-            <span class="search-icon" aria-hidden="true">⌕</span>
-             <label class="sr-only" for="searchInput">Search games</label>
+<div class="search-field">
+  <span class="search-icon" aria-hidden="true">⌕</span>
+   <label class="sr-only" for="searchInput">Search games</label>
             <input
               id="searchInput"
               type="search"
@@ -259,12 +262,12 @@
         <!-- Populated from manifest.json by js/home-browse.js -->
       </div>
 
-      <div class="empty-state" id="emptyState" hidden>
-        <p class="empty-glyph" aria-hidden="true">∅</p>
-         <p class="empty-title">No games match that query.</p>
-        <p class="empty-sub">Try a broader term, or clear the active filters.</p>
-        <button type="button" class="reset-btn" id="emptyReset">Reset filters</button>
-      </div>
+<div class="empty-state" id="emptyState" hidden>
+  <p class="empty-glyph" aria-hidden="true">∅</p>
+   <p class="empty-title">No games match that query.</p>
+  <p class="empty-sub">Try a broader term, or clear the active filters.</p>
+  <button type="button" class="reset-btn" id="emptyReset">Reset filters</button>
+</div>
 
       <noscript>
         <p class="browse-status">
@@ -311,7 +314,18 @@
             <h2 class="modal-title" id="modalTitle"></h2>
             <p class="modal-subtitle" id="modalSubtitle"></p>
           </div>
-          <a class="modal-launch" id="modalLaunch" href="#">Open <span class="arrow">→</span></a>
+           <a class="modal-launch" id="modalLaunch" href="#"
+             ><span class="play-glyph" aria-hidden="true">▶</span> Play</a
+           >
+           <button
+             type="button"
+             class="modal-share"
+             id="modalShare"
+             aria-label="Share this game"
+             title="Share this game"
+           >
+             <span aria-hidden="true">⇪</span>
+           </button>
           <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
         </div>
         <div class="modal-meta" id="modalMeta"></div>
