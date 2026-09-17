@@ -109,3 +109,7 @@
 	path = experiments/pastaponics
 	url = https://github.com/Simiacryptus/pastaponics.git
 	branch = main
+[submodule "experiments/point-cad"]
+	path = experiments/point-cad
+	url = https://github.com/Simiacryptus/point-cad.git
+	branch = main
