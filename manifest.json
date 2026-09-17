@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-17T19:03:29.508Z",
+  "generatedAt": "2026-09-17T22:03:31.283Z",
   "counts": {
     "lab": 22,
     "essay": 6
@@ -454,7 +454,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/magnet-lattice",
         "path": "experiments/magnet-lattice",
-        "commit": "ffe0a680ae12822ecbfdd997e15d712bd7610c28",
+        "commit": "878be3e196b351044a62f090461e77a76db50055",
         "branch": "main",
         "submodule": true
       },
@@ -477,7 +477,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/pastaponics",
         "path": "experiments/pastaponics",
-        "commit": "eacd98c329265187ea381b63490018d306cd3d3f",
+        "commit": "63f076397586fe637bbc7d78d668e4d68c8e4ff4",
         "branch": "main",
         "submodule": true
       },
@@ -500,7 +500,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/point-cad",
         "path": "experiments/point-cad",
-        "commit": "98a6e6806e0912b0097217e933545bfcb0a1f5c6",
+        "commit": "1b23dc0194989d22b789c8420fcb8983f9b3c736",
         "branch": "main",
         "submodule": true
       },
@@ -514,7 +514,7 @@
       "order": 9007199254740991,
       "icon": "TC",
       "title": "Theme CAD",
-      "href": "../demo/theme.html",
+      "href": "../demo/math.theme_design.html",
       "readme": "idea.md",
       "pitch": "A theme designer for PointCAD, allowing you to create and customize themes for your CAD projects.",
       "repo": {
@@ -524,7 +524,7 @@
         "slug": "Simiacryptus/point-cad",
         "path": "experiments/point-cad",
         "subpath": "theme-designer",
-        "commit": "98a6e6806e0912b0097217e933545bfcb0a1f5c6",
+        "commit": "1b23dc0194989d22b789c8420fcb8983f9b3c736",
         "branch": "main",
         "submodule": true
       },
