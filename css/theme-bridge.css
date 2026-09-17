@@ -1,0 +1,223 @@
+/* ─────────────────────────────────────────────────────────────
+   theme-bridge.css — maps the Point-CAD design tokens defined in
+   css/themes.css onto the legacy variable names used by
+   style.css / home.css / videos.css / browse.css.
+
+   MUST be loaded *after* those files: the mappings below rely on
+   source order to win the cascade against their literal :root
+   declarations.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── style.css palette ── */
+  --bg: var(--color-canvas);
+  --surface: var(--color-surface-1);
+  --surface-alt: var(--color-surface-2);
+  --border: var(--color-border);
+  --accent: var(--color-brand);
+  --accent2: var(--color-accent-2);
+  --text: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --on-accent: var(--color-on-accent);
+
+  /* ── home.css derived tokens ── */
+  --accent3: var(--color-success);
+  --accent4: var(--color-warning);
+  --accent-glow: color-mix(in oklab, var(--color-brand) 45%, transparent);
+  --accent2-glow: color-mix(in oklab, var(--color-accent-2) 35%, transparent);
+  --border-glow: color-mix(in oklab, var(--color-brand) 30%, transparent);
+  --surface-glass: color-mix(in oklab, var(--color-surface-1) 58%, transparent);
+  --surface-glass-strong: color-mix(in oklab, var(--color-surface-1) 82%, transparent);
+  --shadow: 0 4px 24px color-mix(in oklab, var(--color-canvas) 65%, transparent);
+}
+
+/* ── Surfaces that hard-coded the dark canvas colour ────────── */
+
+body {
+  background:
+    radial-gradient(
+      ellipse at top left,
+      color-mix(in oklab, var(--color-brand) 14%, var(--color-canvas)) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom right,
+      color-mix(in oklab, var(--color-accent-2) 14%, var(--color-canvas)) 0%,
+      transparent 60%
+    ),
+    var(--color-canvas);
+}
+
+nav {
+  background: color-mix(in oklab, var(--color-canvas) 72%, transparent);
+  border-bottom-color: color-mix(in oklab, var(--color-border) 45%, transparent);
+}
+
+.browse-bar {
+  background: color-mix(in oklab, var(--color-canvas) 86%, transparent);
+}
+
+.modal-overlay {
+  background: color-mix(in oklab, var(--color-canvas) 80%, transparent);
+}
+
+.grid-overlay {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--color-brand) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-brand) 10%, transparent) 1px,
+      transparent 1px
+    );
+}
+
+.aurora-blob-1 {
+  background: radial-gradient(circle, var(--color-brand) 0%, transparent 70%);
+}
+.aurora-blob-2 {
+  background: radial-gradient(circle, var(--color-accent-2) 0%, transparent 70%);
+}
+.aurora-blob-3 {
+  background: radial-gradient(circle, var(--color-success) 0%, transparent 70%);
+}
+
+/* ── Accent-filled controls (were literal #0a0d14 on blue) ──── */
+
+.cat-tab[aria-selected='true'],
+.entry-open,
+.featured-card-launch,
+.modal-launch {
+  color: var(--color-on-accent);
+  background: linear-gradient(135deg, var(--color-brand), var(--color-accent-2));
+}
+
+.btn-primary {
+  background: var(--color-brand);
+  color: var(--color-on-accent);
+}
+
+.tag-chip[aria-pressed='true'] {
+  color: var(--color-on-accent);
+  background: var(--color-accent-2);
+}
+
+.hero-title-accent,
+.brand-glyph,
+.footer-mark,
+.page-header h1 {
+  background: linear-gradient(
+    135deg,
+    var(--color-brand) 0%,
+    var(--color-accent-2) 50%,
+    var(--color-warning) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.featured-card-play::before {
+  background: color-mix(in oklab, var(--color-brand) 88%, transparent);
+}
+.featured-card-play::after {
+  border-color: transparent transparent transparent var(--color-on-accent);
+}
+
+/* ── Light-ish themes: tame the white hairlines & dark washes ── */
+
+html.theme-light {
+  --surface-glass: color-mix(in oklab, var(--color-surface-1) 78%, transparent);
+  --surface-glass-strong: color-mix(in oklab, var(--color-surface-1) 94%, transparent);
+}
+
+html.theme-light #bgCanvas {
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+}
+
+html.theme-light .aurora-blob {
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+}
+
+html.theme-light .browse-bar,
+html.theme-light .entry-card,
+html.theme-light .entry-badge,
+html.theme-light .cat-tab,
+html.theme-light .view-toggle,
+html.theme-light .view-btn + .view-btn,
+html.theme-light .tool-select,
+html.theme-light .search-input,
+html.theme-light .tag-more,
+html.theme-light .reset-btn,
+html.theme-light .group-more,
+html.theme-light .modal-card,
+html.theme-light .modal-close,
+html.theme-light .featured-card,
+html.theme-light .card,
+html.theme-light .intro-panel {
+  border-color: color-mix(in oklab, var(--color-border) 70%, transparent);
+}
+
+html.theme-light .search-input,
+html.theme-light .view-btn {
+  background: color-mix(in oklab, var(--color-canvas) 65%, transparent);
+}
+
+html.theme-light .entry-badge,
+html.theme-light .cat-tab {
+  background: color-mix(in oklab, var(--color-surface-2) 55%, transparent);
+}
+
+html.theme-light .entry-card mark {
+  background: color-mix(in oklab, var(--color-highlight) 28%, transparent);
+  color: var(--color-text);
+}
+
+html.theme-light .hero-hint kbd {
+  background: color-mix(in oklab, var(--color-surface-2) 70%, transparent);
+  border-color: color-mix(in oklab, var(--color-border) 70%, transparent);
+}
+
+/* ── The selector itself ────────────────────────────────────── */
+
+.theme-select {
+  appearance: none;
+  font-family: var(--font-body, inherit);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  padding: 0.32rem 1.7rem 0.32rem 0.6rem;
+  border: 1px solid color-mix(in oklab, var(--color-border) 55%, transparent);
+  border-radius: 8px;
+  cursor: pointer;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'><path d='M2 4.5 6 8.5 10 4.5' fill='none' stroke='%238b949e' stroke-width='1.5' stroke-linecap='round'/></svg>")
+      no-repeat right 0.5rem center / 10px,
+    color-mix(in oklab, var(--color-surface-1) 70%, transparent);
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.theme-select:hover {
+  color: var(--color-text);
+  border-color: var(--color-brand);
+}
+
+.theme-select:focus-visible {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-brand) 22%, transparent);
+}
+
+.theme-select option {
+  background: var(--color-surface-1);
+  color: var(--color-text);
+}
+
+@media (max-width: 720px) {
+  .theme-select {
+    max-width: 7.5rem;
+  }
+}

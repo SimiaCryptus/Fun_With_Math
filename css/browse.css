@@ -1,6 +1,7 @@
 /* ─────────────────────────────────────────────────────────────
    browse.css — search / filter / category UI for the unified
    manifest index. Layered on top of home.css.
+      NOTE: `.sr-only` below is also used by the nav theme selector.
    ───────────────────────────────────────────────────────────── */
 
 .sr-only {

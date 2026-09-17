@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-17T14:54:48.252Z",
+  "generatedAt": "2026-09-17T19:03:29.508Z",
   "counts": {
-    "lab": 23,
+    "lab": 22,
     "essay": 6
   },
   "entries": [
@@ -320,29 +320,6 @@
       "source": "numbers/nam-calculator/entry.json"
     },
     {
-      "id": "fractal-learning",
-      "category": "lab",
-      "section": "featured",
-      "order": 13,
-      "icon": "FL",
-      "title": "Fractal Learning",
-      "href": "index.html",
-      "readme": "idea.md",
-      "pitch": "Inverse iterated-function-system fitting: gradient-optimize a small alphabet of affine maps so the depth-N orbit of the origin matches a target point cloud under a Chamfer metric.",
-      "repo": {
-        "url": "https://github.com/Simiacryptus/fractal-learning",
-        "remote": "https://github.com/Simiacryptus/fractal-learning.git",
-        "host": "github.com",
-        "slug": "Simiacryptus/fractal-learning",
-        "path": "experiments/fractal_learning",
-        "commit": "c89049fa14aee641d5f6d9ce6c311b4a7b867693",
-        "branch": "main",
-        "submodule": true
-      },
-      "dir": "experiments/fractal_learning",
-      "source": "experiments/fractal_learning/entry.json"
-    },
-    {
       "id": "optimization-mechanics",
       "category": "lab",
       "section": "featured",
@@ -365,30 +342,6 @@
       },
       "dir": "optimization/optimization-mechanics",
       "source": "optimization/optimization-mechanics/entry.json"
-    },
-    {
-      "id": "chromatic",
-      "category": "lab",
-      "section": "featured",
-      "order": 15,
-      "icon": "CH",
-      "title": "Chromatic — OKLab vs Naive HSL",
-      "href": "index.html",
-      "readme": "README.md",
-      "launchLabel": "Open the Chromatic OKLab vs Naive HSL demo",
-      "pitch": "A color engine that thinks in perception, not hue wheels. The same palette — N accent colors evenly spaced in hue — built two ways: a perceptually-uniform OKLch orbit projected to HSL, versus a naive HSL hue-rotation that bunches near the yellows and stretches thin through the blues. Live distortion metrics (ordering violations, hue drift, gamut clipping) quantify which relational invariants survive projection, turning an aesthetic complaint into a measurable geometry problem.",
-      "repo": {
-        "url": "https://github.com/Simiacryptus/chromatic",
-        "remote": "https://github.com/Simiacryptus/chromatic.git",
-        "host": "github.com",
-        "slug": "Simiacryptus/chromatic",
-        "path": "tools/chromatic",
-        "commit": "7bddd29f43f0766c94e6ce64e136f2d503683bc8",
-        "branch": "main",
-        "submodule": true
-      },
-      "dir": "tools/chromatic",
-      "source": "tools/chromatic/entry.json"
     },
     {
       "id": "no3sieve",
@@ -478,7 +431,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/fractal-mosaic",
         "path": "experiments/fractal-mosaic",
-        "commit": "f79ac5061c4d3a0d86300913a4b749ca823ad475",
+        "commit": "fcd8cbbadbab01aa6bb3288512a4b22472a4181e",
         "branch": "main",
         "submodule": true
       },
@@ -496,11 +449,14 @@
       "readme": "README.md",
       "pitch": "Explore the dynamics of re-rotating magnets and their emergent behaviors.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/magnet-lattice",
+        "remote": "https://github.com/Simiacryptus/magnet-lattice.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "experiments/magnet-lattice"
+        "slug": "Simiacryptus/magnet-lattice",
+        "path": "experiments/magnet-lattice",
+        "commit": "ffe0a680ae12822ecbfdd997e15d712bd7610c28",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "experiments/magnet-lattice",
       "source": "experiments/magnet-lattice/entry.json"
@@ -516,11 +472,14 @@
       "readme": "README.md",
       "pitch": "A modular, 3D‑printed hydroponic medium enabling plant‑driven nutrient self‑regulation through spatially differentiated nutrient channels.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/pastaponics",
+        "remote": "https://github.com/Simiacryptus/pastaponics.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "experiments/pastaponics"
+        "slug": "Simiacryptus/pastaponics",
+        "path": "experiments/pastaponics",
+        "commit": "eacd98c329265187ea381b63490018d306cd3d3f",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "experiments/pastaponics",
       "source": "experiments/pastaponics/entry.json"
@@ -536,14 +495,41 @@
       "readme": "README.md",
       "pitch": "A point-based CAD system for designing complex geometries.",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/point-cad",
+        "remote": "https://github.com/Simiacryptus/point-cad.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "experiments/point-cad"
+        "slug": "Simiacryptus/point-cad",
+        "path": "experiments/point-cad",
+        "commit": "98a6e6806e0912b0097217e933545bfcb0a1f5c6",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "experiments/point-cad",
       "source": "experiments/point-cad/entry.json"
+    },
+    {
+      "id": "theme-cad",
+      "category": "lab",
+      "section": "featured",
+      "order": 9007199254740991,
+      "icon": "TC",
+      "title": "Theme CAD",
+      "href": "../demo/theme.html",
+      "readme": "idea.md",
+      "pitch": "A theme designer for PointCAD, allowing you to create and customize themes for your CAD projects.",
+      "repo": {
+        "url": "https://github.com/Simiacryptus/point-cad",
+        "remote": "https://github.com/Simiacryptus/point-cad.git",
+        "host": "github.com",
+        "slug": "Simiacryptus/point-cad",
+        "path": "experiments/point-cad",
+        "subpath": "theme-designer",
+        "commit": "98a6e6806e0912b0097217e933545bfcb0a1f5c6",
+        "branch": "main",
+        "submodule": true
+      },
+      "dir": "experiments/point-cad/theme-designer",
+      "source": "experiments/point-cad/theme-designer/entry.json"
     },
     {
       "id": "qqn",
@@ -562,7 +548,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/qqn",
         "path": "optimization/QQN",
-        "commit": "107992632afcf16c78d7a075caf97bf40ff31735",
+        "commit": "813904eaa8c80bd4a3520276d0e00a311b4adcda",
         "branch": "main",
         "submodule": true
       },
