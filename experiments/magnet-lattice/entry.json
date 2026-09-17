@@ -1,0 +1,10 @@
+{
+  "id": "magnet-lattice",
+  "category": "lab",
+  "section": "featured",
+  "icon": "ML",
+  "title": "Magnet Lattice",
+  "href": "index.html",
+  "readme": "README.md",
+  "pitch": "Explore the dynamics of re-rotating magnets and their emergent behaviors."
+}

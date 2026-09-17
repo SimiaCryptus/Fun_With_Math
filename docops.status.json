@@ -1,5 +1,5 @@
 {
-  "lastUpdated" : "2026-09-12T18:42:50.840480385Z",
+  "lastUpdated" : "2026-09-17T14:51:33.206588108Z",
   "tasks" : {
     "quadratics/pentagon/docs/analysis.theory_graph.json" : {
       "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
@@ -161,6 +161,27 @@
       "sessionId" : "U-20260912-anR8xo0i",
       "startedAt" : "2026-09-12T18:42:28.183343210Z",
       "completedAt" : "2026-09-12T18:42:50.840480385Z"
+    },
+    "experiments/pastaponics/README_REWRITE.md" : {
+      "target" : "experiments/pastaponics/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260917-ovDCfTVF",
+      "startedAt" : "2026-09-17T14:31:07.741752284Z",
+      "completedAt" : "2026-09-17T14:31:46.881864567Z"
+    },
+    "experiments/point-cad/README_REWRITE.md" : {
+      "target" : "experiments/point-cad/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260917-yZfnZ48C",
+      "startedAt" : "2026-09-17T14:31:07.744620643Z",
+      "completedAt" : "2026-09-17T14:31:36.469083746Z"
+    },
+    "experiments/magnet-lattice/README_REWRITE.md" : {
+      "target" : "experiments/magnet-lattice/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260917-tpD46FSY",
+      "startedAt" : "2026-09-17T14:51:09.183581759Z",
+      "completedAt" : "2026-09-17T14:51:33.206588108Z"
     }
   }
 }

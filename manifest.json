@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-15T19:07:34.584Z",
+  "generatedAt": "2026-09-17T14:54:48.252Z",
   "counts": {
-    "lab": 20,
+    "lab": 23,
     "essay": 6
   },
   "entries": [
@@ -343,29 +343,6 @@
       "source": "experiments/fractal_learning/entry.json"
     },
     {
-      "id": "fractal-mosaic",
-      "category": "lab",
-      "section": "featured",
-      "order": 13,
-      "icon": "FM",
-      "title": "Fractal Mosaic",
-      "href": "index.html",
-      "readme": "README.md",
-      "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album.",
-      "repo": {
-        "url": "https://github.com/Simiacryptus/fractal-mosaic",
-        "remote": "https://github.com/Simiacryptus/fractal-mosaic.git",
-        "host": "github.com",
-        "slug": "Simiacryptus/fractal-mosaic",
-        "path": "experiments/fractal-mosaic",
-        "commit": "f79ac5061c4d3a0d86300913a4b749ca823ad475",
-        "branch": "main",
-        "submodule": true
-      },
-      "dir": "experiments/fractal-mosaic",
-      "source": "experiments/fractal-mosaic/entry.json"
-    },
-    {
       "id": "optimization-mechanics",
       "category": "lab",
       "section": "featured",
@@ -486,6 +463,89 @@
       "source": "physics/chaos-garden/entry.json"
     },
     {
+      "id": "fractal-mosaic",
+      "category": "lab",
+      "section": "featured",
+      "order": 9007199254740991,
+      "icon": "FM",
+      "title": "Fractal Mosaic",
+      "href": "index.html",
+      "readme": "README.md",
+      "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album.",
+      "repo": {
+        "url": "https://github.com/Simiacryptus/fractal-mosaic",
+        "remote": "https://github.com/Simiacryptus/fractal-mosaic.git",
+        "host": "github.com",
+        "slug": "Simiacryptus/fractal-mosaic",
+        "path": "experiments/fractal-mosaic",
+        "commit": "f79ac5061c4d3a0d86300913a4b749ca823ad475",
+        "branch": "main",
+        "submodule": true
+      },
+      "dir": "experiments/fractal-mosaic",
+      "source": "experiments/fractal-mosaic/entry.json"
+    },
+    {
+      "id": "magnet-lattice",
+      "category": "lab",
+      "section": "featured",
+      "order": 9007199254740991,
+      "icon": "ML",
+      "title": "Magnet Lattice",
+      "href": "index.html",
+      "readme": "README.md",
+      "pitch": "Explore the dynamics of re-rotating magnets and their emergent behaviors.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "experiments/magnet-lattice"
+      },
+      "dir": "experiments/magnet-lattice",
+      "source": "experiments/magnet-lattice/entry.json"
+    },
+    {
+      "id": "pastaponics",
+      "category": "lab",
+      "section": "featured",
+      "order": 9007199254740991,
+      "icon": "PP",
+      "title": "Pastaponics",
+      "href": "index.html",
+      "readme": "README.md",
+      "pitch": "A modular, 3D‑printed hydroponic medium enabling plant‑driven nutrient self‑regulation through spatially differentiated nutrient channels.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "experiments/pastaponics"
+      },
+      "dir": "experiments/pastaponics",
+      "source": "experiments/pastaponics/entry.json"
+    },
+    {
+      "id": "point-cad",
+      "category": "lab",
+      "section": "featured",
+      "order": 9007199254740991,
+      "icon": "PC",
+      "title": "Point CAD",
+      "href": "demo/index.html",
+      "readme": "README.md",
+      "pitch": "A point-based CAD system for designing complex geometries.",
+      "repo": {
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "host": "github.com",
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "experiments/point-cad"
+      },
+      "dir": "experiments/point-cad",
+      "source": "experiments/point-cad/entry.json"
+    },
+    {
       "id": "qqn",
       "category": "essay",
       "section": "essays",
@@ -502,7 +562,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/qqn",
         "path": "optimization/QQN",
-        "commit": "52cf2478d59eaf1a7b145aa8ccfea6b34e440d02",
+        "commit": "107992632afcf16c78d7a075caf97bf40ff31735",
         "branch": "main",
         "submodule": true
       },

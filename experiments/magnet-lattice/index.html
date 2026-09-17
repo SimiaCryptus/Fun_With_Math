@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Magnet Lattice Toy</title>
-        <link rel="stylesheet" href="../../css/experiments-magnet-lattice-index.css" />
+        <link rel="stylesheet" href="experiments-magnet-lattice-index.css" />
     </head>
     <body>
         <div id="sidebar">
@@ -14,21 +14,22 @@
                 <button data-mode="sim">Simulate</button>
                 <button data-mode="analysis">Analyze</button>
             </div>
+            <div class="toolbar">
+                <button class="action" id="settings">⚙ Settings</button>
+                <button class="action" id="reset-view">Reset View</button>
+            </div>
 
             <div id="panel-draw">
-                <h2>Grid</h2>
-                <div class="row">
-                    <label>Pitch (px)</label>
-                    <input type="range" id="pitch" min="20" max="80" step="2" value="48" />
-                    <span class="val" id="pitch-val">48</span>
-                </div>
-                <div class="row">
-                    <label><input type="checkbox" id="snap" checked /> Snap to grid</label>
-                </div>
+                <h2>Draw</h2>
                 <p class="hint">
-                    Click a cell to add/remove a magnet. Drag on a magnet to set its angle.
+                    Click an empty cell to add a magnet, click a magnet to remove it. Drag a
+                    magnet to set its angle (hold Shift to snap to 15°).
                 </p>
-                <div class="readout">Magnets: <span id="count">0</span></div>
+                <p class="hint">Right/middle-drag to pan, mouse-wheel to zoom, <kbd>0</kbd> resets the view.</p>
+                <div class="readout">
+                    Magnets: <span id="count">0</span><br />
+                    Grid: <span id="grid-info"></span>
+                </div>
                 <button class="action" id="clear">Clear All</button>
             </div>
 
@@ -39,6 +40,10 @@
                     <button class="action" id="step">Step</button>
                     <button class="action" id="reset">Reset</button>
                 </div>
+                <p class="hint">
+                    Drag a magnet to grab it and set its orientation while the simulation runs.
+                    <kbd>Space</kbd> toggles play.
+                </p>
                 <div class="row">
                     <label>Coupling k</label
                     ><input type="range" id="k" min="0.1" max="10" step="0.1" value="1" /><span
@@ -93,14 +98,29 @@
             </div>
 
             <div id="panel-analysis" style="display: none">
+                <h2>Stable-state catalog</h2>
+                <p class="hint">
+                    Relaxes from many initial conditions, keeps the stable minima and merges
+                    states related by lattice rotations/reflections or a global flip. Click an
+                    entry to load it.
+                </p>
+                <div class="row">
+                    <label for="sweep-starts">Random starts</label>
+                    <input type="number" id="sweep-starts" min="1" max="5000" step="1" value="200" />
+                    <button class="action" id="sweep">Sweep</button>
+                </div>
+                <div id="catalog"></div>
                 <h2>Analysis</h2>
                 <button class="action" id="relax">Relax to Equilibrium</button>
                 <button class="action" id="analyze">Compute Modes</button>
+                <p class="hint">Dragging a magnet here changes the configuration and invalidates computed modes.</p>
                 <div id="heatmap-wrap">
                     <h2>Coupling Matrix</h2>
                     <canvas id="heatmap" class="small" width="280" height="280"></canvas>
                     <h2>Eigen-spectrum</h2>
                     <canvas id="spectrum" class="small" width="280" height="100"></canvas>
+                 <p class="hint">Click a bar to select a mode. Hover the coupling matrix to highlight the pair.</p>
+                 <div class="readout" id="heat-info"></div>
                     <div class="row">
                         <label>Mode</label>
                         <input type="range" id="mode-pick" min="0" max="0" step="1" value="0" />
@@ -123,6 +143,51 @@
         <div id="main">
             <canvas id="scene"></canvas>
         </div>
+
+        <dialog id="config-dialog">
+            <form method="dialog">
+                <h2>Settings</h2>
+                <div class="row">
+                    <label for="cfg-pitch">Grid pitch (px)</label>
+                    <input type="number" id="cfg-pitch" min="8" max="200" step="1" />
+                </div>
+                <div class="row">
+                    <label for="cfg-extent">Grid extent (cells from centre, 0 = unbounded)</label>
+                    <input type="number" id="cfg-extent" min="0" max="256" step="1" />
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" id="cfg-snap" /> Snap placement to grid</label>
+                </div>
+                <div class="row">
+                    <label for="cfg-m">Dipole strength m</label>
+                    <input type="number" id="cfg-m" min="0.01" step="0.1" />
+                </div>
+                <div class="row">
+                    <label for="cfg-substeps">Sub-steps per animation frame</label>
+                    <input type="number" id="cfg-substeps" min="1" max="64" step="1" />
+                </div>
+                <div class="row">
+                    <label><input type="checkbox" id="cfg-labels" /> Show magnet ids</label>
+                </div>
+                <p class="hint">
+                    Physics measures distance in grid-cell units, so the pitch only affects
+                    drawing; nearest neighbours couple with strength k·m².
+                </p>
+                 <p class="hint">
+                     Your arrangement, parameters and view are saved in this browser and restored
+                     on reload.
+                 </p>
+                 <button type="button" id="cfg-forget" class="action secondary">
+                     Forget saved state &amp; reload
+                 </button>
+                <menu>
+                    <button type="submit" value="cancel" formnovalidate class="action secondary">
+                        Cancel
+                    </button>
+                    <button type="submit" value="ok" class="action">Apply</button>
+                </menu>
+            </form>
+        </dialog>
 
         <script type="module" src="src/main.js"></script>
     </body>

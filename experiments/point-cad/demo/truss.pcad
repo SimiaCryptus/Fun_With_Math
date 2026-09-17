@@ -1,0 +1,31 @@
+# roof truss, all lengths mm, angles degrees
+space euclidean3
+units mm deg
+
+var beamLength = 120 locked
+var theta = 30                       # free: the solver may adjust it
+
+point A at (0, 0, 0) fixed
+point B at (100, 0, 0)
+point C at (100, 80, 0)
+point D at (0, 0, 50)  label "ridge"
+
+distance A B = 100
+distance B C = beamLength
+distance A C -> min
+distance A D -> max weight 0.5
+angle A B C = 90
+angle B C D = theta weight 2 note "roof pitch"
+
+# a macro packaging the parallelogram construction from the design notes
+def parallel(A, B, C, D) {
+  point E at C + (B - A)
+  point M at (A + E) / 2
+  var h1, h2
+  distance A M = h1   distance M E = h1   angle A M E = 180
+  distance B M = h2   distance M C = h2   angle B M C = 180
+  angle E C D = 0
+}
+
+solver gauss-newton iterations 200 tolerance 1e-6
+view camera (300, 250, 400) target (50, 40, 20) up (0, 0, 1) perspective

@@ -1,0 +1,11 @@
+{
+  "id": "pastaponics",
+  "category": "lab",
+  "section": "featured",
+  "icon": "PP",
+  "title": "Pastaponics",
+  "href": "index.html",
+  "readme": "README.md",
+  "readme": "README.md",
+  "pitch": "A modular, 3D‑printed hydroponic medium enabling plant‑driven nutrient self‑regulation through spatially differentiated nutrient channels."
+}
