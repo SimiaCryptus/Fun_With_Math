@@ -21,10 +21,8 @@ export function aberrate(dir, n, b) {
     dir.copy(n).multiplyScalar(Math.sign(c2) || 1);
     return dir;
   }
-  dir.set(
-    c2 * n.x + (s2 * px) / pl,
-    c2 * n.y + (s2 * py) / pl,
-    c2 * n.z + (s2 * pz) / pl,
-  ).normalize();
+  dir
+    .set(c2 * n.x + (s2 * px) / pl, c2 * n.y + (s2 * py) / pl, c2 * n.z + (s2 * pz) / pl)
+    .normalize();
   return dir;
 }

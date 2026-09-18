@@ -3,7 +3,8 @@ import { Game } from './core/Game.js';
 const canvas = document.getElementById('viewport');
 const game = new Game({ canvas });
 
-game.init()
+game
+  .init()
   .then(() => game.start())
   .catch((err) => {
     console.error(err);

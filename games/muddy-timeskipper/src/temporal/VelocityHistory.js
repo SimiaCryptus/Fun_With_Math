@@ -19,7 +19,10 @@ export class VelocityHistory {
     this.out = { vx: 0, vy: 0, vz: 0, yaw: 0, yawRate: 0, speed: 0, clamped: false, age: 0 };
   }
 
-  reset() { this.buf.clear(); this._acc = 0; }
+  reset() {
+    this.buf.clear();
+    this._acc = 0;
+  }
 
   /** Call every fixed step; writes a record every HISTORY_DT of sim time. */
   advance(dt, body) {
@@ -32,13 +35,18 @@ export class VelocityHistory {
 
   record(body) {
     const a = this._a;
-    a[0] = body.vel.x; a[1] = body.vel.y; a[2] = body.vel.z;
-    a[3] = body.yaw;   a[4] = body.yawRate;
+    a[0] = body.vel.x;
+    a[1] = body.vel.y;
+    a[2] = body.vel.z;
+    a[3] = body.yaw;
+    a[4] = body.yawRate;
     a[5] = Math.hypot(body.vel.x, body.vel.z);
     this.buf.push(a);
   }
 
-  get seconds() { return this.buf.maxTicksAgo * HISTORY_DT; }
+  get seconds() {
+    return this.buf.maxTicksAgo * HISTORY_DT;
+  }
 
   /**
    * Sample the state `ageSeconds` in the past.
@@ -48,7 +56,8 @@ export class VelocityHistory {
     const o = this.out;
     if (this.buf.count === 0) {
       o.vx = o.vy = o.vz = o.yaw = o.yawRate = o.speed = 0;
-      o.clamped = true; o.age = 0;
+      o.clamped = true;
+      o.age = 0;
       return o;
     }
     const wantTicks = ageSeconds / HISTORY_DT;
@@ -75,5 +84,7 @@ export class VelocityHistory {
   }
 
   /** Speed (m/s) at `ageSeconds` ago — used by the HUD velocity ribbon. */
-  speedAt(ageSeconds) { return this.sample(ageSeconds).speed; }
+  speedAt(ageSeconds) {
+    return this.sample(ageSeconds).speed;
+  }
 }

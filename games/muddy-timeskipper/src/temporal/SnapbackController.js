@@ -21,14 +21,22 @@ export class SnapbackController {
     this.cooldowns = new Map(GEARS.map((g) => [g.id, 0]));
     this.switchLockout = 0;
     this.armLatch = 0;
-    this.rhythm = 0;              // snapbacks used this lap
+    this.rhythm = 0; // snapbacks used this lap
     this.lastEvent = null;
   }
 
-  get gear() { return gearById(this.gearId); }
-  get cooldown() { return this.cooldowns.get(this.gearId) || 0; }
-  get armed() { return this.armLatch > 0; }
-  get ready() { return this.armed && this.cooldown <= 0 && this.switchLockout <= 0; }
+  get gear() {
+    return gearById(this.gearId);
+  }
+  get cooldown() {
+    return this.cooldowns.get(this.gearId) || 0;
+  }
+  get armed() {
+    return this.armLatch > 0;
+  }
+  get ready() {
+    return this.armed && this.cooldown <= 0 && this.switchLockout <= 0;
+  }
 
   /** 0..1 "temporal strain" for HUD thermometer / cartoon rig. */
   get strain() {
@@ -56,7 +64,9 @@ export class SnapbackController {
     this.switchLockout = Math.max(0, this.switchLockout - dt);
   }
 
-  onLapComplete() { this.rhythm = 0; }
+  onLapComplete() {
+    this.rhythm = 0;
+  }
 
   /** @returns {object|null} the emitted snapback event, or null if not permitted. */
   activate(tick = 0) {
@@ -67,10 +77,12 @@ export class SnapbackController {
     const deltaP = applySnapback(this.player.body, pastP, gear, gear.blend, true);
 
     const affected = [];
-    const px = this.player.body.pos.x, pz = this.player.body.pos.z;
+    const px = this.player.body.pos.x,
+      pz = this.player.body.pos.z;
     for (const ai of this.ais) {
       if (gear.chaosRadius >= 0) {
-        const dx = ai.body.pos.x - px, dz = ai.body.pos.z - pz;
+        const dx = ai.body.pos.x - px,
+          dz = ai.body.pos.z - pz;
         if (dx * dx + dz * dz > gear.chaosRadius * gear.chaosRadius) continue;
       }
       const past = ai.history.sample(gear.offset);
@@ -95,9 +107,10 @@ export class SnapbackController {
       pastSpeedMph: msToMph(pastP.speed),
       clamped: pastP.clamped,
       affected,
-      x: px, z: pz,
+      x: px,
+      z: pz,
       shake: gear.shake,
-      sfx: gear.sfx
+      sfx: gear.sfx,
     };
     this.lastEvent = ev;
     this.bus.emit('snapback', ev);
@@ -111,7 +124,9 @@ export class SnapbackController {
  * @returns {number} magnitude of the horizontal velocity delta (for fx/audio).
  */
 export function applySnapback(body, past, gear, blend, isPlayer) {
-  const curX = body.vel.x, curY = body.vel.y, curZ = body.vel.z;
+  const curX = body.vel.x,
+    curY = body.vel.y,
+    curZ = body.vel.z;
 
   // 1. horizontal blend toward the past vector
   let nx = lerp(curX, past.vx, blend);
@@ -122,12 +137,15 @@ export function applySnapback(body, past, gear, blend, isPlayer) {
     const mag = Math.hypot(nx, nz);
     if (mag > 1e-4) {
       V.forwardFromYaw(_tmpF, body.yaw);
-      const fx = _tmpF.x, fz = _tmpF.z;
-      const ux = nx / mag, uz = nz / mag;
+      const fx = _tmpF.x,
+        fz = _tmpF.z;
+      const ux = nx / mag,
+        uz = nz / mag;
       const bx = lerp(ux, fx, gear.headingRealign);
       const bz = lerp(uz, fz, gear.headingRealign);
       const bm = Math.hypot(bx, bz) || 1;
-      nx = (bx / bm) * mag; nz = (bz / bm) * mag;
+      nx = (bx / bm) * mag;
+      nz = (bz / bm) * mag;
     }
   }
 
@@ -141,7 +159,7 @@ export function applySnapback(body, past, gear, blend, isPlayer) {
       const excess = newFwd - cap;
       nx -= _tmpF.x * excess;
       nz -= _tmpF.z * excess;
-      body.fx.deniedBoost = excess;   // render as cartoon boost that does nothing
+      body.fx.deniedBoost = excess; // render as cartoon boost that does nothing
     } else {
       body.fx.deniedBoost = 0;
     }
@@ -154,10 +172,13 @@ export function applySnapback(body, past, gear, blend, isPlayer) {
   V.set(_tmpNew, nx, ny, nz);
   V.clampLen(_tmpNew, SNAP.MAX_SPEED);
 
-  body.vel.x = _tmpNew.x; body.vel.y = _tmpNew.y; body.vel.z = _tmpNew.z;
+  body.vel.x = _tmpNew.x;
+  body.vel.y = _tmpNew.y;
+  body.vel.z = _tmpNew.z;
   body.yawRate = lerp(body.yawRate, past.yawRate, blend * gear.angularBlend);
 
-  const dvx = body.vel.x - curX, dvz = body.vel.z - curZ;
+  const dvx = body.vel.x - curX,
+    dvz = body.vel.z - curZ;
   const dv = Math.hypot(dvx, dvz);
 
   // cartoon-only state (never affects physics)

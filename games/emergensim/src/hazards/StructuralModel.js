@@ -5,7 +5,10 @@ const COLLAPSIBLE = new Set(['FLOOR', 'DOOR', 'STAIR', 'CONTAINMENT', 'EXIT']);
 
 /** Structural integrity per tile: heat weakening, shock propagation, collapse -> debris blocking. */
 export class StructuralModel {
-  constructor(state, bus) { this.state = state; this.bus = bus; }
+  constructor(state, bus) {
+    this.state = state;
+    this.bus = bus;
+  }
 
   tick() {
     const { grid } = this.state;
@@ -18,7 +21,8 @@ export class StructuralModel {
       else if (tile.temperature > 300) v -= 0.015;
       else continue;
       integ.set(key, Math.max(0, v));
-      if (v < 0.3 && !tile.debris && COLLAPSIBLE.has(tile.type)) this.collapse(key, 'heat-weakened structure', []);
+      if (v < 0.3 && !tile.debris && COLLAPSIBLE.has(tile.type))
+        this.collapse(key, 'heat-weakened structure', []);
     }
   }
 
@@ -33,7 +37,8 @@ export class StructuralModel {
       integ.set(key, nv);
       if (nv < 0.3 && !tile.debris && COLLAPSIBLE.has(tile.type)) collapsed.push(key);
     }
-    for (const key of collapsed) this.collapse(key, `aftershock (M${magnitude})`, causeId ? [causeId] : []);
+    for (const key of collapsed)
+      this.collapse(key, `aftershock (M${magnitude})`, causeId ? [causeId] : []);
     for (const npc of this.state.npcs.values()) {
       if (npc.status === 'ACTIVE') npc.traits.fear = Math.min(1, npc.traits.fear + magnitude * 0.4);
     }
@@ -44,14 +49,20 @@ export class StructuralModel {
   windGust(causeId) {
     const { grid } = this.state;
     for (const t of grid.tilesOfType('WINDOW')) t.shattered = true;
-    const nearWindow = (pos) => grid.neighbors(pos, { vertical: false }).some((n) => n.tile.type === 'WINDOW');
+    const nearWindow = (pos) =>
+      grid.neighbors(pos, { vertical: false }).some((n) => n.tile.type === 'WINDOW');
     for (const npc of this.state.npcs.values()) {
-      if (npc.status === 'ACTIVE' && !npc.carriedBy && nearWindow(npc.position)) incapacitateNPC(this.state, this.bus, npc, 'window debris', causeId ? [causeId] : []);
+      if (npc.status === 'ACTIVE' && !npc.carriedBy && nearWindow(npc.position))
+        incapacitateNPC(this.state, this.bus, npc, 'window debris', causeId ? [causeId] : []);
     }
     const p = this.state.player;
     if (p.physicalState.status === 'ACTIVE' && nearWindow(p.position)) {
       p.physicalState.injured = true;
-      this.state.log({ type: 'PLAYER_INJURED', reason: 'window debris', causes: causeId ? [causeId] : [] });
+      this.state.log({
+        type: 'PLAYER_INJURED',
+        reason: 'window debris',
+        causes: causeId ? [causeId] : [],
+      });
     }
   }
 
@@ -66,9 +77,11 @@ export class StructuralModel {
       this.state.hazards.structuralIntegrity.set(n.tile.key, Math.max(0, v - 0.12));
     }
     for (const npc of this.state.npcs.values()) {
-      if (npc.status === 'ACTIVE' && !npc.carriedBy && keyOf(npc.position) === key) incapacitateNPC(this.state, this.bus, npc, 'structural collapse', [rec.id]);
+      if (npc.status === 'ACTIVE' && !npc.carriedBy && keyOf(npc.position) === key)
+        incapacitateNPC(this.state, this.bus, npc, 'structural collapse', [rec.id]);
     }
-    if (keyOf(this.state.player.position) === key) incapacitatePlayer(this.state, this.bus, 'structural collapse', [rec.id]);
+    if (keyOf(this.state.player.position) === key)
+      incapacitatePlayer(this.state, this.bus, 'structural collapse', [rec.id]);
     this.bus.emit('HAZARD_SPAWNED', { type: 'DEBRIS', key });
     this.bus.emit('TILE_CHANGED', { key });
   }

@@ -5,26 +5,30 @@
 ## 1. Executive Summary & System Overview
 
 ### 1.1 Purpose and Vision
-Project PROTOCOL is an interactive, browser-based tactical simulation engine designed to teach crisis navigation, risk geometry, emergency protocols, and social dynamics to learners without relying on high-stress real-time panic mechanics or graphic trauma. By decomposing emergencies into turn-based tactical puzzles—akin to a modern systemic evolution of *The Oregon Trail* combined with turn-based grid tactics—the system affords students the cognitive decompression required to evaluate systemic trade-offs, explore non-ideal decisions, and understand causal failure modes in civil and institutional systems.
+
+Project PROTOCOL is an interactive, browser-based tactical simulation engine designed to teach crisis navigation, risk geometry, emergency protocols, and social dynamics to learners without relying on high-stress real-time panic mechanics or graphic trauma. By decomposing emergencies into turn-based tactical puzzles—akin to a modern systemic evolution of _The Oregon Trail_ combined with turn-based grid tactics—the system affords students the cognitive decompression required to evaluate systemic trade-offs, explore non-ideal decisions, and understand causal failure modes in civil and institutional systems.
 
 ### 1.2 Core Architectural Principles
-* **Decoupled Deterministic Simulation Engine:** The state machine and hazard propagation run independently of the presentation layer, enabling deterministic replays, branching state exploration, and non-real-time step evaluation.
-* **Mechanism Over Morality:** Human interactions, panic, bullying, fights, and cooperation emerge organically from unified mathematical drivers ($Fear, Greed, Trust, Rage, Cohesion$) rather than hardcoded narrative scripts.
-* **Abstracted, Non-Traumatic Outcomes:** Danger is communicated mathematically through spatial coverage, systemic debuffs (e.g., disorientation, reduced mobility, smoke inhalation, spatial displacement), and neutral state removals (tagged/evacuated) rather than sensationalized graphic trauma.
-* **Pedagogical Autopsy (The Meta-Layer):** Every terminal state or completed turn can be inspected via an automated causal graph detailing why specific outcomes manifested (e.g., *"Door left open $\rightarrow$ Oxygen inflow accelerated thermal spread to Hallway B by 3 turns"*).
-* **Zero-Build Native Web Stack:** Built on native Web standards using Modular ES6, modern HTML5 Custom Elements / Canvas overlays, and Three.js for isometric hardware-accelerated 3D tactical visualization.
+
+- **Decoupled Deterministic Simulation Engine:** The state machine and hazard propagation run independently of the presentation layer, enabling deterministic replays, branching state exploration, and non-real-time step evaluation.
+- **Mechanism Over Morality:** Human interactions, panic, bullying, fights, and cooperation emerge organically from unified mathematical drivers ($Fear, Greed, Trust, Rage, Cohesion$) rather than hardcoded narrative scripts.
+- **Abstracted, Non-Traumatic Outcomes:** Danger is communicated mathematically through spatial coverage, systemic debuffs (e.g., disorientation, reduced mobility, smoke inhalation, spatial displacement), and neutral state removals (tagged/evacuated) rather than sensationalized graphic trauma.
+- **Pedagogical Autopsy (The Meta-Layer):** Every terminal state or completed turn can be inspected via an automated causal graph detailing why specific outcomes manifested (e.g., _"Door left open $\rightarrow$ Oxygen inflow accelerated thermal spread to Hallway B by 3 turns"_).
+- **Zero-Build Native Web Stack:** Built on native Web standards using Modular ES6, modern HTML5 Custom Elements / Canvas overlays, and Three.js for isometric hardware-accelerated 3D tactical visualization.
 
 ---
 
 ## 2. Technology Stack & Directory Structure
 
 ### 2.1 Technology Stack
-* **Language & Runtime:** Modern ECMAScript (ES2022+), native browser ES Modules (`<script type="module">`).
-* **3D Rendering & Geometry:** Three.js (r128+) leveraging WebGL 2.0 with orthographic/isometric camera projection, custom GLSL shader overlays for line-of-sight and hazard fields.
-* **UI & HUD Layer:** High-performance semantic HTML5, CSS Grid/Flexbox with CSS Custom Properties for dynamic HUD theming, and an SVG-based dynamic telemetry overlay.
-* **Math & Spatial Acceleration:** Custom Spatial Hash Grid, A* Pathfinding with custom multi-objective cost matrices, and Bresenham-based 3D Line-of-Sight (LoS) Raycasting.
+
+- **Language & Runtime:** Modern ECMAScript (ES2022+), native browser ES Modules (`<script type="module">`).
+- **3D Rendering & Geometry:** Three.js (r128+) leveraging WebGL 2.0 with orthographic/isometric camera projection, custom GLSL shader overlays for line-of-sight and hazard fields.
+- **UI & HUD Layer:** High-performance semantic HTML5, CSS Grid/Flexbox with CSS Custom Properties for dynamic HUD theming, and an SVG-based dynamic telemetry overlay.
+- **Math & Spatial Acceleration:** Custom Spatial Hash Grid, A* Pathfinding with custom multi-objective cost matrices, and Bresenham-based 3D Line-of-Sight (LoS) Raycasting.
 
 ### 2.2 System Directory Structure
+
 ```
 protocol-tactical-sim/
 ├── index.html                     # Entry HTML, canvas mount, telemetry HUD
@@ -80,6 +84,7 @@ protocol-tactical-sim/
 ## 3. Data Models & State Schema
 
 ### 3.1 Global State Tree
+
 The game state is structured as a single deterministic data tree. Every turn can be serialized to a raw JSON snapshot for step-by-step undo, replay, and causal analysis.
 
 ```typescript
@@ -121,6 +126,7 @@ interface GlobalState {
 ```
 
 ### 3.2 Coordinate & Tile Data Models
+
 ```typescript
 interface Coordinate3D {
   x: number; // Grid Column (East-West)
@@ -134,17 +140,17 @@ interface TileState {
   walkable: boolean;
   occludesVision: boolean;
   material: {
-    flammability: number;     // 0.0 (Concrete) to 1.0 (Paper/Solvents)
-    fuelCapacity: number;     // Total thermal energy potential in Joules/unit
-    structuralMax: number;    // Maximum mechanical load before collapse
-    soundTransmission: number;// Audio attenuation coefficient
+    flammability: number; // 0.0 (Concrete) to 1.0 (Paper/Solvents)
+    fuelCapacity: number; // Total thermal energy potential in Joules/unit
+    structuralMax: number; // Maximum mechanical load before collapse
+    soundTransmission: number; // Audio attenuation coefficient
   };
   doorState?: {
     isOpen: boolean;
     isLocked: boolean;
     isBarricaded: boolean;
     barricadeStrength: number; // Degradation threshold under brute force
-    temperature: number;       // External surface temperature in Celsius
+    temperature: number; // External surface temperature in Celsius
   };
   elevation: number;
 }
@@ -155,12 +161,14 @@ interface TileState {
 ## 4. Coordinate, Grid, & Visibility Systems
 
 ### 4.1 Grid Geometry & Spatial Indexing
-* **Metric:** Discrete 3D Grid where each tile represents $1.5\text{m} \times 1.5\text{m} \times 3.0\text{m}$ of physical space.
-* **Coordinate Hashing:** Fast $O(1)$ spatial queries via bit-packed or string-hashed coordinates:
+
+- **Metric:** Discrete 3D Grid where each tile represents $1.5\text{m} \times 1.5\text{m} \times 3.0\text{m}$ of physical space.
+- **Coordinate Hashing:** Fast $O(1)$ spatial queries via bit-packed or string-hashed coordinates:
   $$\text{Hash}(x, y, z) = (x \ \& \ 0\text{xFFFF}) \mid ((y \ \& \ 0\text{xFFFF}) \ll 16) \mid ((z \ \& \ 0\text{xFF}) \ll 32)$$
-* **Adjacency:** 8-way directional connectivity on the XY plane (orthogonal cost $= 1.0$, diagonal cost $= 1.414$), with vertical traversal restricted to linked `STAIR` or `ELEVATOR_SHAFT` tiles.
+- **Adjacency:** 8-way directional connectivity on the XY plane (orthogonal cost $= 1.0$, diagonal cost $= 1.414$), with vertical traversal restricted to linked `STAIR` or `ELEVATOR_SHAFT` tiles.
 
 ### 4.2 Multi-Floor Volumetric Line of Sight (LoS)
+
 Visibility is calculated from the player’s ocular coordinate using an octant-based 3D Bresenham Raycasting or Shadow-Casting algorithm.
 
 ```
@@ -172,9 +180,9 @@ Visibility is calculated from the player’s ocular coordinate using an octant-b
 ```
 
 1. **Vision States:**
-    * `UNSEEN`: Tile has never been in LoS (Rendered pitch black or hidden).
-    * `EXPLORED`: Previously observed; static geometry visible, dynamic entities/hazards hidden (Desaturated gray architectural blueprint).
-    * `VISIBLE`: Real-time line-of-sight confirmed. All hazards, dynamic objects, and NPCs rendered with full telemetry.
+   - `UNSEEN`: Tile has never been in LoS (Rendered pitch black or hidden).
+   - `EXPLORED`: Previously observed; static geometry visible, dynamic entities/hazards hidden (Desaturated gray architectural blueprint).
+   - `VISIBLE`: Real-time line-of-sight confirmed. All hazards, dynamic objects, and NPCs rendered with full telemetry.
 2. **Smoke Attenuation:** Smoke density ($D \in [0.0, 1.0]$) absorbs visibility along rays:
    $$\text{Remaining Visibility} = V_0 \cdot \prod_{i=1}^{N} (1.0 - \alpha \cdot D_i)$$
    Where $\alpha$ is the smoke extinction coefficient ($0.65$). When $\text{Remaining Visibility} < 0.15$, ray propagation terminates.
@@ -195,52 +203,58 @@ Visibility is calculated from the player’s ocular coordinate using an octant-b
 ```
 
 ### 5.1 Thermal & Fire Model
+
 Fire is not randomized; it is a deterministic thermodynamic cellular automaton parameterized by fuel, oxygen, and temperature:
 
 $$\Delta T_i = \left( \sum_{j \in \text{Neighbors}} \frac{K_{\text{cond}} \cdot (T_j - T_i)}{\text{dist}(i,j)} \right) + Q_{\text{combustion}}(i) - Q_{\text{loss}}(i)$$
 
-* **Combustion Trigger:** If $T_i \ge T_{\text{ignition}}$ and $\text{Fuel}_i > 0$ and $\text{Oxygen}_i > 0.05$:
-    * Combustion commences.
-    * $\text{Oxygen}_i$ is consumed at rate $\beta_{\text{oxy}}$.
-    * $\text{Smoke}_i$ is generated proportional to fuel burn rate.
-    * $\text{DoorState.temperature}$ increases. Players checking doors touch a hot surface if $T > 55^\circ\text{C}$, exposing door opening risks.
+- **Combustion Trigger:** If $T_i \ge T_{\text{ignition}}$ and $\text{Fuel}_i > 0$ and $\text{Oxygen}_i > 0.05$:
+  - Combustion commences.
+  - $\text{Oxygen}_i$ is consumed at rate $\beta_{\text{oxy}}$.
+  - $\text{Smoke}_i$ is generated proportional to fuel burn rate.
+  - $\text{DoorState.temperature}$ increases. Players checking doors touch a hot surface if $T > 55^\circ\text{C}$, exposing door opening risks.
 
 ### 5.2 Smoke & Toxic Gas Model
-* **Buoyancy:** Smoke moves upwards ($Z + 1$) via open stairwells or double-height spaces until hitting a ceiling.
-* **Lateral Spread:** Smoke spreads horizontally across adjacent non-wall cells when ceiling capacity is reached.
-* **Inhalation Impact:**
-    * Mild Exposure ($D \in [0.2, 0.5]$): Action Point (AP) maximum reduced by 1.
-    * Heavy Exposure ($D > 0.5$): Movement cost doubled; disoriented pathing (15% chance to deviate by 45 degrees); cumulative lung irritation counter.
+
+- **Buoyancy:** Smoke moves upwards ($Z + 1$) via open stairwells or double-height spaces until hitting a ceiling.
+- **Lateral Spread:** Smoke spreads horizontally across adjacent non-wall cells when ceiling capacity is reached.
+- **Inhalation Impact:**
+  - Mild Exposure ($D \in [0.2, 0.5]$): Action Point (AP) maximum reduced by 1.
+  - Heavy Exposure ($D > 0.5$): Movement cost doubled; disoriented pathing (15% chance to deviate by 45 degrees); cumulative lung irritation counter.
 
 ### 5.3 Active Threat & Non-Graphic Threat Dynamics
+
 To preserve psychological safety while modeling lockdown dynamics, human or external physical threats operate on spatial rule-based vectors:
-* **Perception Cone:** Threat has a forward $120^\circ$ vision cone of 12 tiles and a $360^\circ$ acoustic radius (triggered by running, yelling, door slamming).
-* **State Machine:**
-    * `PATROL`: Moves along defined systemic patrol routes.
-    * `INVESTIGATE`: Moves toward last heard acoustic origin or open door.
-    * `PURSUIT`: Moves along shortest direct path to visible target.
-* **Barricade & Door Mechanics:** If a locked/barricaded door blocks the path, the threat expends turns applying force. Each turn decrements `barricadeStrength` based on structural resistance.
-* **Non-Graphic Resolution:** Reaching a target cell "tags" the entity, removing them from the active tactical grid into the triage/evacuated ledger with zero graphic depiction.
+
+- **Perception Cone:** Threat has a forward $120^\circ$ vision cone of 12 tiles and a $360^\circ$ acoustic radius (triggered by running, yelling, door slamming).
+- **State Machine:**
+  - `PATROL`: Moves along defined systemic patrol routes.
+  - `INVESTIGATE`: Moves toward last heard acoustic origin or open door.
+  - `PURSUIT`: Moves along shortest direct path to visible target.
+- **Barricade & Door Mechanics:** If a locked/barricaded door blocks the path, the threat expends turns applying force. Each turn decrements `barricadeStrength` based on structural resistance.
+- **Non-Graphic Resolution:** Reaching a target cell "tags" the entity, removing them from the active tactical grid into the triage/evacuated ledger with zero graphic depiction.
 
 ---
 
 ## 6. Unified NPC Psychological & Behavioral Spine
 
 ### 6.1 The 5-Variable Psychological Vector
+
 Every dynamic non-player agent possesses five orthogonal psychological traits normalized on $[0.0, 1.0]$:
 
-| Trait | Symbol | Meaning in Crisis Simulation |
-| :--- | :---: | :--- |
-| **Fear** | $F$ | Direct flight impulse, self-preservation, hyper-reactivity to sensory hazards. |
-| **Greed** | $G$ | Preservation of personal belongings, self-serving resource retention, exit hoarding. |
-| **Trust** | $T$ | Willingness to follow player instructions, share resources, and accept orders. |
-| **Rage** | $R$ | Reactive aggression, resistance to authority, impulse to physically push or fight. |
-| **Cohesion** | $C$ | Institutional identification, group loyalty, adherence to collective protocols. |
+| Trait        | Symbol | Meaning in Crisis Simulation                                                         |
+| :----------- | :----: | :----------------------------------------------------------------------------------- |
+| **Fear**     |  $F$   | Direct flight impulse, self-preservation, hyper-reactivity to sensory hazards.       |
+| **Greed**    |  $G$   | Preservation of personal belongings, self-serving resource retention, exit hoarding. |
+| **Trust**    |  $T$   | Willingness to follow player instructions, share resources, and accept orders.       |
+| **Rage**     |  $R$   | Reactive aggression, resistance to authority, impulse to physically push or fight.   |
+| **Cohesion** |  $C$   | Institutional identification, group loyalty, adherence to collective protocols.      |
 
 ### 6.2 Derived Dynamic States
+
 At the start of each NPC phase, secondary behavioral drivers are computed mathematically:
 
-$$\begin{aligned}
+$$ \begin{aligned}
 \text{Stress} &= \text{clamp}(F \cdot 0.7 + R \cdot 0.3 + \text{HazardProximityFactor}, 0, 1) \\
 \text{Confidence} &= \text{clamp}(T \cdot 0.5 + C \cdot 0.5 - \text{Stress} \cdot 0.4, 0, 1) \\
 \text{Aggression} &= \text{clamp}(R \cdot 0.6 + G \cdot 0.4 - T \cdot 0.3, 0, 1) \\
@@ -1060,3 +1074,4 @@ export class SceneRenderer {
 ```
 
 This specification represents the complete architectural and operational standard for the Project PROTOCOL turn-based tactical emergency simulation engine.
+$$

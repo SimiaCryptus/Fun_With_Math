@@ -7,9 +7,9 @@ export class RingBuffer {
     this.capacity = capacity | 0;
     this.stride = stride | 0;
     this.data = new Float32Array(this.capacity * this.stride);
-    this.head = -1;    // index of the most recent record
-    this.count = 0;    // records written, saturating at capacity
-    this.total = 0;    // monotonic write counter (never resets)
+    this.head = -1; // index of the most recent record
+    this.count = 0; // records written, saturating at capacity
+    this.total = 0; // monotonic write counter (never resets)
   }
 
   /** Append a record. `values` must have length >= stride. */
@@ -32,10 +32,14 @@ export class RingBuffer {
   }
 
   /** True when `n` ticks of history actually exist. */
-  has(n) { return this.count > n; }
+  has(n) {
+    return this.count > n;
+  }
 
   /** Oldest available age in ticks. */
-  get maxTicksAgo() { return Math.max(0, this.count - 1); }
+  get maxTicksAgo() {
+    return Math.max(0, this.count - 1);
+  }
 
   read(n, out) {
     const o = this.offsetTicksAgo(n);
@@ -44,5 +48,10 @@ export class RingBuffer {
     return out;
   }
 
-  clear() { this.head = -1; this.count = 0; this.total = 0; this.data.fill(0); }
+  clear() {
+    this.head = -1;
+    this.count = 0;
+    this.total = 0;
+    this.data.fill(0);
+  }
 }

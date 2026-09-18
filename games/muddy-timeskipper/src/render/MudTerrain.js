@@ -4,7 +4,7 @@ import * as THREE from 'three';
  * Shared GLSL: cheap hash noise + fbm and the off-track ground colour, so the outer
  * world (Environment.js) matches the MudField seamlessly at the field border.
  */
-export const NOISE_GLSL = /* glsl */`
+export const NOISE_GLSL = /* glsl */ `
   float mtHash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
   float mtNoise(vec2 p){
     vec2 i = floor(p), f = fract(p); vec2 u = f * f * (3.0 - 2.0 * f);
@@ -47,7 +47,7 @@ function bakeTrackMask(field, spline) {
       const half = spline.w[n.index] * 0.5;
       hint = n.dist < half * 5 ? n.index : -1;
       const o = (iy * res + ix) * 4;
-      data[o]     = Math.max(-6, Math.min(6, n.lateral / half));
+      data[o] = Math.max(-6, Math.min(6, n.lateral / half));
       data[o + 1] = spline.s[n.index];
       data[o + 2] = half;
       data[o + 3] = Math.min(6, n.dist / half);
@@ -70,13 +70,23 @@ export class MudTerrain {
     this.field = field;
     const res = field.res;
 
-    this.tex = new THREE.DataTexture(new Float32Array(res * res * 4), res, res,
-      THREE.RGBAFormat, THREE.FloatType);
+    this.tex = new THREE.DataTexture(
+      new Float32Array(res * res * 4),
+      res,
+      res,
+      THREE.RGBAFormat,
+      THREE.FloatType
+    );
     this.tex.minFilter = this.tex.magFilter = THREE.LinearFilter;
     this.tex.needsUpdate = true;
 
-    this.trackTex = new THREE.DataTexture(bakeTrackMask(field, spline), res, res,
-      THREE.RGBAFormat, THREE.FloatType);
+    this.trackTex = new THREE.DataTexture(
+      bakeTrackMask(field, spline),
+      res,
+      res,
+      THREE.RGBAFormat,
+      THREE.FloatType
+    );
     this.trackTex.minFilter = this.trackTex.magFilter = THREE.LinearFilter;
     this.trackTex.needsUpdate = true;
 
@@ -90,13 +100,13 @@ export class MudTerrain {
       uTexel: { value: 1 / res },
       uCell: { value: field.cell },
       uTrackLen: { value: spline.length },
-      uDry:    col(palette.dry,    0x7a5f2c),
-      uWet:    col(palette.wet,    0x261a0a),
-      uSlime:  col(palette.slime,  0x5c7a1c),
-      uGrass:  col(palette.grass,  0x55602a),
+      uDry: col(palette.dry, 0x7a5f2c),
+      uWet: col(palette.wet, 0x261a0a),
+      uSlime: col(palette.slime, 0x5c7a1c),
+      uGrass: col(palette.grass, 0x55602a),
       uPacked: col(palette.packed, 0x5a4424),
-      uCurbA:  col(palette.curbA,  0xc8452a),
-      uCurbB:  col(palette.curbB,  0xe9ddc2)
+      uCurbA: col(palette.curbA, 0xc8452a),
+      uCurbB: col(palette.curbB, 0xe9ddc2),
     };
 
     this.mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0 });
@@ -105,12 +115,17 @@ export class MudTerrain {
       Object.assign(shader.uniforms, u);
 
       shader.vertexShader = shader.vertexShader
-        .replace('#include <common>', /* glsl */`
+        .replace(
+          '#include <common>',
+          /* glsl */ `
           #include <common>
           uniform sampler2D uField; uniform sampler2D uTrack;
           uniform float uTexel; uniform float uCell;
-          varying vec4 vF; varying vec4 vTrk; varying vec3 vWorld;`)
-        .replace('#include <beginnormal_vertex>', /* glsl */`
+          varying vec4 vF; varying vec4 vTrk; varying vec3 vWorld;`
+        )
+        .replace(
+          '#include <beginnormal_vertex>',
+          /* glsl */ `
           vec2 fuv = vec2(uv.x, 1.0 - uv.y);
           vF   = texture2D(uField, fuv);
           vTrk = texture2D(uTrack, fuv);
@@ -121,20 +136,29 @@ export class MudTerrain {
           vec3 objectNormal = normalize(vec3(hL - hR, 2.0 * uCell, hD - hU));
           #ifdef USE_TANGENT
             vec3 objectTangent = vec3( tangent.xyz );
-          #endif`)
-        .replace('#include <begin_vertex>', /* glsl */`
+          #endif`
+        )
+        .replace(
+          '#include <begin_vertex>',
+          /* glsl */ `
           vec3 transformed = vec3(position);
           transformed.y += vF.r;
-          vWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;`);
+          vWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;`
+        );
 
       shader.fragmentShader = shader.fragmentShader
-        .replace('#include <common>', /* glsl */`
+        .replace(
+          '#include <common>',
+          /* glsl */ `
           #include <common>
           uniform vec3 uDry, uWet, uSlime, uGrass, uPacked, uCurbA, uCurbB;
           uniform float uTrackLen;
           varying vec4 vF; varying vec4 vTrk; varying vec3 vWorld;
-          ${NOISE_GLSL}`)
-        .replace('#include <color_fragment>', /* glsl */`
+          ${NOISE_GLSL}`
+        )
+        .replace(
+          '#include <color_fragment>',
+          /* glsl */ `
           #include <color_fragment>
           float mtWet = 0.0;
           {
@@ -184,10 +208,14 @@ export class MudTerrain {
             c *= 1.0 - vF.a * 0.3;
             diffuseColor.rgb = c;
             mtWet = clamp(vF.b * 0.7 + vF.g * 0.7, 0.0, 1.0);
-          }`)
-        .replace('#include <roughnessmap_fragment>', /* glsl */`
+          }`
+        )
+        .replace(
+          '#include <roughnessmap_fragment>',
+          /* glsl */ `
           #include <roughnessmap_fragment>
-          roughnessFactor = mix(roughnessFactor, 0.28, mtWet);`);
+          roughnessFactor = mix(roughnessFactor, 0.28, mtWet);`
+        );
     };
 
     this.mesh = new THREE.Mesh(geo, this.mat);
@@ -199,7 +227,9 @@ export class MudTerrain {
   }
 
   syncAll() {
-    const f = this.field, d = this.tex.image.data, n = f.res * f.res;
+    const f = this.field,
+      d = this.tex.image.data,
+      n = f.res * f.res;
     for (let i = 0; i < n; i++) {
       d[i * 4 + 0] = f.height[i];
       d[i * 4 + 1] = f.depth[i];
@@ -225,7 +255,7 @@ export class MudTerrain {
         d[i * 4 + 3] = Math.hypot(f.rutU[i], f.rutV[i]);
       }
     }
-    this.tex.needsUpdate = true;   // M9: replace with texSubImage2D partial upload
+    this.tex.needsUpdate = true; // M9: replace with texSubImage2D partial upload
     f.dirty.any = false;
   }
 }

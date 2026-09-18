@@ -24,7 +24,9 @@ export class HazardManager {
     });
   }
 
-  processThreatTick() { this.threat.tick(); }
+  processThreatTick() {
+    this.threat.tick();
+  }
 
   processEnvironmentTick() {
     const s = this.state;
@@ -37,14 +39,35 @@ export class HazardManager {
 
   _runScheduled(ev) {
     const s = this.state;
-    const rec = s.log({ type: 'SCHEDULED_EVENT', eventType: ev.type, magnitude: ev.magnitude, message: ev.message || ev.type });
+    const rec = s.log({
+      type: 'SCHEDULED_EVENT',
+      eventType: ev.type,
+      magnitude: ev.magnitude,
+      message: ev.message || ev.type,
+    });
     switch (ev.type) {
-      case 'AFTERSHOCK': this.structural.applyShock(ev.magnitude ?? 0.3, rec.id); break;
-      case 'WIND_GUST': this.structural.windGust(rec.id); break;
-      case 'ALARM': s.social.alarmActive = true; break;
-      case 'FIRE': if (ev.position) this.fire.ignite(keyOf(ev.position), 'EVENT', ev.intensity ?? 0.5); break;
-      case 'SMOKE': if (ev.position) { const k = keyOf(ev.position); const c = s.hazards.smokeCells.get(k) || { density: 0 }; c.density = Math.min(1, c.density + (ev.intensity ?? 0.5)); s.hazards.smokeCells.set(k, c); } break;
-      default: break;
+      case 'AFTERSHOCK':
+        this.structural.applyShock(ev.magnitude ?? 0.3, rec.id);
+        break;
+      case 'WIND_GUST':
+        this.structural.windGust(rec.id);
+        break;
+      case 'ALARM':
+        s.social.alarmActive = true;
+        break;
+      case 'FIRE':
+        if (ev.position) this.fire.ignite(keyOf(ev.position), 'EVENT', ev.intensity ?? 0.5);
+        break;
+      case 'SMOKE':
+        if (ev.position) {
+          const k = keyOf(ev.position);
+          const c = s.hazards.smokeCells.get(k) || { density: 0 };
+          c.density = Math.min(1, c.density + (ev.intensity ?? 0.5));
+          s.hazards.smokeCells.set(k, c);
+        }
+        break;
+      default:
+        break;
     }
     this.bus.emit('EVENT_BANNER', { message: ev.message || ev.type, eventType: ev.type });
   }

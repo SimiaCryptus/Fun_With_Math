@@ -9,7 +9,9 @@ export class DialogOverlay {
     this._offs = [
       bus.on('NPC_DIALOG', (e) => this.show(e)),
       bus.on('REWOUND', () => this.clear()),
-      bus.on('SCENARIO_ENDED', () => { for (const b of this.bubbles.values()) b.expires += 4000; }),
+      bus.on('SCENARIO_ENDED', () => {
+        for (const b of this.bubbles.values()) b.expires += 4000;
+      }),
     ];
   }
 
@@ -39,7 +41,10 @@ export class DialogOverlay {
       }
       const pos = npc.carriedBy ? this.state.player.position : npc.position;
       const p = project(pos);
-      if (!p || !p.visible) { b.el.style.display = 'none'; continue; }
+      if (!p || !p.visible) {
+        b.el.style.display = 'none';
+        continue;
+      }
       const remaining = b.expires - now;
       b.el.style.display = '';
       b.el.style.left = `${p.x}px`;

@@ -185,8 +185,14 @@ export class Game {
       }
 
       case 'race': {
-        if (input.consume('pause')) { this.pause(); break; }
-        if (input.consume('restart')) { this.beginRace(); break; }
+        if (input.consume('pause')) {
+          this.pause();
+          break;
+        }
+        if (input.consume('restart')) {
+          this.beginRace();
+          break;
+        }
         const controls = input.controls();
         this.car.update(dt, controls);
         const events = this.physics.step(this.car, dt);
@@ -259,13 +265,7 @@ export class Game {
     const car = this.car;
 
     this.camera.update(this.track, car, dt, this.input.isDown('lookBack'));
-    updateRelativity(
-      this.camera.object,
-      this.camera.velocityDir,
-      car.beta,
-      this.effect,
-      this.time,
-    );
+    updateRelativity(this.camera.object, this.camera.velocityDir, car.beta, this.effect, this.time);
 
     this.sky.update(this.camera.object);
     this.props.update(dt);

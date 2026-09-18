@@ -5,8 +5,8 @@ import { BODY_BY_ID } from '../data/bodies.js';
 import { elementsToState } from '../core/kepler.js';
 import { DEG, TWO_PI, daysToTU, tuToDays, wrapAngle } from '../core/units.js';
 
-const cache = new Map();      // key: `${id}|${quantizedDays}` -> {r,v}
-const CACHE_Q = 1 / 64;       // day quantum for memoisation
+const cache = new Map(); // key: `${id}|${quantizedDays}` -> {r,v}
+const CACHE_Q = 1 / 64; // day quantum for memoisation
 
 /** Osculating elements (radians) for body `id` at time `tDays` (since J2000). */
 export function bodyElements(id, tDays) {
@@ -21,15 +21,15 @@ export function bodyElements(id, tDays) {
     const e = e0 + ed * T;
     const I = (I0 + Id * T) * DEG;
     const L = (L0 + Ld * T) * DEG;
-    const P = (P0 + Pd * T) * DEG;   // longitude of perihelion
-    const O = (O0 + Od * T) * DEG;   // longitude of ascending node
+    const P = (P0 + Pd * T) * DEG; // longitude of perihelion
+    const O = (O0 + Od * T) * DEG; // longitude of ascending node
     return { a, e, i: I, Om: O, w: wrapAngle(P - O), M: wrapAngle(L - P) };
   }
 
   // fixed osculating elements + mean motion (canonical mu = 1)
   const { a, e, i, Om, w, M0 } = b.el;
-  const n = Math.sqrt(1 / (a * a * a));                 // rad / TU
-  const M = wrapAngle(M0 * DEG + n * daysToTU(tDays));  // epoch = J2000
+  const n = Math.sqrt(1 / (a * a * a)); // rad / TU
+  const M = wrapAngle(M0 * DEG + n * daysToTU(tDays)); // epoch = J2000
   return { a, e, i: i * DEG, Om: Om * DEG, w: w * DEG, M };
 }
 

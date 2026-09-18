@@ -12,14 +12,14 @@ import { gamma, inertialFalloff } from '../relativity/lorentz.js';
  */
 export class Car {
   constructor(opts = {}) {
-    this.baseAccel = opts.baseAccel ?? 26;   // m/s² of proper thrust
+    this.baseAccel = opts.baseAccel ?? 26; // m/s² of proper thrust
     this.boostAccel = opts.boostAccel ?? 20;
     this.padAccel = opts.padAccel ?? 34;
     this.brakeAccel = opts.brakeAccel ?? 36;
-    this.dragK = opts.dragK ?? 0.11;         // linear drag coefficient
+    this.dragK = opts.dragK ?? 0.11; // linear drag coefficient
     this.steerRate = opts.steerRate ?? 1.25; // rad/s at low speed
     this.maxHeading = opts.maxHeading ?? 0.55;
-    this.boostDrain = opts.boostDrain ?? 0.40;
+    this.boostDrain = opts.boostDrain ?? 0.4;
     this.boostRegen = opts.boostRegen ?? 0.05;
     this.reset();
   }
@@ -35,9 +35,15 @@ export class Car {
     this.scrape = 0;
   }
 
-  get beta() { return clamp(this.v / C_MS, 0, MAX_BETA); }
-  get gamma() { return gamma(this.beta); }
-  get mph() { return this.v / 0.44704; }
+  get beta() {
+    return clamp(this.v / C_MS, 0, MAX_BETA);
+  }
+  get gamma() {
+    return gamma(this.beta);
+  }
+  get mph() {
+    return this.v / 0.44704;
+  }
 
   addBoost(amount) {
     this.boost = clamp(this.boost + amount, 0, 1);
@@ -69,10 +75,10 @@ export class Car {
       this.padTimer = Math.max(0, this.padTimer - dt);
     }
 
-    let a = thrust * inertialFalloff(g);        // relativistic mass
+    let a = thrust * inertialFalloff(g); // relativistic mass
     a -= this.brakeAccel * clamp(input.brake, 0, 1);
-    a -= this.dragK * this.v;                   // aero/rolling drag
-    a -= this.scrape * 18;                      // wall rub
+    a -= this.dragK * this.v; // aero/rolling drag
+    a -= this.scrape * 18; // wall rub
 
     this.v = Math.max(0, this.v + a * dt);
     const vMax = C_MS * MAX_BETA;

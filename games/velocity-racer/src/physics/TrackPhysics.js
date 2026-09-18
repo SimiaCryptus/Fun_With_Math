@@ -35,15 +35,19 @@ export class TrackPhysics {
     const from = car.s;
     let to = from + ds;
     let lapped = false;
-    if (to >= L) { to -= L; lapped = true; }
-    if (to < 0) { to += L; }
+    if (to >= L) {
+      to -= L;
+      lapped = true;
+    }
+    if (to < 0) {
+      to += L;
+    }
     car.s = to;
 
     // ---- pickups / pads ----
     if (this.props) {
       for (const pad of this.props.pads) {
-        if (TrackPhysics.crossed(pad.s, from, to, L) &&
-            Math.abs(car.d - pad.d) < pad.halfWidth) {
+        if (TrackPhysics.crossed(pad.s, from, to, L) && Math.abs(car.d - pad.d) < pad.halfWidth) {
           car.hitBoostPad(1.1);
           events.push({ type: 'pad' });
         }

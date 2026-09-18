@@ -1,46 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<title>Velocity Racer — c = 88 mph</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<link rel="stylesheet" href="./styles.css" />
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
-</head>
-<body>
-  <canvas id="viewport"></canvas>
+  <head>
+    <meta charset="utf-8" />
+    <title>Velocity Racer — c = 88 mph</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="viewport"></canvas>
 
-  <div id="hud" class="hidden">
-    <div class="panel panel-speed">
-      <div class="speed"><span id="hud-speed">0</span><small>mph</small></div>
-      <div class="row"><span class="label">&beta;</span><span id="hud-beta" class="mono">0.000</span></div>
-      <div class="row"><span class="label">&gamma;</span><span id="hud-gamma" class="mono">1.000</span></div>
-      <div class="bar"><div id="hud-boost-fill"></div></div>
-      <div class="row small"><span class="label">BOOST</span><span id="hud-boost" class="mono">100%</span></div>
+    <div id="hud" class="hidden">
+      <div class="panel panel-speed">
+        <div class="speed"><span id="hud-speed">0</span><small>mph</small></div>
+        <div class="row">
+          <span class="label">&beta;</span><span id="hud-beta" class="mono">0.000</span>
+        </div>
+        <div class="row">
+          <span class="label">&gamma;</span><span id="hud-gamma" class="mono">1.000</span>
+        </div>
+        <div class="bar"><div id="hud-boost-fill"></div></div>
+        <div class="row small">
+          <span class="label">BOOST</span><span id="hud-boost" class="mono">100%</span>
+        </div>
+      </div>
+
+      <div class="panel panel-clocks">
+        <div class="row">
+          <span class="label">COCKPIT &tau;</span><span id="hud-proper" class="mono">0:00.000</span>
+        </div>
+        <div class="row">
+          <span class="label">TRACK t</span><span id="hud-coord" class="mono">0:00.000</span>
+        </div>
+        <div class="row">
+          <span class="label">LAP</span><span id="hud-lap" class="mono">1/3</span>
+        </div>
+        <div class="row">
+          <span class="label">BEST</span><span id="hud-best" class="mono">--:--.---</span>
+        </div>
+        <div class="row small">
+          <span class="label">FX</span><span id="hud-effect" class="mono">100%</span>
+        </div>
+      </div>
+
+      <div id="hud-message"></div>
+      <div id="hud-warning" class="hidden">RELATIVISTIC BLACKOUT</div>
+      <div id="hud-crosshair"></div>
     </div>
 
-    <div class="panel panel-clocks">
-      <div class="row"><span class="label">COCKPIT &tau;</span><span id="hud-proper" class="mono">0:00.000</span></div>
-      <div class="row"><span class="label">TRACK t</span><span id="hud-coord" class="mono">0:00.000</span></div>
-      <div class="row"><span class="label">LAP</span><span id="hud-lap" class="mono">1/3</span></div>
-      <div class="row"><span class="label">BEST</span><span id="hud-best" class="mono">--:--.---</span></div>
-      <div class="row small"><span class="label">FX</span><span id="hud-effect" class="mono">100%</span></div>
-    </div>
+    <div id="overlay"></div>
 
-    <div id="hud-message"></div>
-    <div id="hud-warning" class="hidden">RELATIVISTIC BLACKOUT</div>
-    <div id="hud-crosshair"></div>
-  </div>
-
-  <div id="overlay"></div>
-
-  <script type="module" src="./src/main.js"></script>
-</body>
+    <script type="module" src="./src/main.js"></script>
+  </body>
 </html>

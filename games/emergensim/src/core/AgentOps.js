@@ -1,8 +1,15 @@
 /** Shared, non-graphic agent state transitions (neutral "state removals"). */
-export function clamp01(v) { return Math.min(1, Math.max(0, v)); }
+export function clamp01(v) {
+  return Math.min(1, Math.max(0, v));
+}
 
 export function pushNoise(state, position, loudness, source) {
-  state.social.noiseEvents.push({ position: { ...position }, loudness, source, turn: state.meta.turnNumber });
+  state.social.noiseEvents.push({
+    position: { ...position },
+    loudness,
+    source,
+    turn: state.meta.turnNumber,
+  });
 }
 
 export function evacuateNPC(state, bus, npc, reason = 'reached exit', causes = []) {
@@ -19,7 +26,14 @@ export function incapacitateNPC(state, bus, npc, reason, causes = []) {
   if (npc.status !== 'ACTIVE') return null;
   npc.status = 'INCAPACITATED';
   npc.freezeTurns = 0;
-  const rec = state.log({ type: 'NPC_INCAPACITATED', npcId: npc.id, name: npc.name, reason, causes, key: `${npc.position.x},${npc.position.y},${npc.position.z}` });
+  const rec = state.log({
+    type: 'NPC_INCAPACITATED',
+    npcId: npc.id,
+    name: npc.name,
+    reason,
+    causes,
+    key: `${npc.position.x},${npc.position.y},${npc.position.z}`,
+  });
   bus.emit('NPC_INCAPACITATED', { npcId: npc.id, name: npc.name, reason });
   return rec;
 }

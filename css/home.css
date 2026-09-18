@@ -1181,48 +1181,48 @@ html {
     site config asked for it, or when only one tab was rendered. */
 body[data-single-category] .cat-tabs,
 .cat-tabs:has(> *:only-child) {
-   display: none;
+  display: none;
 }
 /* "Surprise me" is a <button> sitting among <a class="nav-link"> items —
     strip the native chrome so it matches its neighbours exactly. */
 .nav-random {
-   background: none;
-   border: none;
-   padding: 0;
-   font: inherit;
-   color: var(--text-muted);
-   cursor: pointer;
-   transition: color 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 .nav-random:hover,
 .nav-random:focus-visible {
-   color: var(--text);
+  color: var(--text);
 }
 .nav-random .arrow {
-   display: inline-block;
-   transition: transform 0.25s ease;
+  display: inline-block;
+  transition: transform 0.25s ease;
 }
 .nav-random:hover .arrow {
-   transform: translateX(3px);
+  transform: translateX(3px);
 }
 /* The hero is short now that there is no research preamble. */
 .hero-compact {
-   padding: 3.5rem 1.5rem 2rem;
+  padding: 3.5rem 1.5rem 2rem;
 }
 .hero-hint {
-   color: var(--text-muted);
-   font-family: var(--font-mono);
-   font-size: 0.75rem;
-   letter-spacing: 0.08em;
-   margin-top: 1.25rem;
-   opacity: 0.7;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  margin-top: 1.25rem;
+  opacity: 0.7;
 }
 .hero-hint kbd {
-   font-family: var(--font-mono);
-   font-size: 0.72rem;
-   padding: 0.1em 0.4em;
-   border: 1px solid rgba(255, 255, 255, 0.14);
-   border-radius: 4px;
-   background: rgba(255, 255, 255, 0.05);
-   color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.1em 0.4em;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
 }

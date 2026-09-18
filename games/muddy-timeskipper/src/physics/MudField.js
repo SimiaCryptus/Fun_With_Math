@@ -7,8 +7,10 @@ import { clamp, clamp01, lerp } from '../core/MathX.js';
  */
 export class MudField {
   constructor({ minX, minZ, size, res = 256 }) {
-    this.minX = minX; this.minZ = minZ;
-    this.size = size; this.res = res;
+    this.minX = minX;
+    this.minZ = minZ;
+    this.size = size;
+    this.res = res;
     this.cell = size / res;
 
     const n = res * res;
@@ -23,9 +25,15 @@ export class MudField {
     this.s = { height: 0, depth: 0, wetness: 0, rutX: 0, rutZ: 0, grip: 1 };
   }
 
-  idx(ix, iy) { return iy * this.res + ix; }
-  toGridX(x) { return (x - this.minX) / this.cell; }
-  toGridZ(z) { return (z - this.minZ) / this.cell; }
+  idx(ix, iy) {
+    return iy * this.res + ix;
+  }
+  toGridX(x) {
+    return (x - this.minX) / this.cell;
+  }
+  toGridZ(z) {
+    return (z - this.minZ) / this.cell;
+  }
 
   /** Paint initial mud zones / terrain from track data. */
   bake(track, noise = () => 0) {
@@ -36,11 +44,16 @@ export class MudField {
         const wx = this.minX + (ix + 0.5) * this.cell;
         const i = this.idx(ix, iy);
         this.height[i] = noise(wx, wz);
-        let d = 0.12, w = 0.2;
+        let d = 0.12,
+          w = 0.2;
         for (const z of track.mudZones || []) {
-          const dx = wx - z.x, dz = wz - z.z;
+          const dx = wx - z.x,
+            dz = wz - z.z;
           const t = 1 - clamp01(Math.hypot(dx, dz) / z.r);
-          if (t > 0) { d = Math.max(d, z.depth * t * t); w = Math.max(w, (z.wetness ?? 0.6) * t); }
+          if (t > 0) {
+            d = Math.max(d, z.depth * t * t);
+            w = Math.max(w, (z.wetness ?? 0.6) * t);
+          }
         }
         this.depth[i] = d;
         this.wetness[i] = w;
@@ -49,22 +62,38 @@ export class MudField {
     this.markAll();
   }
 
-  markAll() { this.dirty = { x0: 0, y0: 0, x1: this.res - 1, y1: this.res - 1, any: true }; }
+  markAll() {
+    this.dirty = { x0: 0, y0: 0, x1: this.res - 1, y1: this.res - 1, any: true };
+  }
 
   _mark(x0, y0, x1, y1) {
     const d = this.dirty;
-    if (!d.any) { d.x0 = x0; d.y0 = y0; d.x1 = x1; d.y1 = y1; d.any = true; return; }
-    if (x0 < d.x0) d.x0 = x0; if (y0 < d.y0) d.y0 = y0;
-    if (x1 > d.x1) d.x1 = x1; if (y1 > d.y1) d.y1 = y1;
+    if (!d.any) {
+      d.x0 = x0;
+      d.y0 = y0;
+      d.x1 = x1;
+      d.y1 = y1;
+      d.any = true;
+      return;
+    }
+    if (x0 < d.x0) d.x0 = x0;
+    if (y0 < d.y0) d.y0 = y0;
+    if (x1 > d.x1) d.x1 = x1;
+    if (y1 > d.y1) d.y1 = y1;
   }
 
   /** Bilinear sample; result is a reused object. */
   sample(x, z) {
     const gx = clamp(this.toGridX(x) - 0.5, 0, this.res - 1.001);
     const gz = clamp(this.toGridZ(z) - 0.5, 0, this.res - 1.001);
-    const ix = gx | 0, iy = gz | 0, fx = gx - ix, fy = gz - iy;
-    const i00 = this.idx(ix, iy), i10 = this.idx(ix + 1, iy);
-    const i01 = this.idx(ix, iy + 1), i11 = this.idx(ix + 1, iy + 1);
+    const ix = gx | 0,
+      iy = gz | 0,
+      fx = gx - ix,
+      fy = gz - iy;
+    const i00 = this.idx(ix, iy),
+      i10 = this.idx(ix + 1, iy);
+    const i01 = this.idx(ix, iy + 1),
+      i11 = this.idx(ix + 1, iy + 1);
     const bl = (a) => lerp(lerp(a[i00], a[i10], fx), lerp(a[i01], a[i11], fx), fy);
 
     const s = this.s;
@@ -80,12 +109,16 @@ export class MudField {
   /** Carve a rut. Called per wheel contact per fixed step. */
   deform(x, z, radius, amount, dirX, dirZ) {
     const r = Math.max(1, Math.ceil(radius / this.cell));
-    const cx = Math.round(this.toGridX(x)), cy = Math.round(this.toGridZ(z));
-    const x0 = clamp(cx - r, 0, this.res - 1), x1 = clamp(cx + r, 0, this.res - 1);
-    const y0 = clamp(cy - r, 0, this.res - 1), y1 = clamp(cy + r, 0, this.res - 1);
+    const cx = Math.round(this.toGridX(x)),
+      cy = Math.round(this.toGridZ(z));
+    const x0 = clamp(cx - r, 0, this.res - 1),
+      x1 = clamp(cx + r, 0, this.res - 1);
+    const y0 = clamp(cy - r, 0, this.res - 1),
+      y1 = clamp(cy + r, 0, this.res - 1);
     for (let iy = y0; iy <= y1; iy++) {
       for (let ix = x0; ix <= x1; ix++) {
-        const dx = (ix - cx) / r, dy = (iy - cy) / r;
+        const dx = (ix - cx) / r,
+          dy = (iy - cy) / r;
         const f = 1 - Math.min(1, dx * dx + dy * dy);
         if (f <= 0) continue;
         const i = this.idx(ix, iy);

@@ -6,7 +6,7 @@ import { bodyState } from '../sim/ephemeris.js';
 import { dist } from '../core/vec3.js';
 import { fmtCredits, fmtNum } from '../core/units.js';
 
-const REFRESH_MS = 1500;          // price drift refresh while the clock runs
+const REFRESH_MS = 1500; // price drift refresh while the clock runs
 const LIGHT_S_PER_AU = 499.005;
 
 export function initTrade(game) {
@@ -17,7 +17,9 @@ export function initTrade(game) {
   let lot = 50;
   let lastRender = 0;
 
-  game.on(() => { dirty = true; });
+  game.on(() => {
+    dirty = true;
+  });
   tabs.addEventListener('click', (e) => {
     const b = e.target.closest('.tab');
     if (!b) return;
@@ -35,26 +37,33 @@ export function initTrade(game) {
    * tables show the margin of "buy here, sell there" per tonne instead.
    */
   function priceTable(stationId, local) {
-    const rows = game.economy.table(stationId).map((r) => {
-      const held = game.ship.cargo[r.id] || 0;
-      let margin = '';
-      if (!local && game.dockedAt) {
-        const hq = game.economy.quote(game.dockedAt, r.id);
-        if (hq) {
-          const m = r.sell - hq.buy;
-          margin = `<div class="sub ${m > 0 ? 'pos' : 'neg'}">${m > 0 ? '+' : ''}${fmtCredits(m)}/t</div>`;
+    const rows = game.economy
+      .table(stationId)
+      .map((r) => {
+        const held = game.ship.cargo[r.id] || 0;
+        let margin = '';
+        if (!local && game.dockedAt) {
+          const hq = game.economy.quote(game.dockedAt, r.id);
+          if (hq) {
+            const m = r.sell - hq.buy;
+            margin = `<div class="sub ${m > 0 ? 'pos' : 'neg'}">${m > 0 ? '+' : ''}${fmtCredits(m)}/t</div>`;
+          }
         }
-      }
-      return `<tr data-cid="${r.id}">
+        return `<tr data-cid="${r.id}">
           <td>${r.name}<div class="sub">${r.trend} · stock ${fmtNum(r.stock, 0)}t · ×${r.ratio.toFixed(2)}${held ? ` · hold ${fmtNum(held, 0)}t` : ''}</div></td>
           <td>${fmtCredits(r.buy)}</td>
           <td>${fmtCredits(r.sell)}${margin}</td>
-          ${local ? `<td>
+          ${
+            local
+              ? `<td>
             <button class="btn small" data-act="buy">B</button>
             <button class="btn small amber" data-act="sell">S</button>
-          </td>` : ''}
+          </td>`
+              : ''
+          }
         </tr>`;
-    }).join('');
+      })
+      .join('');
     return `<table class="mkt ${local ? '' : 'remote'}">
         <thead><tr><th>COMMODITY</th><th>BUY</th><th>SELL</th>${local ? '<th></th>' : ''}</tr></thead>
         <tbody>${rows}</tbody>
@@ -82,14 +91,19 @@ export function initTrade(game) {
   function manifest(sellable) {
     const c = game.ship.cargo;
     const ids = Object.keys(c);
-    if (!ids.length) return `<div class="sec"><h3>MANIFEST</h3><span class="k">Hold empty.</span></div>`;
-    return `<div class="sec"><h3>MANIFEST · ${fmtNum(game.ship.cargoMass, 1)} t</h3>${ids.map((id) => {
-      const est = sellable ? game.economy.trade(game.dockedAt, id, c[id], 'sell', false) : null;
-      return `<div class="row"><span class="k">${COMMODITY_BY_ID[id].name}</span>
-        <span class="v">${fmtNum(c[id], 1)} t${est
-          ? ` · ≈${fmtCredits(est.total)} <button class="btn small amber" data-dump="${id}">SELL ALL</button>`
-          : ''}</span></div>`;
-    }).join('')}</div>`;
+    if (!ids.length)
+      return `<div class="sec"><h3>MANIFEST</h3><span class="k">Hold empty.</span></div>`;
+    return `<div class="sec"><h3>MANIFEST · ${fmtNum(game.ship.cargoMass, 1)} t</h3>${ids
+      .map((id) => {
+        const est = sellable ? game.economy.trade(game.dockedAt, id, c[id], 'sell', false) : null;
+        return `<div class="row"><span class="k">${COMMODITY_BY_ID[id].name}</span>
+        <span class="v">${fmtNum(c[id], 1)} t${
+          est
+            ? ` · ≈${fmtCredits(est.total)} <button class="btn small amber" data-dump="${id}">SELL ALL</button>`
+            : ''
+        }</span></div>`;
+      })
+      .join('')}</div>`;
   }
 
   function market() {
@@ -99,9 +113,11 @@ export function initTrade(game) {
     }
     const st = STATION_BY_ID[game.dockedAt];
     const fuelP = game.economy.fuelPrice(game.dockedAt);
-    const mining = st.mining ? `<div class="sec"><h3>CLAIM · ${st.mining.yield} t/day</h3>
+    const mining = st.mining
+      ? `<div class="sec"><h3>CLAIM · ${st.mining.yield} t/day</h3>
         ${st.mining.goods.map((g) => `<button class="btn" data-mine="${g}">EXTRACT 10d — ${COMMODITY_BY_ID[g].name}</button>`).join('')}
-      </div>` : '';
+      </div>`
+      : '';
 
     return `<div class="sec">
         <h3>${st.name.toUpperCase()} · SPREAD ${(st.spread * 100).toFixed(1)}%</h3>
@@ -127,7 +143,7 @@ export function initTrade(game) {
     const s = game.ship;
     const st = game.dockedAt ? STATION_BY_ID[game.dockedAt] : null;
     const canRefit = st && st.tech >= 3;
-    const cur = s.preview('drive', s.tier.drive);      // current configuration
+    const cur = s.preview('drive', s.tier.drive); // current configuration
 
     const tracks = TRACK_IDS.map((tid) => {
       const tr = UPGRADES[tid];
@@ -142,13 +158,16 @@ export function initTrade(game) {
       return `<div class="sec">
           <h3>${tr.name.toUpperCase()} — ${tr.tiers[lvl].name}</h3>
           <div class="row"><span class="k">${tr.desc}</span></div>
-          ${next ? `${row('next', next.name)}
+          ${
+            next
+              ? `${row('next', next.name)}
             ${row('cost', fmtCredits(next.cost))}
             ${row('dry mass →', `${fmtNum(pv.dry, 0)} t`)}
             ${row('Δv empty / full hold →', `${(pv.dvEmpty / 1000).toFixed(1)} (${delta(cur.dvEmpty, pv.dvEmpty)}) / ${(pv.dvFull / 1000).toFixed(1)} (${delta(cur.dvFull, pv.dvFull)}) km/s`)}
             <button class="btn" data-up="${tid}" ${chk.ok && canRefit && game.credits >= next.cost ? '' : 'disabled'}>
               ${!canRefit ? 'NEEDS TECH-3 YARD' : chk.ok ? 'INSTALL' : chk.why.toUpperCase()}</button>`
-            : `<div class="row"><span class="k">maximum tier installed</span></div>`}
+              : `<div class="row"><span class="k">maximum tier installed</span></div>`
+          }
         </div>`;
     }).join('');
 
@@ -179,7 +198,10 @@ export function initTrade(game) {
     const qty = () => (lot === 'MAX' ? 1e9 : Number(lot));
 
     root.querySelectorAll('[data-lot]').forEach((b) => {
-      b.onclick = () => { lot = b.dataset.lot === 'MAX' ? 'MAX' : Number(b.dataset.lot); dirty = true; };
+      b.onclick = () => {
+        lot = b.dataset.lot === 'MAX' ? 'MAX' : Number(b.dataset.lot);
+        dirty = true;
+      };
     });
     root.querySelectorAll('tr[data-cid] button').forEach((b) => {
       const cid = b.closest('tr').dataset.cid;
@@ -202,7 +224,14 @@ export function initTrade(game) {
   }
 
   return function tick(now = performance.now()) {
-    if (dirty) { render(); lastRender = now; return; }
-    if (game.rate > 0 && now - lastRender >= REFRESH_MS) { render(); lastRender = now; }
+    if (dirty) {
+      render();
+      lastRender = now;
+      return;
+    }
+    if (game.rate > 0 && now - lastRender >= REFRESH_MS) {
+      render();
+      lastRender = now;
+    }
   };
 }

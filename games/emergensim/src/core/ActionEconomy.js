@@ -2,13 +2,24 @@ import { smokeDensityAt } from '../spatial/LineOfSight.js';
 
 export const BASE_AP = 4;
 export const ACTION_COSTS = {
-  MOVE: 1, TOGGLE_DOOR: 1, OPEN_DOOR: 1, CLOSE_DOOR: 1, CHECK_DOOR: 1, BARRICADE: 2,
-  CLEAR_DEBRIS: 2, DEESCALATE: 1, ASSIST: 2, SOUND_ALARM: 1, WAIT: 0,
+  MOVE: 1,
+  TOGGLE_DOOR: 1,
+  OPEN_DOOR: 1,
+  CLOSE_DOOR: 1,
+  CHECK_DOOR: 1,
+  BARRICADE: 2,
+  CLEAR_DEBRIS: 2,
+  DEESCALATE: 1,
+  ASSIST: 2,
+  SOUND_ALARM: 1,
+  WAIT: 0,
 };
 
 /** Action Point ledger: base 4 AP, reduced by inhalation/injury debuffs; movement cost rises in smoke or when carrying. */
 export class ActionEconomy {
-  constructor(state) { this.state = state; }
+  constructor(state) {
+    this.state = state;
+  }
 
   computeMaxAP() {
     const ps = this.state.player.physicalState;
@@ -32,9 +43,13 @@ export class ActionEconomy {
     return ACTION_COSTS[type] ?? 1;
   }
 
-  canAfford(cost) { return this.state.player.actionPoints.current >= cost; }
+  canAfford(cost) {
+    return this.state.player.actionPoints.current >= cost;
+  }
 
-  spend(cost) { this.state.player.actionPoints.current -= cost; }
+  spend(cost) {
+    this.state.player.actionPoints.current -= cost;
+  }
 
   resetForTurn() {
     const ap = this.state.player.actionPoints;

@@ -2,7 +2,8 @@ import { VEHICLE as C, V88, V_MAX, MUD } from '../core/constants.js';
 import { clamp, clamp01, damp, sign, smoothstep } from '../core/MathX.js';
 import * as V from '../core/Vec3.js';
 
-const _f = V.v3(), _r = V.v3();
+const _f = V.v3(),
+  _r = V.v3();
 /** Finite + clamped, or the fallback. Keeps a single bad writer from poisoning the sim. */
 const fin = (v, lo, hi, fallback = 0) =>
   Number.isFinite(v) ? (v < lo ? lo : v > hi ? hi : v) : fallback;
@@ -22,28 +23,42 @@ export class VehicleBody {
     this.tuning = { ...C, ...(opts.tuning || {}) };
 
     this.grounded = true;
-    this.mudLoad = 0;          // 0..1 clinging mud: mass/drag penalty
-    this.instability = 0;      // 0..1 high-speed twitchiness
-    this.slip = 0;             // |lateral speed| normalised
+    this.mudLoad = 0; // 0..1 clinging mud: mass/drag penalty
+    this.instability = 0; // 0..1 high-speed twitchiness
+    this.slip = 0; // |lateral speed| normalised
     this.rollRisk = 0;
     this.rollTimer = 0;
     this.stuckTimer = 0;
-    this.state = 'ok';         // 'ok' | 'rolled' | 'stuck'
+    this.state = 'ok'; // 'ok' | 'rolled' | 'stuck'
 
     // cartoon-only channels consumed by the render rig; never read by physics
     this.fx = {
-      snapImpulse: 0, snapDirX: 0, snapDirZ: 0, screamT: 0,
-      deniedBoost: 0, wheelSpin: 0
+      snapImpulse: 0,
+      snapDirX: 0,
+      snapDirZ: 0,
+      screamT: 0,
+      deniedBoost: 0,
+      wheelSpin: 0,
     };
   }
 
-  get speed() { return V.horizLen(this.vel); }
-  get forwardSpeed() { V.forwardFromYaw(_f, this.yaw); return this.vel.x * _f.x + this.vel.z * _f.z; }
+  get speed() {
+    return V.horizLen(this.vel);
+  }
+  get forwardSpeed() {
+    V.forwardFromYaw(_f, this.yaw);
+    return this.vel.x * _f.x + this.vel.z * _f.z;
+  }
 
   reset(x, z, yaw) {
-    V.set(this.pos, x, 0, z); V.set(this.vel, 0, 0, 0);
-    this.yaw = yaw; this.yawRate = 0;
-    this.state = 'ok'; this.rollTimer = 0; this.stuckTimer = 0; this.mudLoad = 0;
+    V.set(this.pos, x, 0, z);
+    V.set(this.vel, 0, 0, 0);
+    this.yaw = yaw;
+    this.yawRate = 0;
+    this.state = 'ok';
+    this.rollTimer = 0;
+    this.stuckTimer = 0;
+    this.mudLoad = 0;
   }
 
   /** @param {MudField} mud */
@@ -77,7 +92,8 @@ export class VehicleBody {
     // BUG FIX: previously `Math.abs(vF) / T.V_MAX ?? 1` — T.V_MAX did not exist on the
     // tuning object, so this evaluated to NaN (`??` does not catch NaN) and poisoned
     // the whole body on the first throttled step.
-    if (inp.throttle > 0) accel += inp.throttle * T.TORQUE * massPenalty * (1 - clamp01(Math.abs(vF) / vMax));
+    if (inp.throttle > 0)
+      accel += inp.throttle * T.TORQUE * massPenalty * (1 - clamp01(Math.abs(vF) / vMax));
     if (inp.brake > 0) {
       if (vF > 0.5) accel -= inp.brake * T.BRAKE;
       else accel -= inp.brake * T.REVERSE;
@@ -102,8 +118,9 @@ export class VehicleBody {
     if (ground && depth > 0.2) {
       const rl = Math.hypot(ground.rutX, ground.rutZ);
       if (rl > 0.05) {
-        const rx = ground.rutX / rl, rz = ground.rutZ / rl;
-        const crossY = _f.z * rx - _f.x * rz;        // signed alignment error
+        const rx = ground.rutX / rl,
+          rz = ground.rutZ / rl;
+        const crossY = _f.z * rx - _f.x * rz; // signed alignment error
         yawTarget += -crossY * MUD.RUT_PULL * depth * clamp01(Math.abs(vF) / 10);
       }
     }
@@ -139,14 +156,20 @@ export class VehicleBody {
     // --- carve ruts ---
     if (mud && this.grounded && Math.abs(vF) > 1) {
       const m = Math.hypot(this.vel.x, this.vel.z) || 1;
-      mud.deform(this.pos.x, this.pos.z, 1.6,
+      mud.deform(
+        this.pos.x,
+        this.pos.z,
+        1.6,
         0.0022 * clamp01(Math.abs(vF) / 20) * (1 + this.slip),
-        this.vel.x / m, this.vel.z / m);
+        this.vel.x / m,
+        this.vel.z / m
+      );
     }
 
     // --- failure states ---
     this.rollRisk = clamp01((Math.abs(vL) * Math.abs(this.yawRate)) / T.ROLL_LIMIT / 10);
-    this.rollTimer = this.rollRisk > 0.9 ? this.rollTimer + dt : Math.max(0, this.rollTimer - dt * 2);
+    this.rollTimer =
+      this.rollRisk > 0.9 ? this.rollTimer + dt : Math.max(0, this.rollTimer - dt * 2);
     if (this.rollTimer > T.ROLL_TIME) this.state = 'rolled';
 
     if (this.speed < T.STUCK_SPEED && depth > T.STUCK_DEPTH) this.stuckTimer += dt;

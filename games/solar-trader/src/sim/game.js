@@ -22,15 +22,15 @@ const REFIT_DAYS = 4;
 export class Game {
   constructor() {
     this.t = START_DAY;
-    this.rate = 0;                 // days per real second
+    this.rate = 0; // days per real second
     this.ship = new Ship();
     this.economy = new Economy();
     this.economy.lastTickDay = this.t;
     this.credits = 1.25e6;
     this.dockedAt = 'leo-gateway';
-    this.flight = null;            // active coast
-    this.plan = null;              // selected, not yet executed
-    this.target = 'tharsis';       // selected nav target
+    this.flight = null; // active coast
+    this.plan = null; // selected, not yet executed
+    this.target = 'tharsis'; // selected nav target
     this.logLines = [];
     this.listeners = new Set();
     this.autoPause = true;
@@ -39,8 +39,13 @@ export class Game {
   }
 
   // ---------- events ----------
-  on(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
-  emit() { for (const fn of this.listeners) fn(this); }
+  on(fn) {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
+  }
+  emit() {
+    for (const fn of this.listeners) fn(this);
+  }
 
   log(msg, hi = false) {
     this.logLines.push({ t: this.t, msg, hi });
@@ -48,11 +53,17 @@ export class Game {
   }
 
   // ---------- clock ----------
-  setRate(r) { this.rate = r; this.emit(); }
+  setRate(r) {
+    this.rate = r;
+    this.emit();
+  }
 
   /** @param {number} dtReal seconds of wall clock */
   update(dtReal) {
-    if (this.rate <= 0) { this.economy.tick(this.t); return; }
+    if (this.rate <= 0) {
+      this.economy.tick(this.t);
+      return;
+    }
     const dt = this.rate * dtReal;
 
     // Never warp past a maneuver node (and never rewind to one).
@@ -98,15 +109,16 @@ export class Game {
   /** Canonical heliocentric state of the ship right now. */
   shipState() {
     if (this.flight && !this.flight.local) {
-      return propagate(this.flight.r0, this.flight.v0,
-                       daysToTU(this.t - this.flight.departT), 1);
+      return propagate(this.flight.r0, this.flight.v0, daysToTU(this.t - this.flight.departT), 1);
     }
     // Docked, or on a same-body Hohmann hop: ride the parent body.
     const sid = this.flight ? this.flight.to : this.dockedAt;
     return bodyState(STATION_BY_ID[sid].body, this.t);
   }
 
-  shipPosition() { return this.shipState().r; }
+  shipPosition() {
+    return this.shipState().r;
+  }
 
   get status() {
     if (this.flight) {
@@ -117,7 +129,11 @@ export class Game {
   }
 
   // ---------- planning ----------
-  setTarget(stationId) { this.target = stationId; this.plan = null; this.emit(); }
+  setTarget(stationId) {
+    this.target = stationId;
+    this.plan = null;
+    this.emit();
+  }
 
   /** Build (but do not commit) a transfer plan for exactly this window. */
   proposeTransfer(departT, tofDays) {
@@ -126,12 +142,21 @@ export class Game {
     const to = this.target;
     if (from === to) return null;
 
-    const A = STATION_BY_ID[from], B = STATION_BY_ID[to];
+    const A = STATION_BY_ID[from],
+      B = STATION_BY_ID[to];
     if (A.body === B.body) {
       const l = localTransfer(from, to);
       this.plan = {
-        kind: 'local', from, to, departT: this.t, arriveT: this.t + l.tof,
-        tof: l.tof, dvTotal: l.dvTotal, dvDep: l.dvTotal, dvArr: 0, armed: false,
+        kind: 'local',
+        from,
+        to,
+        departT: this.t,
+        arriveT: this.t + l.tof,
+        tof: l.tof,
+        dvTotal: l.dvTotal,
+        dvDep: l.dvTotal,
+        dvArr: 0,
+        armed: false,
       };
       this.emit();
       return this.plan;
@@ -140,7 +165,11 @@ export class Game {
     // No clamping of departT to "now": the readout must describe the cell
     // the player clicked. A past window is reported as infeasible instead.
     const sol = solveTransfer(from, to, departT, tofDays, { aeroFactor: this.ship.aeroFactor });
-    if (!sol) { this.plan = null; this.emit(); return null; }
+    if (!sol) {
+      this.plan = null;
+      this.emit();
+      return null;
+    }
     this.plan = { kind: 'transfer', ...sol, armed: false, samples: arcSamples(sol) };
     this.emit();
     return this.plan;
@@ -161,7 +190,10 @@ export class Game {
     if (!plan) return { ok: false, why: 'no plan' };
     const p = this.planPropellant(plan);
     if (p.total > this.ship.prop + 1e-6) {
-      return { ok: false, why: `needs ${p.total.toFixed(1)} t propellant, have ${this.ship.prop.toFixed(1)} t` };
+      return {
+        ok: false,
+        why: `needs ${p.total.toFixed(1)} t propellant, have ${this.ship.prop.toFixed(1)} t`,
+      };
     }
     if (plan.departT < this.t - 1e-9) return { ok: false, why: 'departure is in the past' };
     return { ok: true };
@@ -170,10 +202,18 @@ export class Game {
   /** Commit the plan; the departure burn happens when the clock reaches it. */
   armPlan() {
     const f = this.planFeasible();
-    if (!f.ok) { this.log(`Flight plan rejected: ${f.why}.`); this.emit(); return false; }
+    if (!f.ok) {
+      this.log(`Flight plan rejected: ${f.why}.`);
+      this.emit();
+      return false;
+    }
     this.plan.armed = true;
     if (this.plan.kind === 'local' || this.plan.departT <= this.t + 1e-9) this.beginFlight();
-    else this.log(`Plan filed: depart ${fmtDate(this.plan.departT)} for ${STATION_BY_ID[this.plan.to].name}.`, true);
+    else
+      this.log(
+        `Plan filed: depart ${fmtDate(this.plan.departT)} for ${STATION_BY_ID[this.plan.to].name}.`,
+        true
+      );
     this.emit();
     return true;
   }
@@ -208,7 +248,9 @@ export class Game {
       }
       this.flight = { ...plan, local: true, r0: null, v0: null };
       this.dockedAt = null;
-      this.log(`Orbit change burn ${(plan.dvTotal).toFixed(0)} m/s → ${STATION_BY_ID[plan.to].name}.`);
+      this.log(
+        `Orbit change burn ${plan.dvTotal.toFixed(0)} m/s → ${STATION_BY_ID[plan.to].name}.`
+      );
       this.plan = null;
       return;
     }
@@ -216,20 +258,32 @@ export class Game {
     if (!this.ship.burn(plan.dvDep)) {
       // Cargo or fuel changed since filing. Unarm so we do not retry every frame.
       plan.armed = false;
-      this.log('Departure burn scrubbed: insufficient propellant at current mass. Plan unfiled.', true);
+      this.log(
+        'Departure burn scrubbed: insufficient propellant at current mass. Plan unfiled.',
+        true
+      );
       return;
     }
     this.flight = {
-      from: plan.from, to: plan.to,
-      departT: plan.departT, arriveT: plan.arriveT, tof: plan.tof,
-      r0: plan.r1, v0: plan.v1, dvArr: plan.dvArr,
+      from: plan.from,
+      to: plan.to,
+      departT: plan.departT,
+      arriveT: plan.arriveT,
+      tof: plan.tof,
+      r0: plan.r1,
+      v0: plan.v1,
+      dvArr: plan.dvArr,
       samples: plan.samples,
     };
-    this.ship.r = plan.r1; this.ship.v = plan.v1;
+    this.ship.r = plan.r1;
+    this.ship.v = plan.v1;
     this.dockedAt = null;
     this.plan = null;
     this.ship.trail = [];
-    this.log(`Departure burn ${(plan.dvDep / 1000).toFixed(2)} km/s · v∞ ${(plan.vInfDep / 1000).toFixed(2)} km/s · ETA ${fmtDate(plan.arriveT)}.`, true);
+    this.log(
+      `Departure burn ${(plan.dvDep / 1000).toFixed(2)} km/s · v∞ ${(plan.vInfDep / 1000).toFixed(2)} km/s · ETA ${fmtDate(plan.arriveT)}.`,
+      true
+    );
   }
 
   completeFlight() {
@@ -238,14 +292,20 @@ export class Game {
     if (f.local) {
       this.log(`Docked at ${STATION_BY_ID[f.to].name}.`);
     } else if (this.ship.burn(f.dvArr)) {
-      this.log(`Capture burn ${(f.dvArr / 1000).toFixed(2)} km/s. Docked at ${STATION_BY_ID[f.to].name}.`, true);
+      this.log(
+        `Capture burn ${(f.dvArr / 1000).toFixed(2)} km/s. Docked at ${STATION_BY_ID[f.to].name}.`,
+        true
+      );
     } else {
       // Mass cannot change in flight, so a feasible plan always captures;
       // this only triggers on an edited or legacy save. Be honest, not cruel.
       const fee = Math.min(this.credits, Math.max(2.5e5, this.credits * 0.25));
       this.ship.prop = 0;
       this.credits -= fee;
-      this.log(`CAPTURE BURN INCOMPLETE — port tugs finished the capture. Salvage fee ${fmtCredits(fee)}.`, true);
+      this.log(
+        `CAPTURE BURN INCOMPLETE — port tugs finished the capture. Salvage fee ${fmtCredits(fee)}.`,
+        true
+      );
     }
     this.dockedAt = f.to;
     this.flight = null;
@@ -265,7 +325,10 @@ export class Game {
     if (!this.dockedAt) return false;
     const eco = this.economy;
     if (!eco.line(this.dockedAt, cid)) return false;
-    let n = Math.max(0, Math.min(tons, eco.availableToBuy(this.dockedAt, cid), this.ship.cargoFree));
+    let n = Math.max(
+      0,
+      Math.min(tons, eco.availableToBuy(this.dockedAt, cid), this.ship.cargoFree)
+    );
     // The price climbs as we buy, so shrink the lot until it is affordable.
     let est = eco.trade(this.dockedAt, cid, n, 'buy', false);
     for (let i = 0; i < 4 && est && est.total > this.credits; i++) {
@@ -276,7 +339,9 @@ export class Game {
     eco.trade(this.dockedAt, cid, n, 'buy', true);
     this.credits -= est.total;
     this.ship.addCargo(cid, n);
-    this.log(`Bought ${n.toFixed(1)} t ${COMMODITY_BY_ID[cid].name} for ${fmtCredits(est.total)} (avg ${fmtCredits(est.avg)}/t).`);
+    this.log(
+      `Bought ${n.toFixed(1)} t ${COMMODITY_BY_ID[cid].name} for ${fmtCredits(est.total)} (avg ${fmtCredits(est.avg)}/t).`
+    );
     this.emit();
     return true;
   }
@@ -290,7 +355,9 @@ export class Game {
     if (!res) return false;
     this.credits += res.total;
     this.ship.addCargo(cid, -n);
-    this.log(`Sold ${n.toFixed(1)} t ${COMMODITY_BY_ID[cid].name} for ${fmtCredits(res.total)} (avg ${fmtCredits(res.avg)}/t).`);
+    this.log(
+      `Sold ${n.toFixed(1)} t ${COMMODITY_BY_ID[cid].name} for ${fmtCredits(res.total)} (avg ${fmtCredits(res.avg)}/t).`
+    );
     this.emit();
     return true;
   }
@@ -314,7 +381,11 @@ export class Game {
     const st = STATION_BY_ID[this.dockedAt];
     if (!st?.mining || !st.mining.goods.includes(cid)) return false;
     const tons = Math.min(st.mining.yield * days, this.ship.cargoFree);
-    if (tons < 0.5) { this.log('Hold is full.'); this.emit(); return false; }
+    if (tons < 0.5) {
+      this.log('Hold is full.');
+      this.emit();
+      return false;
+    }
     this.passDays(days);
     this.ship.addCargo(cid, tons);
     this.log(`Extraction: ${tons.toFixed(0)} t ${COMMODITY_BY_ID[cid].name} over ${days} days.`);
@@ -324,12 +395,21 @@ export class Game {
 
   upgrade(track, tier) {
     const chk = this.ship.canUpgrade(track, tier);
-    if (!chk.ok) { this.log(`Refit refused: ${chk.why}.`); this.emit(); return false; }
+    if (!chk.ok) {
+      this.log(`Refit refused: ${chk.why}.`);
+      this.emit();
+      return false;
+    }
     const spec = UPGRADES[track].tiers[tier];
-    if (this.credits < spec.cost) { this.log('Insufficient credits for refit.'); this.emit(); return false; }
+    if (this.credits < spec.cost) {
+      this.log('Insufficient credits for refit.');
+      this.emit();
+      return false;
+    }
     if (!this.dockedAt || STATION_BY_ID[this.dockedAt].tech < 3) {
       this.log('Refit needs a tech-3 shipyard (Earth, Luna, Mars, Ceres, Callisto…).');
-      this.emit(); return false;
+      this.emit();
+      return false;
     }
     this.credits -= spec.cost;
     this.ship.applyUpgrade(track, tier);
@@ -342,9 +422,13 @@ export class Game {
   // ---------- persistence ----------
   save() {
     const blob = {
-      t: this.t, credits: this.credits, dockedAt: this.dockedAt,
-      target: this.target, ship: this.ship.toJSON(),
-      economy: this.economy.toJSON(), flight: this.flight,
+      t: this.t,
+      credits: this.credits,
+      dockedAt: this.dockedAt,
+      target: this.target,
+      ship: this.ship.toJSON(),
+      economy: this.economy.toJSON(),
+      flight: this.flight,
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(blob));
     this.log('State written to local storage.');
@@ -353,14 +437,21 @@ export class Game {
 
   load() {
     const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) { this.log('No save found.'); this.emit(); return false; }
+    if (!raw) {
+      this.log('No save found.');
+      this.emit();
+      return false;
+    }
     const o = JSON.parse(raw);
-    this.t = o.t; this.credits = o.credits; this.dockedAt = o.dockedAt;
+    this.t = o.t;
+    this.credits = o.credits;
+    this.dockedAt = o.dockedAt;
     this.target = o.target || 'tharsis';
     this.ship = Ship.fromJSON(o.ship);
     this.economy = Economy.fromJSON(o.economy);
     this.flight = o.flight || null;
-    this.plan = null; this.rate = 0;
+    this.plan = null;
+    this.rate = 0;
     this.log(`Restored ${fmtDate(this.t)}.`, true);
     this.emit();
     return true;

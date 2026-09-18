@@ -45,27 +45,37 @@ export class SceneView {
 
   // ---------- construction ----------
   buildStars() {
-    const N = 2500, pos = new Float32Array(N * 3);
+    const N = 2500,
+      pos = new Float32Array(N * 3);
     for (let i = 0; i < N; i++) {
-      const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2;
-      const s = Math.sqrt(1 - u * u), R = 900;
+      const u = Math.random() * 2 - 1,
+        th = Math.random() * Math.PI * 2;
+      const s = Math.sqrt(1 - u * u),
+        R = 900;
       pos[i * 3] = R * s * Math.cos(th);
       pos[i * 3 + 1] = R * s * Math.sin(th);
       pos[i * 3 + 2] = R * u;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    this.scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 1.4, sizeAttenuation: false, color: 0x9fb6cc })));
+    this.scene.add(
+      new THREE.Points(
+        g,
+        new THREE.PointsMaterial({ size: 1.4, sizeAttenuation: false, color: 0x9fb6cc })
+      )
+    );
   }
 
   buildSun() {
     const m = new THREE.Mesh(
       new THREE.SphereGeometry(visualRadius(SUN.radius), 32, 24),
-      new THREE.MeshBasicMaterial({ color: SUN.color }));
+      new THREE.MeshBasicMaterial({ color: SUN.color })
+    );
     this.scene.add(m);
     const halo = new THREE.Mesh(
       new THREE.SphereGeometry(visualRadius(SUN.radius) * 2.6, 24, 18),
-      new THREE.MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.09 }));
+      new THREE.MeshBasicMaterial({ color: 0xffb347, transparent: true, opacity: 0.09 })
+    );
     this.scene.add(halo);
   }
 
@@ -74,7 +84,9 @@ export class SceneView {
     const t = this.game.t;
     for (const b of BODIES) {
       const mat = new THREE.MeshStandardMaterial({
-        color: b.color, roughness: 0.92, metalness: 0.05,
+        color: b.color,
+        roughness: 0.92,
+        metalness: 0.05,
         emissive: new THREE.Color(b.color).multiplyScalar(0.14),
       });
       const mesh = new THREE.Mesh(new THREE.SphereGeometry(visualRadius(b.radius), 24, 18), mat);
@@ -84,7 +96,8 @@ export class SceneView {
       const pts = orbitSamples(b.id, t, 320).map((p) => new THREE.Vector3(p[0], p[1], p[2]));
       const line = new THREE.Line(
         new THREE.BufferGeometry().setFromPoints(pts),
-        new THREE.LineBasicMaterial({ color: b.color, transparent: true, opacity: 0.22 }));
+        new THREE.LineBasicMaterial({ color: b.color, transparent: true, opacity: 0.22 })
+      );
       this.scene.add(line);
     }
   }
@@ -94,7 +107,10 @@ export class SceneView {
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3 * 512), 3));
       g.setDrawRange(0, 0);
-      const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color, transparent: true, opacity, linewidth: width }));
+      const l = new THREE.Line(
+        g,
+        new THREE.LineBasicMaterial({ color, transparent: true, opacity, linewidth: width })
+      );
       l.frustumCulled = false;
       this.scene.add(l);
       return l;
@@ -104,10 +120,15 @@ export class SceneView {
 
     this.shipMesh = new THREE.Mesh(
       new THREE.OctahedronGeometry(0.012, 0),
-      new THREE.MeshBasicMaterial({ color: 0x35e0ff }));
+      new THREE.MeshBasicMaterial({ color: 0x35e0ff })
+    );
     this.scene.add(this.shipMesh);
 
-    const nodeMat = new THREE.MeshBasicMaterial({ color: 0xffb44d, transparent: true, opacity: 0.9 });
+    const nodeMat = new THREE.MeshBasicMaterial({
+      color: 0xffb44d,
+      transparent: true,
+      opacity: 0.9,
+    });
     this.depNode = new THREE.Mesh(new THREE.SphereGeometry(0.012, 10, 8), nodeMat);
     this.arrNode = new THREE.Mesh(new THREE.SphereGeometry(0.012, 10, 8), nodeMat.clone());
     this.arrNode.material.color.set(0xff6ad5);
@@ -141,7 +162,9 @@ export class SceneView {
     if (!m) return;
     const d = this.camera.position.distanceTo(this.controls.target);
     this.controls.target.copy(m.position);
-    const dir = new THREE.Vector3().subVectors(this.camera.position, this.controls.target).normalize();
+    const dir = new THREE.Vector3()
+      .subVectors(this.camera.position, this.controls.target)
+      .normalize();
     this.camera.position.copy(m.position).addScaledVector(dir, Math.min(d, 3.5));
   }
 
@@ -174,7 +197,8 @@ export class SceneView {
     const arc = game.plan?.samples || game.flight?.samples;
     if (arc && arc.length) {
       this.setLine(this.planLine, arc);
-      const a = arc[0], b = arc[arc.length - 1];
+      const a = arc[0],
+        b = arc[arc.length - 1];
       this.depNode.visible = this.arrNode.visible = true;
       this.depNode.position.set(a[0], a[1], a[2]);
       this.arrNode.position.set(b[0], b[1], b[2]);
@@ -203,7 +227,8 @@ export class SceneView {
 
   resize() {
     const el = this.renderer.domElement;
-    this.w = el.clientWidth; this.h = el.clientHeight;
+    this.w = el.clientWidth;
+    this.h = el.clientHeight;
     this.renderer.setSize(this.w, this.h, false);
     this.camera.aspect = this.w / this.h;
     this.camera.updateProjectionMatrix();

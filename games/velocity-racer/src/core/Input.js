@@ -1,14 +1,23 @@
 const KEY_ACTIONS = {
-  KeyW: 'throttle', ArrowUp: 'throttle',
-  KeyS: 'brake', ArrowDown: 'brake',
-  KeyA: 'left', ArrowLeft: 'left',
-  KeyD: 'right', ArrowRight: 'right',
-  ShiftLeft: 'boost', ShiftRight: 'boost', Space: 'boost',
+  KeyW: 'throttle',
+  ArrowUp: 'throttle',
+  KeyS: 'brake',
+  ArrowDown: 'brake',
+  KeyA: 'left',
+  ArrowLeft: 'left',
+  KeyD: 'right',
+  ArrowRight: 'right',
+  ShiftLeft: 'boost',
+  ShiftRight: 'boost',
+  Space: 'boost',
   KeyQ: 'lookBack',
-  Escape: 'pause', KeyP: 'pause',
-  Enter: 'confirm', NumpadEnter: 'confirm',
+  Escape: 'pause',
+  KeyP: 'pause',
+  Enter: 'confirm',
+  NumpadEnter: 'confirm',
   KeyR: 'restart',
-  BracketLeft: 'effectDown', BracketRight: 'effectUp',
+  BracketLeft: 'effectDown',
+  BracketRight: 'effectUp',
   KeyO: 'effectToggle',
   KeyM: 'mute',
 };
@@ -40,7 +49,10 @@ export class Input {
       if (e.code === 'Space' || e.code === 'Enter') this.justPressed.add('confirm');
     });
     target.addEventListener('keyup', (e) => this.keysDown.delete(e.code));
-    target.addEventListener('blur', () => { this.keysDown.clear(); this.down.clear(); });
+    target.addEventListener('blur', () => {
+      this.keysDown.clear();
+      this.down.clear();
+    });
   }
 
   update() {
@@ -58,7 +70,10 @@ export class Input {
     this.padBrake = 0;
     const pads = navigator.getGamepads ? navigator.getGamepads() : [];
     const pad = Array.prototype.find.call(pads || [], (p) => p && p.connected);
-    if (!pad) { this._padPrev.clear(); return; }
+    if (!pad) {
+      this._padPrev.clear();
+      return;
+    }
 
     const ax = pad.axes[0] || 0;
     this.padSteer = Math.abs(ax) > 0.12 ? ax : 0;
@@ -82,7 +97,9 @@ export class Input {
     this._padPrev = now;
   }
 
-  isDown(action) { return this.down.has(action); }
+  isDown(action) {
+    return this.down.has(action);
+  }
 
   /** Returns true once per press. */
   consume(action) {

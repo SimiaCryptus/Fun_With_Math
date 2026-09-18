@@ -14,7 +14,8 @@ import { stumpff } from './kepler.js';
  */
 export function lambert(r1, r2, dt, mu = 1, prograde = true) {
   if (!(dt > 0)) return null;
-  const r1m = norm(r1), r2m = norm(r2);
+  const r1m = norm(r1),
+    r2m = norm(r2);
   if (r1m === 0 || r2m === 0) return null;
 
   let cosdnu = dot(r1, r2) / (r1m * r2m);
@@ -32,7 +33,12 @@ export function lambert(r1, r2, dt, mu = 1, prograde = true) {
   const sq = Math.sqrt(mu);
   let lo = -4 * Math.PI * Math.PI;
   let hi = 4 * Math.PI * Math.PI;
-  let psi = 0, c2 = 0.5, c3 = 1 / 6, y = 0, chi = 0, ok = false;
+  let psi = 0,
+    c2 = 0.5,
+    c3 = 1 / 6,
+    y = 0,
+    chi = 0,
+    ok = false;
 
   for (let iter = 0; iter < 240; iter++) {
     ({ c2, c3 } = stumpff(psi));
@@ -53,11 +59,18 @@ export function lambert(r1, r2, dt, mu = 1, prograde = true) {
     chi = Math.sqrt(y / c2);
     const dtn = (chi * chi * chi * c3 + A * Math.sqrt(y)) / sq;
 
-    if (Math.abs(dtn - dt) < 1e-9 * dt) { ok = true; break; }
-    if (dtn <= dt) lo = psi; else hi = psi;
+    if (Math.abs(dtn - dt) < 1e-9 * dt) {
+      ok = true;
+      break;
+    }
+    if (dtn <= dt) lo = psi;
+    else hi = psi;
     psi = 0.5 * (lo + hi);
     // Bracket exhausted: only accept if the last evaluation actually fits.
-    if (hi - lo < 1e-13) { ok = Math.abs(dtn - dt) < 1e-6 * dt; break; }
+    if (hi - lo < 1e-13) {
+      ok = Math.abs(dtn - dt) < 1e-6 * dt;
+      break;
+    }
   }
   if (!ok || !(y > 0) || !isFinite(y)) return null;
 

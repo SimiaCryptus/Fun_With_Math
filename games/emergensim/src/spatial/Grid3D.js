@@ -1,6 +1,15 @@
 import { createTile, coordKey, isTilePassable } from './Tile.js';
 
-const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+const DIRS = [
+  [1, 0],
+  [-1, 0],
+  [0, 1],
+  [0, -1],
+  [1, 1],
+  [1, -1],
+  [-1, 1],
+  [-1, -1],
+];
 
 /** Multi-floor discrete voxel grid keyed by "x,y,z" for O(1) lookup. */
 export class Grid3D {
@@ -13,10 +22,18 @@ export class Grid3D {
     }
   }
 
-  key(x, y, z) { return coordKey(x, y, z); }
-  get(x, y, z) { return this.tiles.get(coordKey(x, y, z)) || null; }
-  getByKey(key) { return this.tiles.get(key) || null; }
-  has(key) { return this.tiles.has(key); }
+  key(x, y, z) {
+    return coordKey(x, y, z);
+  }
+  get(x, y, z) {
+    return this.tiles.get(coordKey(x, y, z)) || null;
+  }
+  getByKey(key) {
+    return this.tiles.get(key) || null;
+  }
+  has(key) {
+    return this.tiles.has(key);
+  }
 
   /** 8-way planar adjacency (orthogonal 1.0, diagonal 1.414) plus vertical links through STAIR tiles. */
   neighbors(coord, { diagonal = true, vertical = true } = {}) {
@@ -40,7 +57,8 @@ export class Grid3D {
       if (here && here.type === 'STAIR') {
         for (const dz of [1, -1]) {
           const t = this.get(x, y, z + dz);
-          if (t && t.type === 'STAIR') out.push({ tile: t, cost: 1.5, diagonal: false, vertical: true });
+          if (t && t.type === 'STAIR')
+            out.push({ tile: t, cost: 1.5, diagonal: false, vertical: true });
         }
       }
     }
@@ -57,7 +75,9 @@ export class Grid3D {
     return out;
   }
 
-  exits() { return this.tilesOfType('EXIT'); }
+  exits() {
+    return this.tilesOfType('EXIT');
+  }
 
   floorTiles(z) {
     const out = [];
@@ -67,11 +87,15 @@ export class Grid3D {
 
   /** Octile distance with a heavy vertical penalty. */
   static distance(a, b) {
-    const dx = Math.abs(a.x - b.x), dy = Math.abs(a.y - b.y), dz = Math.abs((a.z ?? 0) - (b.z ?? 0));
+    const dx = Math.abs(a.x - b.x),
+      dy = Math.abs(a.y - b.y),
+      dz = Math.abs((a.z ?? 0) - (b.z ?? 0));
     return Math.max(dx, dy) + 0.414 * Math.min(dx, dy) + 3 * dz;
   }
 
   static chebyshev(a, b) {
-    return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) + 100 * Math.abs((a.z ?? 0) - (b.z ?? 0));
+    return (
+      Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) + 100 * Math.abs((a.z ?? 0) - (b.z ?? 0))
+    );
   }
 }

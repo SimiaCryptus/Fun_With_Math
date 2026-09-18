@@ -1,28 +1,42 @@
 import { G0 } from '../core/units.js';
 import { UPGRADES, TRACK_IDS } from '../data/upgrades.js';
 
-const BASE_DRY = 62;   // tonnes of hull/avionics/life support before upgrades
+const BASE_DRY = 62; // tonnes of hull/avionics/life support before upgrades
 
 export class Ship {
   constructor() {
     this.name = 'MV Perihelion';
     this.tier = { drive: 0, tanks: 0, hold: 0, aeroshell: 0, reactor: 0, uplink: 0 };
-    this.prop = this.propCapacity;      // tonnes of propellant aboard
-    this.cargo = {};                    // commodityId -> tonnes
+    this.prop = this.propCapacity; // tonnes of propellant aboard
+    this.cargo = {}; // commodityId -> tonnes
     // Heliocentric canonical state; only meaningful while coasting.
     this.r = [1, 0, 0];
     this.v = [0, 1, 0];
     this.trail = [];
   }
 
-  spec(track) { return UPGRADES[track].tiers[this.tier[track]]; }
+  spec(track) {
+    return UPGRADES[track].tiers[this.tier[track]];
+  }
 
-  get isp()          { return this.spec('drive').isp; }
-  get ve()           { return this.isp * G0; }            // m/s
-  get propCapacity() { return this.spec('tanks').prop; }
-  get cargoCapacity(){ return this.spec('hold').cargo; }
-  get aeroFactor()   { return this.spec('aeroshell').aero; }
-  get uplinkRange()  { return this.spec('uplink').range; }
+  get isp() {
+    return this.spec('drive').isp;
+  }
+  get ve() {
+    return this.isp * G0;
+  } // m/s
+  get propCapacity() {
+    return this.spec('tanks').prop;
+  }
+  get cargoCapacity() {
+    return this.spec('hold').cargo;
+  }
+  get aeroFactor() {
+    return this.spec('aeroshell').aero;
+  }
+  get uplinkRange() {
+    return this.spec('uplink').range;
+  }
 
   get dryMass() {
     let m = BASE_DRY;
@@ -34,8 +48,12 @@ export class Ship {
     for (const k in this.cargo) m += this.cargo[k];
     return m;
   }
-  get cargoFree() { return Math.max(0, this.cargoCapacity - this.cargoMass); }
-  get wetMass()   { return this.dryMass + this.prop + this.cargoMass; }
+  get cargoFree() {
+    return Math.max(0, this.cargoCapacity - this.cargoMass);
+  }
+  get wetMass() {
+    return this.dryMass + this.prop + this.cargoMass;
+  }
 
   /** Δv still available with the current load, in m/s. */
   get deltaV() {
@@ -94,7 +112,9 @@ export class Ship {
     const prop = spec('tanks').prop;
     const cargo = spec('hold').cargo;
     return {
-      dry, prop, cargo,
+      dry,
+      prop,
+      cargo,
       dvEmpty: ve * Math.log((dry + prop) / dry),
       dvFull: ve * Math.log((dry + prop + cargo) / (dry + cargo)),
     };
@@ -102,8 +122,12 @@ export class Ship {
 
   toJSON() {
     return {
-      name: this.name, tier: this.tier, prop: this.prop,
-      cargo: this.cargo, r: this.r, v: this.v,
+      name: this.name,
+      tier: this.tier,
+      prop: this.prop,
+      cargo: this.cargo,
+      r: this.r,
+      v: this.v,
     };
   }
   static fromJSON(o) {

@@ -6,11 +6,7 @@ import { initTrade } from './ui/trade.js';
 import { STATION_BY_ID } from './data/stations.js';
 
 const game = new Game();
-const view = new SceneView(
-  document.getElementById('gl'),
-  document.getElementById('labels'),
-  game,
-);
+const view = new SceneView(document.getElementById('gl'), document.getElementById('labels'), game);
 
 const renderHUD = initHUD(game);
 const tickNav = initNav(game, view);
@@ -20,7 +16,10 @@ const tickTrade = initTrade(game);
 const RATES = [0, 1, 4, 16, 64];
 window.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return;
-  if (e.code === 'Space') { e.preventDefault(); game.setRate(game.rate ? 0 : 4); }
+  if (e.code === 'Space') {
+    e.preventDefault();
+    game.setRate(game.rate ? 0 : 4);
+  }
   if (e.key.toLowerCase() === 'f') view.focus(STATION_BY_ID[game.target].body);
   const n = Number(e.key);
   if (n >= 1 && n <= 5) game.setRate(RATES[n - 1]);

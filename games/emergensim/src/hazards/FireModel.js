@@ -9,7 +9,10 @@ const COOLING = 0.12;
  * Open doors/exits within 2 tiles feed oxygen (burn-rate multiplier) and conduct heat through the doorway.
  */
 export class FireModel {
-  constructor(state, bus) { this.state = state; this.bus = bus; }
+  constructor(state, bus) {
+    this.state = state;
+    this.bus = bus;
+  }
 
   tick() {
     const { grid } = this.state;
@@ -19,10 +22,14 @@ export class FireModel {
 
     for (const [key, cell] of [...fire.entries()]) {
       const tile = grid.getByKey(key);
-      if (!tile) { fire.delete(key); continue; }
+      if (!tile) {
+        fire.delete(key);
+        continue;
+      }
       const oxygen = 1 + 0.35 * this._openings(tile);
       cell.oxygen = oxygen;
-      if (cell.fuel > cell.fuelMax * 0.15) cell.intensity = Math.min(1, cell.intensity + 0.12 * oxygen);
+      if (cell.fuel > cell.fuelMax * 0.15)
+        cell.intensity = Math.min(1, cell.intensity + 0.12 * oxygen);
       else cell.intensity *= 0.7;
       cell.fuel -= cell.burnRate * Math.max(cell.intensity, 0.2) * oxygen;
       tile.temperature = 200 + 700 * cell.intensity;
@@ -44,7 +51,10 @@ export class FireModel {
         if (!n.diagonal && n.tile.type === 'DOOR' && n.tile.doorState.isOpen) {
           for (const m of grid.neighbors(n.tile.coord, { diagonal: false, vertical: false })) {
             if (m.tile.key === tile.key || fire.has(m.tile.key)) continue;
-            addHeat(m.tile.key, K_COND * (tile.temperature - m.tile.temperature) * 0.5 * permeability(m.tile));
+            addHeat(
+              m.tile.key,
+              K_COND * (tile.temperature - m.tile.temperature) * 0.5 * permeability(m.tile)
+            );
           }
         }
       }
@@ -57,7 +67,13 @@ export class FireModel {
       tile.temperature = T;
       if (tile.doorState) tile.doorState.temperature = T;
       const f = tile.material.flammability;
-      if (f > 0.05 && !tile.burnt && tile.type !== 'WALL' && tile.type !== 'WINDOW' && T >= ignitionTemp(f)) {
+      if (
+        f > 0.05 &&
+        !tile.burnt &&
+        tile.type !== 'WALL' &&
+        tile.type !== 'WINDOW' &&
+        T >= ignitionTemp(f)
+      ) {
         this.ignite(key, 'SPREAD');
       }
     }
@@ -71,7 +87,12 @@ export class FireModel {
         if (Math.abs(dx) + Math.abs(dy) > 2 || (dx === 0 && dy === 0)) continue;
         const t = this.state.grid.get(x + dx, y + dy, z);
         if (!t) continue;
-        if ((t.type === 'DOOR' && t.doorState.isOpen) || t.type === 'EXIT' || (t.type === 'WINDOW' && t.shattered)) n++;
+        if (
+          (t.type === 'DOOR' && t.doorState.isOpen) ||
+          t.type === 'EXIT' ||
+          (t.type === 'WINDOW' && t.shattered)
+        )
+          n++;
       }
     }
     return n;
@@ -82,11 +103,18 @@ export class FireModel {
     const tile = this.state.grid.getByKey(key);
     if (!tile || fire.has(key)) return null;
     const fuelMax = tile.material.fuelCapacity || 40;
-    fire.set(key, { intensity, fuel: fuelMax, fuelMax, burnRate: 6 + 10 * tile.material.flammability, oxygen: 1 });
+    fire.set(key, {
+      intensity,
+      fuel: fuelMax,
+      fuelMax,
+      burnRate: 6 + 10 * tile.material.flammability,
+      oxygen: 1,
+    });
     tile.temperature = Math.max(tile.temperature, 200 + 700 * intensity);
     const viaDoor = source === 'SPREAD' ? this._conduit(tile) : null;
     const causes = [];
-    if (viaDoor && this.state.hazards.doorHistory[viaDoor]) causes.push(this.state.hazards.doorHistory[viaDoor]);
+    if (viaDoor && this.state.hazards.doorHistory[viaDoor])
+      causes.push(this.state.hazards.doorHistory[viaDoor]);
     const rec = this.state.log({ type: 'FIRE_SPREAD', key, viaDoor, source, causes });
     this.bus.emit('HAZARD_SPAWNED', { type: 'FIRE', key, viaDoor, source });
     return rec;

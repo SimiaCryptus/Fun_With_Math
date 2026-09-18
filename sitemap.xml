@@ -2,31 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://games.cognotik.com/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://games.cognotik.com/css/theme_design.html</loc>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://games.cognotik.com/games/0x800/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/3d-checkers/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/3d-checkers/src/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/aol/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -44,49 +50,55 @@
   </url>
   <url>
     <loc>https://games.cognotik.com/games/arithmatic-dynamics/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/bridges/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/emergensim/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/madame-claude/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/marching-orders/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/mineminer/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://games.cognotik.com/games/mineminer/styles/theme_design.html</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/muddy-timeskipper/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/number-crush/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -98,49 +110,67 @@
   </url>
   <url>
     <loc>https://games.cognotik.com/games/physical-visualizer/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/solar-trader/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/squirrely/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://games.cognotik.com/games/stereo-tac-toe/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <loc>https://games.cognotik.com/games/stereo-arcade/</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/troggle/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://games.cognotik.com/games/velocity-racer/</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/vocal_parkour/web/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://games.cognotik.com/games/vocal_parkour/web/dist/</loc>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://games.cognotik.com/games/vocal_parkour/web/dist/games-vocal_parkour-web-index.html</loc>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/vocal_parkour/web/packages/vad-demo/</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://games.cognotik.com/games/vocal_parkour/web/public/games-vocal_parkour-web-index.html</loc>
-    <lastmod>2026-09-15</lastmod>
+    <lastmod>2026-09-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

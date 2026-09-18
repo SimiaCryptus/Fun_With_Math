@@ -9,8 +9,8 @@ export class Sky {
   constructor({ radius = 6000 } = {}) {
     const geo = new THREE.SphereGeometry(radius, 96, 56);
     this.material = createRelativisticMaterial({
-      color: 0x170f36,   // horizon
-      colorB: 0x03030c,  // zenith
+      color: 0x170f36, // horizon
+      colorB: 0x03030c, // zenith
       pattern: PATTERN.SKY,
       side: THREE.BackSide,
       depthWrite: false,

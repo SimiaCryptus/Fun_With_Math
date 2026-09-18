@@ -12,7 +12,16 @@
  */
 
 // Plain scalars we can both read and write.
-const SCALARS = ['yaw', 'yawRate', 'mudLoad', 'instability', 'rollRisk', 'slip', 'stuckTimer', 'rollTimer'];
+const SCALARS = [
+  'yaw',
+  'yawRate',
+  'mudLoad',
+  'instability',
+  'rollRisk',
+  'slip',
+  'stuckTimer',
+  'rollTimer',
+];
 // Derived getters: read-only, report but never assign.
 const DERIVED = ['forwardSpeed', 'speed'];
 const VECTORS = ['pos', 'vel'];
@@ -29,7 +38,13 @@ function scanBody(b) {
     for (const a of ['x', 'y', 'z']) if (bad(v[a])) out.push([`${name}.${a}`, v[a]]);
   }
   if (b.input) for (const k of INPUTS) if (bad(b.input[k])) out.push([`input.${k}`, b.input[k]]);
-  for (const k of DERIVED) { try { if (bad(b[k])) out.push([k, b[k]]); } catch { /* getter blew up */ } }
+  for (const k of DERIVED) {
+    try {
+      if (bad(b[k])) out.push([k, b[k]]);
+    } catch {
+      /* getter blew up */
+    }
+  }
   return out;
 }
 
@@ -58,7 +73,10 @@ export class NanGuard {
     for (const v of this.race.all) {
       const b = v.body;
       const bads = scanBody(b);
-      if (!bads.length) { this.prev.set(v, snapBody(b)); continue; }
+      if (!bads.length) {
+        this.prev.set(v, snapBody(b));
+        continue;
+      }
       clean = false;
       this.trips++;
       this._report(label, tick, v, bads);
@@ -86,8 +104,16 @@ export class NanGuard {
     const p = this.prev.get(v);
     const b = v.body;
     if (!p) return;
-    if (b.pos && p.pos) { b.pos.x = p.pos.x; b.pos.y = p.pos.y; b.pos.z = p.pos.z; }
-    if (b.vel) { b.vel.x = 0; b.vel.y = 0; b.vel.z = 0; }   // bleed off the poisoned momentum
+    if (b.pos && p.pos) {
+      b.pos.x = p.pos.x;
+      b.pos.y = p.pos.y;
+      b.pos.z = p.pos.z;
+    }
+    if (b.vel) {
+      b.vel.x = 0;
+      b.vel.y = 0;
+      b.vel.z = 0;
+    } // bleed off the poisoned momentum
     for (const k of SCALARS) {
       if (!(k in b) || Number.isFinite(b[k])) continue;
       b[k] = Number.isFinite(p[k]) ? p[k] : 0;

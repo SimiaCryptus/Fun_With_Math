@@ -14,8 +14,21 @@ export class EscalationModel {
       npc.traits.rage = clamp01(npc.traits.rage + 0.1);
       pushNoise(state, npc.position, 6, npc.id);
     }
-    const rec = state.log({ type: 'CONFLICT', kind, npcId: npc.id, targetId: target.id, npcName: npc.name, targetName: target.name });
-    bus.emit('SOCIAL_CONFLICT', { kind, npcId: npc.id, targetId: target.id, npcName: npc.name, targetName: target.name });
+    const rec = state.log({
+      type: 'CONFLICT',
+      kind,
+      npcId: npc.id,
+      targetId: target.id,
+      npcName: npc.name,
+      targetName: target.name,
+    });
+    bus.emit('SOCIAL_CONFLICT', {
+      kind,
+      npcId: npc.id,
+      targetId: target.id,
+      npcName: npc.name,
+      targetName: target.name,
+    });
     return rec;
   }
 

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-const quadVert = /* glsl */`
+const quadVert = /* glsl */ `
 varying vec2 vUv;
 void main() {
   vUv = uv;
@@ -8,7 +8,7 @@ void main() {
 }
 `;
 
-const vignetteFrag = /* glsl */`
+const vignetteFrag = /* glsl */ `
 uniform float uBeta;
 uniform float uEffect;
 varying vec2 vUv;
@@ -21,7 +21,7 @@ void main() {
 }
 `;
 
-const glowFrag = /* glsl */`
+const glowFrag = /* glsl */ `
 uniform float uBeta;
 uniform float uEffect;
 uniform float uTime;
@@ -51,15 +51,19 @@ export class PostFX {
     this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const geo = new THREE.PlaneGeometry(2, 2);
 
-    const mk = (frag, blending) => new THREE.Mesh(geo, new THREE.ShaderMaterial({
-      uniforms: this.uniforms,
-      vertexShader: quadVert,
-      fragmentShader: frag,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false,
-      blending,
-    }));
+    const mk = (frag, blending) =>
+      new THREE.Mesh(
+        geo,
+        new THREE.ShaderMaterial({
+          uniforms: this.uniforms,
+          vertexShader: quadVert,
+          fragmentShader: frag,
+          transparent: true,
+          depthTest: false,
+          depthWrite: false,
+          blending,
+        })
+      );
 
     this.vignette = mk(vignetteFrag, THREE.NormalBlending);
     this.glow = mk(glowFrag, THREE.AdditiveBlending);

@@ -27,18 +27,27 @@ export class TrackSpline {
 
   _cr(i, t, axis) {
     const n = this.n;
-    const p0 = this.cp[(i - 1 + n) % n][axis], p1 = this.cp[i % n][axis];
-    const p2 = this.cp[(i + 1) % n][axis], p3 = this.cp[(i + 2) % n][axis];
-    const t2 = t * t, t3 = t2 * t;
-    return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
-                  (-p0 + 3 * p1 - 3 * p2 + p3) * t3);
+    const p0 = this.cp[(i - 1 + n) % n][axis],
+      p1 = this.cp[i % n][axis];
+    const p2 = this.cp[(i + 1) % n][axis],
+      p3 = this.cp[(i + 2) % n][axis];
+    const t2 = t * t,
+      t3 = t2 * t;
+    return (
+      0.5 *
+      (2 * p1 +
+        (-p0 + p2) * t +
+        (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
+        (-p0 + 3 * p1 - 3 * p2 + p3) * t3)
+    );
   }
 
   _bake(latAcc) {
     const N = this.samples;
     for (let k = 0; k < N; k++) {
       const u = (k / N) * this.n;
-      const i = Math.floor(u), t = u - i;
+      const i = Math.floor(u),
+        t = u - i;
       this.px[k] = this._cr(i, t, 'x');
       this.py[k] = this._cr(i, t, 'y');
       this.pz[k] = this._cr(i, t, 'z');
@@ -47,12 +56,17 @@ export class TrackSpline {
     // tangents + arc length
     let acc = 0;
     for (let k = 0; k < N; k++) {
-      const a = (k - 1 + N) % N, b = (k + 1) % N;
-      let dx = this.px[b] - this.px[a], dz = this.pz[b] - this.pz[a];
+      const a = (k - 1 + N) % N,
+        b = (k + 1) % N;
+      let dx = this.px[b] - this.px[a],
+        dz = this.pz[b] - this.pz[a];
       const m = Math.hypot(dx, dz) || 1;
-      this.tx[k] = dx / m; this.tz[k] = dz / m;
-      const nx = this.px[(k + 1) % N] - this.px[k], nz = this.pz[(k + 1) % N] - this.pz[k];
-      this.s[k] = acc; acc += Math.hypot(nx, nz);
+      this.tx[k] = dx / m;
+      this.tz[k] = dz / m;
+      const nx = this.px[(k + 1) % N] - this.px[k],
+        nz = this.pz[(k + 1) % N] - this.pz[k];
+      this.s[k] = acc;
+      acc += Math.hypot(nx, nz);
     }
     this.s[N] = acc;
     this.length = acc;
@@ -81,9 +95,15 @@ export class TrackSpline {
     const N = this.samples;
     const i = ((k % N) + N) % N;
     return {
-      index: i, x: this.px[i], y: this.py[i], z: this.pz[i],
-      tx: this.tx[i], tz: this.tz[i],
-      width: this.w[i], vTarget: this.vTarget[i], curv: this.curv[i]
+      index: i,
+      x: this.px[i],
+      y: this.py[i],
+      z: this.pz[i],
+      tx: this.tx[i],
+      tz: this.tz[i],
+      width: this.w[i],
+      vTarget: this.vTarget[i],
+      curv: this.curv[i],
     };
   }
 
@@ -99,45 +119,70 @@ export class TrackSpline {
    */
   nearest(x, z, hint = -1) {
     const N = this.samples;
-    let best = -1, bestD = Infinity;
+    let best = -1,
+      bestD = Infinity;
     if (hint >= 0) {
       for (let d = -24; d <= 48; d++) {
-        const i = ((hint + d) % N + N) % N;
-        const dx = x - this.px[i], dz = z - this.pz[i];
+        const i = (((hint + d) % N) + N) % N;
+        const dx = x - this.px[i],
+          dz = z - this.pz[i];
         const dd = dx * dx + dz * dz;
-        if (dd < bestD) { bestD = dd; best = i; }
+        if (dd < bestD) {
+          bestD = dd;
+          best = i;
+        }
       }
       // Hint window lost the vehicle: fall back to a global search. bestD MUST be
       // reset, otherwise the coarse pass can find nothing closer than the rejected
       // candidate and we return index -1 (=> tx[-1] => NaN lateral).
-      if (Math.sqrt(bestD) > this.w[best] * 3) { best = -1; bestD = Infinity; }
+      if (Math.sqrt(bestD) > this.w[best] * 3) {
+        best = -1;
+        bestD = Infinity;
+      }
     }
     if (best < 0) {
       for (let i = 0; i < N; i += 4) {
-        const dx = x - this.px[i], dz = z - this.pz[i];
+        const dx = x - this.px[i],
+          dz = z - this.pz[i];
         const dd = dx * dx + dz * dz;
-        if (dd < bestD) { bestD = dd; best = i; }
+        if (dd < bestD) {
+          bestD = dd;
+          best = i;
+        }
       }
       for (let d = -4; d <= 4; d++) {
-        const i = ((best + d) % N + N) % N;
-        const dx = x - this.px[i], dz = z - this.pz[i];
+        const i = (((best + d) % N) + N) % N;
+        const dx = x - this.px[i],
+          dz = z - this.pz[i];
         const dd = dx * dx + dz * dz;
-        if (dd < bestD) { bestD = dd; best = i; }
+        if (dd < bestD) {
+          bestD = dd;
+          best = i;
+        }
       }
     }
-    const nx = -this.tz[best], nz = this.tx[best];
+    const nx = -this.tz[best],
+      nz = this.tx[best];
     const lateral = (x - this.px[best]) * nx + (z - this.pz[best]) * nz;
     return { index: best, dist: Math.sqrt(bestD), lateral, progress: best / N };
   }
 
   /** Track AABB padded by max width — used to size the MudField. */
   bounds(pad = 20) {
-    let minX = Infinity, minZ = Infinity, maxX = -Infinity, maxZ = -Infinity;
+    let minX = Infinity,
+      minZ = Infinity,
+      maxX = -Infinity,
+      maxZ = -Infinity;
     for (let i = 0; i < this.samples; i++) {
-      minX = Math.min(minX, this.px[i]); maxX = Math.max(maxX, this.px[i]);
-      minZ = Math.min(minZ, this.pz[i]); maxZ = Math.max(maxZ, this.pz[i]);
+      minX = Math.min(minX, this.px[i]);
+      maxX = Math.max(maxX, this.px[i]);
+      minZ = Math.min(minZ, this.pz[i]);
+      maxZ = Math.max(maxZ, this.pz[i]);
     }
-    minX -= pad; minZ -= pad; maxX += pad; maxZ += pad;
+    minX -= pad;
+    minZ -= pad;
+    maxX += pad;
+    maxZ += pad;
     const size = Math.max(maxX - minX, maxZ - minZ);
     return { minX, minZ, maxX, maxZ, size };
   }
@@ -147,7 +192,8 @@ export class TrackSpline {
     const n = this.nearest(body.pos.x, body.pos.z, hint);
     const half = this.w[n.index] * 0.5;
     if (Math.abs(n.lateral) > half) {
-      const nx = -this.tz[n.index], nz = this.tx[n.index];
+      const nx = -this.tz[n.index],
+        nz = this.tx[n.index];
       const over = Math.abs(n.lateral) - half;
       const s = n.lateral > 0 ? -1 : 1;
       body.pos.x += nx * over * s;

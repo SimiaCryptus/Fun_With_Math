@@ -8,15 +8,15 @@
 
 ## **1\. GAME OVERVIEW**
 
-**Temporal Mudracer** is a single‑player off‑road racing game set on dynamic mud tracks where the player can trigger *velocity snapbacks* by reaching a critical speed threshold (88 mph). Instead of rewinding time, the game rewinds **velocity state**: the player and all AI opponents instantly regain the exact velocity vector they had a fixed number of seconds in the past, while remaining in their current physical positions.
+**Temporal Mudracer** is a single‑player off‑road racing game set on dynamic mud tracks where the player can trigger _velocity snapbacks_ by reaching a critical speed threshold (88 mph). Instead of rewinding time, the game rewinds **velocity state**: the player and all AI opponents instantly regain the exact velocity vector they had a fixed number of seconds in the past, while remaining in their current physical positions.
 
 This creates a racing experience defined by:
 
-* unstable terrain
-* unpredictable physics
-* tactical self‑disruption
-* asymmetric temporal advantage
-* AI opponents reacting to sudden velocity discontinuities
+- unstable terrain
+- unpredictable physics
+- tactical self‑disruption
+- asymmetric temporal advantage
+- AI opponents reacting to sudden velocity discontinuities
 
 The player’s mastery lies in learning when to intentionally destabilize themselves to gain a better past velocity.
 
@@ -24,24 +24,24 @@ The player’s mastery lies in learning when to intentionally destabilize themse
 
 ### **Trigger Condition**
 
-* When the player reaches **88 mph**, they may activate a *Temporal Gear*.
-* Activation is manual; hitting 88 mph only enables the ability.
+- When the player reaches **88 mph**, they may activate a _Temporal Gear_.
+- Activation is manual; hitting 88 mph only enables the ability.
 
 ### **Effect**
 
 Upon activation:
 
-* The player’s velocity vector becomes exactly what it was **N seconds ago**, where N is determined by the selected Temporal Gear.
-* All AI opponents also have their velocity vectors overwritten with their own past vectors from the same N‑second offset.
-* Positions, orientation, mud buildup, suspension state, and track deformation **do not** rewind.
+- The player’s velocity vector becomes exactly what it was **N seconds ago**, where N is determined by the selected Temporal Gear.
+- All AI opponents also have their velocity vectors overwritten with their own past vectors from the same N‑second offset.
+- Positions, orientation, mud buildup, suspension state, and track deformation **do not** rewind.
 
 ### **Resulting Phenomena**
 
-* Sudden slowdowns or speedups
-* Abrupt directional changes
-* Instant stabilization or destabilization
-* AI chaos as they attempt to recover from unexpected velocity states
-* Player advantage through foresight of their own past motion
+- Sudden slowdowns or speedups
+- Abrupt directional changes
+- Instant stabilization or destabilization
+- AI chaos as they attempt to recover from unexpected velocity states
+- Player advantage through foresight of their own past motion
 
 ## **3\. TEMPORAL GEARS**
 
@@ -49,51 +49,51 @@ Temporal Gears define how far back the velocity snapback reaches. They act like 
 
 ### **Gear T1 — 8‑Second Snapback**
 
-* Minor correction
-* Used to fix micro‑slides or regain traction
-* Low cooldown
-* Low risk
-* Produces subtle AI disruption
+- Minor correction
+- Used to fix micro‑slides or regain traction
+- Low cooldown
+- Low risk
+- Produces subtle AI disruption
 
 ### **Gear T2 — 20‑Second Snapback**
 
-* Major correction
-* Used to avoid crashes, undo bad lines, or regain stability
-* Medium cooldown
-* Medium risk
-* AI may suddenly slow dramatically if they were in a turn 20s ago
+- Major correction
+- Used to avoid crashes, undo bad lines, or regain stability
+- Medium cooldown
+- Medium risk
+- AI may suddenly slow dramatically if they were in a turn 20s ago
 
 ### **Gear T3 — 40‑Second Snapback**
 
-* Extreme correction
-* Used to escape disastrous situations or exploit long straights
-* Long cooldown
-* High risk
-* AI may become severely destabilized if their past vector was low or angled
+- Extreme correction
+- Used to escape disastrous situations or exploit long straights
+- Long cooldown
+- High risk
+- AI may become severely destabilized if their past vector was low or angled
 
 ### **Gear Selection**
 
-* Player selects gear before the race or mid‑race via a simple interface.
-* Only one gear can be active at a time.
-* Switching gears mid‑race has a short lockout period.
+- Player selects gear before the race or mid‑race via a simple interface.
+- Only one gear can be active at a time.
+- Switching gears mid‑race has a short lockout period.
 
 ## **4\. VEHICLE HANDLING MODEL (GAMEPLAY BEHAVIOR ONLY)**
 
 ### **Mud Physics**
 
-* Low traction
-* High torque
-* Frequent fishtailing
-* Deep ruts that alter steering
-* Variable mud thickness affecting speed
+- Low traction
+- High torque
+- Frequent fishtailing
+- Deep ruts that alter steering
+- Variable mud thickness affecting speed
 
 ### **High‑Speed Instability**
 
-* Approaching 88 mph is inherently dangerous:
-    * Steering authority drops
-    * Slide probability increases
-    * Suspension oscillation intensifies
-    * Risk of rollover spikes
+- Approaching 88 mph is inherently dangerous:
+  - Steering authority drops
+  - Slide probability increases
+  - Suspension oscillation intensifies
+  - Risk of rollover spikes
 
 This makes hitting 88 mph a **strategic act of self‑harm** intended to unlock temporal correction.
 
@@ -101,31 +101,31 @@ This makes hitting 88 mph a **strategic act of self‑harm** intended to unlock 
 
 When snapback occurs:
 
-* Vehicle instantly adopts the past velocity vector
-* If past vector was stable, the vehicle straightens
-* If past vector was angled, the vehicle may jerk sideways
-* If past vector was slow, the vehicle may suddenly decelerate
-* If past vector was fast, the vehicle may surge forward
+- Vehicle instantly adopts the past velocity vector
+- If past vector was stable, the vehicle straightens
+- If past vector was angled, the vehicle may jerk sideways
+- If past vector was slow, the vehicle may suddenly decelerate
+- If past vector was fast, the vehicle may surge forward
 
 ## **5\. AI OPPONENT BEHAVIOR**
 
 AI opponents:
 
-* Do **not** have temporal abilities
-* Drive using standard mud‑racing logic
-* Attempt to recover from sudden velocity changes caused by player snapbacks
-* React believably to unexpected slowdowns, speedups, or directional shifts
-* May collide with each other due to snapback disruptions
-* May unintentionally block or open paths depending on their past vectors
+- Do **not** have temporal abilities
+- Drive using standard mud‑racing logic
+- Attempt to recover from sudden velocity changes caused by player snapbacks
+- React believably to unexpected slowdowns, speedups, or directional shifts
+- May collide with each other due to snapback disruptions
+- May unintentionally block or open paths depending on their past vectors
 
 ### **AI Recovery Logic**
 
 After a snapback:
 
-* AI attempts to stabilize their vehicle
-* Recalculates optimal line from current position
-* Adjusts throttle and steering to regain control
-* May lose significant time if past vector was poor
+- AI attempts to stabilize their vehicle
+- Recalculates optimal line from current position
+- Adjusts throttle and steering to regain control
+- May lose significant time if past vector was poor
 
 This creates emergent difficulty without requiring temporal awareness.
 
@@ -135,19 +135,19 @@ Tracks are designed to maximize the strategic value of velocity snapbacks.
 
 ### **Key Track Elements**
 
-* Long straights enabling 88 mph
-* Tight corners where past slow velocities become advantageous
-* Mud pits that create low‑velocity “anchors” for future snapbacks
-* Ruts that persist across the race
-* Jumps where snapback can prevent disastrous landings
-* Narrow choke points where AI disruptions create openings
+- Long straights enabling 88 mph
+- Tight corners where past slow velocities become advantageous
+- Mud pits that create low‑velocity “anchors” for future snapbacks
+- Ruts that persist across the race
+- Jumps where snapback can prevent disastrous landings
+- Narrow choke points where AI disruptions create openings
 
 ### **Environmental Variability**
 
-* Rain increases mud thickness
-* Dry spells reduce traction loss
-* Night races reduce visibility
-* Dynamic mud deformation changes optimal lines over time
+- Rain increases mud thickness
+- Dry spells reduce traction loss
+- Night races reduce visibility
+- Dynamic mud deformation changes optimal lines over time
 
 ## **7\. PLAYER STRATEGY LOOP**
 
@@ -167,11 +167,11 @@ Choose the past velocity vector that best fits the current situation.
 
 Use the regained past velocity to:
 
-* stabilize
-* dodge hazards
-* correct mistakes
-* bypass AI
-* regain control
+- stabilize
+- dodge hazards
+- correct mistakes
+- bypass AI
+- regain control
 
 ### **5\. Recover and continue racing**
 
@@ -181,25 +181,25 @@ Plan the next snapback based on evolving track conditions.
 
 ### **Opening**
 
-* Player learns the track
-* Builds mental map of past velocity states
-* Identifies good “anchor moments” for future snapbacks
+- Player learns the track
+- Builds mental map of past velocity states
+- Identifies good “anchor moments” for future snapbacks
 
 ### **Mid‑Race**
 
-* Frequent snapbacks
-* AI disruptions
-* Terrain deformation
-* High‑risk maneuvers
-* Strategic gear switching
+- Frequent snapbacks
+- AI disruptions
+- Terrain deformation
+- High‑risk maneuvers
+- Strategic gear switching
 
 ### **Endgame**
 
-* Player uses final snapbacks to:
-    * avoid late mistakes
-    * bypass AI
-    * stabilize for final sprint
-    * exploit known past vectors
+- Player uses final snapbacks to:
+  - avoid late mistakes
+  - bypass AI
+  - stabilize for final sprint
+  - exploit known past vectors
 
 Victory comes from **temporal rhythm mastery**, not raw speed.
 
@@ -207,27 +207,27 @@ Victory comes from **temporal rhythm mastery**, not raw speed.
 
 ### **Unlockables**
 
-* New Temporal Gears with different offsets
-* Vehicles with different mud handling profiles
-* Tracks with unique environmental hazards
-* Cosmetic mud patterns and liveries
+- New Temporal Gears with different offsets
+- Vehicles with different mud handling profiles
+- Tracks with unique environmental hazards
+- Cosmetic mud patterns and liveries
 
 ### **Skill Development**
 
 Players improve by:
 
-* memorizing their own velocity history
-* learning optimal snapback timing
-* predicting AI disruptions
-* mastering mud physics
+- memorizing their own velocity history
+- learning optimal snapback timing
+- predicting AI disruptions
+- mastering mud physics
 
 ## **10\. FAILURE STATES**
 
-* Rollover
-* Getting stuck in deep mud
-* Severe fishtail leading to spinout
-* Missing checkpoints
-* Overusing snapbacks and losing rhythm
+- Rollover
+- Getting stuck in deep mud
+- Severe fishtail leading to spinout
+- Missing checkpoints
+- Overusing snapbacks and losing rhythm
 
 Snapbacks are powerful but misusing them can worsen the situation.
 
@@ -235,17 +235,17 @@ Snapbacks are powerful but misusing them can worsen the situation.
 
 Finish the race in first place by:
 
-* exploiting temporal mechanics
-* managing mud physics
-* outmaneuvering AI opponents
-* mastering velocity memory
+- exploiting temporal mechanics
+- managing mud physics
+- outmaneuvering AI opponents
+- mastering velocity memory
 
-**Muddy Timeskipper** as a **Ren & Stimpy homage** is *exactly* the right tonal mutation of the core mechanic — because Ren & Stimpy’s entire aesthetic is built on grotesque exaggeration, slapstick physics, sudden tonal whiplash, and surreal cause‑and‑effect. Your temporal‑velocity snapback mechanic *already* behaves like a Ren & Stimpy gag:
+**Muddy Timeskipper** as a **Ren & Stimpy homage** is _exactly_ the right tonal mutation of the core mechanic — because Ren & Stimpy’s entire aesthetic is built on grotesque exaggeration, slapstick physics, sudden tonal whiplash, and surreal cause‑and‑effect. Your temporal‑velocity snapback mechanic _already_ behaves like a Ren & Stimpy gag:
 
-* build tension
-* push it too far
-* trigger a catastrophic reversal
-* watch the world convulse
+- build tension
+- push it too far
+- trigger a catastrophic reversal
+- watch the world convulse
 
 So let’s define the game’s identity cleanly.
 
@@ -261,33 +261,33 @@ So let’s define the game’s identity cleanly.
 
 The game world is a **gross, hyper‑textured mudscape**, rendered with:
 
-* thick, glistening mud clumps
-* exaggerated facial expressions on vehicles
-* sudden close‑up “gross-out” frames
-* elastic physics
-* squash‑and‑stretch bodywork
-* absurd sound effects (wet slaps, sproings, splats, screeches)
+- thick, glistening mud clumps
+- exaggerated facial expressions on vehicles
+- sudden close‑up “gross-out” frames
+- elastic physics
+- squash‑and‑stretch bodywork
+- absurd sound effects (wet slaps, sproings, splats, screeches)
 
 The tone mirrors Ren & Stimpy:
 
-* manic energy
-* grotesque detail
-* sudden tonal shifts
-* slapstick violence without harm
-* surreal logic
+- manic energy
+- grotesque detail
+- sudden tonal shifts
+- slapstick violence without harm
+- surreal logic
 
 Your truck behaves like a character:
 
-* eyes bulge when hitting 88 mph
-* tongue flaps out during slides
-* grill stretches into a scream during snapbacks
+- eyes bulge when hitting 88 mph
+- tongue flaps out during slides
+- grill stretches into a scream during snapbacks
 
 AI opponents have distinct personalities expressed through:
 
-* facial grills
-* bumper teeth
-* mud‑splatter “beards”
-* exaggerated reactions to snapbacks
+- facial grills
+- bumper teeth
+- mud‑splatter “beards”
+- exaggerated reactions to snapbacks
 
 ## **2\. CORE MECHANIC: VELOCITY SNAPBACK (CARTOON LOGIC EDITION)**
 
@@ -295,29 +295,29 @@ AI opponents have distinct personalities expressed through:
 
 When the player reaches **88 mph**, the truck enters a grotesque “temporal strain” state:
 
-* eyes bulge
-* frame vibrates
-* mud boils
-* a giant cartoon thermometer rises
+- eyes bulge
+- frame vibrates
+- mud boils
+- a giant cartoon thermometer rises
 
 Activating a Temporal Gear causes:
 
-* a violent *SPLORCH* sound
-* a temporal “rubber band” recoil
-* velocity snaps back to the past vector
-* AI opponents undergo the same velocity snapback
-* physics exaggerate the discontinuity
+- a violent _SPLORCH_ sound
+- a temporal “rubber band” recoil
+- velocity snaps back to the past vector
+- AI opponents undergo the same velocity snapback
+- physics exaggerate the discontinuity
 
 ### **Cartoon Consequences**
 
 Snapbacks produce:
 
-* sudden comedic slowdowns
-* explosive forward lunges
-* sideways jerks that fling mud like shrapnel
-* AI trucks screaming in exaggerated panic
-* mud geysers erupting from the ground
-* trackside critters reacting in slapstick ways
+- sudden comedic slowdowns
+- explosive forward lunges
+- sideways jerks that fling mud like shrapnel
+- AI trucks screaming in exaggerated panic
+- mud geysers erupting from the ground
+- trackside critters reacting in slapstick ways
 
 ## **3\. TEMPORAL GEARS (REN & STIMPY STYLE)**
 
@@ -325,24 +325,24 @@ Each gear has a distinct cartoon identity.
 
 ### **T1 — “Lil’ Skipper” (8s)**
 
-* A tiny cartoon lever
-* Produces a *boink\!* sound
-* Mild correction
-* Used for comedic micro‑fixes
+- A tiny cartoon lever
+- Produces a _boink\!_ sound
+- Mild correction
+- Used for comedic micro‑fixes
 
 ### **T2 — “Big Ol’ Skipper” (20s)**
 
-* A huge red plunger
-* Produces a *BLORP\!*
-* Major correction
-* Causes AI trucks to wobble violently
+- A huge red plunger
+- Produces a _BLORP\!_
+- Major correction
+- Causes AI trucks to wobble violently
 
 ### **T3 — “Grandpappy Skipper” (40s)**
 
-* A rusty crank with a screaming face
-* Produces a *SKREEEEEE\!*
-* Catastrophic correction
-* AI trucks may cartoonishly freeze, then snap into motion
+- A rusty crank with a screaming face
+- Produces a _SKREEEEEE\!_
+- Catastrophic correction
+- AI trucks may cartoonishly freeze, then snap into motion
 
 ## **4\. VEHICLE BEHAVIOR**
 
@@ -350,50 +350,50 @@ Each gear has a distinct cartoon identity.
 
 Mud behaves like:
 
-* glue
-* pudding
-* quicksand
-* rubber
-* tar
+- glue
+- pudding
+- quicksand
+- rubber
+- tar
 
 Depending on track section, mud may:
 
-* cling to wheels
-* stretch like taffy
-* explode in clumps
-* ripple like water
+- cling to wheels
+- stretch like taffy
+- explode in clumps
+- ripple like water
 
 ### **High‑Speed Instability**
 
 Approaching 88 mph causes:
 
-* truck body elongation
-* wheels vibrating off-axis
-* headlights bulging
-* exhaust sputtering cartoon fire
-* mud peeling off in sheets
+- truck body elongation
+- wheels vibrating off-axis
+- headlights bulging
+- exhaust sputtering cartoon fire
+- mud peeling off in sheets
 
 Snapback instantly resets velocity but not position, causing:
 
-* comedic whiplash
-* sudden calm after chaos
-* AI trucks reacting with exaggerated confusion
+- comedic whiplash
+- sudden calm after chaos
+- AI trucks reacting with exaggerated confusion
 
 ## **5\. AI OPPONENTS**
 
 AI trucks are characters:
 
-* **Gritty Gus** — perpetually angry, mud‑covered, sputtering
-* **Slick Sally** — overconfident, shiny, hates mud
-* **Boggy Bill** — slow, clueless, loves mud
-* **Turbo Tadpole** — tiny, fast, squeaky
+- **Gritty Gus** — perpetually angry, mud‑covered, sputtering
+- **Slick Sally** — overconfident, shiny, hates mud
+- **Boggy Bill** — slow, clueless, loves mud
+- **Turbo Tadpole** — tiny, fast, squeaky
 
 They:
 
-* drive normally
-* react cartoonishly to snapbacks
-* scream, wobble, fishtail, or freeze
-* attempt to recover using exaggerated animations
+- drive normally
+- react cartoonishly to snapbacks
+- scream, wobble, fishtail, or freeze
+- attempt to recover using exaggerated animations
 
 They do **not** understand time mechanics, which is the joke.
 
@@ -401,17 +401,17 @@ They do **not** understand time mechanics, which is the joke.
 
 Tracks are surreal mud environments:
 
-* **The Sludge Speedway** — mud rivers, geysers, giant worms
-* **Gristle Gulch** — bone‑like rocks, sticky pits
-* **The Filth Flats** — endless mud plains with weird critters
-* **The Gunkworks** — industrial sludge pipes, toxic ooze
+- **The Sludge Speedway** — mud rivers, geysers, giant worms
+- **Gristle Gulch** — bone‑like rocks, sticky pits
+- **The Filth Flats** — endless mud plains with weird critters
+- **The Gunkworks** — industrial sludge pipes, toxic ooze
 
 Each track includes:
 
-* exaggerated hazards
-* slapstick obstacles
-* mud creatures reacting to snapbacks
-* environmental gags
+- exaggerated hazards
+- slapstick obstacles
+- mud creatures reacting to snapbacks
+- environmental gags
 
 ## **7\. PLAYER STRATEGY LOOP**
 
@@ -439,14 +439,14 @@ Each snapback is a slapstick event.
 
 Unlock:
 
-* new trucks with unique personalities
-* new mud types
-* new tracks
-* cosmetic gross-out effects
-* new Temporal Gears with longer or shorter offsets
+- new trucks with unique personalities
+- new mud types
+- new tracks
+- cosmetic gross-out effects
+- new Temporal Gears with longer or shorter offsets
 
 ## **9\. SIGNATURE MOMENT**
 
-You’re fishtailing wildly. Your truck’s eyes bulge. Mud sprays everywhere. You slam the throttle. Hit **88 mph**. The truck screams. You pull the “Grandpappy Skipper.” *SKREEEEEE\!* Velocity snaps back 40 seconds. Your truck instantly becomes calm and slow. AI trucks slam into each other in cartoon chaos. A mud geyser erupts. A worm screams. You cruise past the carnage.
+You’re fishtailing wildly. Your truck’s eyes bulge. Mud sprays everywhere. You slam the throttle. Hit **88 mph**. The truck screams. You pull the “Grandpappy Skipper.” _SKREEEEEE\!_ Velocity snaps back 40 seconds. Your truck instantly becomes calm and slow. AI trucks slam into each other in cartoon chaos. A mud geyser erupts. A worm screams. You cruise past the carnage.
 
 That’s **Muddy Timeskipper**.

@@ -37,11 +37,9 @@ export class Props {
 
   _place(mesh, s, lat = 0, up = 0) {
     const f = this.track.frameAt(s);
-    mesh.position.copy(f.position)
-      .addScaledVector(f.lateral, lat)
-      .addScaledVector(f.normal, up);
+    mesh.position.copy(f.position).addScaledVector(f.lateral, lat).addScaledVector(f.normal, up);
     mesh.quaternion.setFromRotationMatrix(
-      new THREE.Matrix4().makeBasis(f.lateral, f.normal, f.tangent),
+      new THREE.Matrix4().makeBasis(f.lateral, f.normal, f.tangent)
     );
     mesh.frustumCulled = false;
     this.group.add(mesh);
@@ -81,7 +79,7 @@ export class Props {
     geo.rotateX(-Math.PI / 2); // lie flat, +y is the road normal
     for (const u of list) {
       const s = (typeof u === 'number' ? u : u[0]) * this.track.length;
-      const d = typeof u === 'number' ? 0 : (u[1] || 0);
+      const d = typeof u === 'number' ? 0 : u[1] || 0;
       const mesh = this._place(new THREE.Mesh(geo, this._materials.pad), s, d, 0.12);
       this.pads.push({ s, d, halfWidth: this.track.width * 0.3, mesh });
     }
@@ -92,7 +90,7 @@ export class Props {
     const geo = new THREE.OctahedronGeometry(1.7, 0);
     for (const entry of list) {
       const u = typeof entry === 'number' ? entry : entry[0];
-      const d = typeof entry === 'number' ? 0 : (entry[1] || 0);
+      const d = typeof entry === 'number' ? 0 : entry[1] || 0;
       const s = u * this.track.length;
       const mesh = this._place(new THREE.Mesh(geo, this._materials.photon), s, d, 2.4);
       this.photons.push({ s, d, mesh, taken: false, phase: Math.random() * Math.PI * 2 });

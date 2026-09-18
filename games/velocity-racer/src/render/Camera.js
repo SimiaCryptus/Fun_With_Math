@@ -25,12 +25,10 @@ export class CockpitCamera {
     // Motion direction = tangent yawed by the car's heading about the road normal.
     this.velocityDir.copy(f.tangent).applyAxisAngle(f.normal, -car.heading).normalize();
 
-    this._pos.copy(f.position)
-      .addScaledVector(f.normal, 1.45)
-      .addScaledVector(f.lateral, car.d);
+    this._pos.copy(f.position).addScaledVector(f.normal, 1.45).addScaledVector(f.lateral, car.d);
 
     // Speed shake (and a kick while scraping a wall).
-    const shake = (b * b * 0.16 + car.scrape * 0.25);
+    const shake = b * b * 0.16 + car.scrape * 0.25;
     this._pos.addScaledVector(f.lateral, Math.sin(this._t * 37.0) * shake * 0.12);
     this._pos.addScaledVector(f.normal, Math.sin(this._t * 53.0) * shake * 0.08);
 

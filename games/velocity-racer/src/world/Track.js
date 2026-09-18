@@ -63,7 +63,7 @@ export class Track {
       const p = this.curve.getPointAt(u);
       const t = this.curve.getTangentAt(u).normalize();
       const l = new THREE.Vector3().crossVectors(t, UP).normalize(); // "right"
-      const n = new THREE.Vector3().crossVectors(l, t).normalize();  // road up
+      const n = new THREE.Vector3().crossVectors(l, t).normalize(); // road up
       this.pos.push(p);
       this.tan.push(t);
       this.lat.push(l);
@@ -169,12 +169,16 @@ export class Track {
         const col = cols[c];
         const o = (i * C + c) * 3;
         p.copy(f.position).addScaledVector(f.lateral, col.lat).addScaledVector(f.normal, col.up);
-        positions[o] = p.x; positions[o + 1] = p.y; positions[o + 2] = p.z;
+        positions[o] = p.x;
+        positions[o + 1] = p.y;
+        positions[o + 2] = p.z;
         nv.set(0, 0, 0)
           .addScaledVector(f.lateral, col.nl ?? 0)
           .addScaledVector(f.normal, col.nu ?? 1)
           .normalize();
-        normals[o] = nv.x; normals[o + 1] = nv.y; normals[o + 2] = nv.z;
+        normals[o] = nv.x;
+        normals[o + 1] = nv.y;
+        normals[o + 2] = nv.z;
         const uo = (i * C + c) * 2;
         uvs[uo] = col.u;
         uvs[uo + 1] = f.s;
@@ -225,7 +229,7 @@ export class Track {
         pattern: PATTERN.ROAD,
         side: THREE.DoubleSide,
       }),
-      'road',
+      'road'
     );
 
     // apron / shoulders
@@ -242,7 +246,7 @@ export class Track {
         emissive: 0.05,
         side: THREE.DoubleSide,
       }),
-      'apron',
+      'apron'
     );
 
     // guard rails
@@ -258,7 +262,7 @@ export class Track {
           pattern: PATTERN.RAIL,
           side: THREE.DoubleSide,
         }),
-        sign < 0 ? 'rail-left' : 'rail-right',
+        sign < 0 ? 'rail-left' : 'rail-right'
       );
     }
   }

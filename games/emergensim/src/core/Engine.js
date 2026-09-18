@@ -21,14 +21,31 @@ export class Engine {
     this.state = new GameState(scenarioData);
     this.hazardManager = new HazardManager(this.state, this.eventBus);
     this.npcManager = new NPCManager(this.state, this.eventBus);
-    this.turnManager = new TurnManager(this.state, this.eventBus, { hazardManager: this.hazardManager, npcManager: this.npcManager });
+    this.turnManager = new TurnManager(this.state, this.eventBus, {
+      hazardManager: this.hazardManager,
+      npcManager: this.npcManager,
+    });
     this.renderer = new SceneRenderer(container, this.state, this.eventBus);
     this.hud = new HUDController(document.getElementById('sim-app'), this.state, this.eventBus);
-    this.actionPalette = new ActionPalette(document.getElementById('action-palette'), this.state, this.eventBus);
-    this.dialogOverlay = new DialogOverlay(document.getElementById('dialog-overlay-layer'), this.state, this.eventBus);
-    this.autopsy = new AutopsyView(document.getElementById('autopsy-modal'), this.state, this.eventBus, {
-      simulate: (snapshot, turns, mutate) => TurnManager.simulateFrom(this.scenario, snapshot, turns, mutate),
-    });
+    this.actionPalette = new ActionPalette(
+      document.getElementById('action-palette'),
+      this.state,
+      this.eventBus
+    );
+    this.dialogOverlay = new DialogOverlay(
+      document.getElementById('dialog-overlay-layer'),
+      this.state,
+      this.eventBus
+    );
+    this.autopsy = new AutopsyView(
+      document.getElementById('autopsy-modal'),
+      this.state,
+      this.eventBus,
+      {
+        simulate: (snapshot, turns, mutate) =>
+          TurnManager.simulateFrom(this.scenario, snapshot, turns, mutate),
+      }
+    );
     this._bindEvents();
   }
 
@@ -54,7 +71,10 @@ export class Engine {
 
   dispatchPlayerAction(actionDescriptor) {
     if (this.state.meta.activePhase !== 'PLAYER_INPUT') {
-      this.eventBus.emit('ACTION_REJECTED', { action: actionDescriptor, reason: 'Not in PLAYER_INPUT phase' });
+      this.eventBus.emit('ACTION_REJECTED', {
+        action: actionDescriptor,
+        reason: 'Not in PLAYER_INPUT phase',
+      });
       return false;
     }
     return this.turnManager.processPlayerAction(actionDescriptor);

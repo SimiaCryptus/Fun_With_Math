@@ -9,9 +9,9 @@ export const sharedUniforms = {
   uBetaView: { value: new THREE.Vector3(0, 0, -1) }, // velocity dir (view space) × β
   uBeta: { value: 0 },
   uGamma: { value: 1 },
-  uEffect: { value: 1 },       // 0 = classical, 1 = full warp
+  uEffect: { value: 1 }, // 0 = classical, 1 = full warp
   uTime: { value: 0 },
-  uDopplerK: { value: 1.4 },   // headlight exponent
+  uDopplerK: { value: 1.4 }, // headlight exponent
   uFog: { value: new THREE.Color(0x090726) },
 };
 
@@ -23,7 +23,7 @@ export const PATTERN = {
   PAD: 4,
 };
 
-const vertexShader = /* glsl */`
+const vertexShader = /* glsl */ `
 uniform vec3 uBetaView;
 uniform float uBeta;
 uniform float uGamma;
@@ -73,7 +73,7 @@ void main() {
 }
 `;
 
-const fragmentShader = /* glsl */`
+const fragmentShader = /* glsl */ `
 uniform vec3 uColor;
 uniform vec3 uColorB;
 uniform float uPattern;
@@ -197,13 +197,16 @@ export function createRelativisticMaterial({
   depthWrite = true,
 } = {}) {
   return new THREE.ShaderMaterial({
-    uniforms: Object.assign({
-      uColor: { value: new THREE.Color(color) },
-      uColorB: { value: new THREE.Color(colorB) },
-      uPattern: { value: pattern },
-      uEmissive: { value: emissive },
-      uOpacity: { value: opacity },
-    }, sharedUniforms),
+    uniforms: Object.assign(
+      {
+        uColor: { value: new THREE.Color(color) },
+        uColorB: { value: new THREE.Color(colorB) },
+        uPattern: { value: pattern },
+        uEmissive: { value: emissive },
+        uOpacity: { value: opacity },
+      },
+      sharedUniforms
+    ),
     vertexShader,
     fragmentShader,
     side,

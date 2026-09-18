@@ -19,15 +19,17 @@ export class CameraRig {
     this.punch = 1;
     this.shake = Math.min(1.2, ev.shake);
   }
-   /** Continue smoothly from wherever another camera (orbit) left us. */
-   snapTo(v) { this.pos.set(v.x, v.y, v.z); }
-
+  /** Continue smoothly from wherever another camera (orbit) left us. */
+  snapTo(v) {
+    this.pos.set(v.x, v.y, v.z);
+  }
 
   update(body, dt) {
     const strain = body.instability;
     const back = 9.5 + body.speed * 0.12;
     const height = 4.2 + strain * 1.2;
-    const fwdX = Math.sin(body.yaw), fwdZ = Math.cos(body.yaw);
+    const fwdX = Math.sin(body.yaw),
+      fwdZ = Math.cos(body.yaw);
 
     this.tmp.set(body.pos.x - fwdX * back, body.pos.y + height, body.pos.z - fwdZ * back);
     const k = 1 - Math.exp(-6 * dt);

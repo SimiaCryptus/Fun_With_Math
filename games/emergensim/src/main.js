@@ -9,7 +9,10 @@ let engine = null;
 
 async function boot(scenarioId) {
   const def = REGISTRY.get(scenarioId) || FireEvacuation;
-  if (engine) { engine.destroy(); engine = null; }
+  if (engine) {
+    engine.destroy();
+    engine = null;
+  }
   const scenario = normalizeScenario(def);
   engine = new Engine(document.getElementById('viewport-container'), scenario);
   engine.eventBus.on('RELOAD_SCENARIO', ({ scenarioId: id }) => {
@@ -25,15 +28,17 @@ async function boot(scenarioId) {
 const select = document.getElementById('scenario-select');
 for (const s of REGISTRY.values()) {
   const opt = document.createElement('option');
-  opt.value = s.id; opt.textContent = s.title;
+  opt.value = s.id;
+  opt.textContent = s.title;
   select.appendChild(opt);
 }
 select.addEventListener('change', () => {
-   select.blur(); // release focus so WASD / hotkeys reach the game again
-   boot(select.value).catch((err) => {
-     console.error(err);
-     document.getElementById('hud-toast').innerHTML = `<div class="toast bad">Boot failed: ${err.message}</div>`;
-   });
+  select.blur(); // release focus so WASD / hotkeys reach the game again
+  boot(select.value).catch((err) => {
+    console.error(err);
+    document.getElementById('hud-toast').innerHTML =
+      `<div class="toast bad">Boot failed: ${err.message}</div>`;
+  });
 });
 
 const initial = new URL(location.href).searchParams.get('scenario') || FireEvacuation.id;

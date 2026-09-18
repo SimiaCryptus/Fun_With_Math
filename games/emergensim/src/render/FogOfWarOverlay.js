@@ -21,7 +21,8 @@ export class FogOfWarOverlay {
       if (tile.coord.z < viewFloor) f *= 0.45;
       this.map.shade(key, f, (c) => {
         if (tile.burnt) c.lerp(CHAR, 0.75);
-        else if (seen && tile.temperature > 60) c.lerp(HOT, Math.min(0.7, (tile.temperature - 60) / 600));
+        else if (seen && tile.temperature > 60)
+          c.lerp(HOT, Math.min(0.7, (tile.temperature - 60) / 600));
         if (tile.type === 'WINDOW' && tile.shattered) c.multiplyScalar(0.45);
       });
     }

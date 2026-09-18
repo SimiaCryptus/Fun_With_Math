@@ -1,6 +1,6 @@
 # SOLAR TRADER — Design Document (v2)
 
-> A hard-ish sci-fi trading game where the *navigation itself* is the game.
+> A hard-ish sci-fi trading game where the _navigation itself_ is the game.
 > You do not "fly to Ceres". You buy a launch window, burn into a Lambert arc,
 > coast for 214 days, and hope the platinum price at Psyche Forge holds.
 
@@ -10,8 +10,8 @@
 
 **Solar Trader** is a browser game about interplanetary logistics under real
 orbital mechanics. Planets and asteroids move on their true (JPL approximate)
-ephemerides. Travel between two rocks is not a distance — it is a *transfer
-problem*: a departure date, a time of flight, and a delta-v bill you pay in
+ephemerides. Travel between two rocks is not a distance — it is a _transfer
+problem_: a departure date, a time of flight, and a delta-v bill you pay in
 propellant mass.
 
 You run a single ship. You buy hydrogen scooped from Jupiter's upper
@@ -20,8 +20,8 @@ atmosphere, water cracked out of Ceres, platinum-group metals ripped from
 a better engine, bigger tanks, an aeroshell, more cargo volume — every one of
 which reshapes which parts of the solar system you can reach at all.
 
-**The fantasy:** being a small-time freighter captain who is *good at
-celestial mechanics*.
+**The fantasy:** being a small-time freighter captain who is _good at
+celestial mechanics_.
 
 ---
 
@@ -35,7 +35,7 @@ celestial mechanics*.
 3. **Time is the scarcest resource.** Money is recoverable. A missed synodic
    window costs you 26 months.
 4. **Upgrades unlock geometry, not damage numbers.** A higher-Isp engine does
-   not make you "stronger"; it makes Saturn *exist* for you.
+   not make you "stronger"; it makes Saturn _exist_ for you.
 5. **Readable, not simplified.** Show the math (v∞, C3, Isp, mass ratio) but
    always pair it with a plain-language consequence line.
 
@@ -50,11 +50,11 @@ celestial mechanics*.
   sell / refuel / upgrade ◄── arrive & capture ◄── coast ◄── depart burn
 ```
 
-* **Micro loop (minutes):** market arbitrage + choosing a transfer off the
+- **Micro loop (minutes):** market arbitrage + choosing a transfer off the
   porkchop.
-* **Meso loop (a session):** a 2-4 leg trade circuit that ends back at a hub
+- **Meso loop (a session):** a 2-4 leg trade circuit that ends back at a hub
   with enough cash for the next upgrade tier.
-* **Macro loop (a campaign):** Inner system (Earth/Luna/Mars/NEAs) → Belt
+- **Macro loop (a campaign):** Inner system (Earth/Luna/Mars/NEAs) → Belt
   (Ceres/Vesta/Psyche) → Jovian (Callisto) → Outer (Titan, Oberon, Triton).
   Each ring is gated by delta-v budget and by patience.
 
@@ -66,11 +66,11 @@ celestial mechanics*.
 
 All simulation math runs in canonical heliocentric units so that `mu_sun = 1`:
 
-| Quantity | Unit | Value |
-|---|---|---|
-| Length | 1 AU | 1.495978707e11 m |
-| Time   | 1 TU | sqrt(AU³/µ☉) ≈ 5.0226e6 s ≈ 58.132 d |
-| Speed  | 1 VU | AU/TU ≈ 29.78 km/s |
+| Quantity | Unit | Value                                |
+| -------- | ---- | ------------------------------------ |
+| Length   | 1 AU | 1.495978707e11 m                     |
+| Time     | 1 TU | sqrt(AU³/µ☉) ≈ 5.0226e6 s ≈ 58.132 d |
+| Speed    | 1 VU | AU/TU ≈ 29.78 km/s                   |
 
 The UI converts to AU / days / km/s at the edges only. Canonical units keep
 the Kepler and Lambert solvers well conditioned in float64.
@@ -126,11 +126,12 @@ parking radius `rp` around parent µ:
                                an aeroshell (aerocapture)
 ```
 
-Consequences that fall out for free and that players *feel*:
-* Departing from a high orbit (Luna Gateway, Deimos Yard) is far cheaper than
+Consequences that fall out for free and that players _feel_:
+
+- Departing from a high orbit (Luna Gateway, Deimos Yard) is far cheaper than
   from LEO — but low orbits are where the industry and the cheap goods are.
-* Oberth makes big-µ bodies (Jupiter) surprisingly cheap to leave.
-* Aerocapture at Mars/Venus/Earth is the single best mid-game upgrade.
+- Oberth makes big-µ bodies (Jupiter) surprisingly cheap to leave.
+- Aerocapture at Mars/Venus/Earth is the single best mid-game upgrade.
 
 ### 4.5 Propellant
 
@@ -143,18 +144,18 @@ Tsiolkovsky, applied per burn, in order, with cargo mass included:
 ```
 
 Loading 300 t of iron does not just fill the hold — it eats your range. The
-Nav panel always shows *remaining* Δv after the currently selected plan.
+Nav panel always shows _remaining_ Δv after the currently selected plan.
 
 ### 4.6 Launch-window search (the porkchop)
 
 For a selected origin/target pair the planner builds an N×M grid:
 
-* X axis: departure date, spanning ~1.15 synodic periods from "now"
+- X axis: departure date, spanning ~1.15 synodic periods from "now"
   (so at least one full window is always visible).
-* Y axis: time of flight, 0.35× → 2.3× the Hohmann TOF.
-* Colour: total Δv (dep+arr), clamped log-ish palette; unreachable /
+- Y axis: time of flight, 0.35× → 2.3× the Hohmann TOF.
+- Colour: total Δv (dep+arr), clamped log-ish palette; unreachable /
   no-solution cells are drawn black.
-* Overlay: a white contour at the player's current Δv budget — the literal
+- Overlay: a white contour at the player's current Δv budget — the literal
   boundary of where they can go today.
 
 Clicking a cell selects a transfer; hovering reads out date, TOF, C3, v∞,
@@ -172,25 +173,25 @@ transfer period. Cheap, quick, and it teaches the Δv-vs-altitude lesson early.
 
 ### 5.1 Commodities (17)
 
-| id | name | base ¢/t | notes |
-|---|---|---|---|
-| `ice` | Dirty Ice | 200 | bulk, everywhere in the belt |
-| `water` | Potable Water | 320 | processed ice |
-| `o2` | LOX | 450 | life support + oxidiser |
-| `h2` | Liquid Hydrogen | 950 | *propellant*, sets refuel price |
-| `ch4` | Methane | 700 | Titan/Mars |
-| `nh3` | Ammonia | 820 | volatiles, outer system |
-| `d2` | Deuterium | 34 000 | Venus & ice giants |
-| `he3` | Helium-3 | 1 900 000 | Jupiter/Uranus only, tiny tonnage |
-| `silicates` | Regolith Aggregate | 150 | construction bulk |
-| `iron` | Iron–Nickel | 1 200 | Psyche/Vesta |
-| `ree` | Rare Earths | 45 000 | Mercury/Vesta |
-| `pgm` | Platinum Group | 130 000 | Psyche/Eros — the money maker |
-| `polymers` | Polymers & Feedstock | 9 000 | organics |
-| `machinery` | Heavy Machinery | 90 000 | Earth/Deimos |
-| `electronics` | Electronics | 260 000 | Earth only, high tech |
-| `food` | Foodstuffs | 40 000 | Earth/Mars |
-| `meds` | Pharmaceuticals | 410 000 | Earth, luxury demand outward |
+| id            | name                 | base ¢/t  | notes                             |
+| ------------- | -------------------- | --------- | --------------------------------- |
+| `ice`         | Dirty Ice            | 200       | bulk, everywhere in the belt      |
+| `water`       | Potable Water        | 320       | processed ice                     |
+| `o2`          | LOX                  | 450       | life support + oxidiser           |
+| `h2`          | Liquid Hydrogen      | 950       | _propellant_, sets refuel price   |
+| `ch4`         | Methane              | 700       | Titan/Mars                        |
+| `nh3`         | Ammonia              | 820       | volatiles, outer system           |
+| `d2`          | Deuterium            | 34 000    | Venus & ice giants                |
+| `he3`         | Helium-3             | 1 900 000 | Jupiter/Uranus only, tiny tonnage |
+| `silicates`   | Regolith Aggregate   | 150       | construction bulk                 |
+| `iron`        | Iron–Nickel          | 1 200     | Psyche/Vesta                      |
+| `ree`         | Rare Earths          | 45 000    | Mercury/Vesta                     |
+| `pgm`         | Platinum Group       | 130 000   | Psyche/Eros — the money maker     |
+| `polymers`    | Polymers & Feedstock | 9 000     | organics                          |
+| `machinery`   | Heavy Machinery      | 90 000    | Earth/Deimos                      |
+| `electronics` | Electronics          | 260 000   | Earth only, high tech             |
+| `food`        | Foodstuffs           | 40 000    | Earth/Mars                        |
+| `meds`        | Pharmaceuticals      | 410 000   | Earth, luxury demand outward      |
 
 ### 5.2 Price model
 
@@ -204,7 +205,7 @@ Each station holds, per commodity: `stock`, `target` (equilibrium stock),
   sell     = price * (1 - spread)
 ```
 
-Stock evolves under production, consumption and *background NPC trade* that
+Stock evolves under production, consumption and _background NPC trade_ that
 relaxes it toward target with a 30-day time constant (solved in closed form,
 so long warps land exactly where daily ticks would):
 
@@ -232,9 +233,9 @@ Fuel logistics is a route-planning constraint, not a menu.
 
 ### 5.4 Contracts (light layer)
 
-Each station offers 2–4 timed delivery contracts: *"180 t of water to Deimos
-Yard before 2036-04-12, 1.1 M¢, 15% posted bond."* Accepting reserves cargo
-space; failing forfeits the bond. Contracts exist to *justify* unattractive
+Each station offers 2–4 timed delivery contracts: _"180 t of water to Deimos
+Yard before 2036-04-12, 1.1 M¢, 15% posted bond."_ Accepting reserves cargo
+space; failing forfeits the bond. Contracts exist to _justify_ unattractive
 routes and to teach window-timing.
 
 ---
@@ -243,23 +244,24 @@ routes and to teach window-timing.
 
 Single hull, six upgrade tracks. Every track is a straight, legible trade-off.
 
-| Track | Effect | Tiers |
-|---|---|---|
-| **Drive** | Specific impulse / thrust | NTR 900 s → Ion 3200 s → MPD 4800 s → Fusion 6500 s |
-| **Tanks** | Propellant capacity (t) | 220 → 360 → 560 → 820 |
-| **Hold** | Cargo capacity (t) | 180 → 300 → 480 → 700 |
-| **Aeroshell** | Capture Δv reduction at atmospheric bodies | 0% → 45% → 70% |
-| **Reactor** | Prereq for high-Isp drives; cuts burn time | 3 tiers |
-| **Uplink** | See remote market prices (1 hop / belt / system-wide) | 3 tiers |
+| Track         | Effect                                                | Tiers                                               |
+| ------------- | ----------------------------------------------------- | --------------------------------------------------- |
+| **Drive**     | Specific impulse / thrust                             | NTR 900 s → Ion 3200 s → MPD 4800 s → Fusion 6500 s |
+| **Tanks**     | Propellant capacity (t)                               | 220 → 360 → 560 → 820                               |
+| **Hold**      | Cargo capacity (t)                                    | 180 → 300 → 480 → 700                               |
+| **Aeroshell** | Capture Δv reduction at atmospheric bodies            | 0% → 45% → 70%                                      |
+| **Reactor**   | Prereq for high-Isp drives; cuts burn time            | 3 tiers                                             |
+| **Uplink**    | See remote market prices (1 hop / belt / system-wide) | 3 tiers                                             |
 
 Dry mass rises with tiers, so a maxed hold on a weak drive is a trap. The
 Shipyard panel previews Δv-full / Δv-empty before purchase.
 
 **Progression gates (soft, purely physical):**
-* Δv ≈ 9 km/s — Earth/Luna/Mars/NEAs.
-* Δv ≈ 15 km/s — Main belt round trips.
-* Δv ≈ 22 km/s + aeroshell — Jupiter.
-* Δv ≈ 30 km/s — Saturn and beyond, with 3–6 year legs.
+
+- Δv ≈ 9 km/s — Earth/Luna/Mars/NEAs.
+- Δv ≈ 15 km/s — Main belt round trips.
+- Δv ≈ 22 km/s + aeroshell — Jupiter.
+- Δv ≈ 30 km/s — Saturn and beyond, with 3–6 year legs.
 
 ---
 
@@ -305,13 +307,13 @@ Shipyard panel previews Δv-full / Δv-empty before purchase.
  └────────────────────────────────────────────────────────────────┘
 ```
 
-* **Camera:** orbit/pan/zoom, `F` focuses the selected body, scale is real AU
+- **Camera:** orbit/pan/zoom, `F` focuses the selected body, scale is real AU
   with log-scaled body radii (or the planets are invisible).
-* **Time:** pause / 1 / 4 / 16 / 64 days-per-second, plus "warp to departure"
+- **Time:** pause / 1 / 4 / 16 / 64 days-per-second, plus "warp to departure"
   and "warp to arrival" which auto-pause on the node.
-* **Colour language:** cyan = you, amber = plan, magenta = target,
+- **Colour language:** cyan = you, amber = plan, magenta = target,
   grey = other orbits.
-* **Every number has a unit and a tooltip.**
+- **Every number has a unit and a tooltip.**
 
 ---
 
@@ -368,46 +370,49 @@ headless-testable and lets the porkchop worker be moved off-thread later.
 
 ## 11. Stretch
 
-* Multi-revolution Lambert solutions (the cheap slow arcs).
-* Gravity assists: two-leg patched conic with a powered flyby solver, and a
+- Multi-revolution Lambert solutions (the cheap slow arcs).
+- Gravity assists: two-leg patched conic with a powered flyby solver, and a
   "Venus-Venus-Earth-Jupiter" tour finder.
-* Low-thrust: Edelbaum/Sims-Flanagan approximation for the fusion drive, so
+- Low-thrust: Edelbaum/Sims-Flanagan approximation for the fusion drive, so
   late game is continuous-thrust spiral planning, not impulses.
-* Fleet management: buy a second hull, queue automated routes.
-* Real texture maps + a starfield from an actual catalogue.
+- Fleet management: buy a second hull, queue automated routes.
+- Real texture maps + a starfield from an actual catalogue.
 
 ## 12. References
 
-* Vallado, *Fundamentals of Astrodynamics and Applications* — §2 (universal
+- Vallado, _Fundamentals of Astrodynamics and Applications_ — §2 (universal
   variables), §7 (Lambert).
-* Bate, Mueller & White, *Fundamentals of Astrodynamics*.
-* JPL SSD, *Approximate Positions of the Major Planets* (element tables).
-* Izzo (2014), *Revisiting Lambert's Problem* — for a future faster solver.
+- Bate, Mueller & White, _Fundamentals of Astrodynamics_.
+- JPL SSD, _Approximate Positions of the Major Planets_ (element tables).
+- Izzo (2014), _Revisiting Lambert's Problem_ — for a future faster solver.
+
 ## 13. Implementation Notes (v2.1 review)
+
 Fixes and changes made against the v2 code drop:
-* **Local (same-body) flights crashed the render loop** (`propagate(null)`).
+
+- **Local (same-body) flights crashed the render loop** (`propagate(null)`).
   The ship now rides the parent body while on a Hohmann hop.
-* **The porkchop is anchored** at the date it was computed and regrids only
+- **The porkchop is anchored** at the date it was computed and regrids only
   when "now" has walked ~1/8 of the way across it, or on RESCAN. Past columns
   are dimmed; the player's selected window survives a regrid. Departure dates
   are no longer silently clamped to "now" — a past cell reads as infeasible.
-* **Panels no longer rebuild their DOM every frame** while the clock runs.
+- **Panels no longer rebuild their DOM every frame** while the clock runs.
   They refresh on discrete events plus a 1–1.5 s throttle, and never while
   the pointer is reading the porkchop.
-* Mining and refits advance the clock via `passDays`, which cancels a filed
+- Mining and refits advance the clock via `passDays`, which cancels a filed
   plan whose window was slept through instead of rewinding time to the node.
-* A departure burn that is no longer affordable (cargo bought after filing)
+- A departure burn that is no longer affordable (cargo bought after filing)
   unfiles the plan rather than retrying every frame; a capture that cannot be
   completed is finished by port tugs for a salvage fee rather than stranding.
-* Economy rebalanced as in §5.2 (background trade, integrated lot pricing,
+- Economy rebalanced as in §5.2 (background trade, integrated lot pricing,
   tamed scarcity clamps). Early trips are capital-limited, not price-limited.
-* **Uplink track now does something**: the Market panel shows the nav target's
+- **Uplink track now does something**: the Market panel shows the nav target's
   (or in-flight destination's) prices when within uplink ring, with the
   buy-here/sell-there margin per tonne and the one-way light-time.
-* Port list shows coplanar Hohmann Δv/TOF estimates against the current
+- Port list shows coplanar Hohmann Δv/TOF estimates against the current
   budget — pillar 4 made visible before any Lambert solve runs.
-* Shipyard previews Δv (full tanks) for empty hold and full hold for the next
+- Shipyard previews Δv (full tanks) for empty hold and full hold for the next
   tier of every track, with the delta against the current configuration.
-* Lambert bracket-collapse exit now verifies the TOF residual; `bodyPeriod`
+- Lambert bracket-collapse exit now verifies the TOF residual; `bodyPeriod`
   uses `tuToDays` instead of a hard-coded constant; `Ship.fromJSON` merges
   over defaults so old saves cannot produce `tiers[undefined]`.

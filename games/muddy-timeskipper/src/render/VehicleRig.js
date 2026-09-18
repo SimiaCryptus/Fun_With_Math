@@ -9,7 +9,7 @@ export class VehicleRig {
   constructor(scene, { color = 0xb4471f, isPlayer = false } = {}) {
     this.isPlayer = isPlayer;
     this.root = new THREE.Group();
-    this.stretchGroup = new THREE.Group();     // scaled non-uniformly
+    this.stretchGroup = new THREE.Group(); // scaled non-uniformly
     this.root.add(this.stretchGroup);
 
     const bodyGeo = new THREE.BoxGeometry(2.7, 1.5, 4.8);
@@ -18,13 +18,17 @@ export class VehicleRig {
     this.mudColor = new THREE.Color(0x3a2a12);
     this.mat = new THREE.MeshToonMaterial({ color });
     this.body = new THREE.Mesh(bodyGeo, this.mat);
-     this.body.castShadow = true;
+    this.body.castShadow = true;
     this.stretchGroup.add(this.body);
 
     // inverted-hull outline (cheap, reliable, very cartoon)
-    this.outline = new THREE.Mesh(bodyGeo, new THREE.MeshBasicMaterial({
-      color: 0x120c05, side: THREE.BackSide
-    }));
+    this.outline = new THREE.Mesh(
+      bodyGeo,
+      new THREE.MeshBasicMaterial({
+        color: 0x120c05,
+        side: THREE.BackSide,
+      })
+    );
     this.outline.scale.setScalar(1.06);
     this.stretchGroup.add(this.outline);
 
@@ -40,7 +44,7 @@ export class VehicleRig {
       const p = new THREE.Mesh(pupGeo, pupMat);
       p.position.set(0, 0, 0.3);
       e.add(p);
-     e.castShadow = true;
+      e.castShadow = true;
       this.stretchGroup.add(e);
       this.eyes.push({ mesh: e, pupil: p, baseX: sx });
     }
@@ -48,9 +52,13 @@ export class VehicleRig {
     // tongue
     const tongueGeo = new THREE.PlaneGeometry(0.9, 2.4, 1, 6);
     tongueGeo.translate(0, 0, 1.2);
-    this.tongue = new THREE.Mesh(tongueGeo, new THREE.MeshToonMaterial({
-      color: 0xd8557a, side: THREE.DoubleSide
-    }));
+    this.tongue = new THREE.Mesh(
+      tongueGeo,
+      new THREE.MeshToonMaterial({
+        color: 0xd8557a,
+        side: THREE.DoubleSide,
+      })
+    );
     this.tongue.position.set(0, 0.75, 2.3);
     this.tongue.rotation.x = -Math.PI / 2.4;
     this.tongue.visible = false;
@@ -61,10 +69,15 @@ export class VehicleRig {
     wGeo.rotateZ(Math.PI / 2);
     const wMat = new THREE.MeshToonMaterial({ color: 0x2a1d0c });
     this.wheels = [];
-    for (const [x, z] of [[-1.35, 1.6], [1.35, 1.6], [-1.35, -1.6], [1.35, -1.6]]) {
+    for (const [x, z] of [
+      [-1.35, 1.6],
+      [1.35, 1.6],
+      [-1.35, -1.6],
+      [1.35, -1.6],
+    ]) {
       const w = new THREE.Mesh(wGeo, wMat);
       w.position.set(x, 0.72, z);
-     w.castShadow = true;
+      w.castShadow = true;
       this.stretchGroup.add(w);
       this.wheels.push(w);
     }
@@ -89,7 +102,9 @@ export class VehicleRig {
     const t = performance.now() * 0.001;
     const vib = strain * 0.06 + snap * 0.12;
     this.stretchGroup.position.set(
-      Math.sin(t * 61) * vib, Math.abs(Math.sin(t * 47)) * vib, Math.sin(t * 53) * vib
+      Math.sin(t * 61) * vib,
+      Math.abs(Math.sin(t * 47)) * vib,
+      Math.sin(t * 53) * vib
     );
 
     // eyes bulge with strain, pupils shoved by lateral G
@@ -97,7 +112,11 @@ export class VehicleRig {
     for (const e of this.eyes) {
       e.mesh.scale.setScalar(bulge);
       e.mesh.position.z = 1.9 + 0.5 * strain;
-      e.pupil.position.x = lerp(e.pupil.position.x, -body.slip * 0.28 * Math.sign(body.yawRate || 1), 0.3);
+      e.pupil.position.x = lerp(
+        e.pupil.position.x,
+        -body.slip * 0.28 * Math.sign(body.yawRate || 1),
+        0.3
+      );
     }
 
     // tongue flaps when sliding

@@ -2,7 +2,10 @@ import { permeability } from '../spatial/Tile.js';
 
 /** Smoke buoyancy (up through stairwells), lateral dispersion through permeable boundaries, escape at exits, slow decay. */
 export class SmokeModel {
-  constructor(state, bus) { this.state = state; this.bus = bus; }
+  constructor(state, bus) {
+    this.state = state;
+    this.bus = bus;
+  }
 
   tick() {
     const { grid } = this.state;
@@ -25,15 +28,27 @@ export class SmokeModel {
 
       if (tile.type === 'STAIR') {
         const up = grid.get(tile.coord.x, tile.coord.y, tile.coord.z + 1);
-        if (up && up.type === 'STAIR') { const rise = remaining * 0.45; add(up.key, rise); remaining -= rise; }
+        if (up && up.type === 'STAIR') {
+          const rise = remaining * 0.45;
+          add(up.key, rise);
+          remaining -= rise;
+        }
       }
 
-      const ns = grid.neighbors(tile.coord, { diagonal: false, vertical: false }).filter((n) => n.tile.type !== 'WALL');
+      const ns = grid
+        .neighbors(tile.coord, { diagonal: false, vertical: false })
+        .filter((n) => n.tile.type !== 'WALL');
       let totalPerm = 0;
-      const perms = ns.map((n) => { const p = permeability(n.tile); totalPerm += p; return p; });
+      const perms = ns.map((n) => {
+        const p = permeability(n.tile);
+        totalPerm += p;
+        return p;
+      });
       if (totalPerm > 0) {
         const share = remaining * 0.28;
-        ns.forEach((n, i) => { if (perms[i] > 0) add(n.tile.key, share * (perms[i] / totalPerm)); });
+        ns.forEach((n, i) => {
+          if (perms[i] > 0) add(n.tile.key, share * (perms[i] / totalPerm));
+        });
         remaining -= share;
       }
       if (tile.type === 'EXIT' || (tile.type === 'WINDOW' && tile.shattered)) remaining *= 0.5;

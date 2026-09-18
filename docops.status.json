@@ -1,299 +1,299 @@
 {
-  "lastUpdated" : "2026-09-15T15:59:01.859192717Z",
-  "tasks" : {
-    "quadratics/pentagon/docs/analysis.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-SJUtXoNJ",
-      "startedAt" : "2026-08-22T20:11:03.340228007Z",
-      "completedAt" : "2026-08-22T20:13:46.113265091Z"
+  "lastUpdated": "2026-09-15T15:59:01.859192717Z",
+  "tasks": {
+    "quadratics/pentagon/docs/analysis.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/analysis.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-SJUtXoNJ",
+      "startedAt": "2026-08-22T20:11:03.340228007Z",
+      "completedAt": "2026-08-22T20:13:46.113265091Z"
     },
-    "quadratics/pentagon/docs/experiment.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/experiment.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-Wc3pHWkj",
-      "startedAt" : "2026-08-22T20:11:03.337660833Z",
-      "completedAt" : "2026-08-22T20:13:14.998280887Z"
+    "quadratics/pentagon/docs/experiment.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/experiment.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-Wc3pHWkj",
+      "startedAt": "2026-08-22T20:11:03.337660833Z",
+      "completedAt": "2026-08-22T20:13:14.998280887Z"
     },
-    "quadratics/pentagon/docs/idea.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/idea.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-nPzGOykF",
-      "startedAt" : "2026-08-22T20:11:03.345347933Z",
-      "completedAt" : "2026-08-22T20:13:51.071677980Z"
+    "quadratics/pentagon/docs/idea.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/idea.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-nPzGOykF",
+      "startedAt": "2026-08-22T20:11:03.345347933Z",
+      "completedAt": "2026-08-22T20:13:51.071677980Z"
     },
-    "quadratics/pentagon/docs/insights.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/insights.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-a0RbAvwV",
-      "startedAt" : "2026-08-22T20:11:03.342743325Z",
-      "completedAt" : "2026-08-22T20:12:53.799256185Z"
+    "quadratics/pentagon/docs/insights.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/insights.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-a0RbAvwV",
+      "startedAt": "2026-08-22T20:11:03.342743325Z",
+      "completedAt": "2026-08-22T20:12:53.799256185Z"
     },
-    "numbers/primegen/docs/algorithm.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/algorithm.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-6gUCoBQ2",
-      "startedAt" : "2026-08-22T20:56:15.486472508Z",
-      "completedAt" : "2026-08-22T20:59:34.011057361Z"
+    "numbers/primegen/docs/algorithm.theory_graph.json": {
+      "target": "numbers/primegen/docs/algorithm.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-6gUCoBQ2",
+      "startedAt": "2026-08-22T20:56:15.486472508Z",
+      "completedAt": "2026-08-22T20:59:34.011057361Z"
     },
-    "numbers/primegen/docs/fractal.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/fractal.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-scOOV1Qr",
-      "startedAt" : "2026-08-22T20:56:15.482175335Z",
-      "completedAt" : "2026-08-22T20:58:35.902129300Z"
+    "numbers/primegen/docs/fractal.theory_graph.json": {
+      "target": "numbers/primegen/docs/fractal.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-scOOV1Qr",
+      "startedAt": "2026-08-22T20:56:15.482175335Z",
+      "completedAt": "2026-08-22T20:58:35.902129300Z"
     },
-    "numbers/primegen/docs/generator.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/generator.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-HOHcbXDA",
-      "startedAt" : "2026-08-22T20:56:15.489868877Z",
-      "completedAt" : "2026-08-22T20:58:35.659201251Z"
+    "numbers/primegen/docs/generator.theory_graph.json": {
+      "target": "numbers/primegen/docs/generator.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-HOHcbXDA",
+      "startedAt": "2026-08-22T20:56:15.489868877Z",
+      "completedAt": "2026-08-22T20:58:35.659201251Z"
     },
-    "numbers/primegen/docs/twin_prime.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/twin_prime.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-JSIFQJHx",
-      "startedAt" : "2026-08-22T20:56:15.493384335Z",
-      "completedAt" : "2026-08-22T20:59:13.616686007Z"
+    "numbers/primegen/docs/twin_prime.theory_graph.json": {
+      "target": "numbers/primegen/docs/twin_prime.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-JSIFQJHx",
+      "startedAt": "2026-08-22T20:56:15.493384335Z",
+      "completedAt": "2026-08-22T20:59:13.616686007Z"
     },
-    "ops/analysis-viewer/idea.theory_graph.json" : {
-      "target" : "ops/analysis-viewer/idea.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-sluhudNj",
-      "startedAt" : "2026-08-22T22:36:37.859792578Z",
-      "completedAt" : "2026-08-22T22:41:57.589387744Z"
+    "ops/analysis-viewer/idea.theory_graph.json": {
+      "target": "ops/analysis-viewer/idea.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-sluhudNj",
+      "startedAt": "2026-08-22T22:36:37.859792578Z",
+      "completedAt": "2026-08-22T22:41:57.589387744Z"
     },
-    "analysis/knowledge/idea.knowledge_graph.json" : {
-      "target" : "analysis/knowledge/idea.knowledge_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-QtXXo0g0",
-      "startedAt" : "2026-08-22T23:34:35.575698988Z",
-      "completedAt" : "2026-08-22T23:40:11.039878286Z"
+    "analysis/knowledge/idea.knowledge_graph.json": {
+      "target": "analysis/knowledge/idea.knowledge_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-QtXXo0g0",
+      "startedAt": "2026-08-22T23:34:35.575698988Z",
+      "completedAt": "2026-08-22T23:40:11.039878286Z"
     },
-    "analysis/theory/idea.knowledge_graph.json" : {
-      "target" : "analysis/theory/idea.knowledge_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-sPNwzfHm",
-      "startedAt" : "2026-08-22T23:34:35.577495734Z",
-      "completedAt" : "2026-08-22T23:40:04.739312891Z"
+    "analysis/theory/idea.knowledge_graph.json": {
+      "target": "analysis/theory/idea.knowledge_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-sPNwzfHm",
+      "startedAt": "2026-08-22T23:34:35.577495734Z",
+      "completedAt": "2026-08-22T23:40:04.739312891Z"
     },
-    "numbers/primegen/docs/generator.knowledge_graph.json" : {
-      "target" : "numbers/primegen/docs/generator.knowledge_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-qnEF8Xjy",
-      "startedAt" : "2026-08-22T23:42:22.155791518Z",
-      "completedAt" : "2026-08-22T23:48:56.388547059Z"
+    "numbers/primegen/docs/generator.knowledge_graph.json": {
+      "target": "numbers/primegen/docs/generator.knowledge_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-qnEF8Xjy",
+      "startedAt": "2026-08-22T23:42:22.155791518Z",
+      "completedAt": "2026-08-22T23:48:56.388547059Z"
     },
-    "experiments/fractal_mosaic/README_REWRITE.md" : {
-      "target" : "experiments/fractal_mosaic/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260831-WxfAMbcF",
-      "startedAt" : "2026-09-01T03:38:50.339589867Z",
-      "completedAt" : "2026-09-01T03:39:54.027996308Z"
+    "experiments/fractal_mosaic/README_REWRITE.md": {
+      "target": "experiments/fractal_mosaic/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260831-WxfAMbcF",
+      "startedAt": "2026-09-01T03:38:50.339589867Z",
+      "completedAt": "2026-09-01T03:39:54.027996308Z"
     },
-    "games/physical-visualizer/README_REWRITE.md" : {
-      "target" : "games/physical-visualizer/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260907-PzOitu6r",
-      "startedAt" : "2026-09-07T17:44:42.537917131Z",
-      "completedAt" : "2026-09-07T17:46:04.519180375Z"
+    "games/physical-visualizer/README_REWRITE.md": {
+      "target": "games/physical-visualizer/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260907-PzOitu6r",
+      "startedAt": "2026-09-07T17:44:42.537917131Z",
+      "completedAt": "2026-09-07T17:46:04.519180375Z"
     },
-    "games/mineminer/README_REWRITE.md" : {
-      "target" : "games/mineminer/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260907-umo2kuY1",
-      "startedAt" : "2026-09-07T20:05:11.836567472Z",
-      "completedAt" : "2026-09-07T20:05:43.721914351Z"
+    "games/mineminer/README_REWRITE.md": {
+      "target": "games/mineminer/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260907-umo2kuY1",
+      "startedAt": "2026-09-07T20:05:11.836567472Z",
+      "completedAt": "2026-09-07T20:05:43.721914351Z"
     },
-    "games/bridges/README_REWRITE.md" : {
-      "target" : "games/bridges/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260908-aOMLNDCC",
-      "startedAt" : "2026-09-08T19:21:36.285260787Z",
-      "completedAt" : "2026-09-08T19:22:10.164323618Z"
+    "games/bridges/README_REWRITE.md": {
+      "target": "games/bridges/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260908-aOMLNDCC",
+      "startedAt": "2026-09-08T19:21:36.285260787Z",
+      "completedAt": "2026-09-08T19:22:10.164323618Z"
     },
-    "games/madame-claude/README_REWRITE.md" : {
-      "target" : "games/madame-claude/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260908-v7fzxnuE",
-      "startedAt" : "2026-09-08T23:57:06.417112980Z",
-      "completedAt" : "2026-09-08T23:57:36.399034273Z"
+    "games/madame-claude/README_REWRITE.md": {
+      "target": "games/madame-claude/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260908-v7fzxnuE",
+      "startedAt": "2026-09-08T23:57:06.417112980Z",
+      "completedAt": "2026-09-08T23:57:36.399034273Z"
     },
-    "games/muddy-timeskipper/README_REWRITE.md" : {
-      "target" : "games/muddy-timeskipper/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260909-OxQi2Rjd",
-      "startedAt" : "2026-09-09T14:45:22.156631643Z",
-      "completedAt" : "2026-09-09T14:45:50.421117924Z"
+    "games/muddy-timeskipper/README_REWRITE.md": {
+      "target": "games/muddy-timeskipper/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260909-OxQi2Rjd",
+      "startedAt": "2026-09-09T14:45:22.156631643Z",
+      "completedAt": "2026-09-09T14:45:50.421117924Z"
     },
-    "games/troggle/README_REWRITE.md" : {
-      "target" : "games/troggle/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260909-Vozu50WI",
-      "startedAt" : "2026-09-09T14:47:09.219937750Z",
-      "completedAt" : "2026-09-09T14:47:46.173436916Z"
+    "games/troggle/README_REWRITE.md": {
+      "target": "games/troggle/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260909-Vozu50WI",
+      "startedAt": "2026-09-09T14:47:09.219937750Z",
+      "completedAt": "2026-09-09T14:47:46.173436916Z"
     },
-    "games/emergensim/README_REWRITE.md" : {
-      "target" : "games/emergensim/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260910-u1OOpbSj",
-      "startedAt" : "2026-09-10T21:19:48.945663912Z",
-      "completedAt" : "2026-09-10T21:20:17.051800156Z"
+    "games/emergensim/README_REWRITE.md": {
+      "target": "games/emergensim/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260910-u1OOpbSj",
+      "startedAt": "2026-09-10T21:19:48.945663912Z",
+      "completedAt": "2026-09-10T21:20:17.051800156Z"
     },
-    "games/squirrely/README_REWRITE.md" : {
-      "target" : "games/squirrely/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260910-0cceRH8M",
-      "startedAt" : "2026-09-10T21:19:48.942481381Z",
-      "completedAt" : "2026-09-10T21:20:17.136039461Z"
+    "games/squirrely/README_REWRITE.md": {
+      "target": "games/squirrely/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260910-0cceRH8M",
+      "startedAt": "2026-09-10T21:19:48.942481381Z",
+      "completedAt": "2026-09-10T21:20:17.136039461Z"
     },
-    "games/marching-orders/README_REWRITE.md" : {
-      "target" : "games/marching-orders/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260911-b7ZnsHEl",
-      "startedAt" : "2026-09-12T00:29:21.604532620Z",
-      "completedAt" : "2026-09-12T00:29:50.449045968Z"
+    "games/marching-orders/README_REWRITE.md": {
+      "target": "games/marching-orders/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260911-b7ZnsHEl",
+      "startedAt": "2026-09-12T00:29:21.604532620Z",
+      "completedAt": "2026-09-12T00:29:50.449045968Z"
     },
-    "physics/chaos-garden/README_REWRITE.md" : {
-      "target" : "physics/chaos-garden/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260912-anR8xo0i",
-      "startedAt" : "2026-09-12T18:42:28.183343210Z",
-      "completedAt" : "2026-09-12T18:42:50.840480385Z"
+    "physics/chaos-garden/README_REWRITE.md": {
+      "target": "physics/chaos-garden/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260912-anR8xo0i",
+      "startedAt": "2026-09-12T18:42:28.183343210Z",
+      "completedAt": "2026-09-12T18:42:50.840480385Z"
     },
-    "games/3d-checkers/README_REWRITE.md" : {
-      "target" : "games/3d-checkers/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-4MLPRfdh",
-      "startedAt" : "2026-09-15T13:18:35.503726290Z",
-      "completedAt" : "2026-09-15T13:18:59.179544243Z"
+    "games/3d-checkers/README_REWRITE.md": {
+      "target": "games/3d-checkers/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-4MLPRfdh",
+      "startedAt": "2026-09-15T13:18:35.503726290Z",
+      "completedAt": "2026-09-15T13:18:59.179544243Z"
     },
-    "0x800.notes.md" : {
-      "target" : "0x800.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-emdmTFdz",
-      "startedAt" : "2026-09-15T15:57:42.775031013Z",
-      "completedAt" : "2026-09-15T15:57:58.364941309Z"
+    "0x800.notes.md": {
+      "target": "0x800.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-emdmTFdz",
+      "startedAt": "2026-09-15T15:57:42.775031013Z",
+      "completedAt": "2026-09-15T15:57:58.364941309Z"
     },
-    "3d-checkers.notes.md" : {
-      "target" : "3d-checkers.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-iHxTWUFZ",
-      "startedAt" : "2026-09-15T15:57:42.785553846Z",
-      "completedAt" : "2026-09-15T15:57:58.567090894Z"
+    "3d-checkers.notes.md": {
+      "target": "3d-checkers.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-iHxTWUFZ",
+      "startedAt": "2026-09-15T15:57:42.785553846Z",
+      "completedAt": "2026-09-15T15:57:58.567090894Z"
     },
-    "aol.notes.md" : {
-      "target" : "aol.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-wNWzr9Wc",
-      "startedAt" : "2026-09-15T15:57:42.778579131Z",
-      "completedAt" : "2026-09-15T15:58:06.862232025Z"
+    "aol.notes.md": {
+      "target": "aol.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-wNWzr9Wc",
+      "startedAt": "2026-09-15T15:57:42.778579131Z",
+      "completedAt": "2026-09-15T15:58:06.862232025Z"
     },
-    "arithmatic-dynamics.notes.md" : {
-      "target" : "arithmatic-dynamics.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-LQLaf7XP",
-      "startedAt" : "2026-09-15T15:57:42.782239636Z",
-      "completedAt" : "2026-09-15T15:57:52.130012322Z"
+    "arithmatic-dynamics.notes.md": {
+      "target": "arithmatic-dynamics.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-LQLaf7XP",
+      "startedAt": "2026-09-15T15:57:42.782239636Z",
+      "completedAt": "2026-09-15T15:57:52.130012322Z"
     },
-    "bridges.notes.md" : {
-      "target" : "bridges.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-CJ7zeG7L",
-      "startedAt" : "2026-09-15T15:57:52.149977585Z",
-      "completedAt" : "2026-09-15T15:58:04.136732065Z"
+    "bridges.notes.md": {
+      "target": "bridges.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-CJ7zeG7L",
+      "startedAt": "2026-09-15T15:57:52.149977585Z",
+      "completedAt": "2026-09-15T15:58:04.136732065Z"
     },
-    "emergensim.notes.md" : {
-      "target" : "emergensim.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-R5pr2zHe",
-      "startedAt" : "2026-09-15T15:57:58.385159627Z",
-      "completedAt" : "2026-09-15T15:58:06.771624369Z"
+    "emergensim.notes.md": {
+      "target": "emergensim.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-R5pr2zHe",
+      "startedAt": "2026-09-15T15:57:58.385159627Z",
+      "completedAt": "2026-09-15T15:58:06.771624369Z"
     },
-    "madame-claude.notes.md" : {
-      "target" : "madame-claude.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-8GVGQyee",
-      "startedAt" : "2026-09-15T15:57:58.586526187Z",
-      "completedAt" : "2026-09-15T15:58:11.120354686Z"
+    "madame-claude.notes.md": {
+      "target": "madame-claude.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-8GVGQyee",
+      "startedAt": "2026-09-15T15:57:58.586526187Z",
+      "completedAt": "2026-09-15T15:58:11.120354686Z"
     },
-    "marching-orders.notes.md" : {
-      "target" : "marching-orders.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-s33ICa8h",
-      "startedAt" : "2026-09-15T15:58:04.151288565Z",
-      "completedAt" : "2026-09-15T15:58:15.725928519Z"
+    "marching-orders.notes.md": {
+      "target": "marching-orders.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-s33ICa8h",
+      "startedAt": "2026-09-15T15:58:04.151288565Z",
+      "completedAt": "2026-09-15T15:58:15.725928519Z"
     },
-    "mineminer.notes.md" : {
-      "target" : "mineminer.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-CniTdI2B",
-      "startedAt" : "2026-09-15T15:58:06.805982102Z",
-      "completedAt" : "2026-09-15T15:58:22.285734653Z"
+    "mineminer.notes.md": {
+      "target": "mineminer.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-CniTdI2B",
+      "startedAt": "2026-09-15T15:58:06.805982102Z",
+      "completedAt": "2026-09-15T15:58:22.285734653Z"
     },
-    "muddy-timeskipper.notes.md" : {
-      "target" : "muddy-timeskipper.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-laHpYrHK",
-      "startedAt" : "2026-09-15T15:58:06.877496061Z",
-      "completedAt" : "2026-09-15T15:58:23.164944791Z"
+    "muddy-timeskipper.notes.md": {
+      "target": "muddy-timeskipper.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-laHpYrHK",
+      "startedAt": "2026-09-15T15:58:06.877496061Z",
+      "completedAt": "2026-09-15T15:58:23.164944791Z"
     },
-    "number-crush.notes.md" : {
-      "target" : "number-crush.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-degnGhEM",
-      "startedAt" : "2026-09-15T15:58:11.133824310Z",
-      "completedAt" : "2026-09-15T15:58:25.089351102Z"
+    "number-crush.notes.md": {
+      "target": "number-crush.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-degnGhEM",
+      "startedAt": "2026-09-15T15:58:11.133824310Z",
+      "completedAt": "2026-09-15T15:58:25.089351102Z"
     },
-    "physical-visualizer.notes.md" : {
-      "target" : "physical-visualizer.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-w1v4u3Zj",
-      "startedAt" : "2026-09-15T15:58:15.741864454Z",
-      "completedAt" : "2026-09-15T15:58:27.381683476Z"
+    "physical-visualizer.notes.md": {
+      "target": "physical-visualizer.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-w1v4u3Zj",
+      "startedAt": "2026-09-15T15:58:15.741864454Z",
+      "completedAt": "2026-09-15T15:58:27.381683476Z"
     },
-    "solar-trader.notes.md" : {
-      "target" : "solar-trader.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-b90QOgZK",
-      "startedAt" : "2026-09-15T15:58:22.301547324Z",
-      "completedAt" : "2026-09-15T15:58:35.880364070Z"
+    "solar-trader.notes.md": {
+      "target": "solar-trader.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-b90QOgZK",
+      "startedAt": "2026-09-15T15:58:22.301547324Z",
+      "completedAt": "2026-09-15T15:58:35.880364070Z"
     },
-    "squirrely.notes.md" : {
-      "target" : "squirrely.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-fy52wbpQ",
-      "startedAt" : "2026-09-15T15:58:23.176798048Z",
-      "completedAt" : "2026-09-15T15:58:39.856819557Z"
+    "squirrely.notes.md": {
+      "target": "squirrely.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-fy52wbpQ",
+      "startedAt": "2026-09-15T15:58:23.176798048Z",
+      "completedAt": "2026-09-15T15:58:39.856819557Z"
     },
-    "stereo-tac-toe.notes.md" : {
-      "target" : "stereo-tac-toe.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-QfZlaVLo",
-      "startedAt" : "2026-09-15T15:58:25.104074989Z",
-      "completedAt" : "2026-09-15T15:58:38.271221265Z"
+    "stereo-tac-toe.notes.md": {
+      "target": "stereo-tac-toe.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-QfZlaVLo",
+      "startedAt": "2026-09-15T15:58:25.104074989Z",
+      "completedAt": "2026-09-15T15:58:38.271221265Z"
     },
-    "troggle.notes.md" : {
-      "target" : "troggle.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-BcQIUKGq",
-      "startedAt" : "2026-09-15T15:58:27.394879698Z",
-      "completedAt" : "2026-09-15T15:58:38.332887214Z"
+    "troggle.notes.md": {
+      "target": "troggle.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-BcQIUKGq",
+      "startedAt": "2026-09-15T15:58:27.394879698Z",
+      "completedAt": "2026-09-15T15:58:38.332887214Z"
     },
-    "vocal_parkour.notes.md" : {
-      "target" : "vocal_parkour.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-8ADNKRNE",
-      "startedAt" : "2026-09-15T15:58:35.895604129Z",
-      "completedAt" : "2026-09-15T15:58:52.581035606Z"
+    "vocal_parkour.notes.md": {
+      "target": "vocal_parkour.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-8ADNKRNE",
+      "startedAt": "2026-09-15T15:58:35.895604129Z",
+      "completedAt": "2026-09-15T15:58:52.581035606Z"
     },
-    "wordsearch.notes.md" : {
-      "target" : "wordsearch.notes.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260915-kO8COFEb",
-      "startedAt" : "2026-09-15T15:58:38.285458286Z",
-      "completedAt" : "2026-09-15T15:59:01.859192717Z"
+    "wordsearch.notes.md": {
+      "target": "wordsearch.notes.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260915-kO8COFEb",
+      "startedAt": "2026-09-15T15:58:38.285458286Z",
+      "completedAt": "2026-09-15T15:59:01.859192717Z"
     }
   }
 }

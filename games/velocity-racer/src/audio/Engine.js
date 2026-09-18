@@ -36,8 +36,10 @@ export class EngineAudio {
     this.oscA.type = 'sawtooth';
     this.oscB = ctx.createOscillator();
     this.oscB.type = 'square';
-    const gA = ctx.createGain(); gA.gain.value = 0.55;
-    const gB = ctx.createGain(); gB.gain.value = 0.16;
+    const gA = ctx.createGain();
+    gA.gain.value = 0.55;
+    const gB = ctx.createGain();
+    gB.gain.value = 0.16;
     this.oscA.connect(gA).connect(this.filter);
     this.oscB.connect(gB).connect(this.filter);
     this.oscA.start();

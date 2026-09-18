@@ -6,7 +6,7 @@ Muddy Timeskipper is a single-player off-road mud racing game with a
 ridiculous, cartoon-brained twist: your truck can reach back in time and
 steal its own velocity from a few seconds — or forty seconds — ago.
 
-Not a time rewind. Not a checkpoint reset. Just *velocity*. Your position
+Not a time rewind. Not a checkpoint reset. Just _velocity_. Your position
 stays exactly where it is, your mud spray stays exactly where it is, your
 truck's crumpled orientation stays exactly where it is — but the speed and
 direction you're travelling in suddenly become whatever they were 8, 20, or
@@ -32,7 +32,7 @@ back to whatever it was N seconds ago.
 Because the effect also applies to every AI opponent on the track, a single
 well-timed snapback can be an act of chaos as much as self-rescue. An
 opponent who was mid-drift through a hairpin twenty seconds ago will
-suddenly be *drifting through a hairpin again*, wherever they currently are
+suddenly be _drifting through a hairpin again_, wherever they currently are
 — which is usually not a hairpin. Cue pileups, panic, and mud flying
 everywhere.
 
@@ -47,8 +47,8 @@ The strategic loop is basically:
 4. Recover, and start planning the next one.
 
 Three gears are offered, each a different reach into the past, each themed
-with its own goofy in-world name and sound effect (a *boink* for the small
-one, a *SKREEEEEE* for the big one). Longer reaches are more powerful and
+with its own goofy in-world name and sound effect (a _boink_ for the small
+one, a _SKREEEEEE_ for the big one). Longer reaches are more powerful and
 more disruptive to the whole field, but come with longer cooldowns.
 
 ## The look and feel
@@ -92,7 +92,7 @@ that nobody actually caused directly.
   looking for a game that actually embodies that tone in its mechanics, not
   just its art.
 - Anyone curious about unusual takes on "rewind" mechanics in games — this
-  one deliberately does *not* rewind time, position, or damage, only
+  one deliberately does _not_ rewind time, position, or damage, only
   velocity, which produces a very different, more chaotic feel than typical
   rewind-powered puzzle or racing games.
 - Players who like a strategic layer of "risk management" bolted onto an

@@ -18,7 +18,8 @@ test('snapback never moves the vehicle or rewinds mud', () => {
   v.body.mudLoad = 0.42;
   // build 10 s of history at 20 m/s forward
   for (let i = 0; i < 10 / SIM_DT; i++) {
-    v.body.vel.x = 0; v.body.vel.z = 20;
+    v.body.vel.x = 0;
+    v.body.vel.z = 20;
     v.history.advance(SIM_DT, v.body);
   }
   const snapshot = { ...v.body.pos, yaw: v.body.yaw, mudLoad: v.body.mudLoad };
@@ -35,7 +36,8 @@ test('velocity is pulled toward the past vector', () => {
   const v = mkVehicle();
   v.body.yaw = 0;
   for (let i = 0; i < 25 / SIM_DT; i++) {
-    v.body.vel.x = 0; v.body.vel.z = 12;
+    v.body.vel.x = 0;
+    v.body.vel.z = 12;
     v.history.advance(SIM_DT, v.body);
   }
   v.body.vel.z = 42;
@@ -47,10 +49,10 @@ test('forward gain is capped for the player (no free boost loop)', () => {
   const v = mkVehicle();
   v.body.yaw = 0;
   for (let i = 0; i < 25 / SIM_DT; i++) {
-    v.body.vel.z = 40;                    // fast past
+    v.body.vel.z = 40; // fast past
     v.history.advance(SIM_DT, v.body);
   }
-  v.body.vel.z = 10;                      // slow now
+  v.body.vel.z = 10; // slow now
   applySnapback(v.body, v.history.sample(20), gearById('T3'), 1, true);
   assert.ok(v.body.vel.z <= 10 * 1.15 + 1e-3, `uncapped: ${v.body.vel.z}`);
   assert.ok(v.body.fx.deniedBoost > 0);
@@ -58,7 +60,10 @@ test('forward gain is capped for the player (no free boost loop)', () => {
 
 test('short history clamps and flags TOO YOUNG', () => {
   const v = mkVehicle();
-  for (let i = 0; i < 2 / SIM_DT; i++) { v.body.vel.z = 9; v.history.advance(SIM_DT, v.body); }
+  for (let i = 0; i < 2 / SIM_DT; i++) {
+    v.body.vel.z = 9;
+    v.history.advance(SIM_DT, v.body);
+  }
   const s = v.history.sample(40);
   assert.equal(s.clamped, true);
   assert.ok(s.age <= 2.1);

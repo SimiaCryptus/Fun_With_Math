@@ -1,13 +1,13 @@
 // Canonical heliocentric units: length = 1 AU, time = 1 TU so that mu_sun == 1.
 
-export const AU      = 1.495978707e11;      // m
-export const MU_SUN  = 1.32712440018e20;    // m^3 s^-2
-export const G0      = 9.80665;             // m s^-2
-export const DAY     = 86400;               // s
+export const AU = 1.495978707e11; // m
+export const MU_SUN = 1.32712440018e20; // m^3 s^-2
+export const G0 = 9.80665; // m s^-2
+export const DAY = 86400; // s
 
-export const TU      = Math.sqrt((AU * AU * AU) / MU_SUN); // s  (~5.0226e6)
-export const VU      = AU / TU;                            // m/s (~29784.7)
-export const DAYS_PER_TU = TU / DAY;                       // ~58.132
+export const TU = Math.sqrt((AU * AU * AU) / MU_SUN); // s  (~5.0226e6)
+export const VU = AU / TU; // m/s (~29784.7)
+export const DAYS_PER_TU = TU / DAY; // ~58.132
 
 export const daysToTU = (d) => d / DAYS_PER_TU;
 export const tuToDays = (t) => t * DAYS_PER_TU;
@@ -42,7 +42,8 @@ export function fmtDuration(days) {
 export const DEG = Math.PI / 180;
 export const TWO_PI = Math.PI * 2;
 
-export function wrapAngle(a) {           // -> [-pi, pi)
+export function wrapAngle(a) {
+  // -> [-pi, pi)
   let x = (a + Math.PI) % TWO_PI;
   if (x < 0) x += TWO_PI;
   return x - Math.PI;

@@ -43,9 +43,7 @@
 
   const BY_ID = new Map(THEMES.map((t) => [t.id, t]));
   const root = document.documentElement;
-  const darkQuery = window.matchMedia
-    ? window.matchMedia('(prefers-color-scheme: dark)')
-    : null;
+  const darkQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
 
   const prefersDark = () => (darkQuery ? darkQuery.matches : true);
 

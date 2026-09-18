@@ -1,4 +1,5 @@
 # games/emergensim/README_REWRITE.md
+
 ```markdown
 # PROTOCOL: A Turn-Based Emergency Response Tactical Simulator
 
@@ -7,7 +8,7 @@
 PROTOCOL is an interactive, browser-based simulation that puts you in charge of
 navigating a crisis — a chemistry lab fire, an active lockdown, a structural
 emergency — one careful decision at a time. Rather than testing your reflexes
-under real-time pressure, it asks you to *think*: where is the smoke going,
+under real-time pressure, it asks you to _think_: where is the smoke going,
 who's panicking, which door should stay shut, and what happens six turns from
 now if you get it wrong?
 
@@ -22,8 +23,8 @@ Most emergency-preparedness media falls into one of two traps: dry instructional
 videos nobody remembers, or high-stress, graphic simulations that are
 upsetting rather than educational. PROTOCOL tries a third path, inspired
 loosely by classic turn-based strategy games and systemic simulators like
-*The Oregon Trail* — games where the tension comes from *understanding a
-system*, not from jump-scares or gore.
+_The Oregon Trail_ — games where the tension comes from _understanding a
+system_, not from jump-scares or gore.
 
 There is no blood, no graphic injury, and no real-time panic-button gameplay.
 Danger is communicated instead through numbers, spreading hazards, and visible
@@ -37,16 +38,16 @@ you — behaves according to an underlying psychological model built from five
 simple traits: fear, greed, trust, rage, and cohesion. These combine
 mathematically into behaviors like panic-freezing, fleeing, cooperating,
 following instructions, or even bullying and conflict. Nothing is scripted;
-it all *emerges* from the numbers, the same way real crowd behavior emerges
+it all _emerges_ from the numbers, the same way real crowd behavior emerges
 from real human psychology. Rumors and misinformation can even spread through
 the crowd, getting distorted as frightened people pass them along — mirroring
 how misinformation actually propagates during real emergencies.
 
 ## The "Autopsy" — Learning From What Happened
 
-Perhaps the most distinctive feature is what happens *after* a scenario ends
+Perhaps the most distinctive feature is what happens _after_ a scenario ends
 (or even mid-scenario): the Autopsy view. This is a step-by-step causal
-replay of everything that happened, explaining *why* it happened — "leaving
+replay of everything that happened, explaining _why_ it happened — "leaving
 the fire door open let oxygen in, which accelerated the fire's spread into
 the stairwell, which blocked the exit, which caused a crowd to reroute into a
 smoke-filled hallway." You can even ask "what if" — rewind to an earlier
@@ -76,11 +77,11 @@ punish failure, it's to explore cause and effect safely.
 
 ## Why It's Interesting
 
-PROTOCOL treats an emergency not as a jump-scare gauntlet but as a *system* —
+PROTOCOL treats an emergency not as a jump-scare gauntlet but as a _system_ —
 one governed by physics (heat, oxygen, structural load), by psychology (fear,
 trust, group behavior), and by information flow (rumors, alarms, social
 influence). Watching these systems interact produces surprisingly realistic,
-often counterintuitive outcomes, and understanding *why* they happened is the
+often counterintuitive outcomes, and understanding _why_ they happened is the
 whole point of the experience.
 
 It's a small case study in how a lot of real-world institutional failures

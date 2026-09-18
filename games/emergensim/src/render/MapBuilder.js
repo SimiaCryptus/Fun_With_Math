@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-export const TILE = 1;        // 1 world unit = 1 tile (1.5 m)
-export const FLOOR_H = 2.6;   // vertical spacing between floors
+export const TILE = 1; // 1 world unit = 1 tile (1.5 m)
+export const FLOOR_H = 2.6; // vertical spacing between floors
 
 /** Grid coordinate -> world position (grid x -> world X, grid y -> world Z, floor z -> world Y). */
 export function worldPos(c, yOff = 0, out = new THREE.Vector3()) {
@@ -9,13 +9,13 @@ export function worldPos(c, yOff = 0, out = new THREE.Vector3()) {
 }
 
 const KIND = {
-  FLOOR:       { size: [TILE, 0.12, TILE], yOff: -0.06, color: 0x2b3542 },
+  FLOOR: { size: [TILE, 0.12, TILE], yOff: -0.06, color: 0x2b3542 },
   CONTAINMENT: { size: [TILE, 0.12, TILE], yOff: -0.06, color: 0x2a4f56 },
-  DOOR:        { size: [TILE, 0.12, TILE], yOff: -0.06, color: 0x3a3126 },
-  EXIT:        { size: [TILE, 0.16, TILE], yOff: -0.04, color: 0x178a5c },
-  STAIR:       { size: [TILE, 0.6, TILE],  yOff: 0.3,   color: 0x6f6350 },
-  WALL:        { size: [TILE, 2.0, TILE],  yOff: 1.0,   color: 0x4d5a70, shadow: true },
-  WINDOW:      { size: [TILE, 2.0, TILE],  yOff: 1.0,   color: 0x7fb6d8, transparent: true, opacity: 0.4 },
+  DOOR: { size: [TILE, 0.12, TILE], yOff: -0.06, color: 0x3a3126 },
+  EXIT: { size: [TILE, 0.16, TILE], yOff: -0.04, color: 0x178a5c },
+  STAIR: { size: [TILE, 0.6, TILE], yOff: 0.3, color: 0x6f6350 },
+  WALL: { size: [TILE, 2.0, TILE], yOff: 1.0, color: 0x4d5a70, shadow: true },
+  WINDOW: { size: [TILE, 2.0, TILE], yOff: 1.0, color: 0x7fb6d8, transparent: true, opacity: 0.4 },
 };
 const CARPET = new THREE.Color(0x3a3450);
 const FUEL = new THREE.Color(0x6b3f2a);
@@ -25,7 +25,11 @@ const PLANK_COLOR = 0x5a3b1e;
 export function disposeObject(obj) {
   obj.traverse((o) => {
     if (o.geometry) o.geometry.dispose();
-    if (o.material) for (const m of [].concat(o.material)) { if (m.map) m.map.dispose(); m.dispose(); }
+    if (o.material)
+      for (const m of [].concat(o.material)) {
+        if (m.map) m.map.dispose();
+        m.dispose();
+      }
   });
 }
 
@@ -36,9 +40,9 @@ export class MapBuilder {
     this.state = state;
     this.group = new THREE.Group();
     scene.add(this.group);
-    this.floorGroups = new Map();   // z -> Group
-    this.instances = new Map();     // key -> { mesh, index, base }
-    this.doors = new Map();         // key -> door parts
+    this.floorGroups = new Map(); // z -> Group
+    this.instances = new Map(); // key -> { mesh, index, base }
+    this.doors = new Map(); // key -> door parts
     this.viewFloor = 0;
     this._dirty = new Set();
     this._tmp = new THREE.Color();
@@ -83,7 +87,11 @@ export class MapBuilder {
       const z = tiles[0].coord.z;
       const kind = KIND[type] || KIND.FLOOR;
       const geo = new THREE.BoxGeometry(...kind.size);
-      const mat = new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: !!kind.transparent, opacity: kind.opacity ?? 1 });
+      const mat = new THREE.MeshLambertMaterial({
+        color: 0xffffff,
+        transparent: !!kind.transparent,
+        opacity: kind.opacity ?? 1,
+      });
       const inst = new THREE.InstancedMesh(geo, mat, tiles.length);
       inst.castShadow = !!kind.shadow;
       inst.receiveShadow = true;
@@ -106,7 +114,10 @@ export class MapBuilder {
   _buildDoor(tile) {
     const { x, y, z } = tile.coord;
     const g = this.state.grid;
-    const solid = (dx, dy) => { const t = g.get(x + dx, y + dy, z); return !t || t.type === 'WALL' || t.type === 'WINDOW'; };
+    const solid = (dx, dy) => {
+      const t = g.get(x + dx, y + dy, z);
+      return !t || t.type === 'WALL' || t.type === 'WINDOW';
+    };
     // Door slab spans the axis that has walls on both sides.
     const alongX = solid(1, 0) && solid(-1, 0) ? true : !(solid(0, 1) && solid(0, -1));
 
@@ -118,25 +129,42 @@ export class MapBuilder {
     slab.castShadow = true;
     pivot.add(slab);
     const planks = new THREE.Group();
-    for (const [py, rz] of [[0.6, -0.2], [1.3, 0.2]]) {
+    for (const [py, rz] of [
+      [0.6, -0.2],
+      [1.3, 0.2],
+    ]) {
       const p = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.14, 0.26), plankMat);
       p.position.set(0.47, py, 0);
       p.rotation.z = rz;
       planks.add(p);
     }
     pivot.add(planks);
-    const lock = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 8), new THREE.MeshBasicMaterial({ color: 0xf59e0b }));
+    const lock = new THREE.Mesh(
+      new THREE.SphereGeometry(0.09, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xf59e0b })
+    );
     lock.position.set(0.78, 1.0, 0.12);
     pivot.add(lock);
 
     const wp = worldPos(tile.coord);
     if (alongX) pivot.position.set(wp.x - 0.47, wp.y, wp.z);
-    else { pivot.position.set(wp.x, wp.y, wp.z - 0.47); pivot.rotation.y = -Math.PI / 2; }
+    else {
+      pivot.position.set(wp.x, wp.y, wp.z - 0.47);
+      pivot.rotation.y = -Math.PI / 2;
+    }
     const closedRot = pivot.rotation.y;
     this.floorGroup(z).add(pivot);
     this.doors.set(tile.key, {
-      pivot, slab, planks, lock, mat, plankMat, closedRot, targetRot: closedRot,
-      base: new THREE.Color(DOOR_COLOR), plankBase: new THREE.Color(PLANK_COLOR),
+      pivot,
+      slab,
+      planks,
+      lock,
+      mat,
+      plankMat,
+      closedRot,
+      targetRot: closedRot,
+      base: new THREE.Color(DOOR_COLOR),
+      plankBase: new THREE.Color(PLANK_COLOR),
     });
   }
 
@@ -184,7 +212,8 @@ export class MapBuilder {
       const T = ds.temperature ?? 20;
       const recent = ds.lastChecked >= turn - 1;
       const known = ds.lastChecked > -99;
-      const glow = T > 45 && (recent || known) ? Math.min(1, (T - 45) / 350) * (recent ? 1 : 0.4) : 0;
+      const glow =
+        T > 45 && (recent || known) ? Math.min(1, (T - 45) / 350) * (recent ? 1 : 0.4) : 0;
       d.mat.emissive.setRGB(glow, glow * 0.22, 0);
     }
   }
@@ -192,12 +221,16 @@ export class MapBuilder {
   update(dt) {
     const a = Math.min(1, dt * 8);
     for (const d of this.doors.values()) {
-      if (Math.abs(d.pivot.rotation.y - d.targetRot) > 0.001) d.pivot.rotation.y += (d.targetRot - d.pivot.rotation.y) * a;
+      if (Math.abs(d.pivot.rotation.y - d.targetRot) > 0.001)
+        d.pivot.rotation.y += (d.targetRot - d.pivot.rotation.y) * a;
     }
   }
 
   clear() {
-    for (const g of this.floorGroups.values()) { disposeObject(g); this.group.remove(g); }
+    for (const g of this.floorGroups.values()) {
+      disposeObject(g);
+      this.group.remove(g);
+    }
     this.floorGroups.clear();
     this.instances.clear();
     this.doors.clear();

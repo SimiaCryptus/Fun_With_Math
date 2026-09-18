@@ -12,8 +12,7 @@ export const smoothstep = (e0, e1, x) => {
 };
 
 /** Frame-rate independent exponential approach. */
-export const damp = (cur, target, rate, dt) =>
-  target + (cur - target) * Math.exp(-rate * dt);
+export const damp = (cur, target, rate, dt) => target + (cur - target) * Math.exp(-rate * dt);
 
 export const wrapPi = (a) => {
   let x = (a + Math.PI) % (Math.PI * 2);

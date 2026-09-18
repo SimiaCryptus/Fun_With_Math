@@ -12,32 +12,63 @@ export function smokeDensityAt(state, key) {
 export function bresenham3D(a, b) {
   const pts = [];
   let { x, y, z } = a;
-  const dx = Math.abs(b.x - x), dy = Math.abs(b.y - y), dz = Math.abs(b.z - z);
-  const sx = b.x > x ? 1 : -1, sy = b.y > y ? 1 : -1, sz = b.z > z ? 1 : -1;
+  const dx = Math.abs(b.x - x),
+    dy = Math.abs(b.y - y),
+    dz = Math.abs(b.z - z);
+  const sx = b.x > x ? 1 : -1,
+    sy = b.y > y ? 1 : -1,
+    sz = b.z > z ? 1 : -1;
   pts.push({ x, y, z });
   if (dx >= dy && dx >= dz) {
-    let p1 = 2 * dy - dx, p2 = 2 * dz - dx;
+    let p1 = 2 * dy - dx,
+      p2 = 2 * dz - dx;
     while (x !== b.x) {
       x += sx;
-      if (p1 >= 0) { y += sy; p1 -= 2 * dx; }
-      if (p2 >= 0) { z += sz; p2 -= 2 * dx; }
-      p1 += 2 * dy; p2 += 2 * dz; pts.push({ x, y, z });
+      if (p1 >= 0) {
+        y += sy;
+        p1 -= 2 * dx;
+      }
+      if (p2 >= 0) {
+        z += sz;
+        p2 -= 2 * dx;
+      }
+      p1 += 2 * dy;
+      p2 += 2 * dz;
+      pts.push({ x, y, z });
     }
   } else if (dy >= dx && dy >= dz) {
-    let p1 = 2 * dx - dy, p2 = 2 * dz - dy;
+    let p1 = 2 * dx - dy,
+      p2 = 2 * dz - dy;
     while (y !== b.y) {
       y += sy;
-      if (p1 >= 0) { x += sx; p1 -= 2 * dy; }
-      if (p2 >= 0) { z += sz; p2 -= 2 * dy; }
-      p1 += 2 * dx; p2 += 2 * dz; pts.push({ x, y, z });
+      if (p1 >= 0) {
+        x += sx;
+        p1 -= 2 * dy;
+      }
+      if (p2 >= 0) {
+        z += sz;
+        p2 -= 2 * dy;
+      }
+      p1 += 2 * dx;
+      p2 += 2 * dz;
+      pts.push({ x, y, z });
     }
   } else {
-    let p1 = 2 * dy - dz, p2 = 2 * dx - dz;
+    let p1 = 2 * dy - dz,
+      p2 = 2 * dx - dz;
     while (z !== b.z) {
       z += sz;
-      if (p1 >= 0) { y += sy; p1 -= 2 * dz; }
-      if (p2 >= 0) { x += sx; p2 -= 2 * dz; }
-      p1 += 2 * dy; p2 += 2 * dx; pts.push({ x, y, z });
+      if (p1 >= 0) {
+        y += sy;
+        p1 -= 2 * dz;
+      }
+      if (p2 >= 0) {
+        x += sx;
+        p2 -= 2 * dz;
+      }
+      p1 += 2 * dy;
+      p2 += 2 * dx;
+      pts.push({ x, y, z });
     }
   }
   return pts;

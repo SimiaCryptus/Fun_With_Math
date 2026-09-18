@@ -15,9 +15,9 @@ import { VU, daysToTU, tuToDays } from '../core/units.js';
  * Same expression serves capture (time-reversed).
  */
 export function wellDeltaV(mu, rPark, vInf) {
-  if (!mu || mu < 1e3 || !rPark) return vInf;   // negligible gravity well
+  if (!mu || mu < 1e3 || !rPark) return vInf; // negligible gravity well
   const vCirc = Math.sqrt(mu / rPark);
-  return Math.sqrt(vInf * vInf + 2 * mu / rPark) - vCirc;
+  return Math.sqrt(vInf * vInf + (2 * mu) / rPark) - vCirc;
 }
 
 /** Hohmann time of flight (days) between two circular radii in AU. */
@@ -26,12 +26,12 @@ export function hohmannTOF(a1, a2) {
   return tuToDays(Math.PI * Math.sqrt(at * at * at));
 }
 /**
-* Cheap coplanar-Hohmann estimate of a leg, for the port list. Ignores
-* inclination and eccentricity so it is a lower bound on the real porkchop
-* minimum, but it is O(1) and lets the UI show "reachable / not" for every
-* station without 5 000 Lambert solves each.
-* @returns {{dvDep:number, dvArr:number, dvTotal:number, tof:number}|null} m/s, days
-*/
+ * Cheap coplanar-Hohmann estimate of a leg, for the port list. Ignores
+ * inclination and eccentricity so it is a lower bound on the real porkchop
+ * minimum, but it is O(1) and lets the UI show "reachable / not" for every
+ * station without 5 000 Lambert solves each.
+ * @returns {{dvDep:number, dvArr:number, dvTotal:number, tof:number}|null} m/s, days
+ */
 export function hohmannEstimate(fromStationId, toStationId, t, aeroFactor = 0) {
   const A = STATION_BY_ID[fromStationId];
   const B = STATION_BY_ID[toStationId];
@@ -75,7 +75,7 @@ export function solveTransfer(fromStationId, toStationId, departT, tofDays, opts
   const sol = lambert(sa.r, sb.r, daysToTU(tofDays), 1, true);
   if (!sol) return null;
 
-  const vInfDep = norm(sub(sol.v1, sa.v)) * VU;    // m/s
+  const vInfDep = norm(sub(sol.v1, sa.v)) * VU; // m/s
   const vInfArr = norm(sub(sol.v2, sb.v)) * VU;
   if (!isFinite(vInfDep) || !isFinite(vInfArr)) return null;
 
@@ -85,13 +85,23 @@ export function solveTransfer(fromStationId, toStationId, departT, tofDays, opts
   const dvArr = rawArr * (1 - aero);
 
   return {
-    from: fromStationId, to: toStationId,
-    departT, arriveT, tof: tofDays,
-    r1: sa.r, r2: sb.r, v1: sol.v1, v2: sol.v2,
-    vBody1: sa.v, vBody2: sb.v,
-    vInfDep, vInfArr,
-    c3: (vInfDep * vInfDep) / 1e6,             // km^2/s^2
-    dvDep, dvArr, dvTotal: dvDep + dvArr,
+    from: fromStationId,
+    to: toStationId,
+    departT,
+    arriveT,
+    tof: tofDays,
+    r1: sa.r,
+    r2: sb.r,
+    v1: sol.v1,
+    v2: sol.v2,
+    vBody1: sa.v,
+    vBody2: sb.v,
+    vInfDep,
+    vInfArr,
+    c3: (vInfDep * vInfDep) / 1e6, // km^2/s^2
+    dvDep,
+    dvArr,
+    dvTotal: dvDep + dvArr,
     aeroSaved: rawArr - dvArr,
   };
 }
@@ -105,7 +115,8 @@ export function localTransfer(fromStationId, toStationId) {
   const B = STATION_BY_ID[toStationId];
   if (!A || !B || A.body !== B.body) return null;
   const mu = BODY_BY_ID[A.body].mu;
-  const r1 = A.rPark, r2 = B.rPark;
+  const r1 = A.rPark,
+    r2 = B.rPark;
   const at = (r1 + r2) / 2;
   const dv1 = Math.abs(Math.sqrt(mu * (2 / r1 - 1 / at)) - Math.sqrt(mu / r1));
   const dv2 = Math.abs(Math.sqrt(mu / r2) - Math.sqrt(mu * (2 / r2 - 1 / at)));
@@ -153,11 +164,20 @@ export function porkchop(fromStationId, toStationId, t0, opts = {}) {
   }
 
   return {
-    nx, ny, dep0: t0, depStep, tof0: tofMin, tofStep, dv, min,
-    hohmann: hoh, synodic: syn,
-    best: min.ix >= 0
-      ? solveTransfer(fromStationId, toStationId, min.departT, min.tof, { aeroFactor })
-      : null,
+    nx,
+    ny,
+    dep0: t0,
+    depStep,
+    tof0: tofMin,
+    tofStep,
+    dv,
+    min,
+    hohmann: hoh,
+    synodic: syn,
+    best:
+      min.ix >= 0
+        ? solveTransfer(fromStationId, toStationId, min.departT, min.tof, { aeroFactor })
+        : null,
   };
 }
 

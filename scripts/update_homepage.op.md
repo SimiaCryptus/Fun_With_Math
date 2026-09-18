@@ -5,4 +5,3 @@ transforms:
 ---
 
 Update the game page to include a link to [home](/).
-

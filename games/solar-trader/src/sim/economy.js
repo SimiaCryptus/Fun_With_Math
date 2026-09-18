@@ -2,9 +2,9 @@ import { COMMODITIES, COMMODITY_BY_ID } from '../data/commodities.js';
 import { STATIONS, STATION_BY_ID } from '../data/stations.js';
 import { clamp } from '../core/units.js';
 
-const STOCK_DAYS = 90;      // target stock ~= 90 days of throughput
+const STOCK_DAYS = 90; // target stock ~= 90 days of throughput
 const MIN_TARGET = 40;
-const RELAX = 1 / 30;       // 1/day: NPC freighters pull stock toward target
+const RELAX = 1 / 30; // 1/day: NPC freighters pull stock toward target
 const SCARCITY_EXP = 0.7;
 const SCARCITY_LO = 0.35;
 const SCARCITY_HI = 3.5;
@@ -51,8 +51,12 @@ export class Economy {
     this.lastTickDay = 0;
   }
 
-  lines(stationId) { return this.markets[stationId] || {}; }
-  line(stationId, cid) { return this.markets[stationId]?.[cid] || null; }
+  lines(stationId) {
+    return this.markets[stationId] || {};
+  }
+  line(stationId, cid) {
+    return this.markets[stationId]?.[cid] || null;
+  }
 
   /** Marginal mid price, credits per tonne, at the current stock. */
   price(stationId, cid) {
@@ -72,7 +76,7 @@ export class Economy {
   availableToBuy(stationId, cid) {
     const L = this.line(stationId, cid);
     if (!L) return 0;
-    return Math.max(0, L.stock - L.target * 0.10);
+    return Math.max(0, L.stock - L.target * 0.1);
   }
 
   /**
@@ -91,7 +95,8 @@ export class Economy {
     const spreadK = side === 'buy' ? 1 + sp : 1 - sp;
     const n = Math.max(1, Math.min(32, Math.ceil(tons / 4)));
     const step = tons / n;
-    let stock = L.stock, total = 0;
+    let stock = L.stock,
+      total = 0;
     for (let i = 0; i < n; i++) {
       // midpoint rule on stock for a second-order accurate integral
       total += priceAt(base, L.mult, L.target, stock + sign * step * 0.5) * spreadK * step;
@@ -137,8 +142,11 @@ export class Economy {
         // mean-reverting random walk on the locality multiplier
         const drift = (Math.random() - 0.5) * 0.02 * Math.sqrt(dt);
         const revert = 1 - Math.exp(-0.004 * dt);
-        L.mult = clamp(L.mult + drift + (L.baseMult - L.mult) * revert,
-                       L.baseMult * 0.6, L.baseMult * 1.9);
+        L.mult = clamp(
+          L.mult + drift + (L.baseMult - L.mult) * revert,
+          L.baseMult * 0.6,
+          L.baseMult * 1.9
+        );
       }
     }
   }
@@ -146,13 +154,15 @@ export class Economy {
   /** Rows for the market UI, sorted by value. */
   table(stationId) {
     const m = this.lines(stationId);
-    return COMMODITIES
-      .filter((c) => m[c.id])
+    return COMMODITIES.filter((c) => m[c.id])
       .map((c) => {
         const q = this.quote(stationId, c.id);
         const L = m[c.id];
         return {
-          id: c.id, name: c.name, cls: c.cls, base: c.base,
+          id: c.id,
+          name: c.name,
+          cls: c.cls,
+          base: c.base,
           ...q,
           ratio: q.mid / c.base,
           stock: L.stock,
@@ -164,10 +174,15 @@ export class Economy {
       .sort((a, b) => b.mid - a.mid);
   }
 
-  toJSON() { return { markets: this.markets, lastTickDay: this.lastTickDay }; }
+  toJSON() {
+    return { markets: this.markets, lastTickDay: this.lastTickDay };
+  }
   static fromJSON(o) {
     const e = new Economy();
-    if (o?.markets) { e.markets = o.markets; e.lastTickDay = o.lastTickDay || 0; }
+    if (o?.markets) {
+      e.markets = o.markets;
+      e.lastTickDay = o.lastTickDay || 0;
+    }
     return e;
   }
 }

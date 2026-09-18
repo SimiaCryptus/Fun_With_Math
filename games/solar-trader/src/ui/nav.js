@@ -4,18 +4,20 @@ import { porkchop, localTransfer, hohmannEstimate } from '../sim/planner.js';
 import { drawPorkchop } from './porkchop.js';
 import { fmtDate, fmtDuration, fmtNum } from '../core/units.js';
 
-const REFRESH_MS = 1000;   // countdown refresh cadence while the clock runs
+const REFRESH_MS = 1000; // countdown refresh cadence while the clock runs
 
 export function initNav(game, view) {
   const root = document.getElementById('nav-root');
-  let grid = null;         // porkchop result, anchored at grid.dep0
-  let sel = null;          // {ix, iy} selected cell
+  let grid = null; // porkchop result, anchored at grid.dep0
+  let sel = null; // {ix, iy} selected cell
   let gridKey = '';
   let dirty = true;
-  let hovering = false;    // pointer is on the porkchop: do not rebuild under it
+  let hovering = false; // pointer is on the porkchop: do not rebuild under it
   let lastRender = 0;
 
-  game.on(() => { dirty = true; });
+  game.on(() => {
+    dirty = true;
+  });
 
   const row = (k, v, cls = '') =>
     `<div class="row"><span class="k">${k}</span><span class="v ${cls}">${v}</span></div>`;
@@ -45,15 +47,18 @@ export function initNav(game, view) {
     if (!grid || game.plan?.armed) return;
     sel = { ix, iy };
     const { departT, tof } = cellToPlan(ix, iy);
-    game.proposeTransfer(departT, tof);      // emits -> dirty; render() clears it
+    game.proposeTransfer(departT, tof); // emits -> dirty; render() clears it
     if (redraw) render();
   }
 
   function ensureGrid(force = false) {
-    if (game.flight || game.plan?.armed) return;          // never disturb a filed plan
-    const from = game.dockedAt, to = game.target;
+    if (game.flight || game.plan?.armed) return; // never disturb a filed plan
+    const from = game.dockedAt,
+      to = game.target;
     if (!from || !to || from === to || STATION_BY_ID[from].body === STATION_BY_ID[to].body) {
-      grid = null; gridKey = ''; sel = null;
+      grid = null;
+      gridKey = '';
+      sel = null;
       return;
     }
     const key = `${from}>${to}|${game.ship.aeroFactor}`;
@@ -64,13 +69,18 @@ export function initNav(game, view) {
     }
 
     // Keep the player's chosen window across a regrid if it is still in view.
-    const keep = key === gridKey && game.plan?.kind === 'transfer'
-      ? { departT: game.plan.departT, tof: game.plan.tof } : null;
+    const keep =
+      key === gridKey && game.plan?.kind === 'transfer'
+        ? { departT: game.plan.departT, tof: game.plan.tof }
+        : null;
     gridKey = key;
     grid = porkchop(from, to, game.t, { aeroFactor: game.ship.aeroFactor });
 
     const kept = keep ? cellIndex(keep.departT, keep.tof) : null;
-    if (kept) { selectCell(kept.ix, kept.iy, false); return; }
+    if (kept) {
+      selectCell(kept.ix, kept.iy, false);
+      return;
+    }
     sel = grid.min.ix >= 0 ? { ix: grid.min.ix, iy: grid.min.iy } : null;
     if (sel) selectCell(sel.ix, sel.iy, false);
   }
@@ -83,7 +93,8 @@ export function initNav(game, view) {
       const active = s.id === game.target;
       const isHere = s.id === here;
       const body = BODY_BY_ID[s.body];
-      let est = '', unreach = false;
+      let est = '',
+        unreach = false;
       if (here && !isHere) {
         const h = hohmannEstimate(here, s.id, game.t, game.ship.aeroFactor);
         if (h) {
@@ -106,7 +117,8 @@ export function initNav(game, view) {
 
   function planReadout() {
     const p = game.plan;
-    if (!p) return `<div class="sec"><span class="k">No solution at this cell — pick another.</span></div>`;
+    if (!p)
+      return `<div class="sec"><span class="k">No solution at this cell — pick another.</span></div>`;
     const prop = game.planPropellant(p);
     const feas = game.planFeasible(p);
     const propLeft = Math.max(0, game.ship.prop - prop.total);
@@ -190,7 +202,8 @@ export function initNav(game, view) {
     else if (game.plan?.armed) head = armedPanel();
     else if (from && to) head = chopPanel(from, to);
 
-    root.innerHTML = head + `<h2 style="border-top:1px solid var(--edge)">PORTS</h2>` + targetList();
+    root.innerHTML =
+      head + `<h2 style="border-top:1px solid var(--edge)">PORTS</h2>` + targetList();
 
     const canvas = document.getElementById('chop');
     if (canvas && grid) {
@@ -200,11 +213,21 @@ export function initNav(game, view) {
         const r = canvas.getBoundingClientRect();
         const ix = Math.round(((ev.clientX - r.left) / r.width) * (grid.nx - 1));
         const iy = Math.round((1 - (ev.clientY - r.top) / r.height) * (grid.ny - 1));
-        return { ix: Math.max(0, Math.min(grid.nx - 1, ix)), iy: Math.max(0, Math.min(grid.ny - 1, iy)) };
+        return {
+          ix: Math.max(0, Math.min(grid.nx - 1, ix)),
+          iy: Math.max(0, Math.min(grid.ny - 1, iy)),
+        };
       };
-      canvas.onclick = (ev) => { const c = pick(ev); selectCell(c.ix, c.iy); };
-      canvas.onmouseenter = () => { hovering = true; };
-      canvas.onmouseleave = () => { hovering = false; };
+      canvas.onclick = (ev) => {
+        const c = pick(ev);
+        selectCell(c.ix, c.iy);
+      };
+      canvas.onmouseenter = () => {
+        hovering = true;
+      };
+      canvas.onmouseleave = () => {
+        hovering = false;
+      };
       canvas.onmousemove = (ev) => {
         const c = pick(ev);
         const v = grid.dv[c.iy * grid.nx + c.ix];
@@ -218,13 +241,30 @@ export function initNav(game, view) {
       };
     }
 
-    const bind = (id, fn) => { const el = document.getElementById(id); if (el) el.onclick = fn; };
-    bind('btn-execute', () => { game.armPlan(); });
+    const bind = (id, fn) => {
+      const el = document.getElementById(id);
+      if (el) el.onclick = fn;
+    };
+    bind('btn-execute', () => {
+      game.armPlan();
+    });
     bind('btn-warp-dep', () => game.warpToDeparture());
     bind('btn-warp-arr', () => game.warpToArrival());
-    bind('btn-unfile', () => { if (game.plan) { game.plan.armed = false; game.log('Flight plan unfiled.'); game.emit(); } });
-    bind('btn-rescan', () => { ensureGrid(true); render(); });
-    bind('btn-local', () => { game.proposeTransfer(game.t, 0); game.armPlan(); });
+    bind('btn-unfile', () => {
+      if (game.plan) {
+        game.plan.armed = false;
+        game.log('Flight plan unfiled.');
+        game.emit();
+      }
+    });
+    bind('btn-rescan', () => {
+      ensureGrid(true);
+      render();
+    });
+    bind('btn-local', () => {
+      game.proposeTransfer(game.t, 0);
+      game.armPlan();
+    });
 
     root.querySelectorAll('[data-station]').forEach((n) => {
       n.onclick = () => {
@@ -237,7 +277,11 @@ export function initNav(game, view) {
   }
 
   return function tick(now = performance.now()) {
-    if (dirty) { render(); lastRender = now; return; }
+    if (dirty) {
+      render();
+      lastRender = now;
+      return;
+    }
     // Countdowns/feasibility drift with the clock; refresh gently, never
     // while the pointer is reading the porkchop.
     if (game.rate > 0 && !hovering && now - lastRender >= REFRESH_MS) {

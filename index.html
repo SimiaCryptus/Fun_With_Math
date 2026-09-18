@@ -10,58 +10,52 @@
     <meta name="author" content="SimiaCryptus" />
     <meta
       name="keywords"
-       content="browser games, math games, puzzle games, free online games, no install games, HTML5 games, javascript games, logic puzzles, strategy games, arcade, indie games"
+      content="browser games, math games, puzzle games, free online games, no install games, HTML5 games, javascript games, logic puzzles, strategy games, arcade, indie games"
     />
     <meta
       name="description"
-       content="Cognotik Games — a small arcade of original browser games. Puzzles, strategy, and arcade toys built on mathematical ideas. No installs, no accounts; everything runs in your browser."
+      content="Cognotik Games — a small arcade of original browser games. Puzzles, strategy, and arcade toys built on mathematical ideas. No installs, no accounts; everything runs in your browser."
     />
-     <title>Cognotik Games — Original Browser Games</title>
+    <title>Cognotik Games — Original Browser Games</title>
     <link rel="canonical" href="https://games.cognotik.com/" />
     <meta name="theme-color" content="#0a0a14" />
     <meta name="color-scheme" content="dark light" />
-     <!-- ── PWA ────────────────────────────────────────────────
+    <!-- ── PWA ────────────────────────────────────────────────
           NOTE: the installable app manifest is `app.webmanifest`.
           `manifest.json` is the *content* manifest consumed by
           js/home-browse.js — the two are unrelated. -->
-     <link rel="manifest" href="/app.webmanifest" />
-     <meta name="application-name" content="Cognotik Games" />
-     <meta name="mobile-web-app-capable" content="yes" />
-     <meta name="apple-mobile-web-app-capable" content="yes" />
-     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-     <meta name="apple-mobile-web-app-title" content="Cognotik Games" />
-     <meta name="msapplication-TileColor" content="#0a0a14" />
-     <meta name="msapplication-TileImage" content="/icons/icon-144.png" />
+    <link rel="manifest" href="/app.webmanifest" />
+    <meta name="application-name" content="Cognotik Games" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Cognotik Games" />
+    <meta name="msapplication-TileColor" content="#0a0a14" />
+    <meta name="msapplication-TileImage" content="/icons/icon-144.png" />
     <!-- Favicons / site icon -->
     <link rel="icon" type="image/png" href="icon.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="icon.png" />
-     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
     <link rel="shortcut icon" href="icon.png" />
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-     <meta property="og:site_name" content="Cognotik Games" />
-    <meta
-      property="og:title"
-       content="Cognotik Games — Original Browser Games"
-    />
+    <meta property="og:site_name" content="Cognotik Games" />
+    <meta property="og:title" content="Cognotik Games — Original Browser Games" />
     <meta
       property="og:description"
-       content="A small arcade of original browser games — puzzles, strategy, and arcade toys grown out of mathematical ideas. Pick one and play; it all runs in your browser."
+      content="A small arcade of original browser games — puzzles, strategy, and arcade toys grown out of mathematical ideas. Pick one and play; it all runs in your browser."
     />
     <meta property="og:url" content="https://games.cognotik.com/" />
     <meta property="og:image" content="https://games.cognotik.com/og-image.png" />
-    <meta
-      property="og:image:alt"
-       content="Cognotik Games — original browser games"
-    />
+    <meta property="og:image:alt" content="Cognotik Games — original browser games" />
     <meta property="og:locale" content="en_US" />
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-     <meta name="twitter:title" content="Cognotik Games — Original Browser Games" />
+    <meta name="twitter:title" content="Cognotik Games — Original Browser Games" />
     <meta
       name="twitter:description"
-       content="A small arcade of original browser games — puzzles, strategy, and arcade toys. No installs, no accounts, just play."
+      content="A small arcade of original browser games — puzzles, strategy, and arcade toys. No installs, no accounts, just play."
     />
     <meta name="twitter:image" content="https://games.cognotik.com/og-image.png" />
 
@@ -99,31 +93,31 @@
     <link rel="stylesheet" href="css/home.css" />
     <link rel="stylesheet" href="css/videos.css" />
     <link rel="stylesheet" href="css/browse.css" />
-     <link rel="stylesheet" href="css/pwa.css" />
-     <!-- Adapter + picker chrome: must come after every stylesheet
+    <link rel="stylesheet" href="css/pwa.css" />
+    <!-- Adapter + picker chrome: must come after every stylesheet
           that declares :root variables of its own. -->
-     <link rel="stylesheet" href="css/theme-bridge.css" />
-     <link rel="stylesheet" href="css/theme-picker.css" />
+    <link rel="stylesheet" href="css/theme-bridge.css" />
+    <link rel="stylesheet" href="css/theme-picker.css" />
     <!-- Prime the manifest fetch as early as possible -->
     <link rel="preload" href="manifest.json" as="fetch" crossorigin="anonymous" />
     <script src="/lib/marked.min.js"></script>
-     <script src="js/index.js"></script>
-      <!-- Service-worker registration, install prompt, update toast -->
-      <script src="js/pwa.js" defer></script>
-     <!--
+    <script src="js/index.js"></script>
+    <!-- Service-worker registration, install prompt, update toast -->
+    <script src="js/pwa.js" defer></script>
+    <!--
        Games-only build. `home-browse.js` reads this before rendering and
        restricts the manifest-driven index to game entries (any entry whose
        category is not in `categories` is dropped, and the category tab strip
        collapses to a single implicit group).
      -->
-     <script>
-       window.SITE_CONFIG = {
-         siteName: 'Cognotik Games',
-         categories: ['game'],
-         defaultCategory: 'game',
-         hideCategoryTabs: true,
-       };
-     </script>
+    <script>
+      window.SITE_CONFIG = {
+        siteName: 'Cognotik Games',
+        categories: ['game'],
+        defaultCategory: 'game',
+        hideCategoryTabs: true,
+      };
+    </script>
     <!-- Structured data: WebSite + Organization; the ItemList is emitted at
          runtime by js/home-browse.js straight from manifest.json. -->
     <script type="application/ld+json">
@@ -134,8 +128,8 @@
             "@type": "WebSite",
             "@id": "https://games.cognotik.com/#website",
             "url": "https://games.cognotik.com/",
-             "name": "Cognotik Games",
-             "description": "A small arcade of original browser games — puzzles, strategy, and arcade toys that run entirely in your browser.",
+            "name": "Cognotik Games",
+            "description": "A small arcade of original browser games — puzzles, strategy, and arcade toys that run entirely in your browser.",
             "inLanguage": "en",
             "potentialAction": {
               "@type": "SearchAction",
@@ -150,7 +144,7 @@
           {
             "@type": "Organization",
             "@id": "https://games.cognotik.com/#org",
-             "name": "Cognotik Games",
+            "name": "Cognotik Games",
             "url": "https://games.cognotik.com/",
             "sameAs": ["https://github.com/SimiaCryptus/Fun_With_Math", "https://aol.cognotik.com/"]
           },
@@ -158,9 +152,9 @@
             "@type": "CollectionPage",
             "@id": "https://games.cognotik.com/#webpage",
             "url": "https://games.cognotik.com/",
-             "name": "Cognotik Games",
+            "name": "Cognotik Games",
             "isPartOf": { "@id": "https://games.cognotik.com/#website" },
-             "about": "Original browser games: puzzles, strategy, and arcade toys"
+            "about": "Original browser games: puzzles, strategy, and arcade toys"
           }
         ]
       }
@@ -178,49 +172,54 @@
     <nav>
       <!-- primary navigation -->
       <a class="brand" href="index.html">
-         <span class="brand-glyph">⚄</span>
-         <span class="brand-text">Cognotik Games</span>
+        <span class="brand-glyph">⚄</span>
+        <span class="brand-text">Cognotik Games</span>
       </a>
       <span class="spacer"></span>
-       <a class="nav-link nav-section-link" href="#browse" data-jump-cat="game">All games</a>
-       <button type="button" class="nav-link nav-random" id="randomGame" title="Play something random">
-         Surprise me <span class="arrow">⤳</span>
-       </button>
-       <button type="button" class="nav-link nav-random" id="shareSite" title="Share this arcade">
-         Share <span class="arrow">⇪</span>
-       </button>
-       <!-- Colour-theme picker (populated by js/themes.js) -->
-       <div class="theme-picker">
-         <button
-           type="button"
-           class="theme-toggle"
-           id="themeToggle"
-           aria-haspopup="true"
-           aria-expanded="false"
-           aria-controls="themeMenu"
-           title="Colour theme"
-         >
-           <span class="theme-swatch" aria-hidden="true"></span>
-           <span class="theme-toggle-label">Theme</span>
-           <span class="arrow" aria-hidden="true">▾</span>
-         </button>
-         <div class="theme-menu" id="themeMenu" role="menu" aria-label="Colour theme" hidden></div>
-       </div>
+      <a class="nav-link nav-section-link" href="#browse" data-jump-cat="game">All games</a>
+      <button
+        type="button"
+        class="nav-link nav-random"
+        id="randomGame"
+        title="Play something random"
+      >
+        Surprise me <span class="arrow">⤳</span>
+      </button>
+      <button type="button" class="nav-link nav-random" id="shareSite" title="Share this arcade">
+        Share <span class="arrow">⇪</span>
+      </button>
+      <!-- Colour-theme picker (populated by js/themes.js) -->
+      <div class="theme-picker">
         <button
           type="button"
-          class="nav-link pwa-install"
-          id="pwaInstall"
-          title="Install Cognotik Games on this device"
-          hidden
+          class="theme-toggle"
+          id="themeToggle"
+          aria-haspopup="true"
+          aria-expanded="false"
+          aria-controls="themeMenu"
+          title="Colour theme"
         >
-          Install <span class="arrow">⬇</span>
+          <span class="theme-swatch" aria-hidden="true"></span>
+          <span class="theme-toggle-label">Theme</span>
+          <span class="arrow" aria-hidden="true">▾</span>
         </button>
+        <div class="theme-menu" id="themeMenu" role="menu" aria-label="Colour theme" hidden></div>
+      </div>
+      <button
+        type="button"
+        class="nav-link pwa-install"
+        id="pwaInstall"
+        title="Install Cognotik Games on this device"
+        hidden
+      >
+        Install <span class="arrow">⬇</span>
+      </button>
       <a
         class="nav-link"
         href="https://github.com/SimiaCryptus/Fun_With_Math"
         target="_blank"
         rel="noopener"
-         aria-label="View the Cognotik Games source on GitHub"
+        aria-label="View the Cognotik Games source on GitHub"
         >GitHub <span class="arrow">↗</span></a
       >
     </nav>
@@ -228,30 +227,30 @@
     <section class="hero hero-compact">
       <div class="hero-badge">
         <span class="hero-badge-dot"></span>
-         Free to play · no installs · runs entirely in the browser
+        Free to play · no installs · runs entirely in the browser
       </div>
 
       <p class="hero-lede">
-         A small arcade of original games — puzzles, strategy boards, and arcade toys, most of them
-         grown out of a mathematical idea that turned out to be fun to play with. Nothing to install,
-         no accounts, no ads: pick one and start playing.
+        A small arcade of original games — puzzles, strategy boards, and arcade toys, most of them
+        grown out of a mathematical idea that turned out to be fun to play with. Nothing to install,
+        no accounts, no ads: pick one and start playing.
       </p>
 
       <p class="hero-hint"><kbd>/</kbd> to search · <kbd>Esc</kbd> to clear</p>
     </section>
 
     <!-- ── Browse: search / filter / sort ─────────────────────── -->
-     <section id="browse" class="browse" aria-label="Browse all games">
+    <section id="browse" class="browse" aria-label="Browse all games">
       <div class="browse-bar" id="browseBar">
         <div class="browse-row browse-row-main">
-<div class="search-field">
-  <span class="search-icon" aria-hidden="true">⌕</span>
-   <label class="sr-only" for="searchInput">Search games</label>
+          <div class="search-field">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <label class="sr-only" for="searchInput">Search games</label>
             <input
               id="searchInput"
               type="search"
               class="search-input"
-               placeholder="Search games by title, genre, tag…"
+              placeholder="Search games by title, genre, tag…"
               autocomplete="off"
               spellcheck="false"
             />
@@ -276,7 +275,7 @@
               <option value="curated">Curated</option>
               <option value="az">Title A–Z</option>
               <option value="za">Title Z–A</option>
-               <option value="media">Has gameplay video</option>
+              <option value="media">Has gameplay video</option>
             </select>
             <div class="view-toggle" role="group" aria-label="Layout density">
               <button type="button" data-view="grid" class="view-btn" title="Gallery view">
@@ -290,14 +289,14 @@
         </div>
 
         <div class="browse-row browse-row-tags" id="tagRow" hidden>
-           <span class="tag-row-label">Genres</span>
+          <span class="tag-row-label">Genres</span>
           <div class="tag-chips" id="tagChips"></div>
           <button type="button" class="tag-more" id="tagMore" hidden>more ▾</button>
         </div>
 
         <div class="browse-row browse-row-status">
           <p class="browse-status" id="browseStatus" role="status" aria-live="polite">
-             Loading games…
+            Loading games…
           </p>
           <button type="button" class="reset-btn" id="resetFilters" hidden>Reset filters</button>
         </div>
@@ -307,18 +306,18 @@
         <!-- Populated from manifest.json by js/home-browse.js -->
       </div>
 
-<div class="empty-state" id="emptyState" hidden>
-  <p class="empty-glyph" aria-hidden="true">∅</p>
-   <p class="empty-title">No games match that query.</p>
-  <p class="empty-sub">Try a broader term, or clear the active filters.</p>
-  <button type="button" class="reset-btn" id="emptyReset">Reset filters</button>
-</div>
+      <div class="empty-state" id="emptyState" hidden>
+        <p class="empty-glyph" aria-hidden="true">∅</p>
+        <p class="empty-title">No games match that query.</p>
+        <p class="empty-sub">Try a broader term, or clear the active filters.</p>
+        <button type="button" class="reset-btn" id="emptyReset">Reset filters</button>
+      </div>
 
       <noscript>
         <p class="browse-status">
-           This index is rendered from <a href="manifest.json">manifest.json</a> and requires
-           JavaScript. The games themselves live under <code>/games</code> and each one has its own
-           playable page.
+          This index is rendered from <a href="manifest.json">manifest.json</a> and requires
+          JavaScript. The games themselves live under <code>/games</code> and each one has its own
+          playable page.
         </p>
       </noscript>
     </section>
@@ -333,11 +332,11 @@
         &middot; no build step, no dependencies beyond a couple of CDN-loaded libraries
       </p>
       <p style="opacity: 0.75; font-size: 0.9em; max-width: 60ch; margin: 1em auto">
-         Every game here is original — designed, tuned, and played by hand, with AI-assisted tooling
-         used the way a workshop uses power tools. No trackers, no accounts, no in-app anything:
-         your saves stay in your own browser.
+        Every game here is original — designed, tuned, and played by hand, with AI-assisted tooling
+        used the way a workshop uses power tools. No trackers, no accounts, no in-app anything: your
+        saves stay in your own browser.
       </p>
-       <p class="footer-mark">⚄</p>
+      <p class="footer-mark">⚄</p>
     </footer>
     <!-- Back-to-top shortcut -->
     <button
@@ -359,18 +358,18 @@
             <h2 class="modal-title" id="modalTitle"></h2>
             <p class="modal-subtitle" id="modalSubtitle"></p>
           </div>
-           <a class="modal-launch" id="modalLaunch" href="#"
-             ><span class="play-glyph" aria-hidden="true">▶</span> Play</a
-           >
-           <button
-             type="button"
-             class="modal-share"
-             id="modalShare"
-             aria-label="Share this game"
-             title="Share this game"
-           >
-             <span aria-hidden="true">⇪</span>
-           </button>
+          <a class="modal-launch" id="modalLaunch" href="#"
+            ><span class="play-glyph" aria-hidden="true">▶</span> Play</a
+          >
+          <button
+            type="button"
+            class="modal-share"
+            id="modalShare"
+            aria-label="Share this game"
+            title="Share this game"
+          >
+            <span aria-hidden="true">⇪</span>
+          </button>
           <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
         </div>
         <div class="modal-meta" id="modalMeta"></div>
@@ -378,45 +377,44 @@
         <div class="modal-body" id="modalBody"></div>
       </div>
     </div>
-     <!-- PWA: update prompt + offline indicator (driven by js/pwa.js) -->
-     <div class="pwa-toast" id="pwaUpdateToast" role="status" aria-live="polite" hidden>
-       <span class="pwa-toast-text">A new version of the arcade is ready.</span>
-       <button type="button" class="pwa-toast-btn" id="pwaReload">Reload</button>
-       <button type="button" class="pwa-toast-dismiss" id="pwaUpdateDismiss" aria-label="Dismiss">
-         ✕
-       </button>
-     </div>
-     <div class="pwa-offline" id="pwaOffline" role="status" aria-live="polite" hidden>
-       You're offline — games you've already opened still play.
-     </div>
-
+    <!-- PWA: update prompt + offline indicator (driven by js/pwa.js) -->
+    <div class="pwa-toast" id="pwaUpdateToast" role="status" aria-live="polite" hidden>
+      <span class="pwa-toast-text">A new version of the arcade is ready.</span>
+      <button type="button" class="pwa-toast-btn" id="pwaReload">Reload</button>
+      <button type="button" class="pwa-toast-dismiss" id="pwaUpdateDismiss" aria-label="Dismiss">
+        ✕
+      </button>
+    </div>
+    <div class="pwa-offline" id="pwaOffline" role="status" aria-live="polite" hidden>
+      You're offline — games you've already opened still play.
+    </div>
 
     <script src="js/home-browse.js"></script>
-     <!-- Theme registry + picker behaviour -->
-     <script src="js/themes.js"></script>
-     <script>
-        // "Surprise me" — jump to a random game card rendered from the manifest.
-        // Also reachable as a PWA app shortcut via /?random=1, in which case we
-        // poll briefly until home-browse.js has painted the cards.
-        (() => {
-          const pick = () => {
-            const links = Array.from(
-              document.querySelectorAll(
-                '#entryGroups a[data-entry-launch], #entryGroups .entry-card a[href]'
-              )
-            ).filter((a) => a.getAttribute('href') && !a.getAttribute('href').startsWith('#'));
-            if (!links.length) return false;
-            window.location.href = links[Math.floor(Math.random() * links.length)].href;
-            return true;
-          };
-          document.getElementById('randomGame')?.addEventListener('click', pick);
-          if (new URLSearchParams(location.search).get('random') === '1') {
-            let tries = 0;
-            const timer = setInterval(() => {
-              if (pick() || ++tries > 40) clearInterval(timer);
-            }, 150);
-          }
-        })();
-     </script>
+    <!-- Theme registry + picker behaviour -->
+    <script src="js/themes.js"></script>
+    <script>
+      // "Surprise me" — jump to a random game card rendered from the manifest.
+      // Also reachable as a PWA app shortcut via /?random=1, in which case we
+      // poll briefly until home-browse.js has painted the cards.
+      (() => {
+        const pick = () => {
+          const links = Array.from(
+            document.querySelectorAll(
+              '#entryGroups a[data-entry-launch], #entryGroups .entry-card a[href]'
+            )
+          ).filter((a) => a.getAttribute('href') && !a.getAttribute('href').startsWith('#'));
+          if (!links.length) return false;
+          window.location.href = links[Math.floor(Math.random() * links.length)].href;
+          return true;
+        };
+        document.getElementById('randomGame')?.addEventListener('click', pick);
+        if (new URLSearchParams(location.search).get('random') === '1') {
+          let tries = 0;
+          const timer = setInterval(() => {
+            if (pick() || ++tries > 40) clearInterval(timer);
+          }, 150);
+        }
+      })();
+    </script>
   </body>
 </html>

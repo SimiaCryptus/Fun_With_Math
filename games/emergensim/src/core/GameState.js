@@ -31,7 +31,15 @@ export class GameState {
       id: 'PLAYER',
       position: { ...pStart },
       actionPoints: { max: 4, current: 4 },
-      physicalState: { status: 'ACTIVE', lungIrritation: 0, exposure: 'NONE', slowed: false, disoriented: false, injured: false, carrying: null },
+      physicalState: {
+        status: 'ACTIVE',
+        lungIrritation: 0,
+        exposure: 'NONE',
+        slowed: false,
+        disoriented: false,
+        injured: false,
+        carrying: null,
+      },
       inventory: [...(s.player.inventory || ['BARRICADE_KIT'])],
       lineOfSight: [],
       visible: new Set(),
@@ -39,9 +47,18 @@ export class GameState {
     };
 
     this.npcs = new Map();
-    (s.agents || []).forEach((a, i) => { const npc = this._createNPC(a, i); this.npcs.set(npc.id, npc); });
+    (s.agents || []).forEach((a, i) => {
+      const npc = this._createNPC(a, i);
+      this.npcs.set(npc.id, npc);
+    });
 
-    this.hazards = { fireCells: new Map(), smokeCells: new Map(), structuralIntegrity: new Map(), threatEntities: [], doorHistory: {} };
+    this.hazards = {
+      fireCells: new Map(),
+      smokeCells: new Map(),
+      structuralIntegrity: new Map(),
+      threatEntities: [],
+      doorHistory: {},
+    };
     for (const key of this.grid.tiles.keys()) this.hazards.structuralIntegrity.set(key, 1.0);
     (s.initialHazards || []).forEach((h, i) => this._placeHazard(h, i));
 
@@ -67,7 +84,14 @@ export class GameState {
       name: agent.name || agent.id || `NPC ${index + 1}`,
       role,
       position: { ...agent.position },
-      traits: { fear: 0.3, greed: 0.3, trust: 0.5, rage: 0.2, cohesion: 0.5, ...(agent.traits || {}) },
+      traits: {
+        fear: 0.3,
+        greed: 0.3,
+        trust: 0.5,
+        rage: 0.2,
+        cohesion: 0.5,
+        ...(agent.traits || {}),
+      },
       derived: { stress: 0, confidence: 0, aggression: 0, empathy: 0, riskTolerance: 0 },
       status: 'ACTIVE',
       socialRank: agent.socialRank ?? ROLE_RANK[role] ?? 1,
@@ -106,7 +130,13 @@ export class GameState {
     const intensity = h.intensity ?? 0.6;
     if (h.type === 'FIRE') {
       const fuelMax = tile.material.fuelCapacity || 80;
-      this.hazards.fireCells.set(key, { intensity, fuel: fuelMax, fuelMax, burnRate: 6 + 10 * tile.material.flammability, oxygen: 1 });
+      this.hazards.fireCells.set(key, {
+        intensity,
+        fuel: fuelMax,
+        fuelMax,
+        burnRate: 6 + 10 * tile.material.flammability,
+        oxygen: 1,
+      });
       tile.temperature = 200 + 700 * intensity;
     } else if (h.type === 'SMOKE') {
       this.hazards.smokeCells.set(key, { density: Math.min(1, intensity) });
@@ -117,7 +147,7 @@ export class GameState {
 
   /** Deterministic mulberry32 PRNG advanced on the state so replays are exact. */
   random() {
-    this.rngState = (this.rngState + 0x6D2B79F5) >>> 0;
+    this.rngState = (this.rngState + 0x6d2b79f5) >>> 0;
     let t = this.rngState;
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -133,16 +163,31 @@ export class GameState {
 
   snapshot() {
     return structuredClone({
-      meta: this.meta, rngState: this.rngState, tiles: this.grid.tiles, player: this.player, npcs: this.npcs,
-      hazards: this.hazards, social: this.social, telemetryLog: this.telemetryLog, outcome: this.outcome, eventSeq: this._eventSeq,
+      meta: this.meta,
+      rngState: this.rngState,
+      tiles: this.grid.tiles,
+      player: this.player,
+      npcs: this.npcs,
+      hazards: this.hazards,
+      social: this.social,
+      telemetryLog: this.telemetryLog,
+      outcome: this.outcome,
+      eventSeq: this._eventSeq,
     });
   }
 
   restore(snap) {
     const c = structuredClone(snap);
-    this.meta = c.meta; this.rngState = c.rngState; this.grid.tiles = c.tiles; this.player = c.player;
-    this.npcs = c.npcs; this.hazards = c.hazards; this.social = c.social; this.telemetryLog = c.telemetryLog;
-    this.outcome = c.outcome; this._eventSeq = c.eventSeq;
+    this.meta = c.meta;
+    this.rngState = c.rngState;
+    this.grid.tiles = c.tiles;
+    this.player = c.player;
+    this.npcs = c.npcs;
+    this.hazards = c.hazards;
+    this.social = c.social;
+    this.telemetryLog = c.telemetryLog;
+    this.outcome = c.outcome;
+    this._eventSeq = c.eventSeq;
   }
 
   npcAt(key, { includeIncapacitated = true } = {}) {
@@ -156,7 +201,9 @@ export class GameState {
   }
 
   threatAt(key) {
-    return this.hazards.threatEntities.find((t) => !t.neutralized && keyOf(t.position) === key) || null;
+    return (
+      this.hazards.threatEntities.find((t) => !t.neutralized && keyOf(t.position) === key) || null
+    );
   }
 
   counts() {

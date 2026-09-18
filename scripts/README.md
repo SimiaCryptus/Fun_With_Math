@@ -41,13 +41,13 @@ node scripts/generate-seo-pages.js \
   --author "SimiaCryptus"
 ```
 
-| Flag          | Default                     | Description                      |
-| ------------- | --------------------------- | -------------------------------- |
-| `--out`       | `companion`                 | Output folder (relative to root) |
+| Flag          | Default                      | Description                      |
+| ------------- | ---------------------------- | -------------------------------- |
+| `--out`       | `companion`                  | Output folder (relative to root) |
 | `--base`      | `https://games.cognotik.com` | Canonical base URL               |
-| `--root`      | `process.cwd()`             | Project root                     |
-| `--site-name` | `Mathematical Explorations` | Used in titles / OG / JSON-LD    |
-| `--author`    | `SimiaCryptus`              | `author` meta + JSON-LD author   |
+| `--root`      | `process.cwd()`              | Project root                     |
+| `--site-name` | `Mathematical Explorations`  | Used in titles / OG / JSON-LD    |
+| `--author`    | `SimiaCryptus`               | `author` meta + JSON-LD author   |
 
 ## Notes
 

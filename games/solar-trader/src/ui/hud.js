@@ -3,8 +3,12 @@ import { fmtCredits, fmtDate, fmtNum } from '../core/units.js';
 export function initHUD(game) {
   const $ = (id) => document.getElementById(id);
   const el = {
-    date: $('hud-date'), credits: $('hud-credits'), dv: $('hud-dv'),
-    fuel: $('hud-fuel'), cargo: $('hud-cargo'), status: $('hud-status'),
+    date: $('hud-date'),
+    credits: $('hud-credits'),
+    dv: $('hud-dv'),
+    fuel: $('hud-fuel'),
+    cargo: $('hud-cargo'),
+    status: $('hud-status'),
     log: $('log'),
   };
 

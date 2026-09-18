@@ -28,9 +28,7 @@ export class Menu {
   }
 
   showStart({ best = Infinity, effect = 1, trackName = 'Photon Circuit', laps = 3 } = {}) {
-    const controls = CONTROLS
-      .map(([k, v]) => `<div><span>${k}</span>${v}</div>`)
-      .join('');
+    const controls = CONTROLS.map(([k, v]) => `<div><span>${k}</span>${v}</div>`).join('');
     this._show(`
       <h1>Velocity Racer</h1>
       <h2>c = 88 mph</h2>
@@ -55,13 +53,17 @@ export class Menu {
   }
 
   showResults({ lapTimes = [], coord = 0, proper = 0, best = Infinity, isNewBest = false }) {
-    const rows = lapTimes.map((l, i) => `
+    const rows = lapTimes
+      .map(
+        (l, i) => `
       <tr>
         <td>Lap ${i + 1}</td>
         <td>${formatTime(l.coord)}</td>
         <td>${formatTime(l.proper)}</td>
         <td>${(l.coord / Math.max(l.proper, 1e-6)).toFixed(3)}</td>
-      </tr>`).join('');
+      </tr>`
+      )
+      .join('');
 
     this._show(`
       <h1>Finish</h1>

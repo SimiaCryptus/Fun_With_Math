@@ -14,7 +14,13 @@ import { NanGuard } from './dev/NanGuard.js';
 import sludge from './track/tracks/sludge-speedway.js';
 
 const TRACKS = { 'sludge-speedway': sludge };
-const COLORS = { player: 0xb4471f, grittyGus: 0x6b4a12, slickSally: 0xc9c9d6, boggyBill: 0x4d6b1f, turboTadpole: 0xd8a41f };
+const COLORS = {
+  player: 0xb4471f,
+  grittyGus: 0x6b4a12,
+  slickSally: 0xc9c9d6,
+  boggyBill: 0x4d6b1f,
+  turboTadpole: 0xd8a41f,
+};
 
 export async function boot({ glCanvas, hudCanvas, gearRow, trackId = 'sludge-speedway' }) {
   const track = TRACKS[trackId];
@@ -36,7 +42,9 @@ export async function boot({ glCanvas, hudCanvas, gearRow, trackId = 'sludge-spe
   scene.fog = new THREE.Fog(amb.fog ?? 0x8f7546, 160, 1300);
 
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.5, 2000);
-  const camRig = new CameraRig(camera, { reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches });
+  const camRig = new CameraRig(camera, {
+    reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches,
+  });
 
   // ---------- lighting ----------
   const SUN_DIR = new THREE.Vector3(0.45, 0.72, 0.32).normalize();
@@ -45,17 +53,29 @@ export async function boot({ glCanvas, hudCanvas, gearRow, trackId = 'sludge-spe
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   const sc = sun.shadow.camera;
-  sc.left = sc.bottom = -130; sc.right = sc.top = 130; sc.near = 20; sc.far = 700;
+  sc.left = sc.bottom = -130;
+  sc.right = sc.top = 130;
+  sc.near = 20;
+  sc.far = 700;
   sun.shadow.bias = -0.0004;
   sun.shadow.normalBias = 0.6;
   scene.add(sun, sun.target);
 
   // ---------- world ----------
   const terrain = new MudTerrain(scene, race.mud, race.spline, amb);
-  const env = new Environment(scene, { spline: race.spline, field: race.mud, track, sunDir: SUN_DIR, palette: amb });
+  const env = new Environment(scene, {
+    spline: race.spline,
+    field: race.mud,
+    track,
+    sunDir: SUN_DIR,
+    palette: amb,
+  });
   const rigs = new Map();
   for (const v of race.all) {
-    rigs.set(v, new VehicleRig(scene, { color: COLORS[v.id] ?? 0x888888, isPlayer: v === race.player }));
+    rigs.set(
+      v,
+      new VehicleRig(scene, { color: COLORS[v.id] ?? 0x888888, isPlayer: v === race.player })
+    );
   }
 
   const hud = new HUD(hudCanvas);
@@ -127,7 +147,7 @@ export async function boot({ glCanvas, hudCanvas, gearRow, trackId = 'sludge-spe
     throttle: clamp01(s?.throttle),
     brake: clamp01(s?.brake),
     steer: clamp11(s?.steer),
-    handbrake: !!s?.handbrake
+    handbrake: !!s?.handbrake,
   });
   for (const v of race.all) {
     if (typeof v.applyInput !== 'function') continue;
@@ -185,11 +205,25 @@ export async function boot({ glCanvas, hudCanvas, gearRow, trackId = 'sludge-spe
   bus.on('snapback', (ev) => {
     camRig.onSnapback(ev);
     audio.play(ev.sfx, 1);
-    hud.showStamp(ev.clamped ? 'TOO YOUNG!!' : ev.gearId === 'T3' ? 'SKREEEEEE!' : ev.gearId === 'T2' ? 'BLORP!' : 'boink!');
+    hud.showStamp(
+      ev.clamped
+        ? 'TOO YOUNG!!'
+        : ev.gearId === 'T3'
+          ? 'SKREEEEEE!'
+          : ev.gearId === 'T2'
+            ? 'BLORP!'
+            : 'boink!'
+    );
   });
-  bus.on('crash', (e) => { if (e.id === 'player') hud.showStamp(e.kind === 'stuck' ? 'GLORPED!' : 'YOU IDJIT!'); });
-  bus.on('lap', (e) => { if (e.id === 'player') hud.showStamp('ANOTHER LAP!'); });
-  bus.on('finish', (e) => hud.showStamp(e.standings[0] === 'player' ? 'FILTHY VICTORY!' : 'YOU LOSE, DUMMY!'));
+  bus.on('crash', (e) => {
+    if (e.id === 'player') hud.showStamp(e.kind === 'stuck' ? 'GLORPED!' : 'YOU IDJIT!');
+  });
+  bus.on('lap', (e) => {
+    if (e.id === 'player') hud.showStamp('ANOTHER LAP!');
+  });
+  bus.on('finish', (e) =>
+    hud.showStamp(e.standings[0] === 'player' ? 'FILTHY VICTORY!' : 'YOU LOSE, DUMMY!')
+  );
 
   // ---------- loop ----------
   // Flip DEBUG_NAN off for release. `halt: true` freezes on the first trip if you
@@ -228,7 +262,7 @@ export async function boot({ glCanvas, hudCanvas, gearRow, trackId = 'sludge-spe
       renderer.render(scene, camera);
       hud.draw(race, dt);
       syncButtons();
-    }
+    },
   });
   loop.start();
 

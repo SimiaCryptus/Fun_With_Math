@@ -68,7 +68,10 @@ export class SceneRenderer {
 
   // ------------------------------------------------------------------ setup
   _size() {
-    return { width: this.container.clientWidth || window.innerWidth, height: this.container.clientHeight || window.innerHeight };
+    return {
+      width: this.container.clientWidth || window.innerWidth,
+      height: this.container.clientHeight || window.innerHeight,
+    };
   }
 
   _setupLighting() {
@@ -84,7 +87,12 @@ export class SceneRenderer {
     dir.shadow.mapSize.set(2048, 2048);
     dir.shadow.bias = -0.0005;
     const sc = dir.shadow.camera;
-    sc.left = -span; sc.right = span; sc.top = span; sc.bottom = -span; sc.near = 1; sc.far = span * 4;
+    sc.left = -span;
+    sc.right = span;
+    sc.top = span;
+    sc.bottom = -span;
+    sc.near = 1;
+    sc.far = span * 4;
     this.scene.add(dir, dir.target);
     const fill = new THREE.DirectionalLight(0x8fb3ff, 0.35);
     fill.position.set(c.x - span, span * 0.5, c.z - span);
@@ -92,7 +100,10 @@ export class SceneRenderer {
   }
 
   _setupOverlays() {
-    this.hover = new THREE.Mesh(new THREE.BoxGeometry(1.04, 0.06, 1.04), new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.45 }));
+    this.hover = new THREE.Mesh(
+      new THREE.BoxGeometry(1.04, 0.06, 1.04),
+      new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.45 })
+    );
     this.hover.visible = false;
     this.scene.add(this.hover);
     this.pathMarkers = [];
@@ -108,11 +119,17 @@ export class SceneRenderer {
 
   _bindDOM() {
     const el = this.renderer.domElement;
-    const add = (target, type, fn, opts) => { target.addEventListener(type, fn, opts); this._dom.push(() => target.removeEventListener(type, fn, opts)); };
+    const add = (target, type, fn, opts) => {
+      target.addEventListener(type, fn, opts);
+      this._dom.push(() => target.removeEventListener(type, fn, opts));
+    };
     add(el, 'pointerdown', (e) => this._onPointerDown(e));
     add(el, 'pointermove', (e) => this._onPointerMove(e));
     add(el, 'pointerup', (e) => this._onPointerUp(e));
-    add(el, 'pointerleave', () => { this._ptr.down = false; this._setHover(null); });
+    add(el, 'pointerleave', () => {
+      this._ptr.down = false;
+      this._setHover(null);
+    });
     add(el, 'wheel', (e) => this._onWheel(e), { passive: false });
     add(el, 'contextmenu', (e) => e.preventDefault());
     add(window, 'resize', () => this._onResize());
@@ -123,7 +140,10 @@ export class SceneRenderer {
     const { width, height } = this._size();
     const aspect = width / height;
     const d = this.frustum;
-    this.camera.left = -d * aspect; this.camera.right = d * aspect; this.camera.top = d; this.camera.bottom = -d;
+    this.camera.left = -d * aspect;
+    this.camera.right = d * aspect;
+    this.camera.top = d;
+    this.camera.bottom = -d;
     this.camera.updateProjectionMatrix();
     this.camera.position.copy(this.camTarget).addScaledVector(ISO_DIR, CAM_DIST);
     this.camera.lookAt(this.camTarget);
@@ -159,7 +179,10 @@ export class SceneRenderer {
   // ------------------------------------------------------------------ picking & input
   _pickGround(cx, cy) {
     const rect = this.renderer.domElement.getBoundingClientRect();
-    this._ndc.set(((cx - rect.left) / rect.width) * 2 - 1, -((cy - rect.top) / rect.height) * 2 + 1);
+    this._ndc.set(
+      ((cx - rect.left) / rect.width) * 2 - 1,
+      -((cy - rect.top) / rect.height) * 2 + 1
+    );
     this._raycaster.setFromCamera(this._ndc, this.camera);
     const out = new THREE.Vector3();
     return this._raycaster.ray.intersectPlane(this._plane, out) ? out : null;
@@ -172,16 +195,29 @@ export class SceneRenderer {
   }
 
   _onPointerDown(e) {
-    this._ptr = { down: true, dragging: false, sx: e.clientX, sy: e.clientY, button: e.button, ground: this._pickGround(e.clientX, e.clientY) };
+    this._ptr = {
+      down: true,
+      dragging: false,
+      sx: e.clientX,
+      sy: e.clientY,
+      button: e.button,
+      ground: this._pickGround(e.clientX, e.clientY),
+    };
   }
 
   _onPointerMove(e) {
     const p = this._ptr;
     if (p.down) {
-      if (!p.dragging && Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > 5) { p.dragging = true; this._setHover(null); }
+      if (!p.dragging && Math.hypot(e.clientX - p.sx, e.clientY - p.sy) > 5) {
+        p.dragging = true;
+        this._setHover(null);
+      }
       if (p.dragging && p.ground) {
         const g = this._pickGround(e.clientX, e.clientY);
-        if (g) { this.camTarget.add(p.ground.clone().sub(g)); this._updateCamera(); }
+        if (g) {
+          this.camTarget.add(p.ground.clone().sub(g));
+          this._updateCamera();
+        }
       }
       return;
     }
@@ -233,16 +269,24 @@ export class SceneRenderer {
     const v = worldPos(pos, 1.9, this._tmpV).project(this.camera);
     if (v.z > 1) return null;
     const { width, height } = this._size();
-    return { x: ((v.x + 1) / 2) * width, y: ((1 - v.y) / 2) * height, visible: this.isRevealed(keyOf(pos)) };
+    return {
+      x: ((v.x + 1) / 2) * width,
+      y: ((1 - v.y) / 2) * height,
+      visible: this.isRevealed(keyOf(pos)),
+    };
   }
 
   syncFromState() {
     if (!this.map) return;
     const s = this.state;
     const pz = s.player.position.z;
-    if (pz !== this._lastPlayerZ) { this._lastPlayerZ = pz; this._setViewFloor(pz); }
+    if (pz !== this._lastPlayerZ) {
+      this._lastPlayerZ = pz;
+      this._setViewFloor(pz);
+    }
     const reveal = (key) => this.isRevealed(key);
-    const explored = (key) => !!s.outcome || s.player.explored.has(key) || s.player.visible.has(key);
+    const explored = (key) =>
+      !!s.outcome || s.player.explored.has(key) || s.player.visible.has(key);
     this.map.setViewFloor(this.viewFloor);
     this.map.syncDoors(s.meta.turnNumber);
     this.fog.update(this.viewFloor, !!s.outcome);
@@ -265,12 +309,19 @@ export class SceneRenderer {
   dispose() {
     for (const off of this._dom) off();
     for (const off of this._offs) off();
-    this._dom = []; this._offs = [];
+    this._dom = [];
+    this._offs = [];
     if (this.map) this.map.dispose();
     if (this.entities) this.entities.dispose();
     if (this.hazards) this.hazards.dispose();
-    if (this.hover) { this.hover.geometry.dispose(); this.hover.material.dispose(); }
-    if (this.pathMarkers && this.pathMarkers.length) { this.pathMarkers[0].geometry.dispose(); this.pathMarkers[0].material.dispose(); }
+    if (this.hover) {
+      this.hover.geometry.dispose();
+      this.hover.material.dispose();
+    }
+    if (this.pathMarkers && this.pathMarkers.length) {
+      this.pathMarkers[0].geometry.dispose();
+      this.pathMarkers[0].material.dispose();
+    }
     if (this.renderer) {
       this.renderer.dispose();
       const el = this.renderer.domElement;
