@@ -10,6 +10,16 @@
     "manifest:split:dry": "tsx scripts/split-manifest.ts --dry-run",
     "manifest:split:check": "tsx scripts/split-manifest.ts --dry-run --strict",
     "manifest:build": "tsx scripts/build-manifest.ts",
+
+     "manifest:build:check": "tsx scripts/build-manifest.ts --check",
+     "manifest:sync": "tsx scripts/sync-entries.ts",
+     "manifest:sync:dry": "tsx scripts/sync-entries.ts --dry-run",
+     "manifest:sync:check": "tsx scripts/sync-entries.ts --check",
+     "seo:apply": "tsx scripts/apply-seo.ts",
+     "seo:apply:dry": "tsx scripts/apply-seo.ts --dry-run",
+     "seo:check": "tsx scripts/apply-seo.ts --check",
+     "seo:strip": "tsx scripts/apply-seo.ts --strip",
+
     "split:list": "node split_repo.js --list",
     "split:dry": "node split_repo.js --dry-run",
     "split": "node split_repo.js",
@@ -30,9 +40,9 @@
     "lint:all:fix": "npm run lint:fix && npm run lint:css:fix && npm run lint:md:fix",
     "format": "prettier --write '**/*.js' '**/*.html' '**/*.css' '**/*.json' '**/*.md'",
     "format:check": "prettier --check '**/*.js' '**/*.html' '**/*.css' '**/*.json' '**/*.md'",
-    "validate": "npm run typecheck && npm run lint:all && npm run format:check && npm run test",
+     "validate": "npm run typecheck && npm run lint:all && npm run format:check && npm run manifest:sync:check && npm run seo:check && npm run test",
     "prebuild": "npm run format",
-    "build": "npm run assets",
+     "build": "npm run manifest:build && npm run seo:apply && npm run assets",
     "build:seo": "node scripts/generate-seo-pages.cjs",
     "build:seo:prod": "node scripts/generate-seo-pages.cjs --out companion --base https://games.cognotik.com"
   },

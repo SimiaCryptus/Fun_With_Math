@@ -35,7 +35,7 @@ import {
   toPathRef,
   uniqueId,
   validateEntryFile,
-} from '../manifest/schema.ts';
+} from './manifest_schema.ts';
 /* ---------------------------------------------------------------- args */
 const argv = process.argv.slice(2);
 const flag = (name) => argv.includes(`--${name}`);
@@ -272,7 +272,7 @@ async function main() {
     `\nsplit-manifest: ${pending.length} entries — ` +
       `${written} written, ${unchanged} unchanged, ${skipped} skipped${DRY_RUN ? ' (dry run)' : ''}`
   );
-  console.log('next: node --experimental-strip-types scripts/build-manifest.ts');
+   console.log('next: npm run manifest:build   (then: npm run seo:apply)');
   if (STRICT && warnings.length) process.exitCode = 1;
 }
 main().catch((err) => {
