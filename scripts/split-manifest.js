@@ -77,6 +77,8 @@ const KNOWN_LEGACY_KEYS = new Set([
   'video',
   'subtitle',
   'launchLabel',
+   'description',
+   // Deprecated: migrated into `description` below.
   'pitch',
   'tags',
   'hidden',
@@ -166,6 +168,19 @@ async function collect() {
         if (dropped.length) {
           warnings.push(`${origin}: dropped unsupported field(s): ${dropped.join(', ')}`);
         }
+         // `pitch` is the deprecated spelling of `description`; an explicit
+         // `description` always wins.
+         const rawDescription =
+           typeof item.description === 'string' ? item.description : undefined;
+         const rawPitch = typeof item.pitch === 'string' ? item.pitch : undefined;
+         if (rawPitch !== undefined) {
+           warnings.push(
+             rawDescription !== undefined
+               ? `${origin}: "${title}" has both "pitch" and "description" — "pitch" dropped`
+               : `${origin}: "${title}" uses deprecated "pitch" — migrated to "description"`
+           );
+         }
+         const description = rawDescription ?? rawPitch;
         const dir = entryDirFor({ category, href, readme, title });
         // One directory can hold exactly one entry.json — first row wins.
         const owner = dirOwners.get(dir);
@@ -192,7 +207,7 @@ async function collect() {
             readme: readme ? toPathRef(dir, readme) : undefined,
             video: video ? toPathRef(dir, video) : undefined,
             launchLabel: str(item.launchLabel),
-            pitch: typeof item.pitch === 'string' ? item.pitch : undefined,
+             description,
             tags: Array.isArray(item.tags)
               ? item.tags.filter((t) => typeof t === 'string')
               : undefined,

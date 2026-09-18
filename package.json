@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+     "manifest:strip-pitch": "node scripts/strip-pitch.mjs",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.web.json",
     "typecheck:watch": "tsc -p tsconfig.json --watch",
     "manifest:split": "tsx scripts/split-manifest.ts",

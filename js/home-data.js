@@ -21,6 +21,11 @@
     t.innerHTML = html.trim();
     return t.content.firstElementChild;
   }
+   // `pitch` is the deprecated spelling of `description`.
+   function descriptionOf(item) {
+     return item.description || item.pitch || '';
+   }
+
 
   // Build a "featured" style card (used for both experiments and essays).
   function buildFeaturedCard(item) {
@@ -72,7 +77,7 @@
 
     const pitch = document.createElement('p');
     pitch.className = 'featured-card-pitch';
-    pitch.innerHTML = item.pitch || '';
+     pitch.innerHTML = descriptionOf(item);
     card.appendChild(pitch);
 
     const preview = document.createElement('div');
@@ -100,7 +105,7 @@
     card.appendChild(title);
 
     const p = document.createElement('p');
-    p.innerHTML = item.pitch || '';
+     p.innerHTML = descriptionOf(item);
     card.appendChild(p);
 
     if (item.tag) {

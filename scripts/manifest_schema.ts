@@ -39,6 +39,9 @@ export const ENTRY_KEY_ORDER = [
     'id',
     'title',
     'description',
+     // Deprecated alias for `description`; listed so legacy sidecars that
+     // still carry it round-trip with a stable key order.
+     'pitch',
     'tags',
     'category',
     'href',
@@ -52,6 +55,13 @@ export const ENTRY_KEY_ORDER = [
     'repo',
     'seo',
 ] as const;
+/**
+   * Fields that are still read for backwards compatibility but should no longer
+   * be authored. Each maps to its modern replacement.
+   */
+export const DEPRECATED_KEYS: Readonly<Record<string, string>> = {
+      pitch: 'description',
+};
 export const MANIFEST_VERSION = 1;
 /**
   * Categories recognised by the legacy per-section JSON exports. Entries may
@@ -98,6 +108,8 @@ export interface EntryFile {
     id: string;
     title?: string;
     description?: string;
+     /** @deprecated legacy alias for {@link EntryFile.description}. */
+     pitch?: string;
     tags?: string[];
     category?: string;
     href?: string;
@@ -332,6 +344,32 @@ export function parseSubmoduleStatus(text: string): SubmoduleStatus[] {
 
 
 /* --------------------------------------------------------------- keys */
+/**
+  * Preferred prose for an entry: `description`, falling back to the
+  * deprecated `pitch` field. Returns `undefined` when neither carries text.
+  */
+export function entryDescription(
+     entry: Pick<EntryFile, 'description' | 'pitch'>,
+): string | undefined {
+     for (const value of [entry.description, entry.pitch]) {
+         if (typeof value === 'string' && value.trim() !== '') return value;
+     }
+     return undefined;
+}
+/**
+  * Return a copy of `entry` with any legacy `pitch` folded into
+  * `description` and the alias removed. An explicit `description` wins.
+  */
+export function migrateDescription<T extends EntryFile>(entry: T): T {
+     if (entry.pitch === undefined) return entry;
+     const {pitch, ...rest} = entry as EntryFile;
+     const description = entryDescription(entry);
+     return orderKeys(
+         (description === undefined ? rest : {...rest, description}) as T,
+         ENTRY_KEY_ORDER,
+     );
+}
+
 
 /**
  * Return a shallow copy of `obj` with keys ordered according to `order`;
@@ -416,6 +454,15 @@ export function validateEntryFile(entry: unknown, target: string): string[] {
     if (e.description !== undefined && typeof e.description !== 'string') {
         problems.push(`${target}: "description" must be a string`);
     }
+     if (e.pitch !== undefined) {
+         if (typeof e.pitch !== 'string') {
+             problems.push(`${target}: "pitch" must be a string`);
+         } else if (e.description !== undefined) {
+             problems.push(
+                 `${target}: "pitch" is deprecated and "description" is already set — remove "pitch"`,
+             );
+         }
+     }
     if (e.tags !== undefined) {
         if (!Array.isArray(e.tags) || e.tags.some((t) => typeof t !== 'string')) {
             problems.push(`${target}: "tags" must be an array of strings`);

@@ -141,7 +141,9 @@
     const dir = raw.dir || '';
     const category = CATEGORY_META[raw.category] ? raw.category : 'lab';
     const section = raw.section || SECTION_ORDER[category][0];
-    const pitchText = stripHtml(raw.pitch || '');
+     // `pitch` is the deprecated spelling of `description`.
+     const description = raw.description || raw.pitch || '';
+     const descriptionText = stripHtml(description);
     const tags = Array.isArray(raw.tags) ? raw.tags.filter(Boolean) : [];
 
     return {
@@ -152,7 +154,9 @@
       icon: raw.icon || '·',
       title: raw.title || raw.id,
       subtitle: raw.subtitle || '',
-      pitch: raw.pitch || '',
+       description,
+       /** @deprecated alias kept for older consumers; use `description`. */
+       pitch: description,
       launchLabel: raw.launchLabel || `Open ${raw.title || raw.id}`,
       href: resolveRef(dir, raw.href),
       readme: raw.readme ? resolveRef(dir, raw.readme) : '',
@@ -165,7 +169,7 @@
       haystack: [
         raw.title,
         raw.subtitle,
-        pitchText,
+         descriptionText,
         tags.join(' '),
         raw.id,
         category,
@@ -342,8 +346,10 @@
       ? `<p class="entry-sub">${highlight(entry.subtitle, terms)}</p>`
       : '';
 
-    // Pitch may carry trusted inline HTML (links) authored in entry.json.
-    const pitch = entry.pitch ? `<div class="entry-pitch">${entry.pitch}</div>` : '';
+     // The description may carry trusted inline HTML (links) authored in entry.json.
+     const description = entry.description
+       ? `<div class="entry-pitch">${entry.description}</div>`
+       : '';
 
     return `
       <article class="entry-card" data-id="${escapeHtml(entry.id)}" tabindex="0"
@@ -356,7 +362,7 @@
           </div>
         </div>
         ${mediaHtml}
-        ${pitch}
+         ${description}
         <div class="entry-foot">
           ${badges.join('')}
           <a class="entry-open" href="${escapeHtml(entry.href)}"
@@ -622,8 +628,8 @@
       el.modalMedia.innerHTML = '';
     }
 
-    el.modalBody.innerHTML = entry.pitch
-      ? `<p class="entry-pitch" style="-webkit-line-clamp:unset;display:block">${entry.pitch}</p>`
+     el.modalBody.innerHTML = entry.description
+       ? `<p class="entry-pitch" style="-webkit-line-clamp:unset;display:block">${entry.description}</p>`
       : '';
     if (entry.readme) {
       el.modalBody.insertAdjacentHTML('beforeend', '<p class="readme-loading">Loading notes…</p>');
