@@ -98,8 +98,8 @@
 	path = games/number-crush
 	url = https://github.com/Simiacryptus/number-crush.git
 	branch = main
-[submodule "games/stereo-tac-toe"]
-	path = games/stereo-tac-toe
+[submodule "games/stereo-arcade"]
+	path = games/stereo-arcade
 	url = https://github.com/Simiacryptus/stereo-tac-toe.git
 	branch = main
 [submodule "games/wordsearch"]
