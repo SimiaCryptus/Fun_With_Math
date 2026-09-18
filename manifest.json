@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-17T23:38:29.040Z",
+  "generatedAt": "2026-09-18T12:28:56.831Z",
   "counts": {
     "game": 14
   },
@@ -136,20 +136,18 @@
       "title": "Stereo Arcade",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_stereo_arcade.mp4",
       "launchLabel": "Open Stereo Arcade",
       "pitch": "A fully playable game collection of classic arcade games, including Tic-Tac-Toe, Pong, and others, embedded in an autostereogram",
       "repo": {
-        "url": "https://github.com/Simiacryptus/stereo-tac-toe",
-        "remote": "https://github.com/Simiacryptus/stereo-tac-toe.git",
+        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
+        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
         "host": "github.com",
-        "slug": "Simiacryptus/stereo-tac-toe",
-        "path": "games/stereo-tac-toe",
-        "commit": "78c811341d2ab4cd061712f53682a18ae164937c",
-        "branch": "main",
-        "submodule": true
+        "slug": "SimiaCryptus/Fun_With_Math",
+        "subpath": "games/stereo-arcade"
       },
-      "dir": "games/stereo-tac-toe",
-      "source": "games/stereo-tac-toe/entry.json"
+      "dir": "games/stereo-arcade",
+      "source": "games/stereo-arcade/entry.json"
     },
     {
       "id": "marching-orders",
@@ -160,6 +158,7 @@
       "title": "Marching Orders",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_marching_orders.mp4",
       "launchLabel": "Open Marching Orders",
       "pitch": "A Lemmings-inspired voxel siege game where you control troops that march, turn, step, and fall to reach objectives. Plan your strategy with signs, crates, and various troop types to overcome obstacles and achieve victory.",
       "repo": {
@@ -268,7 +267,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/mineminer",
         "path": "games/mineminer",
-        "commit": "04a2299daae8c45239c518efc79c107605282684",
+        "commit": "3b84df364e8a6605bfc4d07b0653d134385fd6e8",
         "branch": "main",
         "submodule": true
       },
