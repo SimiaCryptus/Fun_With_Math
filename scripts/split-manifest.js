@@ -272,7 +272,7 @@ async function main() {
     `\nsplit-manifest: ${pending.length} entries — ` +
       `${written} written, ${unchanged} unchanged, ${skipped} skipped${DRY_RUN ? ' (dry run)' : ''}`
   );
-   console.log('next: npm run manifest:build   (then: npm run seo:apply)');
+  console.log('next: npm run manifest:build   (then: npm run seo:apply)');
   if (STRICT && warnings.length) process.exitCode = 1;
 }
 main().catch((err) => {

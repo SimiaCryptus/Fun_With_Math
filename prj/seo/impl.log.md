@@ -11,12 +11,12 @@ Status: **complete**
 
 ## Delivered
 
-| File | Purpose |
-| --- | --- |
-| `scripts/sync-entries.ts` | **New.** Inverse of `build-manifest`: manifest → sidecars. |
-| `scripts/apply-seo.ts` | **New.** Injects a managed SEO block into each entry's HTML. |
+| File                        | Purpose                                                             |
+| --------------------------- | ------------------------------------------------------------------- |
+| `scripts/sync-entries.ts`   | **New.** Inverse of `build-manifest`: manifest → sidecars.          |
+| `scripts/apply-seo.ts`      | **New.** Injects a managed SEO block into each entry's HTML.        |
 | `scripts/split-manifest.js` | Fixed import path (`./manifest_schema.ts`); updated next-step hint. |
-| `package.json` | New scripts; `validate` and `build` wired up. |
+| `package.json`              | New scripts; `validate` and `build` wired up.                       |
 
 ## Data flow
 

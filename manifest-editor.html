@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manifest Editor</title>
+<link rel="stylesheet" href="scripts/manifest_editor.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Manifest&nbsp;Editor</h1>
+
+  <div class="topbar__group">
+    <input id="source-url" type="text" class="url" spellcheck="false" title="Manifest URL to fetch">
+    <button id="btn-load" type="button">Load</button>
+    <button id="btn-import" type="button" title="Import a manifest.json from disk">Import…</button>
+  </div>
+
+  <div class="topbar__group topbar__group--right">
+    <label class="toggle" title="Rewrite generatedAt with the current time when exporting">
+      <input id="pref-stamp" type="checkbox"> stamp&nbsp;generatedAt
+    </label>
+    <label class="toggle" title="Omit entries flagged hidden:true from the exported manifest">
+      <input id="pref-drop-hidden" type="checkbox"> drop&nbsp;hidden
+    </label>
+    <button id="btn-copy" type="button" class="primary">Copy JSON</button>
+    <button id="btn-download" type="button" class="primary">Download</button>
+  </div>
+</header>
+
+<div id="banner" class="banner" hidden>
+  <span id="banner-text"></span>
+  <span class="banner__actions">
+    <button id="btn-reload" type="button">Reload from source</button>
+    <button id="btn-discard" type="button">Discard draft</button>
+  </span>
+</div>
+
+<main class="layout">
+
+  <!-- ------------------------------------------------ list -->
+  <aside class="pane pane--list">
+    <div class="pane__head">
+      <input id="filter-text" type="search" placeholder="Filter entries…" autocomplete="off">
+      <select id="filter-category" title="Filter by category"></select>
+      <label class="toggle" title="Show entries flagged hidden:true">
+        <input id="filter-hidden" type="checkbox" checked> hidden
+      </label>
+    </div>
+
+    <ol id="entry-list" class="entries"></ol>
+
+    <div class="pane__foot">
+      <button id="btn-new" type="button" title="Add a new entry">+ New</button>
+      <button id="btn-dup" type="button" title="Duplicate the selected entry">Duplicate</button>
+      <button id="btn-del" type="button" class="danger" title="Delete the selected entry">Delete</button>
+      <span class="spacer"></span>
+      <button id="btn-up" type="button" title="Move up">↑</button>
+      <button id="btn-down" type="button" title="Move down">↓</button>
+      <button id="btn-sort" type="button" title="Sort with compareEntries()">Sort</button>
+      <button id="btn-renumber" type="button" title="Rewrite order within each section">Renumber</button>
+    </div>
+  </aside>
+
+  <!-- ------------------------------------------------ form -->
+  <section class="pane pane--form">
+    <div class="pane__head">
+      <strong id="form-title">No entry selected</strong>
+      <span class="spacer"></span>
+      <button id="btn-sync-paths" type="button" title="Derive dir/source from category + id">Sync dir/source</button>
+      <button id="btn-normalize-repo" type="button" title="Re-derive url/host/slug from the remote">Normalize repo</button>
+    </div>
+
+    <ul id="entry-problems" class="problems" hidden></ul>
+
+    <form id="entry-form" class="form" autocomplete="off"></form>
+  </section>
+
+  <!-- ------------------------------------------------ output -->
+  <section class="pane pane--out">
+    <div class="pane__head">
+      <strong>manifest.json</strong>
+      <span class="spacer"></span>
+      <button id="btn-apply-raw" type="button" title="Parse the text below and replace the working copy">Apply edits</button>
+      <button id="btn-revert-raw" type="button">Revert</button>
+    </div>
+    <textarea id="raw" class="raw" spellcheck="false"></textarea>
+    <div class="pane__foot">
+      <button id="btn-save" type="button" title="Force-write the working copy to localStorage">Save draft</button>
+      <span id="status" class="status"></span>
+    </div>
+  </section>
+
+</main>
+
+<input id="file-input" type="file" accept="application/json,.json" hidden>
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="scripts/manifest_editor.js"></script>
+</body>
+</html>
