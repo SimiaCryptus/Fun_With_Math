@@ -17,6 +17,5 @@
     <mapping directory="$PROJECT_DIR$/games/troggle" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/vocal_parkour" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/games/wordsearch" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/../Pentagon_Lattice_Geometry" vcs="Git" />
   </component>
 </project>

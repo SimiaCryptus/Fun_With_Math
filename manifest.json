@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-18T12:28:56.831Z",
+  "generatedAt": "2026-09-18T18:38:22.878Z",
   "counts": {
     "game": 14
   },
@@ -23,7 +23,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/Arcade_of_Life",
         "path": "games/aol",
-        "commit": "55d2fe731a71599d7d660874b2435cbcac504095",
+        "commit": "ac99e73ece25f51a1f260d74571f4d008a9b5b2a",
         "submodule": true
       },
       "dir": "games/aol",
@@ -47,7 +47,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/0x800",
         "path": "games/0x800",
-        "commit": "aab8e0898dd0307ff02201c5617df0a2172ac10e",
+        "commit": "26773a8281e5522919344ac1d0d511e0f17b6a43",
         "branch": "main",
         "submodule": true
       },
@@ -72,7 +72,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/bridges",
         "path": "games/bridges",
-        "commit": "3a42a29dd2e2a194b6f28d1a94d9ee08e336ec4f",
+        "commit": "7616c3658b45420d49a19aca7e83e69f508192b5",
         "branch": "main",
         "submodule": true
       },
@@ -88,6 +88,7 @@
       "title": "Vocal Parkour",
       "href": "https://vp.cognotik.com/",
       "readme": "INTRO.md",
+      "video": "/videos/demo_vp.mp4",
       "launchLabel": "Open Vocal Parkour",
       "pitch": "A vocal-gesture rhythm game: navigate levels using your voice. Real-time audio-DSP feature extraction and an in-browser classifier turn mic input into game controls — all analysis runs client-side.",
       "repo": {
@@ -96,7 +97,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/SonicParkour",
         "path": "games/vocal_parkour",
-        "commit": "4a85ed62664aea0039f3c49b2dd1d6a898d3866a",
+        "commit": "2469111d865b3d3e2f29fb3139c630252b934900",
         "submodule": true
       },
       "dir": "games/vocal_parkour",
@@ -140,11 +141,14 @@
       "launchLabel": "Open Stereo Arcade",
       "pitch": "A fully playable game collection of classic arcade games, including Tic-Tac-Toe, Pong, and others, embedded in an autostereogram",
       "repo": {
-        "url": "https://github.com/SimiaCryptus/Fun_With_Math",
-        "remote": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+        "url": "https://github.com/Simiacryptus/stereo-tac-toe",
+        "remote": "https://github.com/Simiacryptus/stereo-tac-toe.git",
         "host": "github.com",
-        "slug": "SimiaCryptus/Fun_With_Math",
-        "subpath": "games/stereo-arcade"
+        "slug": "Simiacryptus/stereo-tac-toe",
+        "path": "games/stereo-arcade",
+        "commit": "02683358451d5e48fc963fa803b0860d2ae675f5",
+        "branch": "main",
+        "submodule": true
       },
       "dir": "games/stereo-arcade",
       "source": "games/stereo-arcade/entry.json"
@@ -167,7 +171,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/marching-orders",
         "path": "games/marching-orders",
-        "commit": "152591f1fd982dc721c8367afe16b5e7205a96a4",
+        "commit": "484e03111484527c3935fd954dc3c52422377d14",
         "branch": "main",
         "submodule": true
       },
@@ -217,7 +221,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/3d-checkers",
         "path": "games/3d-checkers",
-        "commit": "8b6edd30c1e718603144f854fcc4dcf9f3a73016",
+        "commit": "43a29617543fccbd87b5cc94702102a0e296bb75",
         "branch": "main",
         "submodule": true
       },
@@ -242,7 +246,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/madame-claude",
         "path": "games/madame-claude",
-        "commit": "7fc3b771819911d0872c85df2a88c5c1380a9901",
+        "commit": "026de1f3943489404a5d7cdf4aad44f687b3e97e",
         "branch": "main",
         "submodule": true
       },
@@ -267,7 +271,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/mineminer",
         "path": "games/mineminer",
-        "commit": "3b84df364e8a6605bfc4d07b0653d134385fd6e8",
+        "commit": "5e4a218a17891b4aa740f7fd6a55293c6acc184c",
         "branch": "main",
         "submodule": true
       },
@@ -283,6 +287,7 @@
       "title": "Physical Visualizer",
       "href": "index.html",
       "readme": "README.md",
+      "video": "/videos/demo_viz.mp4",
       "launchLabel": "Open Physical Visualizer",
       "pitch": "A music visualizer you can hold in your hand. Play a song and feedback-heavy imagery pulses on every kick drum — then tilt the phone and the glitter on screen slides downhill like it has real weight, or shake it to shatter into the next scene. Wrapped around it all is a pixel-exact, skinnable homage to a late-1990s desktop music player, complete with spectrum display, equalizer, and playlist, running entirely offline in your browser.",
       "repo": {
@@ -291,7 +296,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/physical-visualizer",
         "path": "games/physical-visualizer",
-        "commit": "e1e81f78a9fcd1e357cb9b137921f12dc214e470",
+        "commit": "e9fc3360a2a203bca1aac1216871371da8ccc4c6",
         "branch": "main",
         "submodule": true
       },
@@ -316,7 +321,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/squirrely",
         "path": "games/squirrely",
-        "commit": "1dc188a7b1a1d4b61362a1a2e90bbf2beba72bbe",
+        "commit": "8c1069f2c02fe6e7556bb80fe82c8fe40c5fe758",
         "branch": "main",
         "submodule": true
       },
@@ -341,7 +346,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/troggle",
         "path": "games/troggle",
-        "commit": "33c0a300d4874e67c003ba864127a3168caf713c",
+        "commit": "504e538268cee4fc2cdba4e4a0cdb9f8f40afa14",
         "branch": "main",
         "submodule": true
       },
