@@ -71,11 +71,39 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <!-- ── Colour themes ─────────────────────────────────────────
+         css/themes.css declares the 16 semantic tokens for :root and
+         for every [data-theme="…"]; css/theme-bridge.css maps those
+         tokens onto the legacy variable names used by the other
+         stylesheets, so it must load *after* them.
+         The inline script below applies the stored choice before the
+         first paint to avoid a flash of the wrong palette. -->
+    <script>
+      (() => {
+        try {
+          const choice = localStorage.getItem('cognotik:theme') || 'auto';
+          const dark = !window.matchMedia || matchMedia('(prefers-color-scheme: dark)').matches;
+          const root = document.documentElement;
+          root.setAttribute(
+            'data-theme',
+            choice === 'auto' ? (dark ? 'mainMenu' : 'newGame') : choice
+          );
+          root.dataset.themeChoice = choice;
+        } catch (_) {
+          document.documentElement.setAttribute('data-theme', 'mainMenu');
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="css/themes.css" />
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/home.css" />
     <link rel="stylesheet" href="css/videos.css" />
     <link rel="stylesheet" href="css/browse.css" />
      <link rel="stylesheet" href="css/pwa.css" />
+     <!-- Adapter + picker chrome: must come after every stylesheet
+          that declares :root variables of its own. -->
+     <link rel="stylesheet" href="css/theme-bridge.css" />
+     <link rel="stylesheet" href="css/theme-picker.css" />
     <!-- Prime the manifest fetch as early as possible -->
     <link rel="preload" href="manifest.json" as="fetch" crossorigin="anonymous" />
     <script src="/lib/marked.min.js"></script>
@@ -161,6 +189,23 @@
        <button type="button" class="nav-link nav-random" id="shareSite" title="Share this arcade">
          Share <span class="arrow">⇪</span>
        </button>
+       <!-- Colour-theme picker (populated by js/themes.js) -->
+       <div class="theme-picker">
+         <button
+           type="button"
+           class="theme-toggle"
+           id="themeToggle"
+           aria-haspopup="true"
+           aria-expanded="false"
+           aria-controls="themeMenu"
+           title="Colour theme"
+         >
+           <span class="theme-swatch" aria-hidden="true"></span>
+           <span class="theme-toggle-label">Theme</span>
+           <span class="arrow" aria-hidden="true">▾</span>
+         </button>
+         <div class="theme-menu" id="themeMenu" role="menu" aria-label="Colour theme" hidden></div>
+       </div>
         <button
           type="button"
           class="nav-link pwa-install"
@@ -347,6 +392,8 @@
 
 
     <script src="js/home-browse.js"></script>
+     <!-- Theme registry + picker behaviour -->
+     <script src="js/themes.js"></script>
      <script>
         // "Surprise me" — jump to a random game card rendered from the manifest.
         // Also reachable as a PWA app shortcut via /?random=1, in which case we

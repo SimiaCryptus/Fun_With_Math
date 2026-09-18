@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-17T00:43:01.654Z",
+  "generatedAt": "2026-09-17T23:38:29.040Z",
   "counts": {
     "game": 14
   },
@@ -23,7 +23,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/Arcade_of_Life",
         "path": "games/aol",
-        "commit": "fc2cfabd0370aaced8c541a3a77597f43f6cdea7",
+        "commit": "55d2fe731a71599d7d660874b2435cbcac504095",
         "submodule": true
       },
       "dir": "games/aol",
@@ -47,7 +47,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/0x800",
         "path": "games/0x800",
-        "commit": "5cfef795e975ba48f2ffdf2595563c72f326ef58",
+        "commit": "aab8e0898dd0307ff02201c5617df0a2172ac10e",
         "branch": "main",
         "submodule": true
       },
@@ -72,7 +72,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/bridges",
         "path": "games/bridges",
-        "commit": "c52a555ab27da97fdd6bf584ef0e96dd803d80bf",
+        "commit": "3a42a29dd2e2a194b6f28d1a94d9ee08e336ec4f",
         "branch": "main",
         "submodule": true
       },
@@ -96,7 +96,7 @@
         "host": "github.com",
         "slug": "SimiaCryptus/SonicParkour",
         "path": "games/vocal_parkour",
-        "commit": "86d628684aa86ed4f5eb64995baed0420b127e84",
+        "commit": "4a85ed62664aea0039f3c49b2dd1d6a898d3866a",
         "submodule": true
       },
       "dir": "games/vocal_parkour",
@@ -120,7 +120,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/wordsearch",
         "path": "games/wordsearch",
-        "commit": "b5f9f2aa815bfea15ff021c0a78fe3b5bbdf111a",
+        "commit": "519fc396db4f708bafc8aa40d62d01e031e402e1",
         "branch": "main",
         "submodule": true
       },
@@ -144,7 +144,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/stereo-tac-toe",
         "path": "games/stereo-tac-toe",
-        "commit": "b51062238102e4718012536e65dd30b9bfd44ab1",
+        "commit": "78c811341d2ab4cd061712f53682a18ae164937c",
         "branch": "main",
         "submodule": true
       },
@@ -168,7 +168,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/marching-orders",
         "path": "games/marching-orders",
-        "commit": "d774b18246aa37fad8040c401f9b55d1a1dd7a30",
+        "commit": "152591f1fd982dc721c8367afe16b5e7205a96a4",
         "branch": "main",
         "submodule": true
       },
@@ -193,7 +193,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/number-crush",
         "path": "games/number-crush",
-        "commit": "6b349e30f45562ab31b41a45e67be550ee0cc3ae",
+        "commit": "ca921d33e634d8c5ed0ac0bddce8ba993f004ce4",
         "branch": "main",
         "submodule": true
       },
@@ -218,7 +218,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/3d-checkers",
         "path": "games/3d-checkers",
-        "commit": "5c323c47ff88af39a472a3717f83cdbe9bf86692",
+        "commit": "8b6edd30c1e718603144f854fcc4dcf9f3a73016",
         "branch": "main",
         "submodule": true
       },
@@ -243,7 +243,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/madame-claude",
         "path": "games/madame-claude",
-        "commit": "8544999bae47f2a1e02b43aa7e01ad169170ac67",
+        "commit": "7fc3b771819911d0872c85df2a88c5c1380a9901",
         "branch": "main",
         "submodule": true
       },
@@ -268,7 +268,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/mineminer",
         "path": "games/mineminer",
-        "commit": "3c65461c68309b6cfb1814eb51f83524f9580ff5",
+        "commit": "04a2299daae8c45239c518efc79c107605282684",
         "branch": "main",
         "submodule": true
       },
@@ -292,7 +292,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/physical-visualizer",
         "path": "games/physical-visualizer",
-        "commit": "ba1989f917c6dd8404cb629ace7086e260e90fff",
+        "commit": "e1e81f78a9fcd1e357cb9b137921f12dc214e470",
         "branch": "main",
         "submodule": true
       },
@@ -317,7 +317,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/squirrely",
         "path": "games/squirrely",
-        "commit": "c5978b9f808a18fd3ab22490c4bf8ee552318fd8",
+        "commit": "1dc188a7b1a1d4b61362a1a2e90bbf2beba72bbe",
         "branch": "main",
         "submodule": true
       },
@@ -342,7 +342,7 @@
         "host": "github.com",
         "slug": "Simiacryptus/troggle",
         "path": "games/troggle",
-        "commit": "f2dc499b4be72f638f62e35cdbe2cd3d8854a7f5",
+        "commit": "33c0a300d4874e67c003ba864127a3168caf713c",
         "branch": "main",
         "submodule": true
       },

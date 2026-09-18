@@ -1,0 +1,403 @@
+/* ============================================================
+   css/theme-bridge.css
+   ------------------------------------------------------------
+   themes.css declares 16 *semantic* tokens (--color-canvas,
+   --color-brand, …) for :root plus every [data-theme="…"].
+   The rest of the site was written against an older, ad-hoc set
+   of names (--bg, --accent, --surface-glass, …) and a lot of
+   hard-coded hex / rgba() literals.
+
+   This file is the adapter between the two worlds:
+     1. it re-declares the legacy variables in terms of the
+        theme tokens, and
+     2. it re-states the handful of rules that baked colours in
+        literally, so switching [data-theme] actually restyles
+        the page.
+
+   IMPORTANT: load this *after* style.css / home.css / browse.css
+   / videos.css / pwa.css — it wins on document order, not
+   specificity.
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* ── style.css core palette ───────────────────────────────── */
+  --bg: var(--color-canvas);
+  --surface: var(--color-surface-1);
+  --border: var(--color-border);
+  --accent: var(--color-brand);
+  --accent2: var(--color-accent-2);
+  --text: var(--color-text);
+  --text-muted: var(--color-text-muted);
+  --shadow: 0 4px 24px rgb(0 0 0 / 45%);
+
+  /* ── home.css atmosphere ──────────────────────────────────── */
+  --accent-glow: color-mix(in oklab, var(--color-brand) 45%, transparent);
+  --accent2-glow: color-mix(in oklab, var(--color-accent-2) 35%, transparent);
+  --accent3: var(--color-success);
+  --accent4: var(--color-warning);
+  --surface-glass: color-mix(in oklab, var(--color-surface-1) 62%, transparent);
+  --surface-glass-strong: color-mix(in oklab, var(--color-surface-2) 88%, transparent);
+  --border-glow: color-mix(in oklab, var(--color-brand) 28%, transparent);
+
+  /* ── helpers used by the overrides below ──────────────────── */
+  --hairline: color-mix(in oklab, var(--color-border) 38%, transparent);
+  --hairline-strong: color-mix(in oklab, var(--color-border) 65%, transparent);
+  --field-bg: color-mix(in oklab, var(--color-surface-2) 82%, transparent);
+  --veil: color-mix(in oklab, var(--color-canvas) 84%, transparent);
+  --ink: var(--color-on-accent);
+  --drop: 0 24px 60px -18px rgb(0 0 0 / 55%);
+  --wash: color-mix(in oklab, var(--color-brand) 10%, transparent);
+}
+
+/* Light-canvas themes need light form controls and scrollbars. */
+[data-theme='newGame'],
+[data-theme='questLog'],
+[data-theme='rainbowRoad'],
+[data-theme='powerUp'] {
+  color-scheme: light;
+}
+
+/* ── Atmosphere ─────────────────────────────────────────────── */
+
+body {
+  background:
+    radial-gradient(
+      ellipse at top left,
+      color-mix(in oklab, var(--color-brand) 14%, var(--color-canvas)) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at bottom right,
+      color-mix(in oklab, var(--color-accent-2) 14%, var(--color-canvas)) 0%,
+      transparent 60%
+    ),
+    var(--color-canvas);
+}
+
+.aurora-blob-1 {
+  background: radial-gradient(circle, var(--color-brand) 0%, transparent 70%);
+}
+.aurora-blob-2 {
+  background: radial-gradient(circle, var(--color-accent-2) 0%, transparent 70%);
+}
+.aurora-blob-3 {
+  background: radial-gradient(circle, var(--color-success) 0%, transparent 70%);
+}
+
+.grid-overlay {
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--color-brand) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--color-brand) 8%, transparent) 1px,
+      transparent 1px
+    );
+}
+
+.hero::before {
+  background: radial-gradient(
+    ellipse 80% 50% at 50% -20%,
+    color-mix(in oklab, var(--color-brand) 20%, transparent),
+    transparent
+  );
+}
+
+/* ── Chrome: nav, panels, hairlines ─────────────────────────── */
+
+nav {
+  background: color-mix(in oklab, var(--color-surface-1) 70%, transparent);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.brand-glyph,
+.hero-title-accent,
+.footer-mark {
+  background: linear-gradient(135deg, var(--color-brand), var(--color-accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hero-title-accent {
+  background: linear-gradient(
+    135deg,
+    var(--color-brand) 0%,
+    var(--color-accent-2) 50%,
+    var(--color-warning) 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hero-badge {
+  border-color: color-mix(in oklab, var(--color-brand) 30%, transparent);
+  background: color-mix(in oklab, var(--color-brand) 8%, transparent);
+}
+
+.hero-hint kbd,
+.search-input,
+.tool-select,
+.view-toggle,
+.browse-bar,
+.intro-panel,
+.featured-card,
+.entry-card,
+.modal-card,
+.modal-close,
+.back-to-top,
+.share-menu,
+.pwa-toast,
+.pwa-install {
+  border-color: var(--hairline);
+}
+
+.browse-bar {
+  background: color-mix(in oklab, var(--color-surface-1) 86%, transparent);
+}
+
+.browse-bar.is-stuck {
+  border-color: var(--border-glow);
+}
+
+.entry-group-head,
+.entry-foot,
+.featured-card-header,
+.modal-header,
+.browse-row-tags,
+footer,
+.controls h3 {
+  border-color: var(--hairline);
+}
+
+.section-title-num,
+.entry-group-count {
+  color: var(--color-brand);
+  border-color: color-mix(in oklab, var(--color-brand) 32%, transparent);
+  background: color-mix(in oklab, var(--color-brand) 10%, transparent);
+}
+
+.footer-divider {
+  background: linear-gradient(to right, transparent, var(--color-brand), transparent);
+}
+
+/* ── Form controls ──────────────────────────────────────────── */
+
+.search-input,
+.tool-select {
+  background-color: var(--field-bg);
+  color: var(--color-text);
+}
+
+.search-input:focus {
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-brand) 22%, transparent);
+}
+
+.view-btn {
+  background: var(--field-bg);
+}
+
+.view-btn[aria-pressed='true'] {
+  background: color-mix(in oklab, var(--color-brand) 20%, transparent);
+  color: var(--color-brand);
+}
+
+.search-clear {
+  background: color-mix(in oklab, var(--color-text) 10%, transparent);
+}
+
+/* ── Call-to-action surfaces ────────────────────────────────── */
+
+.btn-primary,
+.featured-card-launch,
+.entry-open {
+  background: linear-gradient(135deg, var(--color-brand), var(--color-brand-hover));
+  color: var(--ink);
+}
+
+.entry-play,
+.share-copy,
+.pwa-toast-btn {
+  background: linear-gradient(135deg, var(--color-success), var(--color-brand));
+  color: var(--ink);
+  box-shadow: 0 6px 18px -8px color-mix(in oklab, var(--color-success) 80%, transparent);
+}
+
+.entry-play:hover,
+.entry-play:focus-visible {
+  box-shadow: 0 12px 26px -8px color-mix(in oklab, var(--color-success) 90%, transparent);
+}
+
+.modal-launch {
+  background: linear-gradient(135deg, var(--color-success), var(--color-brand)) !important;
+  color: var(--ink) !important;
+}
+
+.cat-tab[aria-selected='true'] {
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--color-brand), var(--color-accent-2));
+  box-shadow: 0 4px 16px -6px var(--accent-glow);
+}
+
+.tag-chip {
+  border-color: color-mix(in oklab, var(--color-accent-2) 26%, transparent);
+  background: color-mix(in oklab, var(--color-accent-2) 8%, transparent);
+}
+
+.tag-chip[aria-pressed='true'] {
+  color: var(--ink);
+  background: var(--color-accent-2);
+  border-color: transparent;
+}
+
+.featured-card-play::before {
+  background: color-mix(in oklab, var(--color-brand) 85%, transparent);
+  box-shadow: 0 4px 20px -2px var(--accent-glow);
+}
+
+.featured-card-play::after {
+  border-color: transparent transparent transparent var(--color-canvas);
+}
+
+/* ── Badges, marks, toasts ──────────────────────────────────── */
+
+.entry-badge {
+  border-color: var(--hairline);
+  background: color-mix(in oklab, var(--color-text) 5%, transparent);
+}
+.entry-badge.is-cat-lab {
+  color: var(--color-link);
+  border-color: color-mix(in oklab, var(--color-link) 32%, transparent);
+}
+.entry-badge.is-cat-game {
+  color: var(--color-success);
+  border-color: color-mix(in oklab, var(--color-success) 32%, transparent);
+}
+.entry-badge.is-cat-essay {
+  color: var(--color-warning);
+  border-color: color-mix(in oklab, var(--color-warning) 32%, transparent);
+}
+.entry-badge.is-media {
+  color: var(--color-accent-2);
+  border-color: color-mix(in oklab, var(--color-accent-2) 32%, transparent);
+}
+
+.entry-card mark {
+  background: color-mix(in oklab, var(--color-highlight) 30%, transparent);
+  color: var(--color-highlight);
+}
+
+.share-toast,
+.pwa-offline {
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--color-highlight), var(--color-warning));
+}
+
+.pwa-toast {
+  background: color-mix(in oklab, var(--color-surface-1) 96%, transparent);
+  color: var(--color-text);
+}
+
+.share-menu {
+  background: color-mix(in oklab, var(--color-surface-1) 96%, transparent);
+  box-shadow: var(--drop);
+}
+
+.share-link {
+  color: var(--color-text);
+}
+.share-link:hover {
+  border-color: var(--color-brand);
+  background: color-mix(in oklab, var(--color-brand) 14%, transparent);
+}
+
+/* ── Modal & overlays ───────────────────────────────────────── */
+
+.modal-overlay {
+  background: var(--veil);
+}
+
+.modal-header {
+  background: var(--surface-glass-strong);
+}
+
+.modal-notes {
+  background: color-mix(in oklab, var(--color-surface-2) 55%, transparent);
+}
+
+.modal-body .mermaid,
+.modal-body pre,
+.readme-preview pre {
+  background: color-mix(in oklab, var(--color-canvas) 80%, transparent);
+  border-color: var(--hairline);
+}
+
+.modal-body code,
+.readme-preview code,
+.info-box code {
+  background: color-mix(in oklab, var(--color-text) 8%, transparent);
+  color: var(--color-accent-2);
+}
+
+.info-box {
+  background: var(--wash);
+  border-color: color-mix(in oklab, var(--color-brand) 24%, transparent);
+}
+
+.card .tag {
+  background: var(--wash);
+  border-color: color-mix(in oklab, var(--color-brand) 26%, transparent);
+  color: var(--color-brand);
+}
+
+.card::after {
+  background: radial-gradient(circle, var(--wash) 0%, transparent 60%);
+}
+
+/* ── Misc ───────────────────────────────────────────────────── */
+
+.group-more:hover {
+  border-color: color-mix(in oklab, var(--color-brand) 50%, transparent);
+  background: color-mix(in oklab, var(--color-brand) 7%, transparent);
+}
+
+.back-to-top {
+  background: color-mix(in oklab, var(--color-surface-1) 78%, transparent);
+  color: var(--color-text);
+  border-color: color-mix(in oklab, var(--color-accent-2) 38%, transparent);
+}
+
+.nav-section-link::after {
+  background: linear-gradient(90deg, var(--color-brand), var(--color-accent-2));
+}
+
+.nav-section-link.is-active {
+  color: var(--color-accent-2);
+}
+
+.skeleton-card {
+  border-color: var(--hairline);
+  background: linear-gradient(
+    100deg,
+    color-mix(in oklab, var(--color-text) 4%, transparent) 30%,
+    color-mix(in oklab, var(--color-text) 10%, transparent) 50%,
+    color-mix(in oklab, var(--color-text) 4%, transparent) 70%
+  );
+  background-size: 220% 100%;
+}
+
+.featured-card-media {
+  background: radial-gradient(
+    120% 120% at 50% 0%,
+    color-mix(in oklab, var(--color-brand) 14%, transparent),
+    color-mix(in oklab, var(--color-canvas) 70%, transparent)
+  );
+  border-color: color-mix(in oklab, var(--color-brand) 16%, transparent);
+}
+
+.featured-card-video,
+.modal-media {
+  background: var(--color-canvas);
+}

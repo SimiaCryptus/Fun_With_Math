@@ -1,0 +1,205 @@
+/* ============================================================
+   css/theme-picker.css — the theme-selection control in the nav.
+
+   Each menu item carries its own `data-theme` attribute, so the
+   tokens from themes.css resolve *inside that item* — the swatch
+   row and the tile background are therefore a live preview of the
+   theme with no JavaScript colour maths at all.
+   ============================================================ */
+
+.theme-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font: inherit;
+  cursor: pointer;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--hairline, rgb(255 255 255 / 18%));
+  border-radius: 999px;
+  padding: 0.35em 0.85em;
+  transition:
+    color 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible,
+.theme-toggle[aria-expanded='true'] {
+  color: var(--text);
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--color-brand) 10%, transparent);
+  outline: none;
+}
+
+.theme-toggle .theme-swatch {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-brand), var(--color-accent-2));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-text) 25%, transparent);
+}
+
+.theme-toggle .arrow {
+  display: inline-block;
+  font-size: 0.7em;
+  transition: transform 0.2s ease;
+}
+
+.theme-toggle[aria-expanded='true'] .arrow {
+  transform: rotate(180deg);
+}
+
+/* ── Popover ────────────────────────────────────────────────── */
+
+.theme-menu {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  right: 0;
+  z-index: 1200;
+  width: min(26rem, calc(100vw - 2rem));
+  max-height: min(70vh, 32rem);
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.85rem;
+  border: 1px solid var(--hairline, rgb(255 255 255 / 12%));
+  border-radius: 14px;
+  background: var(--surface-glass-strong, rgb(22 27 34 / 92%));
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  box-shadow: var(--drop, 0 24px 60px -18px rgb(0 0 0 / 60%));
+}
+
+.theme-menu[hidden] {
+  display: none;
+}
+
+.theme-menu-title {
+  grid-column: 1 / -1;
+  margin: 0 0 0.1rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.theme-menu-hint {
+  grid-column: 1 / -1;
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+/* ── Option tiles (self-previewing) ─────────────────────────── */
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  padding: 0.55rem 0.6rem;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 10px;
+  /* Resolved against the option's own data-theme. */
+  color: var(--color-text);
+  background: var(--color-canvas);
+  border: 1px solid var(--color-border);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.theme-option:hover,
+.theme-option:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgb(0 0 0 / 70%);
+  outline: none;
+}
+
+.theme-option[aria-checked='true'] {
+  box-shadow: 0 0 0 2px var(--color-brand);
+}
+
+.theme-option.is-auto {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.theme-option-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.theme-option-note {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+.theme-swatches {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.theme-dot {
+  width: 15px;
+  height: 10px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-text) 18%, transparent);
+}
+
+.theme-dot-1 {
+  background: var(--color-brand);
+}
+.theme-dot-2 {
+  background: var(--color-accent-2);
+}
+.theme-dot-3 {
+  background: var(--color-success);
+}
+.theme-dot-4 {
+  background: var(--color-highlight);
+}
+.theme-dot-5 {
+  background: var(--color-surface-2);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .theme-toggle .theme-toggle-label {
+    display: none;
+  }
+
+  .theme-menu {
+    position: fixed;
+    top: 60px;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle,
+  .theme-toggle .arrow,
+  .theme-option {
+    transition: none;
+  }
+}
