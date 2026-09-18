@@ -1,201 +1,201 @@
 {
-  "lastUpdated" : "2026-09-17T19:04:01.475963540Z",
-  "tasks" : {
-    "quadratics/pentagon/docs/analysis.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-SJUtXoNJ",
-      "startedAt" : "2026-08-22T20:11:03.340228007Z",
-      "completedAt" : "2026-08-22T20:13:46.113265091Z"
+  "lastUpdated": "2026-09-17T19:04:01.475963540Z",
+  "tasks": {
+    "quadratics/pentagon/docs/analysis.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/analysis.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-SJUtXoNJ",
+      "startedAt": "2026-08-22T20:11:03.340228007Z",
+      "completedAt": "2026-08-22T20:13:46.113265091Z"
     },
-    "quadratics/pentagon/docs/experiment.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/experiment.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-Wc3pHWkj",
-      "startedAt" : "2026-08-22T20:11:03.337660833Z",
-      "completedAt" : "2026-08-22T20:13:14.998280887Z"
+    "quadratics/pentagon/docs/experiment.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/experiment.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-Wc3pHWkj",
+      "startedAt": "2026-08-22T20:11:03.337660833Z",
+      "completedAt": "2026-08-22T20:13:14.998280887Z"
     },
-    "quadratics/pentagon/docs/idea.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/idea.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-nPzGOykF",
-      "startedAt" : "2026-08-22T20:11:03.345347933Z",
-      "completedAt" : "2026-08-22T20:13:51.071677980Z"
+    "quadratics/pentagon/docs/idea.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/idea.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-nPzGOykF",
+      "startedAt": "2026-08-22T20:11:03.345347933Z",
+      "completedAt": "2026-08-22T20:13:51.071677980Z"
     },
-    "quadratics/pentagon/docs/insights.theory_graph.json" : {
-      "target" : "quadratics/pentagon/docs/insights.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-a0RbAvwV",
-      "startedAt" : "2026-08-22T20:11:03.342743325Z",
-      "completedAt" : "2026-08-22T20:12:53.799256185Z"
+    "quadratics/pentagon/docs/insights.theory_graph.json": {
+      "target": "quadratics/pentagon/docs/insights.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-a0RbAvwV",
+      "startedAt": "2026-08-22T20:11:03.342743325Z",
+      "completedAt": "2026-08-22T20:12:53.799256185Z"
     },
-    "numbers/primegen/docs/algorithm.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/algorithm.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-6gUCoBQ2",
-      "startedAt" : "2026-08-22T20:56:15.486472508Z",
-      "completedAt" : "2026-08-22T20:59:34.011057361Z"
+    "numbers/primegen/docs/algorithm.theory_graph.json": {
+      "target": "numbers/primegen/docs/algorithm.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-6gUCoBQ2",
+      "startedAt": "2026-08-22T20:56:15.486472508Z",
+      "completedAt": "2026-08-22T20:59:34.011057361Z"
     },
-    "numbers/primegen/docs/fractal.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/fractal.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-scOOV1Qr",
-      "startedAt" : "2026-08-22T20:56:15.482175335Z",
-      "completedAt" : "2026-08-22T20:58:35.902129300Z"
+    "numbers/primegen/docs/fractal.theory_graph.json": {
+      "target": "numbers/primegen/docs/fractal.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-scOOV1Qr",
+      "startedAt": "2026-08-22T20:56:15.482175335Z",
+      "completedAt": "2026-08-22T20:58:35.902129300Z"
     },
-    "numbers/primegen/docs/generator.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/generator.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-HOHcbXDA",
-      "startedAt" : "2026-08-22T20:56:15.489868877Z",
-      "completedAt" : "2026-08-22T20:58:35.659201251Z"
+    "numbers/primegen/docs/generator.theory_graph.json": {
+      "target": "numbers/primegen/docs/generator.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-HOHcbXDA",
+      "startedAt": "2026-08-22T20:56:15.489868877Z",
+      "completedAt": "2026-08-22T20:58:35.659201251Z"
     },
-    "numbers/primegen/docs/twin_prime.theory_graph.json" : {
-      "target" : "numbers/primegen/docs/twin_prime.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-JSIFQJHx",
-      "startedAt" : "2026-08-22T20:56:15.493384335Z",
-      "completedAt" : "2026-08-22T20:59:13.616686007Z"
+    "numbers/primegen/docs/twin_prime.theory_graph.json": {
+      "target": "numbers/primegen/docs/twin_prime.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-JSIFQJHx",
+      "startedAt": "2026-08-22T20:56:15.493384335Z",
+      "completedAt": "2026-08-22T20:59:13.616686007Z"
     },
-    "ops/analysis-viewer/idea.theory_graph.json" : {
-      "target" : "ops/analysis-viewer/idea.theory_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-sluhudNj",
-      "startedAt" : "2026-08-22T22:36:37.859792578Z",
-      "completedAt" : "2026-08-22T22:41:57.589387744Z"
+    "ops/analysis-viewer/idea.theory_graph.json": {
+      "target": "ops/analysis-viewer/idea.theory_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-sluhudNj",
+      "startedAt": "2026-08-22T22:36:37.859792578Z",
+      "completedAt": "2026-08-22T22:41:57.589387744Z"
     },
-    "analysis/knowledge/idea.knowledge_graph.json" : {
-      "target" : "analysis/knowledge/idea.knowledge_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-QtXXo0g0",
-      "startedAt" : "2026-08-22T23:34:35.575698988Z",
-      "completedAt" : "2026-08-22T23:40:11.039878286Z"
+    "analysis/knowledge/idea.knowledge_graph.json": {
+      "target": "analysis/knowledge/idea.knowledge_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-QtXXo0g0",
+      "startedAt": "2026-08-22T23:34:35.575698988Z",
+      "completedAt": "2026-08-22T23:40:11.039878286Z"
     },
-    "analysis/theory/idea.knowledge_graph.json" : {
-      "target" : "analysis/theory/idea.knowledge_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-sPNwzfHm",
-      "startedAt" : "2026-08-22T23:34:35.577495734Z",
-      "completedAt" : "2026-08-22T23:40:04.739312891Z"
+    "analysis/theory/idea.knowledge_graph.json": {
+      "target": "analysis/theory/idea.knowledge_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-sPNwzfHm",
+      "startedAt": "2026-08-22T23:34:35.577495734Z",
+      "completedAt": "2026-08-22T23:40:04.739312891Z"
     },
-    "numbers/primegen/docs/generator.knowledge_graph.json" : {
-      "target" : "numbers/primegen/docs/generator.knowledge_graph.json",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260822-qnEF8Xjy",
-      "startedAt" : "2026-08-22T23:42:22.155791518Z",
-      "completedAt" : "2026-08-22T23:48:56.388547059Z"
+    "numbers/primegen/docs/generator.knowledge_graph.json": {
+      "target": "numbers/primegen/docs/generator.knowledge_graph.json",
+      "status": "COMPLETED",
+      "sessionId": "U-20260822-qnEF8Xjy",
+      "startedAt": "2026-08-22T23:42:22.155791518Z",
+      "completedAt": "2026-08-22T23:48:56.388547059Z"
     },
-    "experiments/fractal_mosaic/README_REWRITE.md" : {
-      "target" : "experiments/fractal_mosaic/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260831-WxfAMbcF",
-      "startedAt" : "2026-09-01T03:38:50.339589867Z",
-      "completedAt" : "2026-09-01T03:39:54.027996308Z"
+    "experiments/fractal_mosaic/README_REWRITE.md": {
+      "target": "experiments/fractal_mosaic/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260831-WxfAMbcF",
+      "startedAt": "2026-09-01T03:38:50.339589867Z",
+      "completedAt": "2026-09-01T03:39:54.027996308Z"
     },
-    "games/physical-visualizer/README_REWRITE.md" : {
-      "target" : "games/physical-visualizer/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260907-PzOitu6r",
-      "startedAt" : "2026-09-07T17:44:42.537917131Z",
-      "completedAt" : "2026-09-07T17:46:04.519180375Z"
+    "games/physical-visualizer/README_REWRITE.md": {
+      "target": "games/physical-visualizer/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260907-PzOitu6r",
+      "startedAt": "2026-09-07T17:44:42.537917131Z",
+      "completedAt": "2026-09-07T17:46:04.519180375Z"
     },
-    "games/mineminer/README_REWRITE.md" : {
-      "target" : "games/mineminer/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260907-umo2kuY1",
-      "startedAt" : "2026-09-07T20:05:11.836567472Z",
-      "completedAt" : "2026-09-07T20:05:43.721914351Z"
+    "games/mineminer/README_REWRITE.md": {
+      "target": "games/mineminer/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260907-umo2kuY1",
+      "startedAt": "2026-09-07T20:05:11.836567472Z",
+      "completedAt": "2026-09-07T20:05:43.721914351Z"
     },
-    "games/bridges/README_REWRITE.md" : {
-      "target" : "games/bridges/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260908-aOMLNDCC",
-      "startedAt" : "2026-09-08T19:21:36.285260787Z",
-      "completedAt" : "2026-09-08T19:22:10.164323618Z"
+    "games/bridges/README_REWRITE.md": {
+      "target": "games/bridges/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260908-aOMLNDCC",
+      "startedAt": "2026-09-08T19:21:36.285260787Z",
+      "completedAt": "2026-09-08T19:22:10.164323618Z"
     },
-    "games/madame-claude/README_REWRITE.md" : {
-      "target" : "games/madame-claude/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260908-v7fzxnuE",
-      "startedAt" : "2026-09-08T23:57:06.417112980Z",
-      "completedAt" : "2026-09-08T23:57:36.399034273Z"
+    "games/madame-claude/README_REWRITE.md": {
+      "target": "games/madame-claude/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260908-v7fzxnuE",
+      "startedAt": "2026-09-08T23:57:06.417112980Z",
+      "completedAt": "2026-09-08T23:57:36.399034273Z"
     },
-    "games/muddy-timeskipper/README_REWRITE.md" : {
-      "target" : "games/muddy-timeskipper/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260909-OxQi2Rjd",
-      "startedAt" : "2026-09-09T14:45:22.156631643Z",
-      "completedAt" : "2026-09-09T14:45:50.421117924Z"
+    "games/muddy-timeskipper/README_REWRITE.md": {
+      "target": "games/muddy-timeskipper/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260909-OxQi2Rjd",
+      "startedAt": "2026-09-09T14:45:22.156631643Z",
+      "completedAt": "2026-09-09T14:45:50.421117924Z"
     },
-    "games/troggle/README_REWRITE.md" : {
-      "target" : "games/troggle/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260909-Vozu50WI",
-      "startedAt" : "2026-09-09T14:47:09.219937750Z",
-      "completedAt" : "2026-09-09T14:47:46.173436916Z"
+    "games/troggle/README_REWRITE.md": {
+      "target": "games/troggle/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260909-Vozu50WI",
+      "startedAt": "2026-09-09T14:47:09.219937750Z",
+      "completedAt": "2026-09-09T14:47:46.173436916Z"
     },
-    "games/emergensim/README_REWRITE.md" : {
-      "target" : "games/emergensim/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260910-u1OOpbSj",
-      "startedAt" : "2026-09-10T21:19:48.945663912Z",
-      "completedAt" : "2026-09-10T21:20:17.051800156Z"
+    "games/emergensim/README_REWRITE.md": {
+      "target": "games/emergensim/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260910-u1OOpbSj",
+      "startedAt": "2026-09-10T21:19:48.945663912Z",
+      "completedAt": "2026-09-10T21:20:17.051800156Z"
     },
-    "games/squirrely/README_REWRITE.md" : {
-      "target" : "games/squirrely/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260910-0cceRH8M",
-      "startedAt" : "2026-09-10T21:19:48.942481381Z",
-      "completedAt" : "2026-09-10T21:20:17.136039461Z"
+    "games/squirrely/README_REWRITE.md": {
+      "target": "games/squirrely/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260910-0cceRH8M",
+      "startedAt": "2026-09-10T21:19:48.942481381Z",
+      "completedAt": "2026-09-10T21:20:17.136039461Z"
     },
-    "games/marching-orders/README_REWRITE.md" : {
-      "target" : "games/marching-orders/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260911-b7ZnsHEl",
-      "startedAt" : "2026-09-12T00:29:21.604532620Z",
-      "completedAt" : "2026-09-12T00:29:50.449045968Z"
+    "games/marching-orders/README_REWRITE.md": {
+      "target": "games/marching-orders/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260911-b7ZnsHEl",
+      "startedAt": "2026-09-12T00:29:21.604532620Z",
+      "completedAt": "2026-09-12T00:29:50.449045968Z"
     },
-    "physics/chaos-garden/README_REWRITE.md" : {
-      "target" : "physics/chaos-garden/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260912-anR8xo0i",
-      "startedAt" : "2026-09-12T18:42:28.183343210Z",
-      "completedAt" : "2026-09-12T18:42:50.840480385Z"
+    "physics/chaos-garden/README_REWRITE.md": {
+      "target": "physics/chaos-garden/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260912-anR8xo0i",
+      "startedAt": "2026-09-12T18:42:28.183343210Z",
+      "completedAt": "2026-09-12T18:42:50.840480385Z"
     },
-    "experiments/pastaponics/README_REWRITE.md" : {
-      "target" : "experiments/pastaponics/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260917-ovDCfTVF",
-      "startedAt" : "2026-09-17T14:31:07.741752284Z",
-      "completedAt" : "2026-09-17T14:31:46.881864567Z"
+    "experiments/pastaponics/README_REWRITE.md": {
+      "target": "experiments/pastaponics/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260917-ovDCfTVF",
+      "startedAt": "2026-09-17T14:31:07.741752284Z",
+      "completedAt": "2026-09-17T14:31:46.881864567Z"
     },
-    "experiments/point-cad/README_REWRITE.md" : {
-      "target" : "experiments/point-cad/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260917-yZfnZ48C",
-      "startedAt" : "2026-09-17T14:31:07.744620643Z",
-      "completedAt" : "2026-09-17T14:31:36.469083746Z"
+    "experiments/point-cad/README_REWRITE.md": {
+      "target": "experiments/point-cad/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260917-yZfnZ48C",
+      "startedAt": "2026-09-17T14:31:07.744620643Z",
+      "completedAt": "2026-09-17T14:31:36.469083746Z"
     },
-    "experiments/magnet-lattice/README_REWRITE.md" : {
-      "target" : "experiments/magnet-lattice/README_REWRITE.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260917-tpD46FSY",
-      "startedAt" : "2026-09-17T14:51:09.183581759Z",
-      "completedAt" : "2026-09-17T14:51:33.206588108Z"
+    "experiments/magnet-lattice/README_REWRITE.md": {
+      "target": "experiments/magnet-lattice/README_REWRITE.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260917-tpD46FSY",
+      "startedAt": "2026-09-17T14:51:09.183581759Z",
+      "completedAt": "2026-09-17T14:51:33.206588108Z"
     },
-    "css/theme_design.md" : {
-      "target" : "css/theme_design.md",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260917-axrpBRL4",
-      "startedAt" : "2026-09-17T17:45:29.060243044Z",
-      "completedAt" : "2026-09-17T17:55:00.042017580Z"
+    "css/theme_design.md": {
+      "target": "css/theme_design.md",
+      "status": "COMPLETED",
+      "sessionId": "U-20260917-axrpBRL4",
+      "startedAt": "2026-09-17T17:45:29.060243044Z",
+      "completedAt": "2026-09-17T17:55:00.042017580Z"
     },
-    "css/theme_design.html" : {
-      "target" : "css/theme_design.html",
-      "status" : "COMPLETED",
-      "sessionId" : "U-20260917-pGgYFN6a",
-      "startedAt" : "2026-09-17T18:59:52.635447930Z",
-      "completedAt" : "2026-09-17T19:04:01.475963540Z"
+    "css/theme_design.html": {
+      "target": "css/theme_design.html",
+      "status": "COMPLETED",
+      "sessionId": "U-20260917-pGgYFN6a",
+      "startedAt": "2026-09-17T18:59:52.635447930Z",
+      "completedAt": "2026-09-17T19:04:01.475963540Z"
     }
   }
 }

@@ -12,17 +12,16 @@ related:
 **Input.** Every stylesheet matched by `related`. HTML files in the same tree may be
 read for context (which selectors sit on which backgrounds) but are not edited.
 
-
 **Output.** One HTML file, `index.html`, written next to the stylesheets. It is
-the theme-designer *harness* (`demo/theme.html`) with its
+the theme-designer _harness_ (`demo/theme.html`) with its
 `<script type="application/json" id="theme-doc">` block filled in (§2.11): the sketch
 and every handoff field travel inside that one file, so nothing is cut and pasted.
 Opening it in a browser restores the palette, the preview templates, the migration
-guide and the evidence; the designer plays with anchors and rules, presses *Solve
-themes* and uses the header buttons to regenerate every derived artefact on demand —
-*Save CSS* (`<project>-tokens.css`), *Save guide (.md)* (`<project>-integration.md`,
-the incorporation instructions addressed to a human or an agent), *Save tokens*,
-*Save .pcad*, and *Save harness (.html)* (the file itself with the current edits, so it
+guide and the evidence; the designer plays with anchors and rules, presses _Solve
+themes_ and uses the header buttons to regenerate every derived artefact on demand —
+_Save CSS_ (`<project>-tokens.css`), _Save guide (.md)_ (`<project>-integration.md`,
+the incorporation instructions addressed to a human or an agent), _Save tokens_,
+_Save .pcad_, and _Save harness (.html)_ (the file itself with the current edits, so it
 remains the source of truth).
 
 The harness document must contain
@@ -30,33 +29,31 @@ The harness document must contain
 1. an **inventory** of every colour the stylesheets currently use,
 2. a **token map** that gives each distinct colour a role and a name,
 3. a **Point-CAD sketch** (PCS, the `.pcad` dialect used by `demo/palette.pcad`) that
-   restates the palette as a few *anchors* plus *rules*, with one `theme` block per
+   restates the palette as a few _anchors_ plus _rules_, with one `theme` block per
    colour scheme found (or proposed),
 4. a small **HTML + CSS demonstration** that consumes the custom properties the
    application generates from the sketch,
 5. a description of what the application will **emit when the sketch is solved**,
 6. a **migration guide** for rewriting the stylesheets against the new variables, and
 7. the **evidence** (inventory, token map, relations, expected output) that justifies
-    every rule — as fields of the same document, not as a separate markdown transcript.
+   every rule — as fields of the same document, not as a separate markdown transcript.
 
 The sketch must be precise enough to parse and solve without hand edits, and readable
 
-
-
-enough that a designer understands *why* each rule exists. §3 defines every field; the
+enough that a designer understands _why_ each rule exists. §3 defines every field; the
 short form of where each one surfaces:
 
-| document field (§3)                                                              | in the UI                                   | in the generated guide              |
-|----------------------------------------------------------------------------------|---------------------------------------------|-------------------------------------|
-| `pcad` (top level, beside `doc`)                                                 | **Script** window                           | §11, and *Save .pcad*               |
-| `project`, `prefix`, `format`, `scope`, `switchMode`, `defaultTheme`, `fallback` | **Handoff › Project & emitter**             | title, file names, *At a glance*, §3 |
-| `summary`                                                                        | **Handoff › Migration guide › Summary**     | §1                                  |
-| `replacements`, `plumbing`, `alpha`, `skip`, `order`                             | **Handoff › Migration guide**               | §5 – §9                             |
-| `findings`                                                                       | **Handoff › Migration guide › Findings**    | §10                                 |
-| `preview.css`, `preview.html`                                                    | **Preview** window, CSS / HTML tabs         | §12                                 |
-| `inventory`, `tokenMap`, `relations`, `expected`                                 | **Handoff › Evidence (working notes)**      | Appendix A – D                      |
+| document field (§3)                                                              | in the UI                                | in the generated guide               |
+| -------------------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------ |
+| `pcad` (top level, beside `doc`)                                                 | **Script** window                        | §11, and _Save .pcad_                |
+| `project`, `prefix`, `format`, `scope`, `switchMode`, `defaultTheme`, `fallback` | **Handoff › Project & emitter**          | title, file names, _At a glance_, §3 |
+| `summary`                                                                        | **Handoff › Migration guide › Summary**  | §1                                   |
+| `replacements`, `plumbing`, `alpha`, `skip`, `order`                             | **Handoff › Migration guide**            | §5 – §9                              |
+| `findings`                                                                       | **Handoff › Migration guide › Findings** | §10                                  |
+| `preview.css`, `preview.html`                                                    | **Preview** window, CSS / HTML tabs      | §12                                  |
+| `inventory`, `tokenMap`, `relations`, `expected`                                 | **Handoff › Evidence (working notes)**   | Appendix A – D                       |
 
-A markdown document is no longer part of the deliverable: *Save guide (.md)* generates
+A markdown document is no longer part of the deliverable: _Save guide (.md)_ generates
 `<project>-integration.md` from these fields whenever someone needs it.
 
 This operation does **not** modify any stylesheet. It produces the harness only.
@@ -65,10 +62,10 @@ This operation does **not** modify any stylesheet. It produces the harness only.
 
 ## 1. Principles
 
-- **Fidelity first, improvement second.** The sketch must reproduce the *existing* design:
+- **Fidelity first, improvement second.** The sketch must reproduce the _existing_ design:
   every derived colour is seeded with the value observed in the CSS, and every rule
   written down is one that already holds in the CSS within tolerance (§2.6). Rules that
-  the existing CSS *violates* (typically contrast floors) are still written — that is the
+  the existing CSS _violates_ (typically contrast floors) are still written — that is the
   point of the exercise — but each one is listed as a finding (§3.9) so nobody is
   surprised when the solver moves a colour.
 - **Few anchors, many derivations.** A theme should need to state only what a designer
@@ -96,14 +93,14 @@ Work through the steps in order; each fills one or more fields of the harness do
 Scan every matched file. Extract each colour literal together with its context:
 
 | record          | contents                                                                                                                                                        |
-|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `literal`       | the text as written (`#3b5bdb`, `rgb(59 91 219)`, `hsl(…)`, `oklch(…)`, `rebeccapurple`, …)                                                                     |
 | `file:line`     | location (all occurrences)                                                                                                                                      |
 | `selector`      | the rule's selector, with pseudo-classes (`a:hover`, `.btn:disabled`)                                                                                           |
 | `property`      | `color`, `background(-color)`, `border(-*-color)`, `outline-color`, `box-shadow`, `fill`, `stroke`, `text-decoration-color`, gradient stop, `--custom-property` |
 | `alpha`         | separate from the colour (`rgba(0,0,0,.12)` → colour `#000`, alpha `0.12`)                                                                                      |
-| `theme context` | enclosing `@media (prefers-color-scheme: …)`, `[data-theme=…]`, `.dark`, `:root.theme-x`, `color-scheme` declarations, or *none*                                |
-| `state`         | `:hover`, `:focus(-visible)`, `:active`, `:disabled`, `[aria-*]`, or *rest*                                                                                     |
+| `theme context` | enclosing `@media (prefers-color-scheme: …)`, `[data-theme=…]`, `.dark`, `:root.theme-x`, `color-scheme` declarations, or _none_                                |
+| `state`         | `:hover`, `:focus(-visible)`, `:active`, `:disabled`, `[aria-*]`, or _rest_                                                                                     |
 | `via`           | if the value arrived through `var(--x)`, the custom property chain that resolves it                                                                             |
 
 Include colours defined in existing custom properties even if unused; include `currentColor`
@@ -120,7 +117,7 @@ the emitter round-trips the notation the sketch was written in, so anchors may b
 exactly as they appear in the CSS.
 
 Record derived quantities used in later steps: `L`, `C`, `H`, linear-sRGB luminance `Y`,
-and whether `C < 0.02` (a *near-neutral*, whose hue is numerically unreliable — see §7).
+and whether `C < 0.02` (a _near-neutral_, whose hue is numerically unreliable — see §7).
 
 ### 2.3 Cluster and count
 
@@ -150,7 +147,7 @@ emitter and the sample stylesheet already use; extend it (`danger`, `success`, `
 `info`, `focusRing`, `selection`, `codeBg`, …) rather than inventing synonyms.
 
 | token         | typical evidence                                                           | usual role  |
-|---------------|----------------------------------------------------------------------------|-------------|
+| ------------- | -------------------------------------------------------------------------- | ----------- |
 | `canvas`      | `background` of `html`/`body`; the most common background                  | anchor      |
 | `brand`       | primary button background, logo colour, the hue links share                | anchor      |
 | `surface1..n` | container backgrounds that differ from `canvas` mostly in `L`              | derived     |
@@ -160,8 +157,8 @@ emitter and the sample stylesheet already use; extend it (`danger`, `success`, `
 | `link`        | `a { color }`                                                              | derived     |
 | `accent`      | call-to-action background not equal to `brand`; badges; highlights         | derived     |
 | `*Hover`      | the `:hover`/`:active` variant of a token, differing mostly in `L`         | derived     |
-| `warmth`      | *not in CSS* — an orientation point capturing the hue surfaces lean toward | orientation |
-| `readingGray` | *not in CSS* — the hue and chroma shared by text, muted text and border    | orientation |
+| `warmth`      | _not in CSS_ — an orientation point capturing the hue surfaces lean toward | orientation |
+| `readingGray` | _not in CSS_ — the hue and chroma shared by text, muted text and border    | orientation |
 
 Roles, exactly as in the theme designer:
 
@@ -184,7 +181,7 @@ rule only if it holds within tolerance **in every theme found** (or is an access
 floor). Record the numbers in the document.
 
 | relation                         | how to detect                                                     | tolerance              | PCS                                              |
-|----------------------------------|-------------------------------------------------------------------|------------------------|--------------------------------------------------|
+| -------------------------------- | ----------------------------------------------------------------- | ---------------------- | ------------------------------------------------ |
 | even lightness ramp              | successive `dL` between `canvas, surface1, surface2, …` are equal | ±0.01 in `L`           | `dL A B = stepL` per step, `stepL` a variable    |
 | hue family                       | hue angles within a small arc                                     | ±5° (±10° if `C<0.05`) | `lock H ref A B C`                               |
 | equal chroma                     | `C` values equal                                                  | ±0.005                 | `lock C ref A B`                                 |
@@ -261,18 +258,17 @@ them and the guide prints them in §12). Requirements:
 
 Derive it from the inventory: which literal becomes which `var()`, where, and what to
 delete. Detailed requirements in §3.8.
-- *Save CSS* — `<project>-tokens.css`, the stylesheet the app loads first.
-- *Save tokens* / *Save .pcad* when the host wants them.
+
+- _Save CSS_ — `<project>-tokens.css`, the stylesheet the app loads first.
+- _Save tokens_ / _Save .pcad_ when the host wants them.
 
 ---
-
-
 
 ## 3. The harness document (`theme-doc`)
 
 Field by field, in the order the generated guide prints them. Every prose field is
 markdown (tables and fenced code are fine); each is edited in the Handoff window and
-written verbatim into `<project>-integration.md` by *Save guide (.md)*, so write for the
+written verbatim into `<project>-integration.md` by _Save guide (.md)_, so write for the
 reader of that guide — a developer or an agent adopting the tokens — not for yourself.
 
 ### 3.1 Summary (`summary`)
@@ -289,7 +285,7 @@ their own short table.
 
 ### 3.3 Token map (`tokenMap`)
 
-| token | custom property | role | light (observed) | dark (observed / *derived*) | clusters merged | notes |
+| token | custom property | role | light (observed) | dark (observed / _derived_) | clusters merged | notes |
 
 Every cluster from §3.2 must appear here, or in §3.9 with a reason it was not tokenised (alpha overlay, one-off
 illustration colour, third-party widget, …).
@@ -298,18 +294,14 @@ illustration colour, third-party widget, …).
 
 For each rule in the sketch: the rule, the tokens involved, the measured evidence per
 theme (e.g. `dL canvas→surface1 = −0.041, surface1→surface2 = −0.039`), and whether it
-currently *holds*, is a *floor the CSS fails*, or is a *design decision* (orientation
+currently _holds_, is a _floor the CSS fails_, or is a _design decision_ (orientation
 point, shared variable).
-
-
-
-
 
 ### 3.5 The sketch (`pcad`)
 
 The complete, parseable sketch as one JSON string (no fence), commented like
 `demo/palette.pcad`. It appears in the Script window when the harness opens and as §11
-of the guide; a designer should be able to press *Solve themes* on it as is.
+of the guide; a designer should be able to press _Solve themes_ on it as is.
 
 ### 3.6 Demonstration (`preview.css`, `preview.html`)
 
@@ -319,7 +311,7 @@ theme.
 
 ### 3.7 Expected solver output (`expected`)
 
-Describe what *Export CSS* produces for this sketch (format in §5) and, if you ran the
+Describe what _Export CSS_ produces for this sketch (format in §5) and, if you ran the
 solve, paste the actual output with the log line
 (`solve: converged=… iterations=… residual=… light: 0 unmet · dark: 0 unmet`). Then list,
 per theme, the derived tokens that moved more than ΔE 0.05 from their seed and which
@@ -341,7 +333,7 @@ rows too), 2 into `plumbing`, 4 and 5 into `alpha`, 6 into `skip`, 7 into `order
 3. **Per-rule theme overrides to delete** — every declaration inside a theme context
    that merely swapped a colour becomes redundant once the rule uses a token; list them.
 4. **Alpha and derived values** — translucent uses of a token become
-   `color-mix(in oklab, var(--color-text) 60%, transparent)`; hover shades that were *not* promoted to a token can use
+   `color-mix(in oklab, var(--color-text) 60%, transparent)`; hover shades that were _not_ promoted to a token can use
    relative colour syntax
    `oklch(from var(--color-accent) calc(l - 0.06) c h)`. Shadows usually stay literal.
 5. **Fallbacks** — during transition use `var(--color-x, <old literal>)`; remove the
@@ -356,7 +348,7 @@ rows too), 2 into `plumbing`, 4 and 5 into `alpha`, 6 into `skip`, 7 into `order
 
 Accessibility failures (pair, measured ratio, floor), clusters that were merged
 aggressively, colours whose role is ambiguous, near-neutrals whose hue was taken from an
-orientation point, out-of-gamut literals, proposed themes, and any rule you chose *not*
+orientation point, out-of-gamut literals, proposed themes, and any rule you chose _not_
 to write and why.
 
 ---
@@ -410,7 +402,7 @@ overpower an equality or a floor.
 
 ## 5. What the application emits
 
-*Export CSS* (`emitCSS(sketch, result)`) writes, in this order:
+_Export CSS_ (`emitCSS(sketch, result)`) writes, in this order:
 
 1. a header comment: `/* Point-CAD theme — <n> colours, themes: light, dark */`,
 2. `:root { … }` with the **first** theme's solved values,
@@ -424,27 +416,30 @@ For the worked example in §6 the light block reads:
 ```css
 /* Point-CAD theme — 10 colours, themes: light, dark */
 :root {
-    --color-canvas: oklch(98% 0.005 90);
-    --color-brand: oklch(52.556% 0.19879 268.04);
-    --color-surface-1: oklch(94% 0.0059 88.4);
-    --color-surface-2: oklch(90% 0.0059 88.4);
-    --color-surface-3: oklch(86% 0.0059 88.4);
-    --color-text: oklch(45.075% 0.01 260);
-    --color-text-muted: oklch(55.422% 0.01 260);
-    --color-border: oklch(65.449% 0.01 260);
-    --color-accent: oklch(52.556% 0.12 88.04);
-    --color-link: oklch(52.556% 0.19879 268.04);
+  --color-canvas: oklch(98% 0.005 90);
+  --color-brand: oklch(52.556% 0.19879 268.04);
+  --color-surface-1: oklch(94% 0.0059 88.4);
+  --color-surface-2: oklch(90% 0.0059 88.4);
+  --color-surface-3: oklch(86% 0.0059 88.4);
+  --color-text: oklch(45.075% 0.01 260);
+  --color-text-muted: oklch(55.422% 0.01 260);
+  --color-border: oklch(65.449% 0.01 260);
+  --color-accent: oklch(52.556% 0.12 88.04);
+  --color-link: oklch(52.556% 0.19879 268.04);
 }
 
 @media (prefers-color-scheme: dark) {
-    :root { /* dark theme, same ten properties */
-    }
+  :root {
+    /* dark theme, same ten properties */
+  }
 }
 
-[data-theme="light"] { /* same as :root */
+[data-theme='light'] {
+  /* same as :root */
 }
 
-[data-theme="dark"] { /* same as the media block */
+[data-theme='dark'] {
+  /* same as the media block */
 }
 ```
 
@@ -463,15 +458,15 @@ the sketch** before accepting it:
 - The log line must show `0 unmet` per theme, or the unmet constraints must be
   explained in §3.9.
 
-*Export tokens* writes the same data as W3C Design Tokens JSON, one group per theme; *Export .pcad* writes the sketch
-back with solved seeds if *Adopt* was used.
-*Save guide (.md)* writes `<project>-integration.md`: the token table (token → custom
+_Export tokens_ writes the same data as W3C Design Tokens JSON, one group per theme; _Export .pcad_ writes the sketch
+back with solved seeds if _Adopt_ was used.
+_Save guide (.md)_ writes `<project>-integration.md`: the token table (token → custom
 property → value per theme), the CSS above, numbered adoption steps addressed to a human
 or an agent, the six migration-guide fields verbatim, the sketch, the demonstration, the
-solver report and the evidence fields as an appendix. *Save harness (.html)* writes a standalone page whose
+solver report and the evidence fields as an appendix. _Save harness (.html)_ writes a standalone page whose
 `<script type="application/json" id="theme-doc">` block carries the sketch and every
 field — the same format this operation writes in §2.11 — so the palette can be re-opened
-(*Open…* or drag-and-drop), re-coloured and re-exported later.
+(_Open…_ or drag-and-drop), re-coloured and re-exported later.
 
 ---
 
@@ -562,77 +557,85 @@ observed values):
 
 ```css
 body {
-    margin: 0;
-    padding: 20px;
-    font: 14px/1.5 system-ui, sans-serif;
-    background: var(--color-canvas, #fdfcf9);
-    color: var(--color-text, #222);
+  margin: 0;
+  padding: 20px;
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+  background: var(--color-canvas, #fdfcf9);
+  color: var(--color-text, #222);
 }
 
 h2 {
-    margin: 0 0 4px;
-    font-size: 20px;
+  margin: 0 0 4px;
+  font-size: 20px;
 }
 
 .muted {
-    color: var(--color-text-muted, #666);
+  color: var(--color-text-muted, #666);
 }
 
 a {
-    color: var(--color-link, #36c);
+  color: var(--color-link, #36c);
 }
 
 .card {
-    background: var(--color-surface-1, #f1efe9);
-    border: 1px solid var(--color-border, #ccc);
-    border-radius: 8px;
-    padding: 12px;
-    margin: 12px 0;
+  background: var(--color-surface-1, #f1efe9);
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
 }
 
 .card .card {
-    background: var(--color-surface-2, #e4e1d9);
+  background: var(--color-surface-2, #e4e1d9);
 }
 
 .card .card .card {
-    background: var(--color-surface-3, #d7d3c9);
+  background: var(--color-surface-3, #d7d3c9);
 }
 
 .btn {
-    display: inline-block;
-    background: var(--color-accent, #c60);
-    color: var(--color-canvas, #fff);
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-weight: 600;
+  display: inline-block;
+  background: var(--color-accent, #c60);
+  color: var(--color-canvas, #fff);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-weight: 600;
 }
 ```
 
 ```html
 <h2>Sample page</h2>
-<p>Body text on <code>canvas</code>. <span class="muted">Secondary text uses <code>textMuted</code>.</span> A <a
-        href="#">link</a> sits on the brand hue.</p>
+<p>
+  Body text on <code>canvas</code>.
+  <span class="muted">Secondary text uses <code>textMuted</code>.</span> A <a href="#">link</a> sits
+  on the brand hue.
+</p>
 <div class="card">
-    <b>surface1</b>
-    <div class="card">
-        <b>surface2</b>
-        <div class="card"><b>surface3</b> — three even lightness steps.</div>
-    </div>
+  <b>surface1</b>
+  <div class="card">
+    <b>surface2</b>
+    <div class="card"><b>surface3</b> — three even lightness steps.</div>
+  </div>
 </div>
 <p><span class="btn">Accent action</span></p>
-<p class="muted">Every colour above is a solved point in OKLab; edit an anchor or a rule in the script window and
-    re-solve.</p>
+<p class="muted">
+  Every colour above is a solved point in OKLab; edit an anchor or a rule in the script window and
+  re-solve.
+</p>
 ```
 
 `preview.html`:
 
 ```html
+
 ```
 
 `replacements` excerpt for the same example:
 
 | literal           | where                  | property   | token       | replacement                         |
-|-------------------|------------------------|------------|-------------|-------------------------------------|
+| ----------------- | ---------------------- | ---------- | ----------- | ----------------------------------- |
 | `#fdfcf9`         | app.css ×1             | background | `canvas`    | `background: var(--color-canvas)`   |
 | `#222`            | app.css ×7             | color      | `text`      | `color: var(--color-text)`          |
 | `#666`            | app.css ×3             | color      | `textMuted` | `color: var(--color-text-muted)`    |
@@ -661,10 +664,10 @@ a {
   `gamut srgb`; report it and use its gamut-mapped value.
 - **Everything must parse.** Constraint names, arities and target forms are exactly
 - **Raw templates.** `preview.css` and `preview.html` are CSS and body markup, not fenced
-   markdown; a fence in either shows up verbatim in the preview.
+  markdown; a fence in either shows up verbatim in the preview.
 - **Valid JSON.** One bad escape in the `theme-doc` block and the harness opens empty
   (the log then shows no `loaded embedded sketch` line). Escape `"`, `\` and newlines in
-   `pcad`, and `</` as `<\/`.
+  `pcad`, and `</` as `<\/`.
   those in §4; `index.html` must open with no errors in the log.
 
 ---
@@ -673,60 +676,78 @@ a {
 
 - [ ] The sketch parses and solves (`converged=true`, `0 unmet` per theme, or unmet
 - [ ] `index.html` opens in a browser: the `theme-doc` block is valid JSON, the
-  log says `loaded embedded sketch`, and no `src=` fetch error appears.
+      log says `loaded embedded sketch`, and no `src=` fetch error appears.
 - [ ] Every colour literal in the matched CSS appears in `inventory`, and every cluster
-   is either a token in `tokenMap` or explained in `findings`.
-  constraints explained).
+      is either a token in `tokenMap` or explained in `findings`.
+      constraints explained).
 - [ ] Every exported token is seeded with an observed value (light) and, for dark, either
-  observed or seeded on the correct side of the canvas.
+      observed or seeded on the correct side of the canvas.
 - [ ] Every text/background pair that occurs in the CSS has a `contrast` floor.
 - [ ] Every rule in the sketch has evidence or a stated design decision in §3.4.
 - [ ] Every derived point is determined on all three axes, or its slack is listed.
 - [ ] The demo CSS references only tokens that exist and uses each exported token once.
 - [ ] The migration table covers every occurrence in the inventory, including deletions
-  of redundant per-theme overrides.
+      of redundant per-theme overrides.
 - [ ] Proposed (not found) themes and all accessibility failures are listed as findings.
+
 ### 2.11 Write the harness
+
 Copy `demo/theme.html` to `index.html` and fill in its `theme-doc` block — do not
 leave the file to be assembled by hand in the browser:
+
 1. Remove the `src="./palette.pcad"` attribute from `<point-cad>`. An embedded sketch
-    wins over `src=` anyway, but the attribute would still fetch (and log an error) when
-    the file is opened from another directory.
+   wins over `src=` anyway, but the attribute would still fetch (and log an error) when
+   the file is opened from another directory.
 2. Point the module import at the library relative to where `index.html` lives:
-    `import { bootHarness } from "<path>/extensions/theme/ui/harness.js"`.
+   `import { bootHarness } from "<path>/extensions/theme/ui/harness.js"`.
 3. Fill the JSON block. Every key of `doc` is optional and falls back to the harness
-    defaults; `pcad` is the complete sketch of §2.8 as **one JSON string** (`\n` between
-    lines, `"` and `\` escaped). Prose fields are markdown; `preview.html` /
-    `preview.css` are raw markup and CSS. Escape any `</` inside the block as `<\/` (the
-    harness itself writes `\u003c`) so the browser does not close the script early.
-    ```html
-    <script type="application/json" id="theme-doc">
-    {
-      "generator": "analyze.op",
-      "generated": "2025-01-01T00:00:00Z",
-      "pcad": "# theme_design — one colour model, two themes\nspace oklab\nunits none deg\ngamut srgb\n…",
-      "doc": {
-        "project": "My app",
-        "prefix": "color-", "format": "oklch", "scope": ":root",
-        "switchMode": "media,attribute", "defaultTheme": "", "fallback": false,
-        "summary": "…",
-        "replacements": "| literal | where | property | token | replacement |\n|---|---|---|---|---|\n| `#222` | app.css ×7 | color | `text` | `color: var(--color-text)` |",
-        "plumbing": "…", "alpha": "…", "skip": "…", "order": "…", "findings": "…",
-        "inventory": "…", "tokenMap": "…", "relations": "…", "expected": "…",
-        "preview": { "html": "<h2>Sample page</h2>…", "css": "body { background: var(--color-canvas, #fdfcf9); … }" }
-      }
-    }
-    </script>
-    ```
+   defaults; `pcad` is the complete sketch of §2.8 as **one JSON string** (`\n` between
+   lines, `"` and `\` escaped). Prose fields are markdown; `preview.html` /
+   `preview.css` are raw markup and CSS. Escape any `</` inside the block as `<\/` (the
+   harness itself writes `\u003c`) so the browser does not close the script early.
+   ```html
+   <script type="application/json" id="theme-doc">
+     {
+       "generator": "analyze.op",
+       "generated": "2025-01-01T00:00:00Z",
+       "pcad": "# theme_design — one colour model, two themes\nspace oklab\nunits none deg\ngamut srgb\n…",
+       "doc": {
+         "project": "My app",
+         "prefix": "color-",
+         "format": "oklch",
+         "scope": ":root",
+         "switchMode": "media,attribute",
+         "defaultTheme": "",
+         "fallback": false,
+         "summary": "…",
+         "replacements": "| literal | where | property | token | replacement |\n|---|---|---|---|---|\n| `#222` | app.css ×7 | color | `text` | `color: var(--color-text)` |",
+         "plumbing": "…",
+         "alpha": "…",
+         "skip": "…",
+         "order": "…",
+         "findings": "…",
+         "inventory": "…",
+         "tokenMap": "…",
+         "relations": "…",
+         "expected": "…",
+         "preview": {
+           "html": "<h2>Sample page</h2>…",
+           "css": "body { background: var(--color-canvas, #fdfcf9); … }"
+         }
+       }
+     }
+   </script>
+   ```
 4. Verify in a browser: open the file, check the log for `loaded embedded sketch` with
-    no parse errors, press *Solve themes* and read `0 unmet` per theme (or explain the
-    unmet constraints in `findings`). If the session changed anything worth keeping,
-    *Save harness (.html)* writes the same file format back.
-From that file the designer produces every derived artefact without any notes document:
-- *Save harness (.html)* — the deliverable itself: sketch + templates + guide + evidence.
-- *Save guide (.md)* — `<project>-integration.md`, generated from the fields: the token
-   table, the CSS, numbered adoption steps for a human or an agent, the six migration
-   fields verbatim, the sketch, the demonstration, the solver report and the evidence
-   appendix. Nobody writes this file by hand.
-- *Open…* (or dropping a file on the viewport) re-loads a saved harness, a `.pcad` or a
-   sketch `.json` into the same page.
+   no parse errors, press _Solve themes_ and read `0 unmet` per theme (or explain the
+   unmet constraints in `findings`). If the session changed anything worth keeping,
+   _Save harness (.html)_ writes the same file format back.
+   From that file the designer produces every derived artefact without any notes document:
+
+- _Save harness (.html)_ — the deliverable itself: sketch + templates + guide + evidence.
+- _Save guide (.md)_ — `<project>-integration.md`, generated from the fields: the token
+  table, the CSS, numbered adoption steps for a human or an agent, the six migration
+  fields verbatim, the sketch, the demonstration, the solver report and the evidence
+  appendix. Nobody writes this file by hand.
+- _Open…_ (or dropping a file on the viewport) re-loads a saved harness, a `.pcad` or a
+  sketch `.json` into the same page.

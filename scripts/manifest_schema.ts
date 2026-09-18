@@ -1,646 +1,440 @@
 /**
- * manifest/schema.ts
+ * scripts/manifest_schema.ts
  *
- * Single source of truth for the unified content manifest.
+ * Shared types, constants and helpers for the manifest / entry-sidecar
+ * pipeline (build-manifest, sync-entries, split-manifest, apply-seo, …).
  *
- * This module is deliberately dependency-free and isomorphic: it contains no
- * `node:` imports and only POSIX-style string path math, so it can be imported
- * by the build scripts, by a bundler, or directly by the site at runtime.
+ * The repository keeps two representations of the same data:
+ *
+ *   - `entry.json` sidecars — one per project directory, hand-edited,
+ *     the *source of truth*. Path-like fields (`href`, `readme`, `video`)
+ *     are written relative to the sidecar's own directory. A leading
+ *     "/" pins a reference at the repo root instead (e.g. to point at a
+ *     shared asset that lives outside the entry's own directory).
+ *
+ *   - `manifest.json` — the compiled, flattened view used at runtime.
+ *     Every entry carries its `dir` (repo-root-relative, POSIX) and an
+ *     optional `source` (repo-root-relative path to the sidecar, for
+ *     entries whose sidecar isn't at `<dir>/entry.json`).
+ *
+ * `build-manifest` walks the tree, reads every sidecar and produces
+ * `manifest.json`. `sync-entries` is the inverse: it takes the compiled
+ * manifest and writes every entry back into its sidecar. Round-tripping
+ * through both must be a fixed point — that's what `--check` verifies.
  */
 
-/* ------------------------------------------------------------------ *
- * Constants
- * ------------------------------------------------------------------ */
+import path from 'node:path';
 
-/** Bumped to 2 when entries gained the autodiscovered `repo` block. */
-export const MANIFEST_VERSION = 2 as const;
+/* ------------------------------------------------------------ constants */
 
-/** Filename of the per-directory sidecar written by `split-manifest`. */
 export const ENTRY_FILENAME = 'entry.json';
-
-/** Filename of the unified manifest written by `build-manifest`. */
 export const MANIFEST_FILENAME = 'manifest.json';
 
-export const CATEGORIES = ['lab', 'game', 'essay'] as const;
-export type Category = (typeof CATEGORIES)[number];
-
-/** Where new entries of each category live by default. */
-export const CATEGORY_ROOTS: Record<Category, string> = {
-  lab: 'experiments',
-  game: 'games',
-  essay: 'essays',
-};
-
-/** Directories the builder scans for `entry.json` sidecars. */
-export const SCAN_ROOTS: readonly string[] = ['experiments', 'games', 'essays'];
-
-/** Never descend into these while scanning. */
-export const SCAN_IGNORE: readonly string[] = [
-  'node_modules',
-  '.git',
-  '.idea',
-  'dist',
-  'build',
-  'vendor',
-  'assets',
-];
-
-/** How deep below a scan root an `entry.json` may live. */
-export const SCAN_MAX_DEPTH = 4;
-
-export interface LegacySource {
-  /** Root-relative path of the pre-unification manifest. */
-  file: string;
-  category: Category;
-  /** Array-valued keys, in publication order. */
-  sections: readonly string[];
-  /** Section assigned to entries that have none. */
-  defaultSection: string;
-}
-
 /**
- * The three manifests being unified. Also used in reverse by
- * `build-manifest --legacy` to regenerate them for backwards compatibility.
+ * Canonical key order used when serializing both `entry.json` sidecars
+ * and manifest entries, so that diffs stay minimal and human-reviewable.
+ * Keys not listed here are appended afterwards, in their original order.
  */
-export const LEGACY_SOURCES: readonly LegacySource[] = [
-  { file: 'labs.json', category: 'lab', sections: ['featured', 'essays', 'demos'], defaultSection: 'featured' },
-  { file: 'games.json', category: 'game', sections: ['games'], defaultSection: 'games' },
-  { file: 'essays.json', category: 'essay', sections: ['essays'], defaultSection: 'essays' },
-];
-
-/** Canonical key order for serialized entries (stable diffs). */
-export const ENTRY_KEY_ORDER: readonly string[] = [
-  'id',
-  'category',
-  'section',
-  'order',
-  'icon',
-  'title',
-  'subtitle',
-  'href',
-  'readme',
-  'video',
-  'launchLabel',
-  'pitch',
-  'tags',
-  'hidden',
-   'repo',
-];
-
-/** Key order used when regenerating the legacy manifests. */
-export const LEGACY_KEY_ORDER: readonly string[] = [
-  'icon',
-  'title',
-  'href',
-  'readme',
-  'video',
-  'subtitle',
-  'launchLabel',
-  'pitch',
-];
-/** Canonical key order inside an entry's `repo` block. */
-export const REPO_KEY_ORDER: readonly string[] = [
-   'url',
-   'remote',
-   'host',
-   'slug',
-   'path',
-   'subpath',
-   'commit',
-   'branch',
-   'submodule',
-];
-
-/* ------------------------------------------------------------------ *
- * Types
- * ------------------------------------------------------------------ */
-
+export const ENTRY_KEY_ORDER = [
+    'id',
+    'title',
+    'description',
+    'tags',
+    'category',
+    'href',
+    'readme',
+    'video',
+    'thumbnail',
+    'author',
+    'license',
+    'date',
+    'order',
+    'repo',
+    'seo',
+] as const;
+export const MANIFEST_VERSION = 1;
 /**
- * A path reference inside an `entry.json`. Three flavors:
- *
- *  1. `index.html`            – relative to the entry's own directory.
- *  2. `/videos/demo.mp4`      – relative to the *site root* (shared assets).
- *  3. `https://example.com/`  – absolute URL, passed through untouched.
- *
- * `resolvePathRef()` collapses all three into a root-relative path.
- */
-export type PathRef = string;
-/**
-  * Where an entry's source actually lives in version control.
-  *
-  * Autodiscovered by `build-manifest` from `.gitmodules` + `git submodule
-  * status`; anything written explicitly into an `entry.json` overrides the
-  * discovered value field-by-field.
+  * Categories recognised by the legacy per-section JSON exports. Entries may
+  * use other `category` values freely; only these participate in `--legacy`
+  * output.
   */
+export type Category = 'labs' | 'games' | 'essays';
+/** One `--legacy` output file and the section(s) it is split into. */
+export interface LegacySource {
+     category: Category;
+     file: string;
+     sections: readonly string[];
+     defaultSection: string;
+}
+export const LEGACY_SOURCES: readonly LegacySource[] = [
+     {category: 'labs', file: 'labs.json', sections: ['labs'], defaultSection: 'labs'},
+     {category: 'games', file: 'games.json', sections: ['games'], defaultSection: 'games'},
+     {category: 'essays', file: 'essays.json', sections: ['essays'], defaultSection: 'essays'},
+];
+/**
+  * Default scan configuration for `build-manifest`'s directory walk.
+  * `SCAN_ROOTS` is only consulted with `--scan-roots-only`; by default the
+  * walk starts at the repository root instead.
+  */
+export const SCAN_ROOTS: readonly string[] = ['labs', 'games', 'essays'];
+/** Directory names always skipped while walking, regardless of scan root. */
+export const SCAN_IGNORE: readonly string[] = ['.git'];
+/** Default recursion limit (relative to each scan root) for the directory walk. */
+export const SCAN_MAX_DEPTH = 3;
+
+
+/* ---------------------------------------------------------------- types */
+
 export interface RepoInfo {
-   /** Canonical browse URL, e.g. `https://github.com/user/project`. */
-   url?: string;
-   /** Raw remote as configured, when it differs from `url` (ssh, relative…). */
-   remote?: string;
-   /** Host inferred from `url`, e.g. `github.com`. */
-   host?: string;
-   /** Path within the host, e.g. `user/project`. */
-   slug?: string;
-   /** Root-relative checkout path (`''` = this repository). */
-   path?: string;
-   /** Path of the entry *inside* that repository (`''` = repo root). */
-   subpath?: string;
-   /** Pinned commit — the submodule gitlink, not a moving branch head. */
-   commit?: string;
-   /** Tracked branch, when `.gitmodules` declares one. */
-   branch?: string;
-   /** True when the checkout is a submodule of the outer repository. */
-   submodule?: boolean;
-}
-/** One `[submodule "…"]` stanza of a `.gitmodules` file. */
-export interface GitModule {
-   name: string;
-   /** Root-relative checkout path. */
-   path: string;
-   /** Raw `url =` value; may be relative (`../other.git`). */
-   url: string;
-   /** `branch =` value; `.` means "track the superproject's branch". */
-   branch?: string;
-}
-/** One line of `git submodule status`. */
-export interface SubmoduleStatus {
-   /** `' '` in sync, `'-'` uninitialized, `'+'` moved, `'U'` conflicted. */
-   state: ' ' | '-' | '+' | 'U';
-   commit: string;
-   path: string;
-   /** Ref shown in parentheses, with a leading `heads/` stripped. */
-   ref?: string;
+    url?: string;
+    branch?: string;
+    commit?: string;
+
+    [key: string]: unknown;
 }
 
-/** The on-disk shape of a per-directory `entry.json`. */
+/** Shape of a per-directory `entry.json` sidecar file. */
 export interface EntryFile {
-  /** Stable slug; unique across the whole site. */
-  id: string;
-  category: Category;
-  /** Publication bucket, e.g. `featured` | `demos` | `games` | `essays`. */
-  section?: string;
-  /** Sort key within the section. Missing sorts last, then by title. */
-  order?: number;
-  /** Two-or-three character badge (or an emoji). */
-  icon: string;
-  title: string;
-  subtitle?: string;
-  href: PathRef;
-  readme?: PathRef;
-  video?: PathRef;
-  launchLabel?: string;
-  /** Short HTML-bearing blurb. */
-  pitch?: string;
-  tags?: string[];
-  /** Excluded from the published manifest when true. */
-  hidden?: boolean;
-   /**
-    * Optional override for repository discovery. A bare string is treated as
-    * the remote URL; an object overrides individual {@link RepoInfo} fields.
-    */
-   repo?: RepoInfo | string;
+    id: string;
+    title?: string;
+    description?: string;
+    tags?: string[];
+    category?: string;
+    href?: string;
+    readme?: string;
+    video?: string;
+    thumbnail?: string;
+    author?: string;
+    license?: string;
+    date?: string;
+    order?: number;
+    /** Autodiscovered on build; not normally hand-maintained. */
+    repo?: RepoInfo;
+    seo?: Record<string, unknown>;
+
+    [key: string]: unknown;
 }
 
-/** An entry after resolution, as it appears in the unified manifest. */
+/** Shape of one entry inside the compiled `manifest.json`. */
 export interface ManifestEntry extends EntryFile {
-  section: string;
-  order: number;
-  /** Root-relative directory that owns this entry. */
-  dir: string;
-  /** Root-relative path of the sidecar it came from. */
-  source: string;
-   /** Resolved repository provenance (always an object here, never a string). */
-   repo?: RepoInfo;
+    /** Repo-root-relative directory the sidecar lives in. */
+    dir?: string;
+    /** Repo-root-relative path to the sidecar, if not `<dir>/entry.json`. */
+    source?: string;
 }
 
 export interface UnifiedManifest {
-  version: number;
-  generatedAt: string;
-  counts: Record<string, number>;
-  entries: ManifestEntry[];
+    generatedAt?: string;
+    entries: ManifestEntry[];
+
+    [key: string]: unknown;
+}
+/** One `[submodule "name"]` block parsed out of `.gitmodules`. */
+export interface GitmoduleEntry {
+     path: string;
+     url: string;
+     /** Literal `.` means "track the superproject's current branch". */
+     branch?: string;
+}
+/** One line of `git submodule status [--recursive]` output. */
+export interface SubmoduleStatus {
+     path: string;
+     commit: string;
+     /** ` ` = in sync, `-` = not initialized, `+` = checked out commit differs, `U` = merge conflicts. */
+     state: ' ' | '-' | '+' | 'U';
 }
 
-/* ------------------------------------------------------------------ *
- * POSIX path helpers (string-only, browser safe)
- * ------------------------------------------------------------------ */
 
-export function isExternal(p: string): boolean {
-  return /^[a-z][a-z0-9+.\-]*:/i.test(p) || p.startsWith('//');
-}
-
-export function isRootRelative(p: string): boolean {
-  return p.startsWith('/');
-}
-
-/** Split `path?query#hash` into `[path, suffix]`. */
-export function splitPathSuffix(p: string): [string, string] {
-   // `[\s\S]` so a stray newline in a query/hash does not silently truncate.
-   const m = /^([^?#]*)([?#][\s\S]*)?$/.exec(p);
-  return [m?.[1] ?? p, m?.[2] ?? ''];
-}
-
-export function normalizePosix(p: string): string {
-  const abs = p.startsWith('/');
-  const out: string[] = [];
-  for (const part of p.split('/')) {
-    if (!part || part === '.') continue;
-    if (part === '..') {
-      if (out.length && out[out.length - 1] !== '..') out.pop();
-      else if (!abs) out.push('..');
-      continue;
-    }
-    out.push(part);
-  }
-  return (abs ? '/' : '') + out.join('/');
-}
-
-export function joinPosix(...parts: (string | undefined)[]): string {
-  return normalizePosix(parts.filter(Boolean).join('/'));
-}
-
-export function dirnamePosix(p: string): string {
-  const i = p.lastIndexOf('/');
-  if (i < 0) return '';
-  if (i === 0) return '/';
-  return p.slice(0, i);
-}
-
-export function basenamePosix(p: string): string {
-  const i = p.lastIndexOf('/');
-  return i < 0 ? p : p.slice(i + 1);
-}
-
-export function slugify(value: string): string {
-  return value
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-/** Keys that carry comments/metadata rather than content (`$schema`, `//`). */
-export function isMetaKey(key: string): boolean {
-   return key.startsWith('$') || key === '//';
-}
-
-/* ------------------------------------------------------------------ *
- * Path <-> entry-directory translation
- * ------------------------------------------------------------------ */
+/* ---------------------------------------------------------- path refs */
 
 /**
- * Rewrite a root-relative path for storage inside `<dir>/entry.json`.
- * Paths under `dir` become directory-relative; everything else is anchored
- * to the site root with a leading `/`.
+ * Resolve a path reference found in an `entry.json` (or manifest entry)
+ * into a repo-root-relative, slash-free-leading POSIX path.
+ *
+ *   - a leading "/" pins the reference at the repo root: `/a/b.png` -> `a/b.png`
+ *   - anything else is taken relative to `dir`: `b.png` (dir=`a`) -> `a/b.png`
  */
-export function toPathRef(dir: string, value: string): PathRef {
-   // An empty reference stays empty: callers must decide whether that is fatal.
-   // (Previously this produced a bare "/", which then passed validation.)
-   if (!value) return '';
-  if (isExternal(value)) return value;
-  const [pathPart, suffix] = splitPathSuffix(value);
-  const norm = normalizePosix(pathPart.replace(/^\/+/, ''));
-  const prefix = dir ? `${normalizePosix(dir)}/` : '';
-  if (prefix && norm.startsWith(prefix)) return norm.slice(prefix.length) + suffix;
-  return `/${norm}${suffix}`;
-}
-
-/** Inverse of {@link toPathRef}: produce a root-relative path (or URL). */
-export function resolvePathRef(dir: string, value: PathRef): string {
-  if (isExternal(value)) return value;
-  const [pathPart, suffix] = splitPathSuffix(value);
-  if (isRootRelative(pathPart)) return normalizePosix(pathPart).replace(/^\/+/, '') + suffix;
-  return joinPosix(dir, pathPart) + suffix;
-}
-
-/** Resolve every path field of an entry against its directory, in place-safe fashion. */
-export function resolveEntryPaths<T extends EntryFile>(entry: T, dir: string): T {
-  const out = { ...entry };
-  out.href = resolvePathRef(dir, entry.href);
-  if (entry.readme !== undefined) out.readme = resolvePathRef(dir, entry.readme);
-  if (entry.video !== undefined) out.video = resolvePathRef(dir, entry.video);
-  return out;
-}
-/* ------------------------------------------------------------------ *
-  * Git repository discovery (pure string helpers, no `node:` imports)
-  * ------------------------------------------------------------------ */
-/** Turn any remote spelling into a canonical, browsable https URL. */
-export function normalizeGitUrl(remote: string): string {
-   const raw = (remote ?? '').trim();
-   if (!raw) return '';
-   // Plain filesystem remotes are left alone: there is nothing to browse.
-   if (raw.startsWith('/') || raw.startsWith('.') || /^file:\/\//i.test(raw)) {
-     return raw.replace(/\/+$/, '');
-   }
-   let url = raw;
-   // scp-like shorthand: git@host:owner/name.git
-   const scp = /^(?:[^@\s/]+@)?([^\s:/]+):([^\s].*)$/.exec(url);
-   if (scp && !url.includes('://')) url = `https://${scp[1]}/${scp[2]}`;
-   url = url.replace(/^(?:ssh|git|git\+ssh|git\+https):\/\//i, 'https://');
-   url = url.replace(/^(https?:\/\/)[^/@]+@/i, '$1'); // drop embedded credentials
-   url = url.replace(/\/+$/, '').replace(/\.git$/i, '');
-   return url;
-}
-/** Resolve a relative submodule url (`../x.git`) against the outer remote. */
-export function resolveGitUrl(base: string, ref: string): string {
-   if (!/^\.{1,2}\//.test(ref)) return ref;
-   const b = normalizeGitUrl(base);
-   if (!b) return ref;
-   const m = /^([a-z][a-z0-9+.\-]*:\/\/[^/]+)(\/.*)?$/i.exec(b);
-   if (!m) return normalizePosix(`${b}/${ref}`);
-   const joined = normalizePosix(`${m[2] ?? '/'}/${ref}`);
-   return `${m[1]}${joined.startsWith('/') ? joined : `/${joined}`}`;
-}
-export function repoHost(url: string): string {
-   return /^[a-z][a-z0-9+.\-]*:\/\/([^/]+)/i.exec(url)?.[1] ?? '';
-}
-/** `https://github.com/user/project` → `user/project` (nested groups kept). */
-export function repoSlug(url: string): string {
-   const m = /^[a-z][a-z0-9+.\-]*:\/\/[^/]+\/(.+)$/i.exec(url);
-   if (!m) return '';
-   return m[1].replace(/^\/+|\/+$/g, '').replace(/\.git$/i, '');
-}
-/** Parse a `.gitmodules` file. Unknown sections and comments are ignored. */
-export function parseGitmodules(text: string): GitModule[] {
-   const out: GitModule[] = [];
-   let cur: Partial<GitModule> | null = null;
-   const commit = () => {
-     if (cur?.path) out.push({ name: cur.name || cur.path, path: cur.path, url: cur.url ?? '', branch: cur.branch });
-     cur = null;
-   };
-   for (const line of (text ?? '').split(/\r?\n/)) {
-     const trimmed = line.trim();
-     if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith(';')) continue;
-     if (trimmed.startsWith('[')) {
-       commit();
-       const section = /^\[submodule\s+"?([^"\]]*)"?\]$/i.exec(trimmed);
-       if (section) cur = { name: section[1] };
-       continue;
-     }
-     if (!cur) continue;
-     const kv = /^([A-Za-z0-9_-]+)\s*=\s*(.*)$/.exec(trimmed);
-     if (!kv) continue;
-     const key = kv[1].toLowerCase();
-     const value = kv[2].trim().replace(/^"|"$/g, '');
-     if (key === 'path') cur.path = normalizePosix(value.replace(/^\.\//, ''));
-     else if (key === 'url') cur.url = value;
-     else if (key === 'branch') cur.branch = value;
-   }
-   commit();
-   return out;
+export function resolvePathRef(dir: string, ref: string): string {
+    if (ref.startsWith('/')) {
+        return path.posix.normalize(ref.slice(1)).replace(/^(\.\.(\/|$))+/, '');
+    }
+    const base = dir ? `${dir}/${ref}` : ref;
+    return path.posix.normalize(base);
 }
 /**
-  * Parse `git submodule status` output (the same shape as `submodules.txt`):
-  * `" <sha> <path> (heads/main)"`, optionally prefixed with `-`, `+` or `U`.
+* Split a path-like reference into its filesystem path and any trailing
+* `#fragment` or `?query` suffix, e.g. `"a/b.html#top"` ->
+* `["a/b.html", "#top"]`. Useful because `href`/`video` values may point at
+* a specific in-page anchor that shouldn't be treated as part of the path
+* when resolving or checking the target file on disk.
+*/
+export function splitPathSuffix(ref: string): [string, string] {
+    const match = /^([^?#]*)([?#].*)?$/.exec(ref);
+    if (!match) return [ref, ''];
+    return [match[1], match[2] ?? ''];
+}
+
+
+/**
+ * Inverse of {@link resolvePathRef}: turn a repo-root-relative path back
+ * into the reference form appropriate for a sidecar living in `dir`.
+ * Paths inside `dir` are written as bare relative paths; anything that
+ * would need to climb out of `dir` is instead pinned at the repo root
+ * with a leading "/".
+ */
+export function toPathRef(dir: string, resolved: string): string {
+    const normalized = path.posix.normalize(resolved);
+    const base = dir ? path.posix.normalize(dir) : '.';
+    const rel = path.posix.relative(base, normalized);
+    if (rel === '') return '.';
+    if (!rel.startsWith('..')) return rel;
+    return `/${normalized}`;
+}
+
+/** Join POSIX path segments and normalize, dropping empty parts. */
+export function joinPosix(...parts: string[]): string {
+    const filtered = parts.filter((p) => p !== undefined && p !== null && p !== '');
+    if (filtered.length === 0) return '';
+    return path.posix.normalize(filtered.join('/'));
+}
+/** Is `ref` an absolute URL (or other non-local scheme) rather than a repo path? */
+export function isExternal(ref: string): boolean {
+     return /^[a-z][a-z0-9+.-]*:/i.test(ref) || ref.startsWith('//');
+}
+/**
+  * Resolve an entry's `href`/`readme`/`video` fields (as found in a sidecar or
+  * manifest entry) against `dir`, leaving external URLs untouched.
   */
+export function resolveEntryPaths(
+     entry: Pick<EntryFile, 'href' | 'readme' | 'video'>,
+     dir: string,
+): {href?: string; readme?: string; video?: string} {
+     const resolve = (ref?: string): string | undefined => {
+         if (!ref) return undefined;
+         return isExternal(ref) ? ref : resolvePathRef(dir, ref);
+     };
+     return {
+         href: resolve(entry.href),
+         readme: resolve(entry.readme),
+         video: resolve(entry.video),
+     };
+}
+/* ----------------------------------------------------------------- repo */
+/**
+  * Which of `submodulePaths` (if any) contains `dir`? Returns the longest
+  * matching path, so nested submodules win over their parents.
+  */
+export function matchRepoPath(dir: string, submodulePaths: string[]): string | undefined {
+     let best: string | undefined;
+     for (const sub of submodulePaths) {
+         if (dir === sub || dir.startsWith(`${sub}/`)) {
+             if (best === undefined || sub.length > best.length) best = sub;
+         }
+     }
+     return best;
+}
+/** `dir`'s path relative to `base`, given `base` is a prefix of `dir`. */
+export function relativeUnder(base: string, dir: string): string {
+     if (!base) return dir;
+     if (dir === base) return '';
+     if (dir.startsWith(`${base}/`)) return dir.slice(base.length + 1);
+     return dir;
+}
+/** Normalize a hand-written sidecar `repo` field into a {@link RepoInfo}. */
+export function normalizeRepoRef(repo: unknown): RepoInfo | undefined {
+     if (typeof repo !== 'object' || repo === null || Array.isArray(repo)) return undefined;
+     const out: RepoInfo = {...(repo as Record<string, unknown>)};
+     for (const key of Object.keys(out)) {
+         if (out[key] === undefined || out[key] === '') delete out[key];
+     }
+     return Object.keys(out).length ? out : undefined;
+}
+/** Merge two (possibly absent) {@link RepoInfo} objects; `primary` wins on conflicts. */
+export function mergeRepoInfo(primary?: RepoInfo, secondary?: RepoInfo): RepoInfo | undefined {
+     if (!primary && !secondary) return undefined;
+     return {...secondary, ...primary};
+}
+function resolveRelativeRemote(remote: string, base: string): string {
+     const parts = base.replace(/\/+$/, '').split('/');
+     for (const segment of remote.split('/')) {
+         if (segment === '' || segment === '.') continue;
+         if (segment === '..') parts.pop();
+         else parts.push(segment);
+     }
+     return parts.join('/');
+}
+interface MakeRepoInfoOptions {
+     remote?: string;
+     /** Superproject remote URL, used to resolve relative submodule URLs. */
+     base?: string;
+     path?: string;
+     commit?: string;
+     branch?: string;
+     submodule?: boolean;
+}
+/** Build a {@link RepoInfo}, resolving relative submodule URLs against `base`. */
+export function makeRepoInfo(opts: MakeRepoInfoOptions): RepoInfo {
+     const info: RepoInfo = {};
+     if (opts.remote) {
+         info.url =
+             opts.base && (opts.remote.startsWith('./') || opts.remote.startsWith('../'))
+                 ? resolveRelativeRemote(opts.remote, opts.base)
+                 : opts.remote;
+     }
+     if (opts.branch) info.branch = opts.branch;
+     if (opts.commit) info.commit = opts.commit;
+     if (opts.path) info.path = opts.path;
+     if (opts.submodule) info.submodule = true;
+     return info;
+}
+/** Parse a `.gitmodules` file into its `[submodule "name"]` entries. */
+export function parseGitmodules(text: string): GitmoduleEntry[] {
+     const modules: GitmoduleEntry[] = [];
+     let current: Partial<GitmoduleEntry> | null = null;
+     const flush = () => {
+         if (current?.path && current.url) modules.push(current as GitmoduleEntry);
+     };
+     for (const rawLine of text.split(/\r?\n/)) {
+         const line = rawLine.trim();
+         if (/^\[submodule\b/.test(line)) {
+             flush();
+             current = {};
+             continue;
+         }
+         if (!current) continue;
+         const kv = line.match(/^(\w+)\s*=\s*(.*)$/);
+         if (!kv) continue;
+         const [, key, value] = kv;
+         if (key === 'path') current.path = value.trim();
+         else if (key === 'url') current.url = value.trim();
+         else if (key === 'branch') current.branch = value.trim();
+     }
+     flush();
+     return modules;
+}
+/** Parse the output of `git submodule status [--recursive]` (or an equivalent file). */
 export function parseSubmoduleStatus(text: string): SubmoduleStatus[] {
-   const out: SubmoduleStatus[] = [];
-   for (const line of (text ?? '').split(/\r?\n/)) {
-     if (!line.trim()) continue;
-     const m = /^([-+U ]?)\s*([0-9a-f]{7,40})\s+(\S+)(?:\s+\((.*)\))?\s*$/i.exec(line);
-     if (!m) continue;
-     out.push({
-       state: ((m[1] || ' ') as SubmoduleStatus['state']),
-       commit: m[2],
-       path: normalizePosix(m[3]),
-       ref: m[4]?.replace(/^heads\//, ''),
-     });
-   }
-   return out;
-}
-/** Longest checkout path in `paths` that contains `dir`, or `null`. */
-export function matchRepoPath(dir: string, paths: readonly string[]): string | null {
-   const target = normalizePosix(dir);
-   let best: string | null = null;
-   for (const candidate of paths) {
-     const p = normalizePosix(candidate);
-     if (!p) continue;
-     if (target === p || target.startsWith(`${p}/`)) {
-       if (!best || p.length > best.length) best = p;
+     const out: SubmoduleStatus[] = [];
+     for (const rawLine of text.split(/\r?\n/)) {
+         if (!rawLine.trim()) continue;
+         const state = rawLine[0];
+         const match = rawLine.slice(1).trim().match(/^(\S+)\s+(\S+)/);
+         if (!match) continue;
+         const [, commit, modPath] = match;
+         out.push({
+             path: modPath,
+             commit,
+             state: (state === '-' || state === '+' || state === 'U' ? state : ' ') as SubmoduleStatus['state'],
+         });
      }
-   }
-   return best;
-}
-/** `relativeUnder('games', 'games/wordsearch')` → `'wordsearch'`. */
-export function relativeUnder(base: string, target: string): string {
-   const b = normalizePosix(base);
-   const t = normalizePosix(target);
-   if (!b) return t;
-   if (t === b) return '';
-   return t.startsWith(`${b}/`) ? t.slice(b.length + 1) : t;
-}
-/** Build a normalized, key-ordered {@link RepoInfo}, dropping empty fields. */
-export function makeRepoInfo(input: {
-   /** Remote as configured; may be scp-like or relative to `base`. */
-   remote?: string;
-   /** Outer remote, used to resolve relative submodule urls. */
-   base?: string;
-   path?: string;
-   subpath?: string;
-   commit?: string;
-   branch?: string;
-   submodule?: boolean;
-}): RepoInfo {
-   const remote = (input.remote ?? '').trim();
-   const absolute = remote ? resolveGitUrl(input.base ?? '', remote) : '';
-   const url = absolute ? normalizeGitUrl(absolute) : '';
-   const info: Record<string, unknown> = {};
-   if (url) info.url = url;
-   if (remote && remote !== url) info.remote = remote;
-   if (url) {
-     const host = repoHost(url);
-     const slug = repoSlug(url);
-     if (host) info.host = host;
-     if (slug) info.slug = slug;
-   }
-   if (input.path) info.path = normalizePosix(input.path);
-   if (input.subpath) info.subpath = normalizePosix(input.subpath);
-   if (input.commit) info.commit = input.commit;
-   if (input.branch) info.branch = input.branch;
-   if (input.submodule) info.submodule = true;
-   return orderKeys(info, REPO_KEY_ORDER) as RepoInfo;
-}
-/** Coerce the `repo` field of an `entry.json` into a {@link RepoInfo}. */
-export function normalizeRepoRef(value: RepoInfo | string | undefined): RepoInfo | undefined {
-   if (!value) return undefined;
-   if (typeof value === 'string') return value.trim() ? makeRepoInfo({ remote: value }) : undefined;
-   return orderKeys({ ...value } as Record<string, unknown>, REPO_KEY_ORDER) as RepoInfo;
-}
-/** Explicit (hand-authored) fields win over discovered ones. */
-export function mergeRepoInfo(explicit?: RepoInfo, discovered?: RepoInfo): RepoInfo | undefined {
-   if (!explicit && !discovered) return undefined;
-   const merged: Record<string, unknown> = { ...(discovered ?? {}) };
-   for (const [key, value] of Object.entries(explicit ?? {})) {
-     if (value !== undefined && value !== '') merged[key] = value;
-   }
-   return Object.keys(merged).length ? (orderKeys(merged, REPO_KEY_ORDER) as RepoInfo) : undefined;
-}
-/** Best-effort "view this entry's source" link. */
-export function repoBrowseUrl(repo?: RepoInfo, subpath?: string): string {
-   if (!repo?.url) return '';
-   const rel = normalizePosix(subpath ?? repo.subpath ?? '');
-   if (!rel) return repo.url;
-   const ref = repo.commit || repo.branch || 'HEAD';
-   const verb = /bitbucket/i.test(repo.host ?? '') ? 'src' : 'tree';
-   return `${repo.url}/${verb}/${ref}/${rel}`;
+     return out;
 }
 
-/* ------------------------------------------------------------------ *
- * Identity
- * ------------------------------------------------------------------ */
 
-/** Pick the directory that should own an entry, given its (root-relative) paths. */
-export function entryDirFor(input: {
-  category: Category;
-  href?: string;
-  readme?: string;
-  title: string;
-}): string {
-  const localDir = (p?: string): string => {
-    if (!p || isExternal(p)) return '';
-    const [pathPart] = splitPathSuffix(p);
-    const dir = dirnamePosix(normalizePosix(pathPart.replace(/^\/+/, '')));
-    return dir === '/' ? '' : dir;
-  };
-  return (
-    localDir(input.href) ||
-    localDir(input.readme) ||
-    joinPosix(CATEGORY_ROOTS[input.category], slugify(input.title))
-  );
-}
+/* --------------------------------------------------------------- keys */
 
-export function entryIdFromDir(dir: string, fallbackTitle = ''): string {
-  return slugify(basenamePosix(dir)) || slugify(fallbackTitle) || 'entry';
-}
 /**
-  * Return `base` (slugified) if free, otherwise `base-2`, `base-3`, … so the
-  * result is guaranteed absent from `taken`.
+ * Return a shallow copy of `obj` with keys ordered according to `order`;
+ * keys not listed in `order` are appended afterwards, in their original
+ * relative order. Keys absent from `obj` are simply skipped.
+ */
+export function orderKeys<T extends Record<string, unknown>>(
+    obj: T,
+    order: readonly string[],
+): T {
+    const out: Record<string, unknown> = {};
+    for (const key of order) {
+        if (key in obj) out[key] = obj[key];
+    }
+    for (const key of Object.keys(obj)) {
+        if (!(key in out)) out[key] = obj[key];
+    }
+    return out as T;
+}
+/* ---------------------------------------------------------------- sort */
+/**
+  * Ordering used for the compiled manifest: explicit `order` first (entries
+  * without one sort last), then title, then id — so ties are stable and
+  * deterministic across rebuilds.
   */
-export function uniqueId(base: string, taken: ReadonlySet<string>): string {
-   const seed = slugify(base) || 'entry';
-   if (!taken.has(seed)) return seed;
-   let n = 2;
-   while (taken.has(`${seed}-${n}`)) n += 1;
-   return `${seed}-${n}`;
-}
-
-/* ------------------------------------------------------------------ *
- * Ordering
- * ------------------------------------------------------------------ */
-
-export function categoryRank(category: Category): number {
-  const i = CATEGORIES.indexOf(category);
-  return i < 0 ? CATEGORIES.length : i;
-}
-
-export function sectionRank(category: Category, section: string): number {
-  const src = LEGACY_SOURCES.find((s) => s.category === category);
-  const i = src ? src.sections.indexOf(section) : -1;
-  return i < 0 ? Number.MAX_SAFE_INTEGER : i;
-}
-
 export function compareEntries(a: ManifestEntry, b: ManifestEntry): number {
-  return (
-    categoryRank(a.category) - categoryRank(b.category) ||
-    sectionRank(a.category, a.section) - sectionRank(b.category, b.section) ||
-    a.section.localeCompare(b.section) ||
-    (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) ||
-    a.title.localeCompare(b.title) ||
-    a.id.localeCompare(b.id)
-  );
+     const orderA = typeof a.order === 'number' ? a.order : Number.MAX_SAFE_INTEGER;
+     const orderB = typeof b.order === 'number' ? b.order : Number.MAX_SAFE_INTEGER;
+     if (orderA !== orderB) return orderA - orderB;
+     const titleA = a.title ?? '';
+     const titleB = b.title ?? '';
+     if (titleA !== titleB) return titleA.localeCompare(titleB);
+     return (a.id ?? '').localeCompare(b.id ?? '');
 }
-
-/* ------------------------------------------------------------------ *
- * Validation & serialization
- * ------------------------------------------------------------------ */
-
-const REQUIRED_STRINGS = ['id', 'icon', 'title', 'href'] as const;
-const OPTIONAL_STRINGS = ['section', 'subtitle', 'readme', 'video', 'launchLabel', 'pitch'] as const;
-/** Structural validation of an entry's `repo` override. */
-export function validateRepoRef(value: unknown, at: (msg: string) => string): string[] {
-   if (typeof value === 'string') {
-     return value.trim() ? [] : [at('"repo" must be a non-empty remote URL when given as a string')];
-   }
-   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
-     return [at('"repo" must be a remote URL string or an object')];
-   }
-   const errors: string[] = [];
-   const r = value as Record<string, unknown>;
-   for (const key of REPO_KEY_ORDER) {
-     if (key === 'submodule') continue;
-     if (r[key] !== undefined && typeof r[key] !== 'string') {
-       errors.push(at(`"repo.${key}" must be a string when present`));
-     }
-   }
-   if (r.submodule !== undefined && typeof r.submodule !== 'boolean') {
-     errors.push(at('"repo.submodule" must be a boolean when present'));
-   }
-   const unknown = Object.keys(r).filter((k) => !REPO_KEY_ORDER.includes(k) && !isMetaKey(k));
-   if (unknown.length) errors.push(at(`unknown repo field(s): ${unknown.join(', ')}`));
-   return errors;
-}
-
-/** Structural validation. Returns a list of human-readable problems. */
-export function validateEntryFile(raw: unknown, source = '<memory>'): string[] {
-  const errors: string[] = [];
-  const at = (msg: string) => `${source}: ${msg}`;
-
-  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
-    return [at('expected a JSON object')];
-  }
-  const e = raw as Record<string, unknown>;
-
-  for (const key of REQUIRED_STRINGS) {
-    if (typeof e[key] !== 'string' || !(e[key] as string).trim()) {
-      errors.push(at(`missing or empty required string field "${key}"`));
-    }
-  }
-  if (typeof e.category !== 'string' || !CATEGORIES.includes(e.category as Category)) {
-    errors.push(at(`"category" must be one of ${CATEGORIES.join(' | ')}`));
-  }
-  for (const key of OPTIONAL_STRINGS) {
-    if (e[key] !== undefined && typeof e[key] !== 'string') {
-      errors.push(at(`"${key}" must be a string when present`));
-    }
-  }
-  if (e.order !== undefined && (typeof e.order !== 'number' || !Number.isFinite(e.order))) {
-    errors.push(at('"order" must be a finite number when present'));
-  }
-  if (e.hidden !== undefined && typeof e.hidden !== 'boolean') {
-    errors.push(at('"hidden" must be a boolean when present'));
-  }
-  if (e.tags !== undefined && (!Array.isArray(e.tags) || e.tags.some((t) => typeof t !== 'string'))) {
-    errors.push(at('"tags" must be an array of strings when present'));
-  }
-  if (typeof e.id === 'string' && e.id !== slugify(e.id)) {
-    errors.push(at(`"id" must be a slug (got "${e.id}", expected "${slugify(e.id)}")`));
-  }
-   if (typeof e.href === 'string' && (e.href.trim() === '/' || e.href.trim() === '.')) {
-     errors.push(at('"href" must point at a file, not a bare directory root'));
-   }
-    if (e.repo !== undefined) errors.push(...validateRepoRef(e.repo, at));
-   const unknown = Object.keys(e).filter((k) => !ENTRY_KEY_ORDER.includes(k) && !isMetaKey(k));
-  if (unknown.length) errors.push(at(`unknown field(s): ${unknown.join(', ')}`));
-
-  return errors;
-}
-
-/** Re-key an object into a canonical order, dropping `undefined` values. */
-export function orderKeys<T extends Record<string, unknown>>(obj: T, order: readonly string[]): T {
-  const out: Record<string, unknown> = {};
-  for (const key of order) if (obj[key] !== undefined) out[key] = obj[key];
-  for (const key of Object.keys(obj)) if (!(key in out) && obj[key] !== undefined) out[key] = obj[key];
-  return out as T;
-}
-
-export function serializeJson(value: unknown): string {
-  return `${JSON.stringify(value, null, 2)}\n`;
-}
-
-/** Strip the manifest-only bookkeeping fields for legacy consumers. */
+/* -------------------------------------------------------------- legacy */
+/**
+  * Strip manifest-only bookkeeping (`dir`, `source`, `section`, `repo`) from
+  * an entry so it matches the shape hand-maintained `labs.json` / `games.json`
+  * / `essays.json` files expect.
+  */
 export function toLegacyEntry(entry: ManifestEntry): Record<string, unknown> {
-  const resolved = resolveEntryPaths(entry, entry.dir);
-   const { id, category, section, order, dir, source, hidden, tags, repo, ...rest } =
-     resolved as ManifestEntry;
-   void id; void category; void section; void order; void dir; void source; void hidden; void tags; void repo;
-  return orderKeys(rest as Record<string, unknown>, LEGACY_KEY_ORDER);
+     const {dir, source, section, repo, category, ...rest} = entry as Record<string, unknown> & {
+         dir?: string;
+         source?: string;
+         section?: string;
+         repo?: RepoInfo;
+         category?: string;
+     };
+     return orderKeys(rest, ENTRY_KEY_ORDER);
+}
+
+
+/* ---------------------------------------------------------- serialize */
+
+/** Stable, human-diffable JSON serialization (4-space indent, trailing newline). */
+export function serializeJson(value: unknown): string {
+    return `${JSON.stringify(value, null, 4)}\n`;
+}
+
+/* ---------------------------------------------------------- validate */
+
+/**
+ * Minimal structural validation for a would-be `entry.json`. Returns a
+ * list of human-readable problems; an empty array means "looks fine".
+ * `target` is only used to prefix messages with the file being checked.
+ */
+export function validateEntryFile(entry: unknown, target: string): string[] {
+    const problems: string[] = [];
+
+    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
+        return [`${target}: entry must be an object`];
+    }
+
+    const e = entry as Record<string, unknown>;
+
+    if (typeof e.id !== 'string' || e.id.trim() === '') {
+        problems.push(`${target}: missing or invalid "id"`);
+    }
+    if (e.title !== undefined && typeof e.title !== 'string') {
+        problems.push(`${target}: "title" must be a string`);
+    }
+    if (e.description !== undefined && typeof e.description !== 'string') {
+        problems.push(`${target}: "description" must be a string`);
+    }
+    if (e.tags !== undefined) {
+        if (!Array.isArray(e.tags) || e.tags.some((t) => typeof t !== 'string')) {
+            problems.push(`${target}: "tags" must be an array of strings`);
+        }
+    }
+    if (e.order !== undefined && typeof e.order !== 'number') {
+        problems.push(`${target}: "order" must be a number`);
+    }
+    for (const field of ['href', 'readme', 'video'] as const) {
+        if (e[field] !== undefined && typeof e[field] !== 'string') {
+            problems.push(`${target}: "${field}" must be a string`);
+        }
+    }
+    if (e.repo !== undefined && (typeof e.repo !== 'object' || e.repo === null || Array.isArray(e.repo))) {
+        problems.push(`${target}: "repo" must be an object`);
+    }
+    if (e.seo !== undefined && (typeof e.seo !== 'object' || e.seo === null || Array.isArray(e.seo))) {
+        problems.push(`${target}: "seo" must be an object`);
+    }
+
+    return problems;
 }

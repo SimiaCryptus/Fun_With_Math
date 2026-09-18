@@ -1,116 +1,29 @@
-'use strict';
 /**
- * manifest/schema.ts
+ * manifest_schema.js
  *
- * Single source of truth for the unified content manifest.
- *
- * This module is deliberately dependency-free and isomorphic: it contains no
- * `node:` imports and only POSIX-style string path math, so it can be imported
- * by the build scripts, by a bundler, or directly by the site at runtime.
+ * Runtime (browser) mirror of the isomorphic half of `manifest_schema.ts`.
+ * Keep the two in sync — or generate this file with `tsc --target es2020
+ * --module es2020 scripts/manifest_schema.ts`. Node-only helpers (`.gitmodules`
+ * parsing, legacy manifest emission) are intentionally omitted.
  */
-var __assign =
-  (this && this.__assign) ||
-  function () {
-    __assign =
-      Object.assign ||
-      function (t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-      };
-    return __assign.apply(this, arguments);
-  };
-var __rest =
-  (this && this.__rest) ||
-  function (s, e) {
-    var t = {};
-    for (var p in s)
-      if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0) t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === 'function')
-      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-        if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-          t[p[i]] = s[p[i]];
-      }
-    return t;
-  };
-Object.defineProperty(exports, '__esModule', { value: true });
-exports.REPO_KEY_ORDER =
-  exports.LEGACY_KEY_ORDER =
-  exports.ENTRY_KEY_ORDER =
-  exports.LEGACY_SOURCES =
-  exports.SCAN_MAX_DEPTH =
-  exports.SCAN_IGNORE =
-  exports.SCAN_ROOTS =
-  exports.CATEGORY_ROOTS =
-  exports.CATEGORIES =
-  exports.MANIFEST_FILENAME =
-  exports.ENTRY_FILENAME =
-  exports.MANIFEST_VERSION =
-    void 0;
-exports.isExternal = isExternal;
-exports.isRootRelative = isRootRelative;
-exports.splitPathSuffix = splitPathSuffix;
-exports.normalizePosix = normalizePosix;
-exports.joinPosix = joinPosix;
-exports.dirnamePosix = dirnamePosix;
-exports.basenamePosix = basenamePosix;
-exports.slugify = slugify;
-exports.isMetaKey = isMetaKey;
-exports.toPathRef = toPathRef;
-exports.resolvePathRef = resolvePathRef;
-exports.resolveEntryPaths = resolveEntryPaths;
-exports.normalizeGitUrl = normalizeGitUrl;
-exports.resolveGitUrl = resolveGitUrl;
-exports.repoHost = repoHost;
-exports.repoSlug = repoSlug;
-exports.parseGitmodules = parseGitmodules;
-exports.parseSubmoduleStatus = parseSubmoduleStatus;
-exports.matchRepoPath = matchRepoPath;
-exports.relativeUnder = relativeUnder;
-exports.makeRepoInfo = makeRepoInfo;
-exports.normalizeRepoRef = normalizeRepoRef;
-exports.mergeRepoInfo = mergeRepoInfo;
-exports.repoBrowseUrl = repoBrowseUrl;
-exports.entryDirFor = entryDirFor;
-exports.entryIdFromDir = entryIdFromDir;
-exports.uniqueId = uniqueId;
-exports.categoryRank = categoryRank;
-exports.sectionRank = sectionRank;
-exports.compareEntries = compareEntries;
-exports.validateRepoRef = validateRepoRef;
-exports.validateEntryFile = validateEntryFile;
-exports.orderKeys = orderKeys;
-exports.serializeJson = serializeJson;
-exports.toLegacyEntry = toLegacyEntry;
+
 /* ------------------------------------------------------------------ *
  * Constants
  * ------------------------------------------------------------------ */
-/** Bumped to 2 when entries gained the autodiscovered `repo` block. */
-exports.MANIFEST_VERSION = 2;
-/** Filename of the per-directory sidecar written by `split-manifest`. */
-exports.ENTRY_FILENAME = 'entry.json';
-/** Filename of the unified manifest written by `build-manifest`. */
-exports.MANIFEST_FILENAME = 'manifest.json';
-exports.CATEGORIES = ['lab', 'game', 'essay'];
-/** Where new entries of each category live by default. */
-exports.CATEGORY_ROOTS = {
+
+export const MANIFEST_VERSION = 2;
+export const ENTRY_FILENAME = 'entry.json';
+export const MANIFEST_FILENAME = 'manifest.json';
+
+export const CATEGORIES = ['lab', 'game', 'essay'];
+
+export const CATEGORY_ROOTS = {
   lab: 'experiments',
   game: 'games',
   essay: 'essays',
 };
-/** Directories the builder scans for `entry.json` sidecars. */
-exports.SCAN_ROOTS = ['experiments', 'games', 'essays'];
-/** Never descend into these while scanning. */
-exports.SCAN_IGNORE = ['node_modules', '.git', '.idea', 'dist', 'build', 'vendor', 'assets'];
-/** How deep below a scan root an `entry.json` may live. */
-exports.SCAN_MAX_DEPTH = 4;
-/**
- * The three manifests being unified. Also used in reverse by
- * `build-manifest --legacy` to regenerate them for backwards compatibility.
- */
-exports.LEGACY_SOURCES = [
+
+export const LEGACY_SOURCES = [
   {
     file: 'labs.json',
     category: 'lab',
@@ -120,8 +33,8 @@ exports.LEGACY_SOURCES = [
   { file: 'games.json', category: 'game', sections: ['games'], defaultSection: 'games' },
   { file: 'essays.json', category: 'essay', sections: ['essays'], defaultSection: 'essays' },
 ];
-/** Canonical key order for serialized entries (stable diffs). */
-exports.ENTRY_KEY_ORDER = [
+
+export const ENTRY_KEY_ORDER = [
   'id',
   'category',
   'section',
@@ -138,19 +51,8 @@ exports.ENTRY_KEY_ORDER = [
   'hidden',
   'repo',
 ];
-/** Key order used when regenerating the legacy manifests. */
-exports.LEGACY_KEY_ORDER = [
-  'icon',
-  'title',
-  'href',
-  'readme',
-  'video',
-  'subtitle',
-  'launchLabel',
-  'pitch',
-];
-/** Canonical key order inside an entry's `repo` block. */
-exports.REPO_KEY_ORDER = [
+
+export const REPO_KEY_ORDER = [
   'url',
   'remote',
   'host',
@@ -161,30 +63,34 @@ exports.REPO_KEY_ORDER = [
   'branch',
   'submodule',
 ];
+
+/** Extra bookkeeping keys that only exist in the unified manifest. */
+export const MANIFEST_ONLY_KEYS = ['dir', 'source'];
+
+/** Full key order for an entry as serialized into `manifest.json`. */
+export const MANIFEST_ENTRY_KEY_ORDER = [...ENTRY_KEY_ORDER, ...MANIFEST_ONLY_KEYS];
+
 /* ------------------------------------------------------------------ *
- * POSIX path helpers (string-only, browser safe)
+ * POSIX path helpers
  * ------------------------------------------------------------------ */
-function isExternal(p) {
+
+export function isExternal(p) {
   return /^[a-z][a-z0-9+.\-]*:/i.test(p) || p.startsWith('//');
 }
-function isRootRelative(p) {
+
+export function isRootRelative(p) {
   return p.startsWith('/');
 }
-/** Split `path?query#hash` into `[path, suffix]`. */
-function splitPathSuffix(p) {
-  var _a, _b;
-  // `[\s\S]` so a stray newline in a query/hash does not silently truncate.
-  var m = /^([^?#]*)([?#][\s\S]*)?$/.exec(p);
-  return [
-    (_a = m === null || m === void 0 ? void 0 : m[1]) !== null && _a !== void 0 ? _a : p,
-    (_b = m === null || m === void 0 ? void 0 : m[2]) !== null && _b !== void 0 ? _b : '',
-  ];
+
+export function splitPathSuffix(p) {
+  const m = /^([^?#]*)([?#][\s\S]*)?$/.exec(p);
+  return [m?.[1] ?? p, m?.[2] ?? ''];
 }
-function normalizePosix(p) {
-  var abs = p.startsWith('/');
-  var out = [];
-  for (var _i = 0, _a = p.split('/'); _i < _a.length; _i++) {
-    var part = _a[_i];
+
+export function normalizePosix(p) {
+  const abs = String(p ?? '').startsWith('/');
+  const out = [];
+  for (const part of String(p ?? '').split('/')) {
     if (!part || part === '.') continue;
     if (part === '..') {
       if (out.length && out[out.length - 1] !== '..') out.pop();
@@ -195,223 +101,115 @@ function normalizePosix(p) {
   }
   return (abs ? '/' : '') + out.join('/');
 }
-function joinPosix() {
-  var parts = [];
-  for (var _i = 0; _i < arguments.length; _i++) {
-    parts[_i] = arguments[_i];
-  }
+
+export function joinPosix(...parts) {
   return normalizePosix(parts.filter(Boolean).join('/'));
 }
-function dirnamePosix(p) {
-  var i = p.lastIndexOf('/');
+
+export function dirnamePosix(p) {
+  const i = p.lastIndexOf('/');
   if (i < 0) return '';
   if (i === 0) return '/';
   return p.slice(0, i);
 }
-function basenamePosix(p) {
-  var i = p.lastIndexOf('/');
+
+export function basenamePosix(p) {
+  const i = p.lastIndexOf('/');
   return i < 0 ? p : p.slice(i + 1);
 }
-function slugify(value) {
-  return value
+
+export function slugify(value) {
+  return String(value ?? '')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
-/** Keys that carry comments/metadata rather than content (`$schema`, `//`). */
-function isMetaKey(key) {
+
+export function isMetaKey(key) {
   return key.startsWith('$') || key === '//';
 }
+
 /* ------------------------------------------------------------------ *
  * Path <-> entry-directory translation
  * ------------------------------------------------------------------ */
-/**
- * Rewrite a root-relative path for storage inside `<dir>/entry.json`.
- * Paths under `dir` become directory-relative; everything else is anchored
- * to the site root with a leading `/`.
- */
-function toPathRef(dir, value) {
-  // An empty reference stays empty: callers must decide whether that is fatal.
-  // (Previously this produced a bare "/", which then passed validation.)
+
+export function toPathRef(dir, value) {
   if (!value) return '';
   if (isExternal(value)) return value;
-  var _a = splitPathSuffix(value),
-    pathPart = _a[0],
-    suffix = _a[1];
-  var norm = normalizePosix(pathPart.replace(/^\/+/, ''));
-  var prefix = dir ? ''.concat(normalizePosix(dir), '/') : '';
+  const [pathPart, suffix] = splitPathSuffix(value);
+  const norm = normalizePosix(pathPart.replace(/^\/+/, ''));
+  const prefix = dir ? `${normalizePosix(dir)}/` : '';
   if (prefix && norm.startsWith(prefix)) return norm.slice(prefix.length) + suffix;
-  return '/'.concat(norm).concat(suffix);
+  return `/${norm}${suffix}`;
 }
-/** Inverse of {@link toPathRef}: produce a root-relative path (or URL). */
-function resolvePathRef(dir, value) {
+
+export function resolvePathRef(dir, value) {
+  if (!value) return '';
   if (isExternal(value)) return value;
-  var _a = splitPathSuffix(value),
-    pathPart = _a[0],
-    suffix = _a[1];
+  const [pathPart, suffix] = splitPathSuffix(value);
   if (isRootRelative(pathPart)) return normalizePosix(pathPart).replace(/^\/+/, '') + suffix;
   return joinPosix(dir, pathPart) + suffix;
 }
-/** Resolve every path field of an entry against its directory, in place-safe fashion. */
-function resolveEntryPaths(entry, dir) {
-  var out = __assign({}, entry);
+
+export function resolveEntryPaths(entry, dir) {
+  const out = { ...entry };
   out.href = resolvePathRef(dir, entry.href);
   if (entry.readme !== undefined) out.readme = resolvePathRef(dir, entry.readme);
   if (entry.video !== undefined) out.video = resolvePathRef(dir, entry.video);
   return out;
 }
+
 /* ------------------------------------------------------------------ *
- * Git repository discovery (pure string helpers, no `node:` imports)
+ * Git provenance helpers
  * ------------------------------------------------------------------ */
-/** Turn any remote spelling into a canonical, browsable https URL. */
-function normalizeGitUrl(remote) {
-  var raw = (remote !== null && remote !== void 0 ? remote : '').trim();
+
+export function normalizeGitUrl(remote) {
+  const raw = String(remote ?? '').trim();
   if (!raw) return '';
-  // Plain filesystem remotes are left alone: there is nothing to browse.
   if (raw.startsWith('/') || raw.startsWith('.') || /^file:\/\//i.test(raw)) {
     return raw.replace(/\/+$/, '');
   }
-  var url = raw;
-  // scp-like shorthand: git@host:owner/name.git
-  var scp = /^(?:[^@\s/]+@)?([^\s:/]+):([^\s].*)$/.exec(url);
-  if (scp && !url.includes('://')) url = 'https://'.concat(scp[1], '/').concat(scp[2]);
+  let url = raw;
+  const scp = /^(?:[^@\s/]+@)?([^\s:/]+):([^\s].*)$/.exec(url);
+  if (scp && !url.includes('://')) url = `https://${scp[1]}/${scp[2]}`;
   url = url.replace(/^(?:ssh|git|git\+ssh|git\+https):\/\//i, 'https://');
-  url = url.replace(/^(https?:\/\/)[^/@]+@/i, '$1'); // drop embedded credentials
+  url = url.replace(/^(https?:\/\/)[^/@]+@/i, '$1');
   url = url.replace(/\/+$/, '').replace(/\.git$/i, '');
   return url;
 }
-/** Resolve a relative submodule url (`../x.git`) against the outer remote. */
-function resolveGitUrl(base, ref) {
-  var _a;
+
+export function resolveGitUrl(base, ref) {
   if (!/^\.{1,2}\//.test(ref)) return ref;
-  var b = normalizeGitUrl(base);
+  const b = normalizeGitUrl(base);
   if (!b) return ref;
-  var m = /^([a-z][a-z0-9+.\-]*:\/\/[^/]+)(\/.*)?$/i.exec(b);
-  if (!m) return normalizePosix(''.concat(b, '/').concat(ref));
-  var joined = normalizePosix(
-    ''.concat((_a = m[2]) !== null && _a !== void 0 ? _a : '/', '/').concat(ref)
-  );
-  return ''.concat(m[1]).concat(joined.startsWith('/') ? joined : '/'.concat(joined));
+  const m = /^([a-z][a-z0-9+.\-]*:\/\/[^/]+)(\/.*)?$/i.exec(b);
+  if (!m) return normalizePosix(`${b}/${ref}`);
+  const joined = normalizePosix(`${m[2] ?? '/'}/${ref}`);
+  return `${m[1]}${joined.startsWith('/') ? joined : `/${joined}`}`;
 }
-function repoHost(url) {
-  var _a, _b;
-  return (_b =
-    (_a = /^[a-z][a-z0-9+.\-]*:\/\/([^/]+)/i.exec(url)) === null || _a === void 0
-      ? void 0
-      : _a[1]) !== null && _b !== void 0
-    ? _b
-    : '';
+
+export function repoHost(url) {
+  return /^[a-z][a-z0-9+.\-]*:\/\/([^/]+)/i.exec(url)?.[1] ?? '';
 }
-/** `https://github.com/user/project` → `user/project` (nested groups kept). */
-function repoSlug(url) {
-  var m = /^[a-z][a-z0-9+.\-]*:\/\/[^/]+\/(.+)$/i.exec(url);
+
+export function repoSlug(url) {
+  const m = /^[a-z][a-z0-9+.\-]*:\/\/[^/]+\/(.+)$/i.exec(url);
   if (!m) return '';
   return m[1].replace(/^\/+|\/+$/g, '').replace(/\.git$/i, '');
 }
-/** Parse a `.gitmodules` file. Unknown sections and comments are ignored. */
-function parseGitmodules(text) {
-  var out = [];
-  var cur = null;
-  var commit = function () {
-    var _a;
-    if (cur === null || cur === void 0 ? void 0 : cur.path)
-      out.push({
-        name: cur.name || cur.path,
-        path: cur.path,
-        url: (_a = cur.url) !== null && _a !== void 0 ? _a : '',
-        branch: cur.branch,
-      });
-    cur = null;
-  };
-  for (
-    var _i = 0, _a = (text !== null && text !== void 0 ? text : '').split(/\r?\n/);
-    _i < _a.length;
-    _i++
-  ) {
-    var line = _a[_i];
-    var trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith(';')) continue;
-    if (trimmed.startsWith('[')) {
-      commit();
-      var section = /^\[submodule\s+"?([^"\]]*)"?\]$/i.exec(trimmed);
-      if (section) cur = { name: section[1] };
-      continue;
-    }
-    if (!cur) continue;
-    var kv = /^([A-Za-z0-9_-]+)\s*=\s*(.*)$/.exec(trimmed);
-    if (!kv) continue;
-    var key = kv[1].toLowerCase();
-    var value = kv[2].trim().replace(/^"|"$/g, '');
-    if (key === 'path') cur.path = normalizePosix(value.replace(/^\.\//, ''));
-    else if (key === 'url') cur.url = value;
-    else if (key === 'branch') cur.branch = value;
-  }
-  commit();
-  return out;
-}
-/**
- * Parse `git submodule status` output (the same shape as `submodules.txt`):
- * `" <sha> <path> (heads/main)"`, optionally prefixed with `-`, `+` or `U`.
- */
-function parseSubmoduleStatus(text) {
-  var _a;
-  var out = [];
-  for (
-    var _i = 0, _b = (text !== null && text !== void 0 ? text : '').split(/\r?\n/);
-    _i < _b.length;
-    _i++
-  ) {
-    var line = _b[_i];
-    if (!line.trim()) continue;
-    var m = /^([-+U ]?)\s*([0-9a-f]{7,40})\s+(\S+)(?:\s+\((.*)\))?\s*$/i.exec(line);
-    if (!m) continue;
-    out.push({
-      state: m[1] || ' ',
-      commit: m[2],
-      path: normalizePosix(m[3]),
-      ref: (_a = m[4]) === null || _a === void 0 ? void 0 : _a.replace(/^heads\//, ''),
-    });
-  }
-  return out;
-}
-/** Longest checkout path in `paths` that contains `dir`, or `null`. */
-function matchRepoPath(dir, paths) {
-  var target = normalizePosix(dir);
-  var best = null;
-  for (var _i = 0, paths_1 = paths; _i < paths_1.length; _i++) {
-    var candidate = paths_1[_i];
-    var p = normalizePosix(candidate);
-    if (!p) continue;
-    if (target === p || target.startsWith(''.concat(p, '/'))) {
-      if (!best || p.length > best.length) best = p;
-    }
-  }
-  return best;
-}
-/** `relativeUnder('games', 'games/wordsearch')` → `'wordsearch'`. */
-function relativeUnder(base, target) {
-  var b = normalizePosix(base);
-  var t = normalizePosix(target);
-  if (!b) return t;
-  if (t === b) return '';
-  return t.startsWith(''.concat(b, '/')) ? t.slice(b.length + 1) : t;
-}
-/** Build a normalized, key-ordered {@link RepoInfo}, dropping empty fields. */
-function makeRepoInfo(input) {
-  var _a, _b;
-  var remote = ((_a = input.remote) !== null && _a !== void 0 ? _a : '').trim();
-  var absolute = remote
-    ? resolveGitUrl((_b = input.base) !== null && _b !== void 0 ? _b : '', remote)
-    : '';
-  var url = absolute ? normalizeGitUrl(absolute) : '';
-  var info = {};
+
+export function makeRepoInfo(input = {}) {
+  const remote = String(input.remote ?? '').trim();
+  const absolute = remote ? resolveGitUrl(input.base ?? '', remote) : '';
+  const url = absolute ? normalizeGitUrl(absolute) : '';
+  const info = {};
   if (url) info.url = url;
   if (remote && remote !== url) info.remote = remote;
   if (url) {
-    var host = repoHost(url);
-    var slug = repoSlug(url);
+    const host = repoHost(url);
+    const slug = repoSlug(url);
     if (host) info.host = host;
     if (slug) info.slug = slug;
   }
@@ -420,163 +218,149 @@ function makeRepoInfo(input) {
   if (input.commit) info.commit = input.commit;
   if (input.branch) info.branch = input.branch;
   if (input.submodule) info.submodule = true;
-  return orderKeys(info, exports.REPO_KEY_ORDER);
+  return orderKeys(info, REPO_KEY_ORDER);
 }
-/** Coerce the `repo` field of an `entry.json` into a {@link RepoInfo}. */
-function normalizeRepoRef(value) {
+
+export function normalizeRepoRef(value) {
   if (!value) return undefined;
   if (typeof value === 'string') return value.trim() ? makeRepoInfo({ remote: value }) : undefined;
-  return orderKeys(__assign({}, value), exports.REPO_KEY_ORDER);
+  return orderKeys({ ...value }, REPO_KEY_ORDER);
 }
-/** Explicit (hand-authored) fields win over discovered ones. */
-function mergeRepoInfo(explicit, discovered) {
+
+export function mergeRepoInfo(explicit, discovered) {
   if (!explicit && !discovered) return undefined;
-  var merged = __assign({}, discovered !== null && discovered !== void 0 ? discovered : {});
-  for (
-    var _i = 0, _a = Object.entries(explicit !== null && explicit !== void 0 ? explicit : {});
-    _i < _a.length;
-    _i++
-  ) {
-    var _b = _a[_i],
-      key = _b[0],
-      value = _b[1];
+  const merged = { ...(discovered ?? {}) };
+  for (const [key, value] of Object.entries(explicit ?? {})) {
     if (value !== undefined && value !== '') merged[key] = value;
   }
-  return Object.keys(merged).length ? orderKeys(merged, exports.REPO_KEY_ORDER) : undefined;
+  return Object.keys(merged).length ? orderKeys(merged, REPO_KEY_ORDER) : undefined;
 }
-/** Best-effort "view this entry's source" link. */
-function repoBrowseUrl(repo, subpath) {
-  var _a, _b;
-  if (!(repo === null || repo === void 0 ? void 0 : repo.url)) return '';
-  var rel = normalizePosix(
-    (_a = subpath !== null && subpath !== void 0 ? subpath : repo.subpath) !== null && _a !== void 0
-      ? _a
-      : ''
-  );
+
+export function repoBrowseUrl(repo, subpath) {
+  if (!repo?.url) return '';
+  const rel = normalizePosix(subpath ?? repo.subpath ?? '');
   if (!rel) return repo.url;
-  var ref = repo.commit || repo.branch || 'HEAD';
-  var verb = /bitbucket/i.test((_b = repo.host) !== null && _b !== void 0 ? _b : '')
-    ? 'src'
-    : 'tree';
-  return ''.concat(repo.url, '/').concat(verb, '/').concat(ref, '/').concat(rel);
+  const ref = repo.commit || repo.branch || 'HEAD';
+  const verb = /bitbucket/i.test(repo.host ?? '') ? 'src' : 'tree';
+  return `${repo.url}/${verb}/${ref}/${rel}`;
 }
+
 /* ------------------------------------------------------------------ *
  * Identity
  * ------------------------------------------------------------------ */
-/** Pick the directory that should own an entry, given its (root-relative) paths. */
-function entryDirFor(input) {
-  var localDir = function (p) {
+
+export function entryDirFor(input) {
+  const localDir = (p) => {
     if (!p || isExternal(p)) return '';
-    var pathPart = splitPathSuffix(p)[0];
-    var dir = dirnamePosix(normalizePosix(pathPart.replace(/^\/+/, '')));
+    const [pathPart] = splitPathSuffix(p);
+    const dir = dirnamePosix(normalizePosix(pathPart.replace(/^\/+/, '')));
     return dir === '/' ? '' : dir;
   };
   return (
     localDir(input.href) ||
     localDir(input.readme) ||
-    joinPosix(exports.CATEGORY_ROOTS[input.category], slugify(input.title))
+    joinPosix(CATEGORY_ROOTS[input.category], slugify(input.title))
   );
 }
-function entryIdFromDir(dir, fallbackTitle) {
-  if (fallbackTitle === void 0) {
-    fallbackTitle = '';
-  }
+
+export function entryIdFromDir(dir, fallbackTitle = '') {
   return slugify(basenamePosix(dir)) || slugify(fallbackTitle) || 'entry';
 }
-/**
- * Return `base` (slugified) if free, otherwise `base-2`, `base-3`, … so the
- * result is guaranteed absent from `taken`.
- */
-function uniqueId(base, taken) {
-  var seed = slugify(base) || 'entry';
+
+export function uniqueId(base, taken) {
+  const seed = slugify(base) || 'entry';
   if (!taken.has(seed)) return seed;
-  var n = 2;
-  while (taken.has(''.concat(seed, '-').concat(n))) n += 1;
-  return ''.concat(seed, '-').concat(n);
+  let n = 2;
+  while (taken.has(`${seed}-${n}`)) n += 1;
+  return `${seed}-${n}`;
 }
+
+export function defaultSection(category) {
+  return LEGACY_SOURCES.find((s) => s.category === category)?.defaultSection ?? 'featured';
+}
+
+export function knownSections(category) {
+  return LEGACY_SOURCES.find((s) => s.category === category)?.sections ?? [];
+}
+
 /* ------------------------------------------------------------------ *
  * Ordering
  * ------------------------------------------------------------------ */
-function categoryRank(category) {
-  var i = exports.CATEGORIES.indexOf(category);
-  return i < 0 ? exports.CATEGORIES.length : i;
+
+export function categoryRank(category) {
+  const i = CATEGORIES.indexOf(category);
+  return i < 0 ? CATEGORIES.length : i;
 }
-function sectionRank(category, section) {
-  var src = exports.LEGACY_SOURCES.find(function (s) {
-    return s.category === category;
-  });
-  var i = src ? src.sections.indexOf(section) : -1;
+
+export function sectionRank(category, section) {
+  const src = LEGACY_SOURCES.find((s) => s.category === category);
+  const i = src ? src.sections.indexOf(section) : -1;
   return i < 0 ? Number.MAX_SAFE_INTEGER : i;
 }
-function compareEntries(a, b) {
-  var _a, _b;
+
+export function compareEntries(a, b) {
   return (
     categoryRank(a.category) - categoryRank(b.category) ||
     sectionRank(a.category, a.section) - sectionRank(b.category, b.section) ||
-    a.section.localeCompare(b.section) ||
-    ((_a = a.order) !== null && _a !== void 0 ? _a : Number.MAX_SAFE_INTEGER) -
-      ((_b = b.order) !== null && _b !== void 0 ? _b : Number.MAX_SAFE_INTEGER) ||
-    a.title.localeCompare(b.title) ||
-    a.id.localeCompare(b.id)
+    String(a.section ?? '').localeCompare(String(b.section ?? '')) ||
+    (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) ||
+    String(a.title ?? '').localeCompare(String(b.title ?? '')) ||
+    String(a.id ?? '').localeCompare(String(b.id ?? ''))
   );
 }
+
 /* ------------------------------------------------------------------ *
  * Validation & serialization
  * ------------------------------------------------------------------ */
-var REQUIRED_STRINGS = ['id', 'icon', 'title', 'href'];
-var OPTIONAL_STRINGS = ['section', 'subtitle', 'readme', 'video', 'launchLabel', 'pitch'];
-/** Structural validation of an entry's `repo` override. */
-function validateRepoRef(value, at) {
+
+const REQUIRED_STRINGS = ['id', 'icon', 'title', 'href'];
+const OPTIONAL_STRINGS = ['section', 'subtitle', 'readme', 'video', 'launchLabel', 'pitch'];
+
+/** Fields that must survive as empty strings so validation can flag them. */
+export const REQUIRED_KEYS = new Set([...REQUIRED_STRINGS, 'category']);
+
+export function validateRepoRef(value, at) {
   if (typeof value === 'string') {
     return value.trim() ? [] : [at('"repo" must be a non-empty remote URL when given as a string')];
   }
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     return [at('"repo" must be a remote URL string or an object')];
   }
-  var errors = [];
-  var r = value;
-  for (var _i = 0, REPO_KEY_ORDER_1 = exports.REPO_KEY_ORDER; _i < REPO_KEY_ORDER_1.length; _i++) {
-    var key = REPO_KEY_ORDER_1[_i];
+  const errors = [];
+  for (const key of REPO_KEY_ORDER) {
     if (key === 'submodule') continue;
-    if (r[key] !== undefined && typeof r[key] !== 'string') {
-      errors.push(at('"repo.'.concat(key, '" must be a string when present')));
+    if (value[key] !== undefined && typeof value[key] !== 'string') {
+      errors.push(at(`"repo.${key}" must be a string when present`));
     }
   }
-  if (r.submodule !== undefined && typeof r.submodule !== 'boolean') {
+  if (value.submodule !== undefined && typeof value.submodule !== 'boolean') {
     errors.push(at('"repo.submodule" must be a boolean when present'));
   }
-  var unknown = Object.keys(r).filter(function (k) {
-    return !exports.REPO_KEY_ORDER.includes(k) && !isMetaKey(k);
-  });
-  if (unknown.length) errors.push(at('unknown repo field(s): '.concat(unknown.join(', '))));
+  const unknown = Object.keys(value).filter((k) => !REPO_KEY_ORDER.includes(k) && !isMetaKey(k));
+  if (unknown.length) errors.push(at(`unknown repo field(s): ${unknown.join(', ')}`));
   return errors;
 }
-/** Structural validation. Returns a list of human-readable problems. */
-function validateEntryFile(raw, source) {
-  if (source === void 0) {
-    source = '<memory>';
-  }
-  var errors = [];
-  var at = function (msg) {
-    return ''.concat(source, ': ').concat(msg);
-  };
+
+export function validateEntryFile(raw, source = '<memory>') {
+  const errors = [];
+  const at = (msg) => `${source}: ${msg}`;
+
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
     return [at('expected a JSON object')];
   }
-  var e = raw;
-  for (var _i = 0, REQUIRED_STRINGS_1 = REQUIRED_STRINGS; _i < REQUIRED_STRINGS_1.length; _i++) {
-    var key = REQUIRED_STRINGS_1[_i];
+  const e = raw;
+
+  for (const key of REQUIRED_STRINGS) {
     if (typeof e[key] !== 'string' || !e[key].trim()) {
-      errors.push(at('missing or empty required string field "'.concat(key, '"')));
+      errors.push(at(`missing or empty required string field "${key}"`));
     }
   }
-  if (typeof e.category !== 'string' || !exports.CATEGORIES.includes(e.category)) {
-    errors.push(at('"category" must be one of '.concat(exports.CATEGORIES.join(' | '))));
+  if (typeof e.category !== 'string' || !CATEGORIES.includes(e.category)) {
+    errors.push(at(`"category" must be one of ${CATEGORIES.join(' | ')}`));
   }
-  for (var _a = 0, OPTIONAL_STRINGS_1 = OPTIONAL_STRINGS; _a < OPTIONAL_STRINGS_1.length; _a++) {
-    var key = OPTIONAL_STRINGS_1[_a];
+  for (const key of OPTIONAL_STRINGS) {
     if (e[key] !== undefined && typeof e[key] !== 'string') {
-      errors.push(at('"'.concat(key, '" must be a string when present')));
+      errors.push(at(`"${key}" must be a string when present`));
     }
   }
   if (e.order !== undefined && (typeof e.order !== 'number' || !Number.isFinite(e.order))) {
@@ -587,76 +371,40 @@ function validateEntryFile(raw, source) {
   }
   if (
     e.tags !== undefined &&
-    (!Array.isArray(e.tags) ||
-      e.tags.some(function (t) {
-        return typeof t !== 'string';
-      }))
+    (!Array.isArray(e.tags) || e.tags.some((t) => typeof t !== 'string'))
   ) {
     errors.push(at('"tags" must be an array of strings when present'));
   }
   if (typeof e.id === 'string' && e.id !== slugify(e.id)) {
-    errors.push(
-      at('"id" must be a slug (got "'.concat(e.id, '", expected "').concat(slugify(e.id), '")'))
-    );
+    errors.push(at(`"id" must be a slug (got "${e.id}", expected "${slugify(e.id)}")`));
   }
   if (typeof e.href === 'string' && (e.href.trim() === '/' || e.href.trim() === '.')) {
     errors.push(at('"href" must point at a file, not a bare directory root'));
   }
-  if (e.repo !== undefined) errors.push.apply(errors, validateRepoRef(e.repo, at));
-  var unknown = Object.keys(e).filter(function (k) {
-    return !exports.ENTRY_KEY_ORDER.includes(k) && !isMetaKey(k);
-  });
-  if (unknown.length) errors.push(at('unknown field(s): '.concat(unknown.join(', '))));
+  if (e.repo !== undefined) errors.push(...validateRepoRef(e.repo, at));
+  const unknown = Object.keys(e).filter((k) => !ENTRY_KEY_ORDER.includes(k) && !isMetaKey(k));
+  if (unknown.length) errors.push(at(`unknown field(s): ${unknown.join(', ')}`));
+
   return errors;
 }
-/** Re-key an object into a canonical order, dropping `undefined` values. */
-function orderKeys(obj, order) {
-  var out = {};
-  for (var _i = 0, order_1 = order; _i < order_1.length; _i++) {
-    var key = order_1[_i];
-    if (obj[key] !== undefined) out[key] = obj[key];
-  }
-  for (var _a = 0, _b = Object.keys(obj); _a < _b.length; _a++) {
-    var key = _b[_a];
+
+/** Validate a full unified manifest entry (adds `dir` / `source` checks). */
+export function validateManifestEntry(entry, source = '<memory>') {
+  const { dir, source: src, ...rest } = entry ?? {};
+  const errors = validateEntryFile(rest, source);
+  if (typeof dir !== 'string' || !dir.trim()) errors.push(`${source}: missing or empty "dir"`);
+  if (typeof src !== 'string' || !src.trim()) errors.push(`${source}: missing or empty "source"`);
+  return errors;
+}
+
+export function orderKeys(obj, order) {
+  const out = {};
+  for (const key of order) if (obj[key] !== undefined) out[key] = obj[key];
+  for (const key of Object.keys(obj))
     if (!(key in out) && obj[key] !== undefined) out[key] = obj[key];
-  }
   return out;
 }
-function serializeJson(value) {
-  return ''.concat(JSON.stringify(value, null, 2), '\n');
-}
-/** Strip the manifest-only bookkeeping fields for legacy consumers. */
-function toLegacyEntry(entry) {
-  var resolved = resolveEntryPaths(entry, entry.dir);
-  var _a = resolved,
-    id = _a.id,
-    category = _a.category,
-    section = _a.section,
-    order = _a.order,
-    dir = _a.dir,
-    source = _a.source,
-    hidden = _a.hidden,
-    tags = _a.tags,
-    repo = _a.repo,
-    rest = __rest(_a, [
-      'id',
-      'category',
-      'section',
-      'order',
-      'dir',
-      'source',
-      'hidden',
-      'tags',
-      'repo',
-    ]);
-  void id;
-  void category;
-  void section;
-  void order;
-  void dir;
-  void source;
-  void hidden;
-  void tags;
-  void repo;
-  return orderKeys(rest, exports.LEGACY_KEY_ORDER);
+
+export function serializeJson(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
 }

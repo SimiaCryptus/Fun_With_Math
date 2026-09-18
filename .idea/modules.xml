@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Fun_With_Math.iml" filepath="$PROJECT_DIR$/.idea/Fun_With_Math.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../Pentagon_Lattice_Geometry/Pentagon_Lattice_Geometry.iml" filepath="$PROJECT_DIR$/../Pentagon_Lattice_Geometry/Pentagon_Lattice_Geometry.iml" />
     </modules>
   </component>
 </project>
