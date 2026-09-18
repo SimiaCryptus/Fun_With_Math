@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedAt": "2026-09-17T22:03:31.283Z",
+  "generatedAt": "2026-09-18T14:22:24.214Z",
   "counts": {
     "lab": 22,
     "essay": 6
@@ -491,7 +491,7 @@
       "order": 9007199254740991,
       "icon": "PC",
       "title": "Point CAD",
-      "href": "demo/index.html",
+      "href": "index.html",
       "readme": "README.md",
       "pitch": "A point-based CAD system for designing complex geometries.",
       "repo": {
@@ -500,12 +500,13 @@
         "host": "github.com",
         "slug": "Simiacryptus/point-cad",
         "path": "experiments/point-cad",
-        "commit": "1b23dc0194989d22b789c8420fcb8983f9b3c736",
+        "subpath": "demo",
+        "commit": "d89076f3e75d3b11f911100dfad1181808fcb2f7",
         "branch": "main",
         "submodule": true
       },
-      "dir": "experiments/point-cad",
-      "source": "experiments/point-cad/entry.json"
+      "dir": "experiments/point-cad/demo",
+      "source": "experiments/point-cad/demo/entry.json"
     },
     {
       "id": "theme-cad",
@@ -514,8 +515,8 @@
       "order": 9007199254740991,
       "icon": "TC",
       "title": "Theme CAD",
-      "href": "../demo/math.theme_design.html",
-      "readme": "idea.md",
+      "href": "index.html",
+      "readme": "README.md",
       "pitch": "A theme designer for PointCAD, allowing you to create and customize themes for your CAD projects.",
       "repo": {
         "url": "https://github.com/Simiacryptus/point-cad",
@@ -524,7 +525,7 @@
         "slug": "Simiacryptus/point-cad",
         "path": "experiments/point-cad",
         "subpath": "theme-designer",
-        "commit": "1b23dc0194989d22b789c8420fcb8983f9b3c736",
+        "commit": "d89076f3e75d3b11f911100dfad1181808fcb2f7",
         "branch": "main",
         "submodule": true
       },

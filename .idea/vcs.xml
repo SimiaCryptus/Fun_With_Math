@@ -33,7 +33,6 @@
     <mapping directory="$PROJECT_DIR$/physics/symmetry_simple" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/quadratics/irrational_lattice" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/quadratics/pentagon" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/tools/chromatic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/tools/static-secrets" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../Pentagon_Lattice_Geometry" vcs="Git" />
   </component>

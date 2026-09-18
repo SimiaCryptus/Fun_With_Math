@@ -13,7 +13,7 @@ related:
 read for context (which selectors sit on which backgrounds) but are not edited.
 
 
-**Output.** One HTML file, `math.theme_design.html`, written next to the stylesheets. It is
+**Output.** One HTML file, `index.html`, written next to the stylesheets. It is
 the theme-designer *harness* (`demo/theme.html`) with its
 `<script type="application/json" id="theme-doc">` block filled in (§2.11): the sketch
 and every handoff field travel inside that one file, so nothing is cut and pasted.
@@ -665,14 +665,14 @@ a {
 - **Valid JSON.** One bad escape in the `theme-doc` block and the harness opens empty
   (the log then shows no `loaded embedded sketch` line). Escape `"`, `\` and newlines in
    `pcad`, and `</` as `<\/`.
-  those in §4; `math.theme_design.html` must open with no errors in the log.
+  those in §4; `index.html` must open with no errors in the log.
 
 ---
 
 ## 8. Acceptance checklist
 
 - [ ] The sketch parses and solves (`converged=true`, `0 unmet` per theme, or unmet
-- [ ] `math.theme_design.html` opens in a browser: the `theme-doc` block is valid JSON, the
+- [ ] `index.html` opens in a browser: the `theme-doc` block is valid JSON, the
   log says `loaded embedded sketch`, and no `src=` fetch error appears.
 - [ ] Every colour literal in the matched CSS appears in `inventory`, and every cluster
    is either a token in `tokenMap` or explained in `findings`.
@@ -687,12 +687,12 @@ a {
   of redundant per-theme overrides.
 - [ ] Proposed (not found) themes and all accessibility failures are listed as findings.
 ### 2.11 Write the harness
-Copy `demo/theme.html` to `math.theme_design.html` and fill in its `theme-doc` block — do not
+Copy `demo/theme.html` to `index.html` and fill in its `theme-doc` block — do not
 leave the file to be assembled by hand in the browser:
 1. Remove the `src="./palette.pcad"` attribute from `<point-cad>`. An embedded sketch
     wins over `src=` anyway, but the attribute would still fetch (and log an error) when
     the file is opened from another directory.
-2. Point the module import at the library relative to where `math.theme_design.html` lives:
+2. Point the module import at the library relative to where `index.html` lives:
     `import { bootHarness } from "<path>/extensions/theme/ui/harness.js"`.
 3. Fill the JSON block. Every key of `doc` is optional and falls back to the harness
     defaults; `pcad` is the complete sketch of §2.8 as **one JSON string** (`\n` between
