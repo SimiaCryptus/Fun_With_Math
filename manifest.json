@@ -1,22 +1,35 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-18T21:38:32.902Z",
+    "generatedAt": "2026-09-18T22:00:47.108Z",
     "counts": {
-        "lab": 22,
-        "essay": 6
+        "labs": 27,
+        "essays": 2,
+        "essay": 4,
+        "lab": 1
     },
     "entries": [
         {
             "id": "pentagon-lattice-geometry",
             "title": "Pentagonal Lattice Geometry",
-            "category": "lab",
+            "description": "A multi-sheeted covering construction in which the regular pentagon develops fractional dimension (d ≈ 2.37) and spinor-like holonomy — a discrete model where a single loop requires two passes to return to identity.",
+            "tags": [
+                "geometry",
+                "quasicrystals",
+                "golden-ratio",
+                "covering-spaces",
+                "holonomy",
+                "fractal-dimension",
+                "cellular-automata",
+                "quadratic-fields"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/Pentagon_Lattice_Geometry.mp4",
             "order": 0,
             "repo": {
                 "url": "git@github.com:SimiaCryptus/Pentagon_Lattice_Geometry.git",
-                "commit": "214d8a98d3f0eabea4f6468070813f0d0e388aad",
+                "commit": "786f251b5d86c9bebeba2dff5eb2fb4f7d85cfc5",
                 "path": "quadratics/pentagon",
                 "submodule": true
             },
@@ -30,28 +43,57 @@
         {
             "id": "qqn",
             "title": "Quadratic Quasi-Newton",
-            "category": "essay",
+            "description": "A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS along a quadratic path, with a provable descent guarantee and no extra hyperparameters.",
+            "tags": [
+                "optimization",
+                "quasi-newton",
+                "l-bfgs",
+                "gradient-descent",
+                "line-search",
+                "numerical-methods",
+                "machine-learning"
+            ],
+            "category": "essays",
             "href": "index.html",
             "readme": "README.md",
+            "author": "SimiaCryptus",
+            "license": "MIT",
+            "date": "2025",
             "order": 0,
             "repo": {
                 "url": "https://github.com/Simiacryptus/qqn.git",
                 "branch": "main",
-                "commit": "813904eaa8c80bd4a3520276d0e00a311b4adcda",
+                "commit": "3f97c56310dce6d1360156f9ad02fefdc3c97ac0",
                 "path": "optimization/QQN",
                 "submodule": true
+            },
+            "seo": {
+                "title": "QQN Optimizer — Quadratic-Quasi-Newton, Illustrated",
+                "description": "An illustrated, interactive introduction to the QQN (Quadratic-Quasi-Newton) optimizer: the quadratic path between gradient descent and quasi-Newton, its four strategy slots, what makes it different, and its history.",
+                "canonical": "https://games.cognotik.com/optimization/QQN/index.html",
+                "type": "article"
             },
             "dir": "optimization/QQN",
             "source": "optimization/QQN/entry.json",
             "section": "essays",
             "icon": "QQN",
-            "subtitle": "Standalone · optimization",
-            "pitch": "A new optimization algorithm for smooth functions that interpolates between gradient descent and L-BFGS."
+            "subtitle": "Standalone · optimization"
         },
         {
             "id": "pid-ca",
             "title": "PID-Regulated Cellular Automaton",
-            "category": "lab",
+            "description": "A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor count against a target and computes proportional, integral, and derivative terms to decide its next state. The result is a rule family with local memory (integral windup), local anticipation (derivative), and tunable dynamical regimes — under-damped ripples, critically-damped blobs, over-damped glassy creep — all from the same control-theoretic mechanism. Swap the domain for an excitable bioelectrical membrane (spiking, refractoriness, propagating waves) or for Dither-CA, where each cell regulates its neighbourhood's mean colour toward a target image.",
+            "tags": [
+                "cellular-automaton",
+                "control-theory",
+                "pid",
+                "excitable-media",
+                "dithering",
+                "simulation",
+                "canvas",
+                "interactive"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/pid-ca-demo.mp4",
@@ -59,28 +101,41 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/pid-ca.git",
                 "branch": "main",
-                "commit": "611f74756653f1fb9b12f9e5eca9efa3d9bec40c",
+                "commit": "de9b1f17823e6509897b340decc2e39f5312f566",
                 "path": "ca/pid-ca",
                 "submodule": true
             },
+            "seo": {
+                "launchLabel": "Open the PID-Regulated Cellular Automaton lab"
+            },
             "dir": "ca/pid-ca",
             "source": "ca/pid-ca/entry.json",
-            "section": "featured",
-            "icon": "PC",
-            "launchLabel": "Open the PID-Regulated Cellular Automaton lab",
-            "pitch": "A cellular automaton whose update rule is a per-cell PID controller: each cell measures its active-neighbor count against a target and computes proportional, integral, and derivative terms to decide its next state. The result is a rule family with local memory (integral windup), local anticipation (derivative), and tunable dynamical regimes — under-damped ripples, critically-damped blobs, over-damped glassy creep — all from the same control-theoretic mechanism."
+            "section": "labs"
         },
         {
             "id": "qqn-visuals",
             "title": "Which Direction? → Where on the Curve?",
-            "category": "essay",
+            "description": "An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from \"which direction should I move?\" into \"where on this curve should I stop?\" — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of classical methods (gradient descent, momentum, L-BFGS, trust regions, OWL-QN) into points in one configuration space. Built to make the geometry something you can feel, not just read.",
+            "tags": [
+                "optimization",
+                "qqn",
+                "quasi-newton",
+                "line-search",
+                "gradient-descent",
+                "l-bfgs",
+                "interactive",
+                "scrollytelling",
+                "visualization",
+                "tutorial"
+            ],
+            "category": "essays",
             "href": "index.html",
             "readme": "README.md",
             "order": 1,
             "repo": {
                 "url": "https://github.com/Simiacryptus/qqn-visuals.git",
                 "branch": "main",
-                "commit": "cd7fc216629293b4738c35b6b9556071aacd7d33",
+                "commit": "4ad204a8226ebfcfe88a001585af4b192162c0a8",
                 "path": "optimization/QQN-Visuals",
                 "submodule": true
             },
@@ -88,13 +143,22 @@
             "source": "optimization/QQN-Visuals/entry.json",
             "section": "essays",
             "icon": "QQN",
-            "subtitle": "Interactive · optimization",
-            "pitch": "An interactive, scroll-driven tutorial on the Quadratic Quasi-Newton (QQN) optimizer. Reframes optimization from \"which direction should I move?\" into \"where on this curve should I stop?\" — with live contour maps, deformable search curves, and a four-axis factoring that collapses a zoo of classical methods (gradient descent, momentum, L-BFGS, trust regions, OWL-QN) into points in one configuration space. <em>Built to make the geometry something you can feel, not just read.</em>"
+            "subtitle": "Interactive · optimization"
         },
         {
             "id": "geometric-entropy",
-            "title": "Geometric Entropy",
-            "category": "lab",
+            "title": "Geometric Entropy Lab",
+            "description": "A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize the Shannon entropy of their pairwise-distance distribution.",
+            "tags": [
+                "entropy",
+                "geometry",
+                "optimization",
+                "erdos-distinct-distances",
+                "manifolds",
+                "tensorflow-js",
+                "webxr"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/Geometric_Entropy.mp4",
@@ -102,19 +166,26 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/geometric-entropy.git",
                 "branch": "main",
-                "commit": "cb42d8f024827cecd9952659e22aae6a44af7b5d",
+                "commit": "9eac35183a119a5e81fee37b29f7d7ab12d766a5",
                 "path": "physics/geometric-entropy",
                 "submodule": true
             },
             "dir": "physics/geometric-entropy",
             "source": "physics/geometric-entropy/entry.json",
-            "section": "featured",
-            "icon": "GE",
-            "pitch": "A continuous analogue of the Erdős distinct-distance problem. Points on a manifold are arranged to extremize the Shannon entropy of their pairwise-distance distribution."
+            "section": "labs"
         },
         {
             "id": "rcc",
             "title": "RCC — Rational Certificate Complexity",
+            "description": "Treats every convergence sequence as a rational certificate engine, measures certificate bit-length against demanded tolerance ε, and stratifies mathematical constants into cost classes RC₁/RC₂/RC₃.",
+            "tags": [
+                "computational-complexity",
+                "numerical-analysis",
+                "mathematical-constants",
+                "hypergeometric-series",
+                "diophantine-approximation",
+                "philosophy-of-mathematics"
+            ],
             "category": "essay",
             "href": "index.html",
             "readme": "README.md",
@@ -122,7 +193,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/rcc.git",
                 "branch": "main",
-                "commit": "430c27d8ad8554f67c33ad8482de42cca32bf9fc",
+                "commit": "4b5a3772bde5844d46e7eb797533da6ea6b241e4",
                 "path": "numbers/RCC",
                 "submodule": true
             },
@@ -136,7 +207,18 @@
         {
             "id": "irrational-lattice",
             "title": "Irrational Lattice",
-            "category": "lab",
+            "description": "A new primitive: deterministic, algebraic “colored noise” for lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a nearest-lattice map — provably aperiodic, spectrally tunable, integer-arithmetic clean.",
+            "tags": [
+                "quadratic-fields",
+                "aperiodic-order",
+                "quasicrystals",
+                "lattices",
+                "colored-noise",
+                "exact-arithmetic",
+                "moire",
+                "procedural-textures"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/Irrational_Lattice.mp4",
@@ -144,19 +226,29 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/irrational-lattice.git",
                 "branch": "main",
-                "commit": "3516c3eb6f84066c23c36e25ddba94b734dc25f3",
+                "commit": "1d63f486a254eea3d9008a3121225f17d41e009a",
                 "path": "quadratics/irrational_lattice",
                 "submodule": true
             },
             "dir": "quadratics/irrational_lattice",
             "source": "quadratics/irrational_lattice/entry.json",
             "section": "featured",
-            "icon": "IL",
-            "pitch": "A new primitive: deterministic, algebraic “colored noise” for lattices. Coordinates in ℚ(√D) deform ℤᵈ and snap back via a nearest-lattice map — provably aperiodic, spectrally tunable, integer-arithmetic clean."
+            "icon": "IL"
         },
         {
             "id": "pi-rcc",
             "title": "PI_RCC — The Simplest Increment: x + sin(x)",
+            "description": "A cubic-convergent iteration for π whose outer recurrence is not hypergeometric — it falls outside RCC's classified class, yet still attains optimal RC₁ certificate cost. Develops derivative engineering (g(α)=0, g′(α)=−1, g″(α)=0) and the tower of continua from ℚ through algebraic, analytic, elliptic/modular constants and periods.",
+            "tags": [
+                "pi",
+                "cubic-convergence",
+                "fixed-point-iteration",
+                "taylor-series",
+                "rational-certificate-complexity",
+                "derivative-engineering",
+                "transcendental-numbers",
+                "interval-arithmetic"
+            ],
             "category": "essay",
             "href": "index.html",
             "readme": "README.md",
@@ -164,7 +256,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/pi-rcc.git",
                 "branch": "main",
-                "commit": "3b2a9fb5b3b530b61338cbe8110190907a28f1b0",
+                "commit": "2af76a593c9fad4c9a032aa8a96889d84d8ab90e",
                 "path": "numbers/PI_RCC",
                 "submodule": true
             },
@@ -178,6 +270,19 @@
         {
             "id": "nam",
             "title": "NAM — Numbers as Machines",
+            "description": "Trilogy III · the executable substrate. A generator-based numerics library where every number is a forkable, deterministic nano-VM emitting an infinite digit stream: a two-tier ABI, signed-digit arithmetic, base-as-codec, p-adics as periodic automata, BBP skip-ahead, and an interval-honest account of equality.",
+            "tags": [
+                "numerics",
+                "exact-real-arithmetic",
+                "coinduction",
+                "final-coalgebra",
+                "signed-digit",
+                "p-adic",
+                "BBP",
+                "generator-complexity",
+                "LLVM",
+                "undecidability"
+            ],
             "category": "essay",
             "href": "index.html",
             "readme": "README.md",
@@ -185,7 +290,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/nam.git",
                 "branch": "main",
-                "commit": "a175bd2960149d9e63073bd6019266b1065e0afe",
+                "commit": "0d8a16f11a9507293060a32d65473c6840e5ac3a",
                 "path": "numbers/NAM",
                 "submodule": true
             },
@@ -199,7 +304,18 @@
         {
             "id": "spacelike-knots",
             "title": "Spacelike Knots",
-            "category": "lab",
+            "description": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot.",
+            "tags": [
+                "knot-theory",
+                "topology",
+                "relativity",
+                "minkowski",
+                "causal-structure",
+                "distance-matrix",
+                "visualization",
+                "webgl"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/Spacelike_Knots.mp4",
@@ -207,20 +323,27 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/spacelike-knots.git",
                 "branch": "main",
-                "commit": "c341828e87fd90a2d2a356846f83bb23c8946668",
+                "commit": "c3699760701328080dae9fb1d8221373fb742f80",
                 "path": "physics/spacelike-knots",
                 "submodule": true
             },
             "dir": "physics/spacelike-knots",
             "source": "physics/spacelike-knots/entry.json",
-            "section": "featured",
-            "icon": "SK",
-            "pitch": "A knot equipped with a Minkowski metric, turning crossings into causal inversions. The distance matrix becomes a causal diagram: timelike, spacelike, and null separations color-coded across the whole knot."
+            "section": "labs"
         },
         {
             "id": "magnet-lattice",
             "title": "Magnet Lattice",
-            "category": "lab",
+            "description": "Explore the dynamics of re-rotating magnets and their emergent behaviors.",
+            "tags": [
+                "physics",
+                "simulation",
+                "dipoles",
+                "lagrangian",
+                "normal-modes",
+                "interactive"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/demo_magnets.mp4",
@@ -228,7 +351,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/magnet-lattice.git",
                 "branch": "main",
-                "commit": "878be3e196b351044a62f090461e77a76db50055",
+                "commit": "b209779efbd847669571370875dc31aeee907207",
                 "path": "experiments/magnet-lattice",
                 "submodule": true
             },
@@ -241,6 +364,16 @@
         {
             "id": "tel",
             "title": "The Extension Ladder: One Way to Watch Number Systems Grow",
+            "description": "A logical reconstruction of the generative mechanism behind number systems: exploit a structure's affordances, force an element outside the set, extend, and repeat — from the integers up through the complex plane, with side branches into modular arithmetic, wavelets, and the p-adics.",
+            "tags": [
+                "mathematics",
+                "number-theory",
+                "field-theory",
+                "transcendence",
+                "p-adic",
+                "philosophy-of-math",
+                "essay"
+            ],
             "category": "essay",
             "href": "index.html",
             "readme": "README.md",
@@ -248,20 +381,28 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/tel.git",
                 "branch": "main",
-                "commit": "7d247d6770566144ea3f0faedf073e5280da4c5d",
+                "commit": "3ab95929fa0c55988785d490c1417a7d00ab2826",
                 "path": "numbers/TEL",
                 "submodule": true
             },
             "dir": "numbers/TEL",
             "source": "numbers/TEL/entry.json",
             "section": "essays",
-            "icon": "TEL",
-            "pitch": ""
+            "icon": "TEL"
         },
         {
             "id": "theme-cad",
             "title": "Theme CAD",
-            "category": "lab",
+            "description": "A theme designer for PointCAD, allowing you to create and customize themes for your CAD projects.",
+            "tags": [
+                "point-cad",
+                "color",
+                "constraints",
+                "design-tokens",
+                "accessibility",
+                "oklab"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/demo_themecad.mp4",
@@ -269,7 +410,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "efa1748dd1ba0afc81346ed6a0913f2d37337b20",
+                "commit": "92584553e1f911e8066734d32b7f662fd9972f05",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "theme-designer"
@@ -277,13 +418,21 @@
             "dir": "experiments/point-cad/theme-designer",
             "source": "experiments/point-cad/theme-designer/entry.json",
             "section": "featured",
-            "icon": "TC",
-            "pitch": "A theme designer for PointCAD, allowing you to create and customize themes for your CAD projects."
+            "icon": "TC"
         },
         {
             "id": "pastaponics",
             "title": "Pastaponics",
-            "category": "lab",
+            "description": "A modular, 3D‑printed hydroponic medium enabling plant‑driven nutrient self‑regulation through spatially differentiated nutrient channels.",
+            "tags": [
+                "hydroponics",
+                "3d-printing",
+                "generative-geometry",
+                "plant-biology",
+                "rhizosphere",
+                "three.js"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/demo_pasta.mp4",
@@ -291,20 +440,26 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/pastaponics.git",
                 "branch": "main",
-                "commit": "63f076397586fe637bbc7d78d668e4d68c8e4ff4",
+                "commit": "0154adb8b447e00bdba9b18bd3c4aad4ec3df0c4",
                 "path": "experiments/pastaponics",
                 "submodule": true
             },
             "dir": "experiments/pastaponics",
             "source": "experiments/pastaponics/entry.json",
-            "section": "featured",
-            "icon": "PP",
-            "pitch": "A modular, 3D‑printed hydroponic medium enabling plant‑driven nutrient self‑regulation through spatially differentiated nutrient channels."
+            "section": "labs"
         },
         {
             "id": "layered-ca",
             "title": "Layered Cellular Automata",
-            "category": "lab",
+            "description": "Langton's ants write a colored substrate that gates where Conway's Life is allowed to live. Three feedback layers — ants → substrate → life → substrate → ants — produce highways, colonies, and fractal boundaries. For a playable take on Conway's Life and 50+ other rulesets, see the sister site The Arcade of Life at https://aol.cognotik.com/",
+            "tags": [
+                "cellular-automata",
+                "langtons-ant",
+                "game-of-life",
+                "emergence",
+                "generative-art"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/Binary_Coded_Layered_Autonoma.mp4",
@@ -312,20 +467,28 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/layered-ca.git",
                 "branch": "main",
-                "commit": "b0973e3a6e73fad8d713ff486602e0be0c9f0c87",
+                "commit": "d438b1739b26d5e36e418695d3c046fcf8c200bb",
                 "path": "ca/layered_ca",
                 "submodule": true
             },
             "dir": "ca/layered_ca",
             "source": "ca/layered_ca/entry.json",
-            "section": "featured",
-            "icon": "CA",
-            "pitch": "Langton's ants write a colored substrate that gates where Conway's Life is allowed to live. Three feedback layers — ants → substrate → life → substrate → ants — produce highways, colonies, and fractal boundaries. For a playable take on Conway's Life and 50+ other rulesets, see the sister site <a href=\"https://aol.cognotik.com/\" target=\"_blank\" rel=\"noopener\">The Arcade of Life ↗</a>."
+            "section": "labs"
         },
         {
             "id": "symmetry-simple",
             "title": "Space-Color Symmetry",
-            "category": "lab",
+            "description": "A pixel canvas where symmetry doesn't just mirror your strokes — it rewires the diffusion graph. Heat flows along symmetry orbits, producing kaleidoscope dynamics on a quotient-like manifold.",
+            "tags": [
+                "symmetry",
+                "diffusion",
+                "symmetry-groups",
+                "kaleidoscope",
+                "generative-art",
+                "heat-equation",
+                "interactive"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/Symmetry_Diffusion.mp4",
@@ -333,41 +496,117 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/symmetry-simple.git",
                 "branch": "main",
-                "commit": "c3fdc5292f8abfc5feb096feef03a7159071b360",
+                "commit": "932d76f048b1605416253c6f513cb15c31669e63",
                 "path": "physics/symmetry_simple",
                 "submodule": true
             },
             "dir": "physics/symmetry_simple",
             "source": "physics/symmetry_simple/entry.json",
-            "section": "featured",
-            "icon": "SY",
-            "pitch": "A pixel canvas where symmetry doesn't just mirror your strokes — it rewires the diffusion graph. Heat flows along symmetry orbits, producing kaleidoscope dynamics on a quotient-like manifold."
+            "section": "labs"
+        },
+        {
+            "id": "experiments-basic",
+            "title": "Basic Math Experiments",
+            "description": "A set of interactive browser experiments: the Mandelbrot set, the Sieve of Eratosthenes, Fourier series epicycles, and the Collatz conjecture.",
+            "tags": [
+                "fractals",
+                "primes",
+                "fourier",
+                "collatz",
+                "canvas",
+                "interactive",
+                "visualization"
+            ],
+            "category": "labs",
+            "href": "mandelbrot.html",
+            "readme": "/README.md",
+            "thumbnail": "/assets/thumbnails/experiments-basic.png",
+            "author": "Fun With Math",
+            "license": "MIT",
+            "date": "2024-01-01",
+            "order": 10,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/basic"
+            },
+            "seo": {
+                "title": "Basic Math Experiments – Fun With Math",
+                "description": "Explore the Mandelbrot set, prime sieves, Fourier series and the Collatz conjecture in interactive, no-install browser demos.",
+                "keywords": [
+                    "mandelbrot set",
+                    "sieve of eratosthenes",
+                    "fourier series",
+                    "collatz conjecture",
+                    "math visualization"
+                ],
+                "pages": [
+                    {
+                        "href": "mandelbrot.html",
+                        "title": "Mandelbrot Set – Fun With Math",
+                        "description": "Explore the Mandelbrot Set fractal interactively in your browser."
+                    },
+                    {
+                        "href": "primes.html",
+                        "title": "Prime Number Sieve – Fun With Math",
+                        "description": "Watch the Sieve of Eratosthenes find primes interactively."
+                    },
+                    {
+                        "href": "fourier.html",
+                        "title": "Fourier Series – Fun With Math",
+                        "description": "Visualize Fourier series approximations with interactive spinning circles."
+                    },
+                    {
+                        "href": "collatz.html",
+                        "title": "Collatz Conjecture – Fun With Math",
+                        "description": "Explore the Collatz Conjecture: the 3n+1 problem visualized."
+                    }
+                ]
+            },
+            "dir": "experiments/basic",
+            "source": "experiments/basic/entry.json",
+            "section": "labs"
         },
         {
             "id": "markov-analysis",
             "title": "Bidirectional Markov Text Analyzer",
-            "category": "lab",
+            "description": "Build a language model from your own corpus, then watch another text light up token-by-token by how surprising it is. Forward and backward order-n Markov models are merged into a single surprise heatmap, with click-to-replace predictions, add-k smoothing, backoff, and live perplexity.",
+            "tags": [
+                "markov",
+                "n-gram",
+                "text-analysis",
+                "language-model",
+                "perplexity",
+                "heatmap",
+                "visualization",
+                "client-side"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 10,
             "repo": {
                 "url": "https://github.com/Simiacryptus/markov-analysis.git",
                 "branch": "main",
-                "commit": "9e42a18cf636456dbe1673c20ecc4fcb05d23a45",
+                "commit": "dfe5912d161011122b8cfb2298f7d3f2172b0c20",
                 "path": "ca/markov-analysis",
                 "submodule": true
             },
             "dir": "ca/markov-analysis",
             "source": "ca/markov-analysis/entry.json",
-            "section": "featured",
-            "icon": "MA",
-            "launchLabel": "Open the Bidirectional Markov Text Analyzer lab",
-            "pitch": "Build a language model from your own corpus, then watch another text light up token-by-token by how <em>surprising</em> it is. Forward and backward order-n Markov models are merged into a single surprise heatmap, with click-to-replace predictions, add-k smoothing, backoff, and live perplexity."
+            "section": "labs"
         },
         {
             "id": "chaos-garden",
             "title": "Chaos Garden",
-            "category": "lab",
+            "description": "An in-browser, gamified fluid dynamics simulation: paint banks and obstacles into a channel, then watch the water braid, eddy and refuse to repeat itself.",
+            "tags": [
+                "fluid-dynamics",
+                "chaos",
+                "simulation",
+                "webgl",
+                "interactive"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/ns_flow_demo.mp4",
@@ -375,40 +614,56 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/chaos-garden.git",
                 "branch": "main",
-                "commit": "ce6b9692c39cf11dcd25c47130d02b66c6d2acde",
+                "commit": "96fe57b571142d6d2c24cf2fc87e00f413e095a1",
                 "path": "physics/chaos-garden",
                 "submodule": true
             },
             "dir": "physics/chaos-garden",
             "source": "physics/chaos-garden/entry.json",
             "section": "featured",
-            "icon": "CG",
-            "pitch": "An in-browser, gamified fluid dynamics simulation"
+            "icon": "CG"
         },
         {
             "id": "static-secrets",
             "title": "Static Secrets",
-            "category": "lab",
+            "description": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key.",
+            "tags": [
+                "cryptography",
+                "pwa",
+                "privacy",
+                "web-crypto",
+                "static-hosting"
+            ],
+            "category": "labs",
             "href": "index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
             "readme": "README.md",
             "order": 12,
             "repo": {
                 "url": "https://github.com/Simiacryptus/static-secrets.git",
                 "branch": "main",
-                "commit": "fae395825f50c6b6d05f4cdc7795424f6ddba6ca",
+                "commit": "492f30a25f75c76a2f377828418c284866eac51c",
                 "path": "tools/static-secrets",
                 "submodule": true
             },
             "dir": "tools/static-secrets",
             "source": "tools/static-secrets/entry.json",
             "section": "featured",
-            "icon": "🔒",
-            "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key."
+            "icon": "🔒"
         },
         {
             "id": "gravity",
             "title": "Relativistic 2-Body Gravity",
-            "category": "lab",
+            "description": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits.",
+            "tags": [
+                "physics",
+                "gravity",
+                "relativity",
+                "orbits",
+                "n-body",
+                "simulation",
+                "chaos"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/Relativistic_Gravity.mp4",
@@ -416,7 +671,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/gravity.git",
                 "branch": "main",
-                "commit": "6dd5c6388c4440149b3c98d44a247ff02d75894d",
+                "commit": "c553fde9065d181ab5b54e8b8d16bbdc996ad1ee",
                 "path": "physics/gravity",
                 "submodule": true
             },
@@ -424,20 +679,30 @@
             "source": "physics/gravity/entry.json",
             "section": "featured",
             "icon": "GR",
-            "launchLabel": "Open the Relativistic 2-Body Gravity lab",
-            "pitch": "A 2-body gravitational system with relativistic adjustments and time-delayed (retarded) interactions. Gravity propagates at finite speed c, breaking Newton's third law and producing orbital precession, frame-dragging analogues, and chaotic orbits."
+            "launchLabel": "Open the Relativistic 2-Body Gravity lab"
         },
         {
             "id": "mesh",
             "title": "Constrained Mesh Enclosure Lab",
-            "category": "lab",
+            "description": "A deformable surface mesh flows downhill on geometric fitness functionals (area, volume, edge-length entropy, angular regularity, Laplacian smoothness) while an exact continuous collision-detection pipeline guarantees it never intrudes into an inner keep-out volume — a differentiable shrink-wrap where every gradient step is clipped at the moment of contact.",
+            "tags": [
+                "geometry",
+                "mesh",
+                "optimization",
+                "collision-detection",
+                "entropy",
+                "constrained-descent",
+                "optimizer-fingerprinting",
+                "webgl"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 14,
             "repo": {
                 "url": "https://github.com/Simiacryptus/mesh.git",
                 "branch": "main",
-                "commit": "96da8c3c5531c7eeffd5e622ee3c45e782903a5a",
+                "commit": "6a9c1c2e7fc948de018a7af72aaf2592355b78f4",
                 "path": "physics/mesh",
                 "submodule": true
             },
@@ -445,49 +710,63 @@
             "source": "physics/mesh/entry.json",
             "section": "featured",
             "icon": "ME",
-            "launchLabel": "Open the Constrained Mesh Enclosure Lab",
-            "pitch": "A deformable surface mesh flows downhill on geometric fitness functionals (area, volume, edge-length entropy, angular regularity, Laplacian smoothness) while an exact continuous collision-detection pipeline guarantees it never intrudes into an inner keep-out volume — a differentiable shrink-wrap where every gradient step is clipped at the moment of contact."
+            "launchLabel": "Open the Constrained Mesh Enclosure Lab"
         },
         {
             "id": "primegen",
             "title": "The Prime Sieve as a Stack of Orthogonal Periodic Fields",
-            "category": "lab",
+            "description": "An interactive essay on the periodic machinery underneath the primes: each prime emits an orthogonal exclusion field, their stacked product has primorial period, and CRT independence makes density multiplicative, entropy additive, and spectral support disjoint.",
+            "tags": [
+                "number theory",
+                "prime sieve",
+                "chinese remainder theorem",
+                "fourier analysis",
+                "entropy",
+                "wheel factorization",
+                "visualization"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 15,
             "repo": {
                 "url": "https://github.com/Simiacryptus/primegen.git",
                 "branch": "main",
-                "commit": "697ef31bfe7617d93b84c8e2b70d80434f258aef",
+                "commit": "48a302c9149b8147f0b53f2ba21c137f5bfa1acf",
                 "path": "numbers/primegen",
                 "submodule": true
             },
             "dir": "numbers/primegen",
             "source": "numbers/primegen/entry.json",
-            "section": "featured",
-            "icon": "PF",
-            "launchLabel": "Open the Prime Sieve as a Stack of Orthogonal Periodic Fields lab",
-            "pitch": "An interactive essay on the periodic machinery underneath the primes: each prime emits an orthogonal exclusion field, their stacked product has primorial period, and CRT independence makes density multiplicative, entropy additive, and spectral support disjoint."
+            "section": "labs"
         },
         {
             "id": "fractal-mosaic",
             "title": "Fractal Mosaic",
-            "category": "lab",
+            "description": "A recursive photomosaic viewer: an infinite, self-similar plane where every photo dissolves into a mosaic of other photos from your album, forever.",
+            "tags": [
+                "fractal",
+                "photomosaic",
+                "infinite-zoom",
+                "recursion",
+                "webgl",
+                "generative",
+                "photography"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 16,
             "repo": {
                 "url": "https://github.com/Simiacryptus/fractal-mosaic.git",
                 "branch": "main",
-                "commit": "fcd8cbbadbab01aa6bb3288512a4b22472a4181e",
+                "commit": "410bd141aa11bd7ea0843996e0af6aabd47c0d8d",
                 "path": "experiments/fractal-mosaic",
                 "submodule": true
             },
             "dir": "experiments/fractal-mosaic",
             "source": "experiments/fractal-mosaic/entry.json",
-            "section": "featured",
-            "icon": "FM",
-            "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album."
+            "section": "labs"
         },
         {
             "id": "point-cad",
@@ -499,7 +778,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "efa1748dd1ba0afc81346ed6a0913f2d37337b20",
+                "commit": "92584553e1f911e8066734d32b7f662fd9972f05",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "demo"
@@ -513,77 +792,113 @@
         {
             "id": "optimization-mechanics",
             "title": "Optimization Mechanics Visualizer",
-            "category": "lab",
+            "description": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations.",
+            "tags": [
+                "optimization",
+                "gradient-descent",
+                "adam",
+                "l-bfgs",
+                "qqn",
+                "visualization",
+                "canvas",
+                "interactive"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 18,
             "repo": {
                 "url": "https://github.com/Simiacryptus/optimization-mechanics.git",
                 "branch": "main",
-                "commit": "1b978cf4451c62ae97de382fe48d579b525c4dfb",
+                "commit": "655d6cbd410935f4efabe6b0d36141575c38ca7a",
                 "path": "optimization/optimization-mechanics",
                 "submodule": true
             },
             "dir": "optimization/optimization-mechanics",
             "source": "optimization/optimization-mechanics/entry.json",
-            "section": "featured",
-            "icon": "OM",
-            "launchLabel": "Open the Optimization Mechanics Visualizer lab",
-            "pitch": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations."
+            "section": "labs"
         },
         {
             "id": "nam-calculator",
             "title": "nam — Numbers as Machines",
-            "category": "lab",
+            "description": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie.",
+            "tags": [
+                "exact-real-arithmetic",
+                "computable-analysis",
+                "digit-streams",
+                "undecidability",
+                "wasm",
+                "calculator",
+                "interactive"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 19,
             "repo": {
                 "url": "https://github.com/Simiacryptus/nam-calculator.git",
                 "branch": "main",
-                "commit": "e6c9ca7e4f4453dea8fec090e68b661bdc87077e",
+                "commit": "af4c9e76dc379d707f1816ac46127adb5ac4c6fe",
                 "path": "numbers/nam-calculator",
                 "submodule": true
             },
             "dir": "numbers/nam-calculator",
             "source": "numbers/nam-calculator/entry.json",
-            "section": "featured",
-            "icon": "NM",
-            "launchLabel": "Open the nam interactive calculator",
-            "pitch": "A calculator where every number is a deterministic, forkable virtual machine emitting an infinite digit stream on demand. Comparison is honestly tri-state, fork cost is annotated by tier, and unprovable digits render as 'pending (null)' rather than a comfortable lie."
+            "section": "labs"
         },
         {
             "id": "no3sieve",
             "title": "No-Three-in-Line: A Visual Theory Explorer",
-            "category": "lab",
+            "description": "An infinite-canvas explorer for the no-three-in-line rule under deterministic greedy growth: ring-major Chebyshev (L∞) traversal, forced empty strips, finite-horizon collinearity, centered-window density fields, top-K certified windows, paranoid verification and one-click export.",
+            "tags": [
+                "combinatorics",
+                "lattice",
+                "no-three-in-line",
+                "greedy",
+                "sieve",
+                "density",
+                "visualization",
+                "infinite-canvas"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 20,
             "repo": {
                 "url": "https://github.com/Simiacryptus/no3sieve.git",
                 "branch": "main",
-                "commit": "931f80895e6da456995de7314501e4d42dcd0738",
+                "commit": "ac032554f1afdf72644d8122505f2fb7d5ba868b",
                 "path": "experiments/no3sieve",
                 "submodule": true
             },
             "dir": "experiments/no3sieve",
             "source": "experiments/no3sieve/entry.json",
-            "section": "featured",
-            "icon": "N3",
-            "launchLabel": "Open the No-Three-in-Line Visual Theory Explorer",
-            "pitch": "An infinite-canvas explorer for the no-three-in-line rule under deterministic greedy growth: ring-major Chebyshev order, forced empty strips, finite-horizon collinearity, density fields, top-K windows, and paranoid verification."
+            "section": "labs"
         },
         {
             "id": "3inline",
-            "title": "No-Three-in-Line Explorer",
-            "category": "lab",
+            "title": "No-Three-in-Line Lab",
+            "description": "A live, physics-flavored playground for the classic no-three-in-line problem: place as many points as possible on an n×n grid so that no three are ever collinear. Instead of searching discrete arrangements, the lab relaxes the lattice constraint and lets points drift under an energy landscape — a magnetic pull toward integer positions, a repulsive force that builds as any triple flattens toward a line, and optional spacing and entropic-noise terms. Gradient optimizers (Adam, SGD+momentum, L-BFGS, QQN) roll the configuration downhill while tracked lines are tinted by population (blue under-filled, green exactly two, red over-crowded). Tune the forces mid-run, drag points by hand, restart for a fresh seed, or switch to 3D mode and orbit a cubic lattice.",
+            "tags": [
+                "combinatorics",
+                "geometry",
+                "optimization",
+                "continuous-relaxation",
+                "energy-landscape",
+                "gradient-descent",
+                "tensorflow-js",
+                "simulated-annealing",
+                "interactive",
+                "3d"
+            ],
+            "category": "labs",
             "href": "index.html",
             "readme": "README.md",
             "order": 21,
             "repo": {
                 "url": "https://github.com/Simiacryptus/3inline.git",
                 "branch": "main",
-                "commit": "17f2c351fda5cd3becee71521cfeff982cb612b9",
+                "commit": "f169603ebfffc008a2cc89a7ca9514a6d86dd7a7",
                 "path": "experiments/3inline",
                 "submodule": true
             },
@@ -591,8 +906,226 @@
             "source": "experiments/3inline/entry.json",
             "section": "featured",
             "icon": "3L",
-            "launchLabel": "Open the No-Three-in-Line Explorer lab",
-            "pitch": "An interactive laboratory for the classic no-three-in-line problem: place ~2n points on an n×n grid so no three are collinear along any rational slope. Solve it by hand with instant collinearity feedback, or watch an entropic simulated-annealing solver with parabola warm starts, sublattice mutations, and a tabu list search for dense configurations — all powered by an incremental line index for fast O(k) move checks."
+            "launchLabel": "Open the No-Three-in-Line Lab"
+        },
+        {
+            "id": "dihedral-attractors",
+            "title": "Dihedral Attractors",
+            "description": "Rung 4 of the geometric-energy ladder: sculpt meshes by optimizing functionals over triangulation dihedral angles — flatness, uniform folds, creasing, smoothness, or fold entropy — with points free or pinned to a sphere, torus, or saddle.",
+            "tags": [
+                "geometry",
+                "discrete-differential-geometry",
+                "dihedral-angles",
+                "curvature",
+                "triangulation",
+                "optimization",
+                "gradient-descent",
+                "attractors",
+                "polyhedra",
+                "interactive",
+                "visualization",
+                "canvas"
+            ],
+            "category": "labs",
+            "href": "index.html",
+            "readme": "README.md",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/dihedral"
+            },
+            "seo": {
+                "title": "Dihedral Attractors — Sculpting Geometry by Optimizing Fold Angles",
+                "description": "An interactive lab that minimizes or maximizes energies built from the dihedral angles of a live triangulation, coaxing point clouds into folded, curvature-defined attractors reminiscent of the Platonic solids.",
+                "keywords": [
+                    "dihedral angle optimization",
+                    "discrete differential geometry",
+                    "mesh curvature energy",
+                    "geometric attractors",
+                    "Thomson problem",
+                    "gradient descent visualization"
+                ]
+            },
+            "dir": "experiments/dihedral",
+            "source": "experiments/dihedral/entry.json",
+            "section": "labs"
+        },
+        {
+            "id": "fractal-learning",
+            "title": "Fitting Point Clouds with Iterated Transforms",
+            "description": "An interactive TensorFlow.js lab that reverse-engineers an iterated function system from a target point cloud: a handful of affine transforms are enumerated to a fixed depth (commutative multisets via binary powers, or ordered words) and tuned by gradient descent against a symmetric Chamfer loss. Draw or load a target shape, pick the number of transforms and the depth, and watch a random constellation self-organize into the outline you asked for.",
+            "tags": [
+                "fractals",
+                "iterated-function-systems",
+                "ifs",
+                "chamfer-distance",
+                "gradient-descent",
+                "autodiff",
+                "tensorflow-js",
+                "point-clouds",
+                "optimization",
+                "inverse-problems",
+                "generative-art",
+                "interactive"
+            ],
+            "category": "labs",
+            "href": "index.html",
+            "readme": "README.md",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "https://github.com/Simiacryptus/fractal-learning.git",
+                "branch": "main",
+                "commit": "50c5f0ef80c3ae20b626c20dc4003bfaf974b47b",
+                "path": "experiments/fractal_learning",
+                "submodule": true
+            },
+            "seo": {
+                "keywords": [
+                    "iterated function system",
+                    "IFS inverse problem",
+                    "fractal compression",
+                    "Barnsley fern",
+                    "Chamfer loss",
+                    "differentiable fractals",
+                    "point cloud fitting",
+                    "TensorFlow.js"
+                ]
+            },
+            "dir": "experiments/fractal_learning",
+            "source": "experiments/fractal_learning/entry.json",
+            "section": "labs"
+        },
+        {
+            "id": "opt-skeleton",
+            "title": "Geometric Entropy Lab — No-Three-in-Line",
+            "description": "A continuous relaxation of the no-three-in-line problem: line-centered potential wells with a non-monotonic population-fitness response f(p) = (p - 2)^2 attract points until a line holds two and repel once it holds three. Annealed Gaussian well width, a cosine lattice-snapping potential and TensorFlow.js optimizers (SGD / Adam / L-BFGS) crystallize points onto the n x n grid, with discrete integer verification of every configuration.",
+            "tags": [
+                "no-three-in-line",
+                "combinatorial-geometry",
+                "continuous-relaxation",
+                "potential-wells",
+                "gradient-descent",
+                "annealing",
+                "tensorflow-js",
+                "visualization"
+            ],
+            "category": "labs",
+            "href": "index.html",
+            "readme": "idea.md",
+            "author": "Wesley Roberts",
+            "license": "MIT",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/opt_skeleton"
+            },
+            "seo": {
+                "title": "Geometric Entropy Lab: Entropic Search for the No-Three-in-Line Problem",
+                "description": "Interactive TensorFlow.js lab relaxing the no-three-in-line problem into a differentiable potential landscape, using population-fitness wells, annealed sigma schedules and lattice snapping to search for 2n-point grid configurations.",
+                "keywords": [
+                    "no three in line problem",
+                    "population fitness response",
+                    "continuous relaxation",
+                    "lattice potential",
+                    "entropic search",
+                    "tensorflow.js optimization"
+                ]
+            },
+            "dir": "experiments/opt_skeleton",
+            "source": "experiments/opt_skeleton/entry.json",
+            "section": "labs"
+        },
+        {
+            "id": "camera-tool",
+            "title": "Laser-Damage Camera Correction",
+            "description": "An offline, installable PWA that profiles a camera sensor to find dead, stuck, hot and noisy pixels — including whole laser-burn patches — then infills the damage from healthy neighbours so a wounded sensor keeps taking clean photos. Everything runs on-device; no frame ever leaves the browser.",
+            "tags": [
+                "pwa",
+                "camera",
+                "image-processing",
+                "computer-vision",
+                "sensor-repair",
+                "laser-damage",
+                "offline",
+                "javascript",
+                "webrtc",
+                "canvas"
+            ],
+            "category": "labs",
+            "href": "index.html",
+            "readme": "README.md",
+            "author": "Nick Sullivan",
+            "license": "MIT",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/camera-tool"
+            },
+            "seo": {
+                "title": "Laser-Damage Camera Correction — Profile and Repair a Damaged Sensor In-Browser",
+                "description": "Profile your camera to map dead, stuck and hot pixels, then automatically infill the damage from healthy neighbours. A privacy-preserving, offline-capable PWA for laser-damaged and hot-pixel-afflicted sensors.",
+                "keywords": [
+                    "dead pixel repair",
+                    "hot pixel correction",
+                    "stuck pixel fix",
+                    "laser damaged camera sensor",
+                    "camera defect map",
+                    "sensor calibration",
+                    "dark frame analysis",
+                    "pixel interpolation",
+                    "progressive web app",
+                    "client-side image processing"
+                ]
+            },
+            "dir": "experiments/camera-tool",
+            "source": "experiments/camera-tool/entry.json",
+            "section": "labs"
+        },
+        {
+            "id": "qqn-jax",
+            "title": "QQN — Quadratic Quasi-Newton (JAX/Optax)",
+            "description": "A pluggable JAX/Optax optimizer that blends steepest descent with a quasi-Newton oracle along a smooth quadratic path d(t) = t(1-t)(-∇f) + t²(-H∇f), letting a single line search pick the blend. No learning rate to tune. Factors optimization into four swappable axes — gradient, oracle, search, region — so L-BFGS, Newton, momentum, Barzilai-Borwein, Anderson, trust-region, OWL-QN and projected gradient all emerge as configurations.",
+            "tags": [
+                "optimization",
+                "jax",
+                "optax",
+                "l-bfgs",
+                "quasi-newton",
+                "line-search",
+                "trust-region",
+                "machine-learning",
+                "numerical-methods",
+                "python"
+            ],
+            "category": "labs",
+            "href": "spline_demo.html",
+            "readme": "README.md",
+            "license": "Apache-2.0",
+            "order": 9007199254740991,
+            "repo": {
+                "commit": "2d0616c8bd1073402237c2fb009d5885086ec384",
+                "path": "optimization/QQN/qqn-jax",
+                "submodule": true
+            },
+            "seo": {
+                "title": "QQN: Quadratic Quasi-Newton Optimizer for JAX",
+                "description": "QQN interpolates gradient descent and L-BFGS along a quadratic path, discovering the right first-/second-order blend each iteration with no learning rate to tune. Pure-functional JAX: composes with jit, vmap, pmap and grad.",
+                "keywords": [
+                    "quadratic quasi-newton",
+                    "QQN optimizer",
+                    "JAX optimizer",
+                    "optax",
+                    "L-BFGS",
+                    "line search",
+                    "learning-rate-free optimization",
+                    "cubic Hermite spline search",
+                    "trust region",
+                    "OWL-QN"
+                ]
+            },
+            "dir": "optimization/QQN/qqn-jax",
+            "source": "optimization/QQN/qqn-jax/entry.json",
+            "section": "labs"
         }
     ]
 }

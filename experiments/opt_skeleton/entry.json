@@ -1,0 +1,32 @@
+{
+    "id": "opt-skeleton",
+    "title": "Geometric Entropy Lab — No-Three-in-Line",
+    "description": "A continuous relaxation of the no-three-in-line problem: line-centered potential wells with a non-monotonic population-fitness response f(p) = (p - 2)^2 attract points until a line holds two and repel once it holds three. Annealed Gaussian well width, a cosine lattice-snapping potential and TensorFlow.js optimizers (SGD / Adam / L-BFGS) crystallize points onto the n x n grid, with discrete integer verification of every configuration.",
+    "tags": [
+        "no-three-in-line",
+        "combinatorial-geometry",
+        "continuous-relaxation",
+        "potential-wells",
+        "gradient-descent",
+        "annealing",
+        "tensorflow-js",
+        "visualization"
+    ],
+    "category": "labs",
+    "href": "index.html",
+    "readme": "idea.md",
+    "author": "Wesley Roberts",
+    "license": "MIT",
+    "seo": {
+        "title": "Geometric Entropy Lab: Entropic Search for the No-Three-in-Line Problem",
+        "description": "Interactive TensorFlow.js lab relaxing the no-three-in-line problem into a differentiable potential landscape, using population-fitness wells, annealed sigma schedules and lattice snapping to search for 2n-point grid configurations.",
+        "keywords": [
+            "no three in line problem",
+            "population fitness response",
+            "continuous relaxation",
+            "lattice potential",
+            "entropic search",
+            "tensorflow.js optimization"
+        ]
+    }
+}
