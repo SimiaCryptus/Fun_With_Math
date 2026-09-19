@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-18T22:33:28.585Z",
+    "generatedAt": "2026-09-19T14:27:51.783Z",
     "counts": {
         "lab": 22,
         "essay": 6,
@@ -18,7 +18,7 @@
             "order": 0,
             "repo": {
                 "url": "git@github.com:SimiaCryptus/Pentagon_Lattice_Geometry.git",
-                "commit": "f64c668ec45c90376bf32326a18eaaa91cc4bc47",
+                "commit": "36c4fbfdfb7dbb92ca896f8d8579e15983ddbac9",
                 "path": "quadratics/pentagon",
                 "submodule": true
             },
@@ -39,7 +39,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/qqn.git",
                 "branch": "main",
-                "commit": "7eba312acbce1c2bef6bbb070402a6cd359a581b",
+                "commit": "cb3b640f4fd1b2bf2c508941a67a5a2916df4dde",
                 "path": "optimization/QQN",
                 "submodule": true
             },
@@ -61,7 +61,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/pid-ca.git",
                 "branch": "main",
-                "commit": "d8ddb05eeca2f234184a8062b2b73101bd4e4be2",
+                "commit": "f39b762462415ec4e820a3a3f0b49f4a7a94f8a7",
                 "path": "ca/pid-ca",
                 "submodule": true
             },
@@ -82,7 +82,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/qqn-visuals.git",
                 "branch": "main",
-                "commit": "102067727c9bf2d27f25e0ba2e9a2655998ed56e",
+                "commit": "5d2140c41562c109a54f5477d699392d382aad29",
                 "path": "optimization/QQN-Visuals",
                 "submodule": true
             },
@@ -104,7 +104,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/geometric-entropy.git",
                 "branch": "main",
-                "commit": "75884bc34b9ae53589087aeef464f3e0c42fd6eb",
+                "commit": "43816f77c9089ec6b6f5823782b00096a8415c0c",
                 "path": "physics/geometric-entropy",
                 "submodule": true
             },
@@ -124,7 +124,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/rcc.git",
                 "branch": "main",
-                "commit": "38dd9278022f7c5d91f121933ae27e948b6eb0e9",
+                "commit": "a7bba09c617a50fb591acf92b1e4a5b3755e644c",
                 "path": "numbers/RCC",
                 "submodule": true
             },
@@ -146,7 +146,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/irrational-lattice.git",
                 "branch": "main",
-                "commit": "16f1bd7cec35aca061b39e7e30cf7f15f0964495",
+                "commit": "73358c282a5281ebcf70e6e9579dceca4504bd62",
                 "path": "quadratics/irrational_lattice",
                 "submodule": true
             },
@@ -166,7 +166,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/pi-rcc.git",
                 "branch": "main",
-                "commit": "7a917bae876aa214cfcb3eb0674b272270e02206",
+                "commit": "9efcbf997183782b9abd70d73701e5073b1d6c33",
                 "path": "numbers/PI_RCC",
                 "submodule": true
             },
@@ -187,7 +187,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/nam.git",
                 "branch": "main",
-                "commit": "deedc1dff422d9eedb56b3ceacad170c83bb130e",
+                "commit": "3e756934f33df938f32e2d6bec83c40cf20d5647",
                 "path": "numbers/NAM",
                 "submodule": true
             },
@@ -209,7 +209,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/spacelike-knots.git",
                 "branch": "main",
-                "commit": "bc7dd9b45836ddb16f1403e8369a2ab8fddca9be",
+                "commit": "efe008976944dbdc5c64df477a2a88843f4955ae",
                 "path": "physics/spacelike-knots",
                 "submodule": true
             },
@@ -230,7 +230,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/magnet-lattice.git",
                 "branch": "main",
-                "commit": "74609a4d8800da8224dd71681fce7d61353f549e",
+                "commit": "0d38d31ffccd0ef94702467d26923f9959391974",
                 "path": "experiments/magnet-lattice",
                 "submodule": true
             },
@@ -250,7 +250,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/tel.git",
                 "branch": "main",
-                "commit": "898eec6d85e36ba918a706e2c61bef13d45593cc",
+                "commit": "8a080e45236410f0381d92fe1630230089353303",
                 "path": "numbers/TEL",
                 "submodule": true
             },
@@ -271,7 +271,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "0f48b27e9f50363f3090a3b067830da750ca31fe",
+                "commit": "eb961c3f7b1c4e6524201730e41bb2438736dfea",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "theme-designer"
@@ -293,7 +293,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/pastaponics.git",
                 "branch": "main",
-                "commit": "61887dab32a4c2b3d15c58ab5ccd8467edbbbf84",
+                "commit": "d9e51f930f681fb7558302fc05140ad54086d72a",
                 "path": "experiments/pastaponics",
                 "submodule": true
             },
@@ -314,7 +314,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/layered-ca.git",
                 "branch": "main",
-                "commit": "3493f932fa9f83cbc4b97d537a6e8705a5588689",
+                "commit": "215665d59850045fa1e7199cfe76ad8211fcfa6b",
                 "path": "ca/layered_ca",
                 "submodule": true
             },
@@ -335,7 +335,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/symmetry-simple.git",
                 "branch": "main",
-                "commit": "7c56c869014556bea8c7c94c58d961d0cef81d51",
+                "commit": "43ca3bf28f67c315d45d302f00e7d5090e9145eb",
                 "path": "physics/symmetry_simple",
                 "submodule": true
             },
@@ -417,7 +417,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/markov-analysis.git",
                 "branch": "main",
-                "commit": "5558375c7b9d822b4644c79c176e338ca12c0fd2",
+                "commit": "d2b042c66052b1166b76c8af570f91473c382fa0",
                 "path": "ca/markov-analysis",
                 "submodule": true
             },
@@ -439,7 +439,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/chaos-garden.git",
                 "branch": "main",
-                "commit": "c869e214d776b3c3bb9377fd011fe1969966a552",
+                "commit": "f939c62f8f75d50f1993f029d8de14048c4063a4",
                 "path": "physics/chaos-garden",
                 "submodule": true
             },
@@ -449,24 +449,25 @@
             "icon": "CG"
         },
         {
-            "id": "static-secrets",
-            "title": "Static Secrets",
-            "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key.",
+            "id": "fractal-mosaic",
+            "title": "Fractal Mosaic",
+            "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album.",
             "category": "lab",
-            "href": "index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
+            "href": "index.html",
             "readme": "README.md",
+            "video": "/videos/demo_mosaic.mp4",
             "order": 12,
             "repo": {
-                "url": "https://github.com/Simiacryptus/static-secrets.git",
+                "url": "https://github.com/Simiacryptus/fractal-mosaic.git",
                 "branch": "main",
-                "commit": "ac6c4c2a6328d8b73d6243502d0a470149c0f71d",
-                "path": "tools/static-secrets",
+                "commit": "d6d80db224e758945acc7fc9d5ef1453f60849fa",
+                "path": "experiments/fractal-mosaic",
                 "submodule": true
             },
-            "dir": "tools/static-secrets",
-            "source": "tools/static-secrets/entry.json",
+            "dir": "experiments/fractal-mosaic",
+            "source": "experiments/fractal-mosaic/entry.json",
             "section": "featured",
-            "icon": "🔒"
+            "icon": "FM"
         },
         {
             "id": "gravity",
@@ -480,7 +481,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/gravity.git",
                 "branch": "main",
-                "commit": "74913ca0f4441ec2575ec6a4d825fd15b7a1eb9d",
+                "commit": "64d5b5316d4d2c6349ae35cd642fdf7a74aa9415",
                 "path": "physics/gravity",
                 "submodule": true
             },
@@ -501,7 +502,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/mesh.git",
                 "branch": "main",
-                "commit": "60c35b75bd6e68aeb5e8ede4ad1bbe85b2d20e17",
+                "commit": "045f5eaec6693c4bb1395d392349f86335a9eba7",
                 "path": "physics/mesh",
                 "submodule": true
             },
@@ -522,7 +523,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/primegen.git",
                 "branch": "main",
-                "commit": "d6e9d4a7cd2cdabc5d82fa36b6d21371b35888e3",
+                "commit": "4a4399b52eb95b39eb4ece6e86c1845cc8f3a4e3",
                 "path": "numbers/primegen",
                 "submodule": true
             },
@@ -533,24 +534,24 @@
             "launchLabel": "Open the Prime Sieve as a Stack of Orthogonal Periodic Fields lab"
         },
         {
-            "id": "fractal-mosaic",
-            "title": "Fractal Mosaic",
-            "pitch": "A fractal mosaic provides infinite-zoom based exploration of your album.",
+            "id": "static-secrets",
+            "title": "Static Secrets",
+            "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key.",
             "category": "lab",
-            "href": "index.html",
+            "href": "index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
             "readme": "README.md",
             "order": 16,
             "repo": {
-                "url": "https://github.com/Simiacryptus/fractal-mosaic.git",
+                "url": "https://github.com/Simiacryptus/static-secrets.git",
                 "branch": "main",
-                "commit": "19c00cbfd77f4f1ad6a81c0ecc162d74517d7764",
-                "path": "experiments/fractal-mosaic",
+                "commit": "da0bd2587637bbdd9053abafcb02dd146db7770c",
+                "path": "tools/static-secrets",
                 "submodule": true
             },
-            "dir": "experiments/fractal-mosaic",
-            "source": "experiments/fractal-mosaic/entry.json",
+            "dir": "tools/static-secrets",
+            "source": "tools/static-secrets/entry.json",
             "section": "featured",
-            "icon": "FM"
+            "icon": "🔒"
         },
         {
             "id": "point-cad",
@@ -563,7 +564,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "0f48b27e9f50363f3090a3b067830da750ca31fe",
+                "commit": "eb961c3f7b1c4e6524201730e41bb2438736dfea",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "demo"
@@ -584,7 +585,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/optimization-mechanics.git",
                 "branch": "main",
-                "commit": "5cad1e60cd98aa34a8980a9e5aeaad11eee6bc4e",
+                "commit": "cd4b844ec26fb9972d9ce9c6c0d97c0f5812423f",
                 "path": "optimization/optimization-mechanics",
                 "submodule": true
             },
@@ -605,7 +606,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/nam-calculator.git",
                 "branch": "main",
-                "commit": "9d53cc0e6dbdb864cc9c7dc83a811e80ae93d163",
+                "commit": "21f027754c985e5fb69de062c7bbefdcb9ba0835",
                 "path": "numbers/nam-calculator",
                 "submodule": true
             },
@@ -626,7 +627,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/no3sieve.git",
                 "branch": "main",
-                "commit": "4e5186ba0e9cc996bea8b116d192f666ccf54055",
+                "commit": "c3c3183482c6a188e05363af66fbe7cacc09bb23",
                 "path": "experiments/no3sieve",
                 "submodule": true
             },
@@ -647,7 +648,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/3inline.git",
                 "branch": "main",
-                "commit": "e8d2ab3215341db8d307fb67c032d14d74fa789d",
+                "commit": "ee374fc6fabadf2d5db2b3f912d438cb11c1bcbd",
                 "path": "experiments/3inline",
                 "submodule": true
             },
@@ -724,7 +725,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/fractal-learning.git",
                 "branch": "main",
-                "commit": "0c063514991a672099ae34e9d5f3036fd0ca45bc",
+                "commit": "9d0167ebbb3c0b576c640e5d8ddce49aa74e3a3a",
                 "path": "experiments/fractal_learning",
                 "submodule": true
             },
@@ -852,7 +853,7 @@
             "license": "Apache-2.0",
             "order": 9007199254740991,
             "repo": {
-                "commit": "404f8747baaf8c87e44ca16e40a4ea60dcf0e978",
+                "commit": "1fe210a64fcf66a00b8fa0c805ffba1d158faab6",
                 "path": "optimization/QQN/qqn-jax",
                 "submodule": true
             },
