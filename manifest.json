@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-19T15:14:05.397Z",
+    "generatedAt": "2026-09-19T15:15:44.756Z",
     "counts": {
         "game": 15
     },
@@ -256,7 +256,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/velocity-racer.git",
                 "branch": "main",
-                "commit": "a4cca5b5b84e0d21477458690c78680000d147fb",
+                "commit": "c76728d5dc5b81d08cf0459e85e30838b5954936",
                 "path": "games/velocity-racer",
                 "submodule": true
             },
@@ -278,7 +278,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/stereo-tac-toe.git",
                 "branch": "main",
-                "commit": "ccc36235483d9966ae5b22f3eb2d32105c0f168a",
+                "commit": "0f913ace3341ca0dd958ad034af198958470a8be",
                 "path": "games/stereo-arcade",
                 "submodule": true
             },
@@ -300,7 +300,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/physical-visualizer.git",
                 "branch": "main",
-                "commit": "280499f4089f177a463437b6de8952716d27656c",
+                "commit": "6c6b400a3ee900908b7e19a887a95a104aa2e88a",
                 "path": "games/physical-visualizer",
                 "submodule": true
             },
@@ -322,7 +322,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/madame-claude.git",
                 "branch": "main",
-                "commit": "51cf58dd57d6680cfa43947392ada2a12f2a8d58",
+                "commit": "1a8a7063d4065aa3ec5fbaa62751d3facca544f0",
                 "path": "games/madame-claude",
                 "submodule": true
             },
