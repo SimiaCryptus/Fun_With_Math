@@ -57,19 +57,29 @@ clocks slow, and the track ahead bunches into a bright tunnel.
 | Steer     | A/D, Left/Right | Left stick |
 | Boost     | Shift / Space   | A          |
 | Look back | Q               | B          |
+| Camera    | C / V, wheel    | Y          |
 | Pause     | Esc             | Start      |
 
 ### 2.3 Speed Model
 
-- Velocity `v` in m/s; `β = v / c`; `γ = 1 / sqrt(1 - β²)`.
-- Engine force falls off as `γ` grows (relativistic mass): acceleration
-  ∝ `F / (γ³ m)`. This gives a natural asymptote at c without a hard clamp.
-- Boost temporarily increases `F`; braking is linear friction.
-- Speed tiers (design targets):
-  - 0–40 mph: no visible effects (β < 0.45).
-  - 40–70 mph: subtle color shift, mild contraction.
-  - 70–85 mph: strong tunnel/aberration, obvious Doppler.
-  - 85–87.9 mph: near-blackout at edges, only forward cone visible.
+- Two speeds, two frames:
+   - **Track speed** `v` (coordinate): `β = v / c`, `γ = 1 / sqrt(1 - β²)`,
+     always `< 88 mph`. Moves the car along the spline in track time.
+   - **Driver speed** `w = γv` (celerity): track metres covered per tick of
+     the driver's own clock. This is what the cockpit speedometer reads and
+     it is _unbounded_ — 88 mph is not a wall from the seat.
+- Thrust is proper acceleration integrated over proper time:
+   `dw/dτ = F/m − k·w² − brake`, `dτ = dt/γ`. Since `d(γv)/dt = γ³ dv/dt`
+   this is the same `a ∝ F/(γ³m)` relativistic-mass asymptote, written in
+   the frame the driver feels.
+- Boost / pads add proper thrust; quadratic drag on `w` sets the plateaus:
+   throttle ≈ **120 mph** driver (β≈0.81), boost ≈ **145** (β≈0.86),
+   boost + pad ≈ **160** (β≈0.88). c is never approached closely enough
+   for the picture to fall apart.
+- Speed tiers (driver mph, design targets):
+   - 0–50: no visible effects (β < 0.5).
+   - 50–100: subtle color shift, mild contraction (β < 0.75).
+   - 100–160: strong tunnel/aberration, obvious Doppler, forward glow.
 
 ### 2.4 Relativistic Effects (player-visible)
 
@@ -91,9 +101,7 @@ clocks slow, and the track ahead bunches into a bright tunnel.
 
 ### 2.6 HUD
 
-- Speedometer showing mph and β (0.000–0.999).
 - γ readout.
-- Dual clocks (cockpit / track).
 - Boost meter.
 - Lap counter & minimap (optional).
 
@@ -152,9 +160,10 @@ games/velocity-racer/
       Track.js           builds mesh from Catmull-Rom spline JSON
       Props.js           billboards, pylons, lights
       Sky.js             gradient/star dome
+       CarMesh.js         player hover car (un-warped, co-moving)
     render/
       Renderer.js        three.js setup, resize, render passes
-      Camera.js          cockpit camera, FOV, shake
+       Camera.js          cockpit / chase camera, FOV, shake, warp fade window
       RelativisticMaterial.js  custom ShaderMaterial (vertex warp,
                                Doppler/headlight in fragment)
       PostFX.js          tunnel vignette, chromatic aberration, bloom
@@ -226,7 +235,6 @@ boostPads: [s...], photons: [s...] }`.
 - **Shader complexity** → build incrementally; keep a non-relativistic
   material toggle for debugging.
 - **Legibility at high β** → clamp effective β for rendering (e.g. 0.95)
-  while physics uses true β.
 - **Performance of post FX** → half-res passes, disable bloom on low end.
 
 ---
@@ -246,17 +254,39 @@ Implemented (≈ v0.6):
 - Zero-build ES6 modules + three.js import map (`index.html`).
 - `world/Track.js`: Catmull-Rom spline, arc-length frames, auto banking
   from curvature, ribbon meshes for road / apron / rails.
-- `physics/Car.js` + `TrackPhysics.js`: (s, d, v, heading) track-space
-  model, `a = F/(γ³m)` asymptote, wall clamp, pads, photons, lap events.
 - `render/RelativisticMaterial.js`: single shader doing Lorentz
   contraction + aberration in the vertex stage and Doppler hue slide +
   headlight gain `D^k` in the fragment stage; shared uniforms updated
   once per frame by `updateRelativity()`.
-- `render/PostFX.js`: β-scaled vignette + additive forward core glow
-  (no EffectComposer needed).
-- `ui/HUD.js`: mph, β, γ, boost, dual clocks, lap/best, FX readout.
 - `audio/Engine.js`: oscillator engine + Doppler-shifted wind band-pass.
 - Rendering β clamped to `RENDER_BETA_MAX` (0.95) while physics uses the
+- `render/PostFX.js`: additive forward core glow (no EffectComposer
+   needed). The blackout vignette and "RELATIVISTIC BLACKOUT" warning were
+   removed for usability.
+- `ui/HUD.js`: driver mph (γv) + track mph, β, γ, boost, driver/track
+   clocks, lap/best, FX readout.
   true β; FX intensity slider on `[` / `]`, hard toggle on `O`.
+- `render/Camera.js` (`RaceCamera`): cockpit / chase / far-chase presets
+   (`C`, gamepad Y) plus mouse-wheel zoom; the chase camera rides the
+   spline behind the car so it never dips under the road. `world/CarMesh.js`
+   appears outside the cockpit and opts out of the warp (`warp: false`).
+- Near-field warp fade (`uWarpNear`/`uWarpFar`): triangles within a few
+   metres of the eye straddle the observer, and aberrating their vertices
+   independently smeared the road across the vanishing point ("under the
+   track" bug). They now stay unwarped; the window is set per camera mode.
   Not yet: ghost car, AI rivals, extra tracks, minimap, track editor.
   Boost currently recharges on **track** time (see §6).
+- Dual speedometers: **driver** speed (γv, headline number, tops out
+   ≈160 mph) and **track** speed (v, < 88 mph), plus β (0.000–0.999).
+- Dual clocks (driver τ / track t).
+   while physics uses true β. The drivetrain plateaus at β≈0.88 anyway.
+- **Blackout vignette** → removed. Darkening the edges near c hid the road
+   edges and rails exactly when the player needed them; the tunnel feel now
+   comes from FOV widening, aberration and the forward glow only.
+- `physics/Car.js` + `TrackPhysics.js`: (s, d, w, heading) track-space
+   model with celerity `w = γv` as primary state, proper-frame integration
+   (`dw/dτ = F/m − k w²`, equivalent to the `a = F/(γ³m)` asymptote),
+   wall clamp, pads, photons, lap events.
+- Engine tuned in the driver's frame: throttle alone reads ≈120 mph on the
+    cockpit speedo (β≈0.81), boost ≈145 (β≈0.86), boost + pad ≈160
+    (β≈0.88). Results screen shows average driver vs. track speed.

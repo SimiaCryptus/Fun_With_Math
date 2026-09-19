@@ -131,22 +131,6 @@ body {
   opacity: 1;
 }
 
-#hud-warning {
-  position: absolute;
-  top: 8%;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 18px;
-  color: var(--magenta);
-  text-shadow: 0 0 18px var(--magenta);
-  animation: blink 0.55s steps(2, end) infinite;
-}
-@keyframes blink {
-  50% {
-    opacity: 0.15;
-  }
-}
 
 #hud-crosshair {
   position: absolute;

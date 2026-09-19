@@ -1,0 +1,12 @@
+{
+    "id": "velocity-racer",
+    "title": "Velocity Racer",
+    "category": "game",
+    "href": "index.html",
+    "readme": "README.md",
+    "video": "/videos/demo_racer.mp4",
+    "section": "games",
+    "icon": "VR",
+    "launchLabel": "Open Velocity Racer",
+    "pitch": "Velocity Racer: Race at the speed of light!"
+}

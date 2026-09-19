@@ -14,6 +14,27 @@ export function gamma(b) {
 export function gammaFromSpeed(v) {
   return gamma(beta(v));
 }
+/**
+  * Celerity (proper velocity) w = γ v: track-frame distance covered per tick
+  * of the driver's own clock. This is what the cockpit speedometer reads and,
+  * unlike v, it has no upper bound.
+  */
+export function celerity(v) {
+   return v * gammaFromSpeed(v);
+}
+/** γ = sqrt(1 + (w/c)²) */
+export function gammaFromCelerity(w) {
+   const x = w / C_MS;
+   return Math.sqrt(1 + x * x);
+}
+/** Coordinate (track-frame) speed from celerity; always < c. */
+export function speedFromCelerity(w) {
+   return w / gammaFromCelerity(w);
+}
+export function betaFromCelerity(w) {
+   return clamp(speedFromCelerity(w) / C_MS, 0, MAX_BETA);
+}
+
 
 /** Proper length → contracted (apparent) length. */
 export function contract(length, g) {

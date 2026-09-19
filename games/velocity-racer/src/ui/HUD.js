@@ -4,7 +4,8 @@ export class HUD {
   constructor(root = document.getElementById('hud')) {
     this.root = root;
     this.el = {
-      speed: document.getElementById('hud-speed'),
+      speed: document.getElementById('hud-speed'), // driver speed (γv)
+      trackSpeed: document.getElementById('hud-track-speed'), // coordinate speed (v)
       beta: document.getElementById('hud-beta'),
       gamma: document.getElementById('hud-gamma'),
       boostFill: document.getElementById('hud-boost-fill'),
@@ -15,7 +16,6 @@ export class HUD {
       best: document.getElementById('hud-best'),
       effect: document.getElementById('hud-effect'),
       message: document.getElementById('hud-message'),
-      warning: document.getElementById('hud-warning'),
     };
     this._msgUntil = 0;
   }
@@ -45,7 +45,8 @@ export class HUD {
       this._msgUntil = 0;
     }
 
-    this.el.speed.textContent = s.mph.toFixed(1);
+    this.el.speed.textContent = s.properMph.toFixed(1);
+    this.el.trackSpeed.textContent = `${s.mph.toFixed(1)} mph`;
     this.el.beta.textContent = s.beta.toFixed(3);
     this.el.gamma.textContent = s.gamma.toFixed(3);
     this.el.boostFill.style.width = `${Math.round(s.boost * 100)}%`;
@@ -55,6 +56,5 @@ export class HUD {
     this.el.lap.textContent = `${Math.min(s.lap, s.laps)}/${s.laps}`;
     this.el.best.textContent = formatTime(s.best);
     this.el.effect.textContent = `${Math.round(s.effect * 100)}%`;
-    this.el.warning.classList.toggle('hidden', !(s.beta > 0.9));
   }
 }

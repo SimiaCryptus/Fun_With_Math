@@ -8,19 +8,6 @@ void main() {
 }
 `;
 
-const vignetteFrag = /* glsl */ `
-uniform float uBeta;
-uniform float uEffect;
-varying vec2 vUv;
-void main() {
-  float b = clamp(uBeta * uEffect, 0.0, 1.0);
-  float r = length(vUv - 0.5) * 2.0;
-  float inner = mix(1.25, 0.16, smoothstep(0.25, 1.0, b));
-  float a = smoothstep(inner, inner + 0.55, r) * mix(0.22, 1.0, b);
-  gl_FragColor = vec4(0.0, 0.0, 0.015, clamp(a, 0.0, 0.985));
-}
-`;
-
 const glowFrag = /* glsl */ `
 uniform float uBeta;
 uniform float uEffect;
@@ -37,8 +24,10 @@ void main() {
 `;
 
 /**
- * Cheap "tunnel" pass: β-scaled vignette plus an additive forward core glow.
- * Drawn as two fullscreen quads after the main scene (no EffectComposer needed).
+ * Cheap "tunnel" pass: an additive forward core glow that grows with β.
+ * The old β-scaled blackout vignette was removed (idea.md §5): it hid the
+ * road edges and HUD-adjacent geometry exactly when the player needed them.
+ * Drawn as a fullscreen quad after the main scene (no EffectComposer needed).
  */
 export class PostFX {
   constructor() {
@@ -51,27 +40,20 @@ export class PostFX {
     this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     const geo = new THREE.PlaneGeometry(2, 2);
 
-    const mk = (frag, blending) =>
-      new THREE.Mesh(
-        geo,
-        new THREE.ShaderMaterial({
-          uniforms: this.uniforms,
-          vertexShader: quadVert,
-          fragmentShader: frag,
-          transparent: true,
-          depthTest: false,
-          depthWrite: false,
-          blending,
-        })
-      );
-
-    this.vignette = mk(vignetteFrag, THREE.NormalBlending);
-    this.glow = mk(glowFrag, THREE.AdditiveBlending);
-    this.vignette.renderOrder = 1;
-    this.glow.renderOrder = 2;
-    this.vignette.frustumCulled = false;
+    this.glow = new THREE.Mesh(
+      geo,
+      new THREE.ShaderMaterial({
+        uniforms: this.uniforms,
+        vertexShader: quadVert,
+        fragmentShader: glowFrag,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      })
+    );
     this.glow.frustumCulled = false;
-    this.scene.add(this.vignette, this.glow);
+    this.scene.add(this.glow);
   }
 
   render(gl, beta, effect, time) {

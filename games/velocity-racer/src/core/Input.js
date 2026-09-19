@@ -11,6 +11,8 @@ const KEY_ACTIONS = {
   ShiftRight: 'boost',
   Space: 'boost',
   KeyQ: 'lookBack',
+   KeyC: 'camera',
+   KeyV: 'camera',
   Escape: 'pause',
   KeyP: 'pause',
   Enter: 'confirm',
@@ -25,6 +27,7 @@ const KEY_ACTIONS = {
 const PAD_BUTTONS = {
   0: 'boost',
   1: 'lookBack',
+   3: 'camera',
   8: 'restart',
   9: 'pause',
 };
@@ -39,6 +42,7 @@ export class Input {
     this.padThrottle = 0;
     this.padBrake = 0;
     this._padPrev = new Set();
+     this.wheel = 0;
 
     target.addEventListener('keydown', (e) => {
       const action = KEY_ACTIONS[e.code];
@@ -49,6 +53,15 @@ export class Input {
       if (e.code === 'Space' || e.code === 'Enter') this.justPressed.add('confirm');
     });
     target.addEventListener('keyup', (e) => this.keysDown.delete(e.code));
+     target.addEventListener(
+       'wheel',
+       (e) => {
+         // normalise line/page deltas to pixels and cap runaway trackpad bursts
+         const dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaMode === 2 ? e.deltaY * 400 : e.deltaY;
+         this.wheel += Math.sign(dy) * Math.min(Math.abs(dy), 120);
+       },
+       { passive: true }
+     );
     target.addEventListener('blur', () => {
       this.keysDown.clear();
       this.down.clear();
@@ -107,6 +120,13 @@ export class Input {
     this.justPressed.delete(action);
     return true;
   }
+   /** Accumulated wheel delta since last call (positive = scroll down / zoom out). */
+   consumeWheel() {
+     const w = this.wheel;
+     this.wheel = 0;
+     return w;
+   }
+
 
   /** Analog driving inputs. */
   controls() {

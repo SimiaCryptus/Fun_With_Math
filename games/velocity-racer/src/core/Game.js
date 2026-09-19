@@ -5,13 +5,14 @@ import { Input, NEUTRAL_CONTROLS } from './Input.js';
 import { Clock } from './Clock.js';
 
 import { Renderer } from '../render/Renderer.js';
-import { CockpitCamera } from '../render/Camera.js';
+import { RaceCamera } from '../render/Camera.js';
 import { PostFX } from '../render/PostFX.js';
 import { updateRelativity } from '../render/RelativisticMaterial.js';
 
 import { Track } from '../world/Track.js';
 import { Props } from '../world/Props.js';
 import { Sky } from '../world/Sky.js';
+import { CarMesh } from '../world/CarMesh.js';
 
 import { Car } from '../physics/Car.js';
 import { TrackPhysics } from '../physics/TrackPhysics.js';
@@ -25,6 +26,7 @@ import { clamp } from '../relativity/constants.js';
 const TOTAL_LAPS = 3;
 const BEST_KEY = 'velocity-racer.bestLap';
 const EFFECT_KEY = 'velocity-racer.effect';
+const CAMERA_KEY = 'velocity-racer.camera';
 
 /** Menu → Countdown → Race → Results (with Paused). */
 export class Game {
@@ -38,6 +40,8 @@ export class Game {
     this.effect = Number.isFinite(storedEffect) ? clamp(storedEffect, 0, 1) : 1;
     const storedBest = parseFloat(localStorage.getItem(BEST_KEY));
     this.best = Number.isFinite(storedBest) && storedBest > 0 ? storedBest : Infinity;
+     const storedCam = parseInt(localStorage.getItem(CAMERA_KEY), 10);
+     this.cameraMode = Number.isFinite(storedCam) ? storedCam : 0;
 
     this.lap = 1;
     this.lapTimes = [];
@@ -59,10 +63,13 @@ export class Game {
 
     this.sky = new Sky();
     this.scene.add(this.sky.mesh);
+     this.carMesh = new CarMesh();
+     this.scene.add(this.carMesh.group);
+
 
     this.car = new Car();
     this.physics = new TrackPhysics(this.track, this.props);
-    this.camera = new CockpitCamera();
+     this.camera = new RaceCamera({ mode: this.cameraMode });
     this.postfx = new PostFX();
 
     this.hud = new HUD();
@@ -140,6 +147,7 @@ export class Game {
       lapTimes: this.lapTimes,
       coord: this.clock.coordinate,
       proper: this.clock.proper,
+     distance: this.totalLaps * this.track.length,
       best: this.best,
       isNewBest,
     });
@@ -158,6 +166,15 @@ export class Game {
       this.audio.muted = !this.audio.muted;
       this.hud.flash(this.audio.muted ? 'MUTED' : 'SOUND ON', 0.5);
     }
+     if (input.consume('camera')) {
+       this.hud.flash(this.camera.cycleMode(), 0.6);
+       localStorage.setItem(CAMERA_KEY, String(this.camera.mode));
+     }
+     const wheel = input.consumeWheel();
+     if (wheel !== 0) {
+       this.camera.zoom(wheel * 0.05); // one mouse notch ≈ 5 m
+       localStorage.setItem(CAMERA_KEY, String(this.camera.mode));
+     }
 
     switch (this.state) {
       case 'menu':
@@ -265,7 +282,12 @@ export class Game {
     const car = this.car;
 
     this.camera.update(this.track, car, dt, this.input.isDown('lookBack'));
-    updateRelativity(this.camera.object, this.camera.velocityDir, car.beta, this.effect, this.time);
+     this.carMesh.update(this.track, car, this.time);
+     this.carMesh.group.visible = this.camera.distance > 2.0;
+     updateRelativity(this.camera.object, this.camera.velocityDir, car.beta, this.effect, this.time, {
+       warpNear: this.camera.warpNear,
+       warpFar: this.camera.warpFar,
+     });
 
     this.sky.update(this.camera.object);
     this.props.update(dt);
@@ -276,6 +298,7 @@ export class Game {
     if (this.state !== 'menu') {
       this.hud.update({
         mph: car.mph,
+       properMph: car.properMph,
         beta: car.beta,
         gamma: car.gamma,
         boost: car.boost,

@@ -68,7 +68,8 @@ export class EngineAudio {
     const t = this.ctx.currentTime;
     const beta = car.beta;
 
-    const rev = 0.14 + 0.86 * beta;
+   // Revs follow the driver's speedo (celerity), so the engine keeps climbing past 88.
+   const rev = 0.14 + 0.86 * Math.min(1, car.properMph / 160);
     const f = 44 + 330 * Math.pow(rev, 1.25) * (car.boosting ? 1.09 : 1);
     this.oscA.frequency.setTargetAtTime(f, t, 0.05);
     this.oscB.frequency.setTargetAtTime(f * 1.503, t, 0.05);

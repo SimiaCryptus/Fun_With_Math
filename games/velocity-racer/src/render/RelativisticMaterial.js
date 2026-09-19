@@ -13,6 +13,11 @@ export const sharedUniforms = {
   uTime: { value: 0 },
   uDopplerK: { value: 1.4 }, // headlight exponent
   uFog: { value: new THREE.Color(0x090726) },
+   // Distance window over which the vertex warp fades in. Geometry closer
+   // than uWarpNear straddles the observer; warping its vertices independently
+   // smears those triangles across the vanishing point (the "road wall" bug).
+   uWarpNear: { value: 3 },
+   uWarpFar: { value: 30 },
 };
 
 export const PATTERN = {
@@ -28,6 +33,9 @@ uniform vec3 uBetaView;
 uniform float uBeta;
 uniform float uGamma;
 uniform float uEffect;
+uniform float uWarp;      // 0 for co-moving objects (the player's car)
+uniform float uWarpNear;  // near-field fade window (metres)
+uniform float uWarpFar;
 
 varying vec2 vUv;
 varying vec3 vObjDir;
@@ -66,7 +74,9 @@ void main() {
     float s2 = sqrt(max(0.0, 1.0 - c2 * c2));
     vec3 aberrated = normalize(c2 * n + s2 * tdir);
 
-    p = mix(p0, aberrated * r, uEffect);
+     // Near-field fade (see uWarpNear); co-moving objects (uWarp = 0) skip it.
+     float w = uEffect * uWarp * smoothstep(uWarpNear, uWarpFar, vDist);
+     p = mix(p0, aberrated * r, w);
   }
 
   gl_Position = projectionMatrix * vec4(p, 1.0);
@@ -79,6 +89,7 @@ uniform vec3 uColorB;
 uniform float uPattern;
 uniform float uEmissive;
 uniform float uOpacity;
+uniform float uWarp;
 
 uniform float uBeta;
 uniform float uGamma;
@@ -174,7 +185,7 @@ void main() {
   }
 
   float D = 1.0 / max(uGamma * (1.0 - uBeta * vCosTheta), 1e-3);
-  D = mix(1.0, D, uEffect);
+   D = mix(1.0, D, uEffect * uWarp);
   vec3 col = dopplerShift(lit, D);
 
   if (!unlit) {
@@ -195,6 +206,7 @@ export function createRelativisticMaterial({
   side = THREE.FrontSide,
   transparent = false,
   depthWrite = true,
+   warp = true, // false for objects co-moving with the observer (the car)
 } = {}) {
   return new THREE.ShaderMaterial({
     uniforms: Object.assign(
@@ -204,6 +216,7 @@ export function createRelativisticMaterial({
         uPattern: { value: pattern },
         uEmissive: { value: emissive },
         uOpacity: { value: opacity },
+         uWarp: { value: warp ? 1 : 0 },
       },
       sharedUniforms
     ),
@@ -225,8 +238,16 @@ const _v = new THREE.Vector3();
  * @param {number} betaValue true β (clamped for rendering)
  * @param {number} effect 0..1 intensity
  * @param {number} time seconds
+  * @param {{warpNear?: number, warpFar?: number}} [opts] near-field fade window (metres)
  */
-export function updateRelativity(camera, velocityDirWorld, betaValue, effect = 1, time = 0) {
+export function updateRelativity(
+   camera,
+   velocityDirWorld,
+   betaValue,
+   effect = 1,
+   time = 0,
+   { warpNear = 3, warpFar = 30 } = {}
+) {
   const b = clamp(betaValue, 0, RENDER_BETA_MAX);
   camera.updateMatrixWorld();
   _m.copy(camera.matrixWorld).invert();
@@ -237,4 +258,6 @@ export function updateRelativity(camera, velocityDirWorld, betaValue, effect = 1
   sharedUniforms.uGamma.value = 1 / Math.sqrt(Math.max(1e-6, 1 - b * b));
   sharedUniforms.uEffect.value = clamp(effect, 0, 1);
   sharedUniforms.uTime.value = time;
+   sharedUniforms.uWarpNear.value = warpNear;
+   sharedUniforms.uWarpFar.value = Math.max(warpNear + 1, warpFar);
 }

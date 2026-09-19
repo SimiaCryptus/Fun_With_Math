@@ -1,4 +1,5 @@
 import { formatTime } from '../core/Clock.js';
+import { MPH_TO_MS } from '../relativity/constants.js';
 
 const CONTROLS = [
   ['Throttle', 'W / ↑ / RT'],
@@ -6,6 +7,7 @@ const CONTROLS = [
   ['Steer', 'A · D / ← → / stick'],
   ['Boost', 'Shift / Space / A'],
   ['Look back', 'Q / B'],
+   ['Camera', 'C / Y · wheel zooms'],
   ['Pause', 'Esc / Start'],
   ['Restart', 'R'],
   ['FX intensity', '[ · ] · O toggles'],
@@ -32,11 +34,13 @@ export class Menu {
     this._show(`
       <h1>Velocity Racer</h1>
       <h2>c = 88 mph</h2>
-      <p><strong>${trackName}</strong> — ${laps} laps. The speed of light is
-      39.34 m/s, so the faster you go the more the universe lies to you:
-      the road contracts, the world bunches into a forward cone, colours
-      blueshift ahead and redshift behind, and your cockpit clock falls
-      behind the track clock.</p>
+     <p><strong>${trackName}</strong> — ${laps} laps. The speed of light is
+     39.34 m/s. From the pit wall you can never reach 88 mph — but you
+     are not on the pit wall. Your speedometer counts track metres per tick
+     of <em>your</em> clock, so it sails past 88 and tops out near 160,
+     while the track clock says you crawled and the world lies to you:
+     the road contracts, everything bunches into a forward cone, colours
+     blueshift ahead and redshift behind.</p>
       <div class="grid">${controls}</div>
       <p class="note">Best lap (track time): ${formatTime(best)} &nbsp;·&nbsp; FX ${Math.round(effect * 100)}%</p>
       <div class="cta">Press SPACE or ENTER to launch</div>
@@ -52,7 +56,14 @@ export class Menu {
     `);
   }
 
-  showResults({ lapTimes = [], coord = 0, proper = 0, best = Infinity, isNewBest = false }) {
+showResults({
+   lapTimes = [],
+   coord = 0,
+   proper = 0,
+   distance = 0,
+   best = Infinity,
+   isNewBest = false,
+}) {
     const rows = lapTimes
       .map(
         (l, i) => `
@@ -64,16 +75,21 @@ export class Menu {
       </tr>`
       )
       .join('');
+   const avgTrackMph = distance / Math.max(coord, 1e-6) / MPH_TO_MS;
+   const avgDriverMph = distance / Math.max(proper, 1e-6) / MPH_TO_MS;
+
 
     this._show(`
       <h1>Finish</h1>
       <h2>${isNewBest ? 'new best lap' : 'race complete'}</h2>
       <table class="results">
-        <tr><th>&nbsp;</th><th>Track t</th><th>Cockpit &tau;</th><th>&gamma;&#773;</th></tr>
+       <tr><th>&nbsp;</th><th>Track t</th><th>Driver &tau;</th><th>&gamma;&#773;</th></tr>
         ${rows}
         <tr class="total"><td>Total</td><td>${formatTime(coord)}</td><td>${formatTime(proper)}</td>
           <td>${(coord / Math.max(proper, 1e-6)).toFixed(3)}</td></tr>
       </table>
+     <p>Average speed: <strong>${avgDriverMph.toFixed(1)} mph</strong> on your
+     speedo, <strong>${avgTrackMph.toFixed(1)} mph</strong> by the track's.</p>
       <p>You aged <strong>${formatTime(proper)}</strong> while the circuit aged
       <strong>${formatTime(coord)}</strong> — ${(coord - proper).toFixed(3)} s of
       borrowed time.</p>

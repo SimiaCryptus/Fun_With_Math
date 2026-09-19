@@ -1,32 +1,53 @@
-import { C_MS, MAX_BETA, clamp } from '../relativity/constants.js';
-import { gamma, inertialFalloff } from '../relativity/lorentz.js';
+import { C_MS, MAX_BETA, MPH_TO_MS, clamp } from '../relativity/constants.js';
+import { gamma, gammaFromCelerity, speedFromCelerity } from '../relativity/lorentz.js';
+
+/** Design targets for the *driver's* speedometer (celerity, in mph). */
+export const DRIVER_TOP_MPH = 120; // throttle alone
+export const DRIVER_BOOST_MPH = 145; // + boost
+export const DRIVER_MAX_MPH = 160; // + boost + pad
 
 /**
- * Track-space car model. State is (s, d, v, heading):
- *   s       arc length along the spline (m)
+ * Track-space car model. State is (s, d, w, heading):
+ *   s       arc length along the spline (m, track frame)
  *   d       lateral offset from centre line (m)
- *   v       speed (m/s)
+ *   w       celerity γv (m/s): track distance per tick of the *driver's*
+ *           clock. This is what the cockpit speedometer shows; it has no
+ *           upper bound, so 88 mph is not a wall from the seat.
+ *   v       coordinate speed (derived from w, always < c); moves the car
+ *           along the track in track time.
  *   heading yaw relative to the track tangent (rad, + = toward +lateral/right)
  *
- * Acceleration falls off as 1/γ³, so c is an asymptote rather than a clamp.
+ * Thrust is proper acceleration and is integrated over proper time:
+ *   dw/dτ = thrust − drag(w) − brake,   dτ = dt / γ
+ * Because d(γv)/dt = γ³ dv/dt this is exactly the a = F/(γ³ m) asymptote of
+ * idea.md §2.3, just written in the frame the driver actually feels. Drag is
+ * quadratic in w, so the driver speedo settles at sqrt(thrust / dragK).
  */
 export class Car {
   constructor(opts = {}) {
-    this.baseAccel = opts.baseAccel ?? 26; // m/s² of proper thrust
-    this.boostAccel = opts.boostAccel ?? 20;
-    this.padAccel = opts.padAccel ?? 34;
-    this.brakeAccel = opts.brakeAccel ?? 36;
-    this.dragK = opts.dragK ?? 0.11; // linear drag coefficient
+    const wTop = DRIVER_TOP_MPH * MPH_TO_MS;
+    const wBoost = DRIVER_BOOST_MPH * MPH_TO_MS;
+    const wMax = DRIVER_MAX_MPH * MPH_TO_MS;
+
+    this.baseAccel = opts.baseAccel ?? 18; // m/s² of proper thrust
+    // drag chosen so throttle alone tops out at DRIVER_TOP_MPH...
+    this.dragK = opts.dragK ?? this.baseAccel / (wTop * wTop);
+    // ...boost lifts that to DRIVER_BOOST_MPH and a pad on top to DRIVER_MAX_MPH.
+    this.boostAccel = opts.boostAccel ?? this.dragK * wBoost * wBoost - this.baseAccel;
+    this.padAccel = opts.padAccel ?? this.dragK * wMax * wMax - this.baseAccel - this.boostAccel;
+    this.brakeAccel = opts.brakeAccel ?? 40;
+
     this.steerRate = opts.steerRate ?? 1.25; // rad/s at low speed
     this.maxHeading = opts.maxHeading ?? 0.55;
-    this.boostDrain = opts.boostDrain ?? 0.4;
-    this.boostRegen = opts.boostRegen ?? 0.05;
+    this.boostDrain = opts.boostDrain ?? 0.3;
+    this.boostRegen = opts.boostRegen ?? 0.07;
     this.reset();
   }
 
   reset(s = 0, d = 0) {
     this.s = s;
     this.d = d;
+    this.w = 0;
     this.v = 0;
     this.heading = 0;
     this.boost = 1;
@@ -35,14 +56,23 @@ export class Car {
     this.scrape = 0;
   }
 
+  /** Track-frame β. */
   get beta() {
     return clamp(this.v / C_MS, 0, MAX_BETA);
   }
   get gamma() {
-    return gamma(this.beta);
+    return gammaFromCelerity(this.w);
   }
+  /** Track-frame speed in mph (< 88). */
   get mph() {
-    return this.v / 0.44704;
+    return this.v / MPH_TO_MS;
+  }
+  /** Driver-frame speed in mph (γv; tops out ≈160). */
+  get properMph() {
+    return this.w / MPH_TO_MS;
+  }
+  get celerity() {
+    return this.w;
   }
 
   addBoost(amount) {
@@ -57,7 +87,7 @@ export class Car {
     const g = this.gamma;
     const b = this.beta;
 
-    // ---- longitudinal ----
+    // ---- longitudinal (driver frame) ----
     let thrust = this.baseAccel * clamp(input.throttle, 0, 1);
 
     this.boosting = false;
@@ -74,15 +104,19 @@ export class Car {
       thrust += this.padAccel;
       this.padTimer = Math.max(0, this.padTimer - dt);
     }
+    // Launch ramp: soften the first metres so a standing start isn't a kick.
+    thrust *= 0.45 + 0.55 * Math.min(1, this.w / 10);
 
-    let a = thrust * inertialFalloff(g); // relativistic mass
+    let a = thrust; // proper acceleration
     a -= this.brakeAccel * clamp(input.brake, 0, 1);
-    a -= this.dragK * this.v; // aero/rolling drag
+    a -= this.dragK * this.w * this.w; // aero drag, quadratic in celerity
     a -= this.scrape * 18; // wall rub
 
-    this.v = Math.max(0, this.v + a * dt);
-    const vMax = C_MS * MAX_BETA;
-    if (this.v > vMax) this.v = vMax;
+    // Integrate over the driver's proper time: dτ = dt / γ.
+    this.w = Math.max(0, this.w + a * (dt / g));
+    const wMax = C_MS * MAX_BETA * gamma(MAX_BETA); // keeps β < MAX_BETA
+    if (this.w > wMax) this.w = wMax;
+    this.v = speedFromCelerity(this.w);
     this.scrape = Math.max(0, this.scrape - dt * 4);
 
     // ---- steering ----

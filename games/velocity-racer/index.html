@@ -19,7 +19,10 @@
 
     <div id="hud" class="hidden">
       <div class="panel panel-speed">
-        <div class="speed"><span id="hud-speed">0</span><small>mph</small></div>
+       <div class="speed"><span id="hud-speed">0</span><small>mph driver</small></div>
+       <div class="row">
+         <span class="label">TRACK</span><span id="hud-track-speed" class="mono">0.0 mph</span>
+       </div>
         <div class="row">
           <span class="label">&beta;</span><span id="hud-beta" class="mono">0.000</span>
         </div>
@@ -34,7 +37,7 @@
 
       <div class="panel panel-clocks">
         <div class="row">
-          <span class="label">COCKPIT &tau;</span><span id="hud-proper" class="mono">0:00.000</span>
+         <span class="label">DRIVER &tau;</span><span id="hud-proper" class="mono">0:00.000</span>
         </div>
         <div class="row">
           <span class="label">TRACK t</span><span id="hud-coord" class="mono">0:00.000</span>
@@ -51,7 +54,6 @@
       </div>
 
       <div id="hud-message"></div>
-      <div id="hud-warning" class="hidden">RELATIVISTIC BLACKOUT</div>
       <div id="hud-crosshair"></div>
     </div>
 
