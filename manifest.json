@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-19T15:11:11.933Z",
+    "generatedAt": "2026-09-19T15:14:05.397Z",
     "counts": {
         "game": 15
     },
@@ -246,13 +246,35 @@
             "pitch": "A game about crossing the highway and filling tree hollows, with reactive personality-based traffic."
         },
         {
+            "id": "velocity-racer",
+            "title": "Velocity Racer",
+            "category": "game",
+            "href": "index.html",
+            "readme": "README.md",
+            "video": "/videos/demo_racer.mp4",
+            "order": 11,
+            "repo": {
+                "url": "https://github.com/Simiacryptus/velocity-racer.git",
+                "branch": "main",
+                "commit": "a4cca5b5b84e0d21477458690c78680000d147fb",
+                "path": "games/velocity-racer",
+                "submodule": true
+            },
+            "dir": "games/velocity-racer",
+            "source": "games/velocity-racer/entry.json",
+            "section": "games",
+            "icon": "VR",
+            "launchLabel": "Open Velocity Racer",
+            "pitch": "Velocity Racer: Race at the speed of light!"
+        },
+        {
             "id": "stereo-arcade",
             "title": "Stereo Arcade",
             "category": "game",
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/demo_stereo_arcade.mp4",
-            "order": 11,
+            "order": 12,
             "repo": {
                 "url": "https://github.com/Simiacryptus/stereo-tac-toe.git",
                 "branch": "main",
@@ -274,7 +296,7 @@
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/demo_viz.mp4",
-            "order": 12,
+            "order": 13,
             "repo": {
                 "url": "https://github.com/Simiacryptus/physical-visualizer.git",
                 "branch": "main",
@@ -296,7 +318,7 @@
             "href": "index.html",
             "readme": "README.md",
             "video": "/videos/demo_Madame_Claude.mp4",
-            "order": 13,
+            "order": 14,
             "repo": {
                 "url": "https://github.com/Simiacryptus/madame-claude.git",
                 "branch": "main",
@@ -310,25 +332,6 @@
             "icon": "MC",
             "launchLabel": "Open Madame Claude",
             "pitch": "An agentic fortune teller (bring your own Anthropic API Key)"
-        },
-        {
-            "id": "velocity-racer",
-            "title": "Velocity Racer",
-            "category": "game",
-            "href": "index.html",
-            "readme": "README.md",
-            "video": "/videos/demo_racer.mp4",
-            "order": 9007199254740991,
-            "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "games/velocity-racer"
-            },
-            "dir": "games/velocity-racer",
-            "source": "games/velocity-racer/entry.json",
-            "section": "games",
-            "icon": "VR",
-            "launchLabel": "Open Velocity Racer",
-            "pitch": "Velocity Racer: Race at the speed of light!"
         }
     ]
 }
