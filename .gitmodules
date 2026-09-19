@@ -159,3 +159,7 @@
 	path = games/3d-checkers
 	url = https://github.com/Simiacryptus/3d-checkers.git
 	branch = main
+[submodule "games/velocity-racer"]
+	path = games/velocity-racer
+	url = https://github.com/Simiacryptus/velocity-racer.git
+	branch = main
