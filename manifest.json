@@ -1,8 +1,8 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-19T15:15:44.756Z",
+    "generatedAt": "2026-09-23T20:40:35.235Z",
     "counts": {
-        "game": 15
+        "game": 16
     },
     "entries": [
         {
@@ -244,6 +244,25 @@
             "icon": "SQ",
             "launchLabel": "Open Squirrely",
             "pitch": "A game about crossing the highway and filling tree hollows, with reactive personality-based traffic."
+        },
+        {
+            "id": "tomb-crawler",
+            "title": "Tomb Crawler",
+            "category": "game",
+            "href": "index.html",
+            "readme": "README.md",
+            "video": "/videos/demo_tomb.mp4",
+            "order": 11,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "games/tomb-crawler"
+            },
+            "dir": "games/tomb-crawler",
+            "source": "games/tomb-crawler/entry.json",
+            "section": "games",
+            "icon": "VR",
+            "launchLabel": "Open Tomb Crawler",
+            "pitch": "Tomb Crawler: An endless descent through a sunken hexagonal tomb!"
         },
         {
             "id": "velocity-racer",

@@ -1,0 +1,13 @@
+{
+    "id": "tomb-crawler",
+    "title": "Tomb Crawler",
+    "category": "game",
+    "href": "index.html",
+    "readme": "README.md",
+    "video": "/videos/demo_tomb.mp4",
+    "order": 11,
+    "section": "games",
+    "icon": "VR",
+    "launchLabel": "Open Tomb Crawler",
+    "pitch": "Tomb Crawler: An endless descent through a sunken hexagonal tomb!"
+}

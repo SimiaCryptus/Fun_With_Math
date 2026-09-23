@@ -1,5 +1,5 @@
 {
-  "lastUpdated" : "2026-09-19T15:05:22.307877028Z",
+  "lastUpdated" : "2026-09-23T20:18:26.508223724Z",
   "tasks" : {
     "quadratics/pentagon/docs/analysis.theory_graph.json" : {
       "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
@@ -308,6 +308,13 @@
       "sessionId" : "U-20260919-DLDv2N3l",
       "startedAt" : "2026-09-19T15:04:54.778203409Z",
       "completedAt" : "2026-09-19T15:05:22.307877028Z"
+    },
+    "games/tomb-crawler/README_REWRITE.md" : {
+      "target" : "games/tomb-crawler/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20260923-BCq4Bco4",
+      "startedAt" : "2026-09-23T20:18:01.483318999Z",
+      "completedAt" : "2026-09-23T20:18:26.508223724Z"
     }
   }
 }
