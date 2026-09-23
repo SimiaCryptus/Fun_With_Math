@@ -163,3 +163,7 @@
 	path = games/velocity-racer
 	url = https://github.com/Simiacryptus/velocity-racer.git
 	branch = main
+[submodule "games/tomb-crawler"]
+	path = games/tomb-crawler
+	url = https://github.com/Simiacryptus/tomb-crawler.git
+	branch = main
