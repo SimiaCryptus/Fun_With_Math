@@ -1,8 +1,8 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-19T14:33:54.769Z",
+    "generatedAt": "2026-09-24T15:44:13.373Z",
     "counts": {
-        "lab": 22,
+        "lab": 23,
         "essay": 6,
         "labs": 6
     },
@@ -260,6 +260,24 @@
             "icon": "TEL"
         },
         {
+            "id": "text-block",
+            "title": "Text Block",
+            "pitch": "A tool for visualizing and interacting with sorted rotations of text strings.",
+            "category": "lab",
+            "href": "index.html",
+            "readme": "README.md",
+            "video": "/videos/demo_text_block.mp4",
+            "order": 6,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/text-block"
+            },
+            "dir": "experiments/text-block",
+            "source": "experiments/text-block/entry.json",
+            "section": "featured",
+            "icon": "TB"
+        },
+        {
             "id": "theme-cad",
             "title": "Theme CAD",
             "pitch": "A theme designer for PointCAD, allowing you to create and customize themes for your CAD projects.",
@@ -271,7 +289,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "930045b68600a3a0c12edfac35c03a2ecd681cd6",
+                "commit": "25df049274f3ceae98984b385e1011671c8128b2",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "theme-designer"
@@ -564,7 +582,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "930045b68600a3a0c12edfac35c03a2ecd681cd6",
+                "commit": "25df049274f3ceae98984b385e1011671c8128b2",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "demo"

@@ -26,6 +26,9 @@
       <label class="toggle" title="Draw a line through each selected position, row by row">
         <input id="paths" type="checkbox"> paths
       </label>
+       <label class="toggle" title="Split the block view: add the sorted cycles of the reversed string (rows sorted by left context) below">
+         <input id="reverse" type="checkbox"> reversed
+       </label>
       <button id="reset" type="button">reset</button>
       <div class="mode-switch" role="group" aria-label="View mode">
         <button type="button" data-mode="block" aria-pressed="true" title="Sorted-rotation block">Block</button>
@@ -49,16 +52,28 @@
 
   <main class="stage">
     <div class="panes">
-      <div id="viewport" class="viewport" tabindex="0"
-           aria-label="Sorted rotation matrix"
-           aria-describedby="help"
-           title="Click: select position · Ctrl/Cmd+click: toggle · Shift+click: range forward in ring order from the anchor · Esc: clear">
-        <div id="header" class="header-row" aria-hidden="true"></div>
-        <div id="rows" class="rows">
-          <svg id="paths-layer" class="paths" aria-hidden="true"></svg>
-        </div>
-        <p id="message" class="message" hidden></p>
-      </div>
+       <div class="blocks">
+         <div id="viewport" class="viewport" tabindex="0"
+              aria-label="Sorted rotation matrix"
+              aria-describedby="help"
+              title="Click: select position · Ctrl/Cmd+click: toggle · Shift+click: range forward in ring order from the anchor · Esc: clear">
+           <div id="header" class="header-row" aria-hidden="true"></div>
+           <div id="rows" class="rows">
+             <svg id="paths-layer" class="paths" aria-hidden="true"></svg>
+           </div>
+           <p id="message" class="message" hidden></p>
+         </div>
+
+         <div id="rviewport" class="viewport reversed"
+              aria-label="Sorted rotations of the reversed ring (sorted by left context)"
+              title="Reversed string: rows sorted by left context · shares the shift with the block above · click / Ctrl / Shift: select">
+           <div id="rheader" class="header-row" aria-hidden="true"></div>
+           <div id="rrows" class="rows">
+             <svg id="rpaths-layer" class="paths" aria-hidden="true"></svg>
+           </div>
+           <p id="rmessage" class="message" hidden></p>
+         </div>
+       </div>
 
       <section id="embed-pane" class="embed-pane" aria-label="Learned embedding">
         <div class="scatter-wrap">

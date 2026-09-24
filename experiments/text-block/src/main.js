@@ -16,9 +16,11 @@ const input = $('text');
 const sentinelBox = $('sentinel');
 const gutterBox = $('gutter');
 const pathsBox = $('paths');
+const reverseBox = $('reverse');
 const resetBtn = $('reset');
 const truncateBtn = $('truncate');
 const viewport = $('viewport');
+const rviewport = $('rviewport');
 const live = $('live');
 
 const renderer = createRenderer({
@@ -29,31 +31,50 @@ const renderer = createRenderer({
   message: $('message'),
 });
 
+const reversedOf = (chars) => chars.slice().reverse();
+
+// Sorted cycles of the reversed string (= rotations sorted by left context).
+// Characters keep their ids, so selection / hover / colours line up with the forward block.
+const rrenderer = createRenderer({
+  viewport: rviewport,
+  header: $('rheader'),
+  rows: $('rrows'),
+  paths: $('rpaths-layer'),
+  message: $('rmessage'),
+  label: 'rev',
+  source: (s) => ({ chars: reversedOf(s.chars), sa: s.rsa, cursor: null }),
+});
+
 const sortFor = (chars, sentinel) =>
   chars.length && chars.length <= LIMIT ? computeSA(chars, { sentinel }) : new Int32Array(0);
+const sortsFor = (chars, sentinel) => ({
+  sa: sortFor(chars, sentinel),
+  rsa: sortFor(reversedOf(chars), sentinel),
+});
 
 const initialChars = createChars(input.value);
 const store = createStore({
   chars: initialChars,
   sentinel: sentinelBox.checked,
-  sa: sortFor(initialChars, sentinelBox.checked),
+  ...sortsFor(initialChars, sentinelBox.checked),
   shift: 0,
   selection: new Set(),
   anchor: null,
   hover: null,
   cursor: null,
   showPaths: pathsBox.checked,
-   mode: 'block',
-   embed: { params: { ...DEFAULT_PARAMS }, running: false, version: 0, colorBlock: false },
+  reverse: reverseBox.checked,
+  mode: 'block',
+  embed: { params: { ...DEFAULT_PARAMS }, running: false, version: 0, colorBlock: false },
 });
 
 const ringFor = (s) => ringOf(s.chars, s.sentinel);
 const isLive = (s) => s.chars.length > 0 && s.chars.length <= LIMIT;
 // Read-only ring strip (shown in embedding mode) mirroring selection / hover.
 const ringView = createRingView($('ring-view'), {
-   onSelect: (id, mods) => applySelection(id, mods),
-   onHover: (id) => { if (id !== store.get().hover) store.set({ hover: id }, ['hover']); },
-   onClear: () => clearSelection(),
+  onSelect: (id, mods) => applySelection(id, mods),
+  onHover: (id) => { if (id !== store.get().hover) store.set({ hover: id }, ['hover']); },
+  onClear: () => clearSelection(),
 });
 
 // ---------------------------------------------------------------- readouts
@@ -119,22 +140,40 @@ function clampCursor() {
 
 store.subscribe('text', (s) => {
   renderer.syncText(s, { limit: LIMIT });
-   ringView.sync(ringFor(s), s);
+  if (s.reverse) rrenderer.syncText(s, { limit: LIMIT });
+  ringView.sync(ringFor(s), s);
   updateReadouts(s);
   clampCursor();
 });
-store.subscribe('shift', (s) => renderer.setShift(s.shift));
+store.subscribe('shift', (s) => {
+  renderer.setShift(s.shift);
+  if (s.reverse) rrenderer.setShift(s.shift);
+});
 store.subscribe('selection', (s) => {
   renderer.highlights(s);
-   ringView.highlights(s);
+  if (s.reverse) rrenderer.highlights(s);
+  ringView.highlights(s);
   updateReadouts(s);
 });
 store.subscribe('hover', (s) => {
-   renderer.highlights(s);
-   ringView.highlights(s);
+  renderer.highlights(s);
+  if (s.reverse) rrenderer.highlights(s);
+  ringView.highlights(s);
 });
 store.subscribe('cursor', (s) => renderer.setCursor(s.cursor));
-store.subscribe('paths', (s) => renderer.setShowPaths(s.showPaths));
+store.subscribe('paths', (s) => {
+  renderer.setShowPaths(s.showPaths);
+  if (s.reverse) rrenderer.setShowPaths(s.showPaths);
+});
+store.subscribe('reverse', (s) => {
+  if (s.reverse) document.body.dataset.reverse = '';
+  else delete document.body.dataset.reverse;
+  reverseBox.checked = s.reverse;
+  // Full sync on show: the hidden block skipped incremental updates.
+  if (s.reverse) rrenderer.syncText(s, { limit: LIMIT });
+  renderer.layout();
+  clampCursor();
+});
 
 // ---------------------------------------------------------------- editing
 
@@ -163,7 +202,7 @@ function commitText(newText, hint) {
   const s = store.get();
   const { chars, removed } = applyEdit(s.chars, newText, hint);
   store.set(
-    { chars, sa: sortFor(chars, s.sentinel), ...selection.prune(s, removed) },
+    { chars, ...sortsFor(chars, s.sentinel), ...selection.prune(s, removed) },
     ['text'],
   );
 }
@@ -172,16 +211,16 @@ sentinelBox.addEventListener('change', () => {
   const s = store.get();
   const sentinel = sentinelBox.checked;
   const patch = sentinel ? {} : selection.prune(s, new Set([SENTINEL_ID]));
-  store.set({ sentinel, sa: sortFor(s.chars, sentinel), ...patch }, ['text']);
+  store.set({ sentinel, ...sortsFor(s.chars, sentinel), ...patch }, ['text']);
 });
 
 resetBtn.addEventListener('click', () => {
   input.value = DEFAULT_TEXT;
   const chars = createChars(DEFAULT_TEXT);
   const s = store.get();
-  renderer.setDx(0);
+  setDxAll(0);
   store.set(
-    { chars, sa: sortFor(chars, s.sentinel), shift: 0, hover: null, cursor: null, ...selection.cleared() },
+    { chars, ...sortsFor(chars, s.sentinel), shift: 0, hover: null, cursor: null, ...selection.cleared() },
     ['text'],
   );
   announce('Reset.');
@@ -192,17 +231,22 @@ truncateBtn.addEventListener('click', () => {
   const chars = s.chars.slice(0, LIMIT);
   const removed = new Set(s.chars.slice(LIMIT).map((c) => c.id));
   input.value = textOf(chars);
-  store.set({ chars, sa: sortFor(chars, s.sentinel), ...selection.prune(s, removed) }, ['text']);
+  store.set({ chars, ...sortsFor(chars, s.sentinel), ...selection.prune(s, removed) }, ['text']);
 });
 
 gutterBox.addEventListener('change', () => {
-  viewport.classList.toggle('no-gutter', !gutterBox.checked);
+  for (const vp of [viewport, rviewport]) vp.classList.toggle('no-gutter', !gutterBox.checked);
   renderer.layout();
+  if (store.get().reverse) rrenderer.layout();
   clampCursor();
 });
 
 pathsBox.addEventListener('change', () => {
   store.set({ showPaths: pathsBox.checked }, ['paths']);
+});
+
+reverseBox.addEventListener('change', () => {
+  store.set({ reverse: reverseBox.checked }, ['reverse']);
 });
 
 // ---------------------------------------------------------------- selection
@@ -232,57 +276,69 @@ function setShift(v) {
 
 // ---------------------------------------------------------------- pointer
 
+const blockViewports = [viewport, rviewport];
 let dragStartShift = 0;
+
+function setDxAll(px) {
+  renderer.setDx(px);
+  rrenderer.setDx(px);
+}
 
 function dragTo(dx) {
   const w = renderer.metrics.cellW;
   const steps = Math.round(dx / w);
   setShift(dragStartShift + steps);
-  renderer.setDx(dx - steps * w);
+  setDxAll(dx - steps * w);
 }
 
-attachDrag(viewport, {
-  onStart() {
-    dragStartShift = store.get().shift;
-    viewport.classList.add('dragging');
-    viewport.classList.remove('snapping');
-    if (store.get().hover != null) store.set({ hover: null }, ['hover']);
-  },
-  onMove(dx) {
-    if (isLive(store.get())) dragTo(dx);
-  },
-  onEnd(dx) {
-    if (isLive(store.get())) dragTo(dx);
-    viewport.classList.remove('dragging');
-    viewport.classList.add('snapping');
-    renderer.setDx(0);
-    setTimeout(() => viewport.classList.remove('snapping'), 160);
-  },
-  onClick(e) {
+/** Drag (shared shift), click selection and hover for one block viewport. */
+function wireBlock(vp) {
+  attachDrag(vp, {
+    onStart() {
+      dragStartShift = store.get().shift;
+      vp.classList.add('dragging');
+      for (const v of blockViewports) v.classList.remove('snapping');
+      if (store.get().hover != null) store.set({ hover: null }, ['hover']);
+    },
+    onMove(dx) {
+      if (isLive(store.get())) dragTo(dx);
+    },
+    onEnd(dx) {
+      if (isLive(store.get())) dragTo(dx);
+      vp.classList.remove('dragging');
+      for (const v of blockViewports) v.classList.add('snapping');
+      setDxAll(0);
+      setTimeout(() => { for (const v of blockViewports) v.classList.remove('snapping'); }, 160);
+    },
+    onClick(e) {
+      const cell = e.target.closest?.('.cell[data-id]');
+      if (!cell) {
+        clearSelection();
+        return;
+      }
+      applySelection(cell._id, { toggle: e.ctrlKey || e.metaKey, range: e.shiftKey });
+      if (vp === viewport) viewport.focus({ preventScroll: true });
+    },
+  });
+
+  vp.addEventListener('contextmenu', (e) => {
+    if (e.ctrlKey) e.preventDefault(); // macOS ctrl+click
+  });
+
+  vp.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch' || vp.classList.contains('dragging')) return;
     const cell = e.target.closest?.('.cell[data-id]');
-    if (!cell) {
-      clearSelection();
-      return;
-    }
-    applySelection(cell._id, { toggle: e.ctrlKey || e.metaKey, range: e.shiftKey });
-    viewport.focus({ preventScroll: true });
-  },
-});
+    const id = cell ? cell._id ?? null : null;
+    if (id !== store.get().hover) store.set({ hover: id }, ['hover']);
+  });
 
-viewport.addEventListener('contextmenu', (e) => {
-  if (e.ctrlKey) e.preventDefault(); // macOS ctrl+click
-});
+  vp.addEventListener('pointerleave', () => {
+    if (store.get().hover != null) store.set({ hover: null }, ['hover']);
+  });
+}
 
-viewport.addEventListener('pointermove', (e) => {
-  if (e.pointerType === 'touch' || viewport.classList.contains('dragging')) return;
-  const cell = e.target.closest?.('.cell[data-id]');
-  const id = cell ? cell._id ?? null : null;
-  if (id !== store.get().hover) store.set({ hover: id }, ['hover']);
-});
-
-viewport.addEventListener('pointerleave', () => {
-  if (store.get().hover != null) store.set({ hover: null }, ['hover']);
-});
+wireBlock(viewport);
+wireBlock(rviewport);
 
 // ---------------------------------------------------------------- keyboard
 
@@ -349,26 +405,31 @@ viewport.addEventListener('keydown', (e) => {
 
 // ---------------------------------------------------------------- layout
 
-new ResizeObserver(() => {
+const ro = new ResizeObserver(() => {
   renderer.layout();
+  if (store.get().reverse) rrenderer.layout();
   clampCursor();
-}).observe(viewport);
+});
+ro.observe(viewport);
+ro.observe(rviewport);
+
 // ---------------------------------------------------------------- embeddings mode
 createEmbedMode({
-   store,
-   renderer,
-   ringFor,
-   select: applySelection,
-   clear: clearSelection,
-   els: {
-     scatter: $('scatter'),
-     tip: $('scatter-tip'),
-     panel: $('embed-panel'),
-     boundary: $('boundary'),
-     modeButtons: document.querySelectorAll('.mode-switch button[data-mode]'),
-   },
+  store,
+  renderer,
+  blocks: [renderer, rrenderer],
+  ringFor,
+  select: applySelection,
+  clear: clearSelection,
+  els: {
+    scatter: $('scatter'),
+    tip: $('scatter-tip'),
+    panel: $('embed-panel'),
+    boundary: $('boundary'),
+    modeButtons: document.querySelectorAll('.mode-switch button[data-mode]'),
+  },
 });
 
-
 store.emit('text');
+store.emit('reverse');
 store.emit('mode');

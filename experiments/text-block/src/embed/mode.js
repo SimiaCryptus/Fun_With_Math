@@ -1,5 +1,5 @@
 import { Embedder } from './embedder.js';
-import { buildGraph, topEdges } from './graph.js';
+import { buildGraph, topEdges, mergeGraphs, reversePermutation } from './graph.js';
 import { pca, procrustes } from './linalg.js';
 import { effectiveRank, knnPurity, ringSmoothness, boundarySignal, knn } from './metrics.js';
 import { createScatter } from './scatter.js';
@@ -16,7 +16,8 @@ import { textOf } from '../ring.js';
  * Glue between the store, the block renderer, the embedder, the scatter view and the panel.
  * Data flow follows embeddings.md §5.4.
  */
-export function createEmbedMode({ store, renderer, ringFor, select, clear, els }) {
+export function createEmbedMode({ store, renderer, blocks, ringFor, select, clear, els }) {
+   const allBlocks = blocks ?? [renderer]; // every block view that mirrors colours / neighbours
   const S = () => store.get();
   const P = () => S().embed.params;
   const isActive = () => S().mode !== 'block';
@@ -119,16 +120,27 @@ export function createEmbedMode({ store, renderer, ringFor, select, clear, els }
     const codes = ringCodes(s.chars, s.sentinel);
     const lcp = computeLCP(codes, s.sa);
     const params = P();
+     const window = params.followView ? followWindow(s) : null;
     graph = buildGraph({
       sa: s.sa, lcp, n, shift: s.shift, params, codes,
-      window: params.followView ? followWindow(s) : null,
+       window,
     });
+     // Optional: add the adjacency of the reversed block (left-context sort).
+     if (params.includeReverse && params.reverseWeight > 0 && s.rsa && s.rsa.length === n) {
+       const rcodes = ringCodes(s.chars.slice().reverse(), s.sentinel);
+       const rlcp = computeLCP(rcodes, s.rsa);
+       const rgraph = buildGraph({
+         sa: s.rsa, lcp: rlcp, n, shift: s.shift, params, codes: rcodes, window,
+       });
+       graph = mergeGraphs(graph, rgraph, reversePermutation(s.chars.length, n), params.reverseWeight);
+     }
     embedder.sync(ring.map((c) => c.id), codes, ring.map((c) => c.ch));
     embedder.setGraph(graph);
     edges = topEdges(graph, 3);
     scatter.setEdges(showEdges ? edges : null);
     const ms = (performance.now() - t0).toFixed(1);
-    panel.setStatus(`graph: n = ${n}, ${graph.edgeCount} edges, window [${graph.window.join(', ')}], built in ${ms} ms`);
+     const rev = graph.reversed ? ` (+ reversed ×${params.reverseWeight})` : '';
+     panel.setStatus(`graph: n = ${n}, ${graph.edgeCount} edges${rev}, window [${graph.window.join(', ')}], built in ${ms} ms`);
     force = true;
     publish();
     kick();
@@ -238,12 +250,12 @@ export function createEmbedMode({ store, renderer, ringFor, select, clear, els }
   function applyColors() {
     if (!coords || !isActive() || !S().embed.colorBlock) return;
     const map = embeddingColors(coords, embedder.ids);
-    renderer.setColors(map);
+     for (const b of allBlocks) b.setColors(map);
     scatter.setColors(map);
   }
 
   function clearColors() {
-    renderer.setColors(null);
+     for (const b of allBlocks) b.setColors(null);
     scatter.setColors(null);
   }
 
@@ -252,14 +264,14 @@ export function createEmbedMode({ store, renderer, ringFor, select, clear, els }
     const p = h == null ? undefined : embedder.index.get(h);
     if (!isActive() || p === undefined || !coords) {
       hoverNN = { id: null, ids: [] };
-      renderer.setNeighbors(null);
+       for (const b of allBlocks) b.setNeighbors(null);
       scatter.setNeighbors(null);
       return;
     }
     const ids = knn(embedder.matrix(), embedder.n, embedder.dim, p, 5).map((q) => embedder.ids[q]);
     hoverNN = { id: h, ids };
     const set = new Set(ids);
-    renderer.setNeighbors(set);
+     for (const b of allBlocks) b.setNeighbors(set);
     scatter.setNeighbors(set);
   }
 
@@ -495,7 +507,7 @@ export function createEmbedMode({ store, renderer, ringFor, select, clear, els }
        kickLayout();
     } else {
       clearColors();
-      renderer.setNeighbors(null);
+       for (const b of allBlocks) b.setNeighbors(null);
     }
   });
 

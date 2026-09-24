@@ -113,6 +113,9 @@ export function buildGraph({ sa, lcp, n, shift = 0, params, window = null, codes
       }
     }
   }
+   return { n, W, ...summarize(W, n, deg), window: win };
+}
+function summarize(W, n, deg = new Float32Array(n)) {
 
   let total = 0;
   let edges = 0;
@@ -126,7 +129,33 @@ export function buildGraph({ sa, lcp, n, shift = 0, params, window = null, codes
       }
     }
   }
-  return { n, W, deg, totalWeight: total, edgeCount: edges, window: win };
+   return { deg, totalWeight: total, edgeCount: edges };
+}
+
+/**
+  * Map from reversed-ring positions to forward-ring positions.
+  * Reversed ring = reverse(chars) [+ sentinel]; the sentinel keeps its place at the end.
+  */
+export function reversePermutation(m, n) {
+   const perm = new Int32Array(n);
+   for (let i = 0; i < n; i++) perm[i] = i < m ? m - 1 - i : i;
+   return perm;
+}
+
+/** base + weight · (other re-indexed through perm). Both graphs have n nodes. */
+export function mergeGraphs(base, other, perm, weight = 1) {
+   const n = base.n;
+   const W = Float32Array.from(base.W);
+   if (weight > 0 && other) {
+     for (let i = 0; i < n; i++) {
+       const p = perm[i];
+       for (let j = 0; j < n; j++) {
+         const w = other.W[i * n + j];
+         if (w > 0) W[p * n + perm[j]] += weight * w;
+       }
+     }
+   }
+   return { n, W, ...summarize(W, n), window: base.window, reversed: true };
 }
 
 /** Top-k strongest edges per node, deduplicated: [[p, q, w/wmax], ...] with p < q. */

@@ -56,9 +56,15 @@ function setText(node, value) {
 
 const regionOf = (j, n) => (j < 0 ? 'prefix' : j >= n ? 'wrap' : 'suffix');
 
-export function createRenderer({ viewport, header, rows, paths, message }) {
+/**
+  * `source(state)` selects what this block shows: { chars, sa, cursor }.
+  * The default is the forward block; the reversed block passes the reversed chars and its SA.
+  */
+const forwardSource = (s) => ({ chars: s.chars, sa: s.sa, cursor: s.cursor });
+
+export function createRenderer({ viewport, header, rows, paths, message, label = 'r', source = forwardSource }) {
   const head = makeRowShell(header);
-  head.rank.textContent = 'r';
+   head.rank.textContent = label;
   head.off.textContent = 'off';
 
   let ring = [];
@@ -123,20 +129,21 @@ export function createRenderer({ viewport, header, rows, paths, message }) {
   }
 
   function syncText(state, { limit = Infinity } = {}) {
+     const src = source(state);
     sel = state.selection;
     hover = state.hover;
-    cursor = state.cursor;
+     cursor = src.cursor ?? null;
     shift = state.shift;
     showPaths = state.showPaths;
 
-    if (state.chars.length === 0) {
+     if (src.chars.length === 0) {
       teardown();
       showMessage('The ring is empty. Type something above.');
       return;
     }
-    if (state.chars.length > limit) {
+     if (src.chars.length > limit) {
       teardown();
-      showMessage(`The ring has ${state.chars.length} characters; the block renders at most ${limit}. Truncate or shorten it.`);
+       showMessage(`The ring has ${src.chars.length} characters; the block renders at most ${limit}. Truncate or shorten it.`);
       return;
     }
 
@@ -144,8 +151,8 @@ export function createRenderer({ viewport, header, rows, paths, message }) {
     viewport.classList.remove('is-empty');
     active = true;
 
-    ring = ringOf(state.chars, state.sentinel);
-    sa = state.sa;
+     ring = ringOf(src.chars, state.sentinel);
+     sa = src.sa;
     n = ring.length;
 
     const oldRank = new Map(order.map((rec, i) => [rec.key, i]));

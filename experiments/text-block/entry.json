@@ -1,0 +1,12 @@
+{
+    "id": "text-block",
+    "title": "Text Block",
+    "pitch": "A tool for visualizing and interacting with sorted rotations of text strings.",
+    "category": "lab",
+    "href": "index.html",
+    "readme": "README.md",
+    "order": 6,
+    "section": "featured",
+    "video": "/videos/demo_text_block.mp4",
+    "icon": "TB"
+}

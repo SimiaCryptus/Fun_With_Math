@@ -18,6 +18,8 @@ const FIELDS = [
   { key: 'lcpMin', label: 'ℓmin', type: 'number', int: true, min: 0 },
   { key: 'lcpCap', label: 'ℓcap', type: 'number', int: true, min: 1 },
   { key: 'cyclicRows', label: 'cyclic rows', type: 'check', title: 'Link the last row to the first' },
+   { key: 'includeReverse', label: 'reversed block', type: 'check', title: 'Also use the adjacency of the reversed-string block (rotations sorted by left context)' },
+   { key: 'reverseWeight', label: 'reversed weight γ', type: 'number', step: 0.1, min: 0, title: 'W = W_forward + γ · W_reversed' },
   { group: 'optimizer' },
   { key: 'optimizer', type: 'select', options: ['contrastive', 'diffuse'] },
   { key: 'dim', label: 'dim d', type: 'number', int: true, min: 1, max: 32 },

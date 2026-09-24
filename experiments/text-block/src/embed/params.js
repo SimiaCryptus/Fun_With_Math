@@ -18,6 +18,8 @@ export const DEFAULT_PARAMS = {
   lcpMin: 1,
   lcpCap: 4,
   cyclicRows: false,
+   includeReverse: false,
+   reverseWeight: 1,
   optimizer: 'contrastive',
   lr: 0.05,
   momentum: 0.9,
@@ -55,6 +57,7 @@ export const PRESETS = {
 export const GRAPH_KEYS = [
   'window', 'followView', 'radius', 'sigma', 'kernel', 'alpha', 'beta',
   'columnFocus', 'columnTau', 'lcpGate', 'lcpMin', 'lcpCap', 'cyclicRows',
+   'includeReverse', 'reverseWeight',
 ];
 
 /** Parameters controlled by presets; editing one switches the preset to "custom". */
