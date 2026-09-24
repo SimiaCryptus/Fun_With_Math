@@ -129,3 +129,7 @@
 	path = experiments/opt_skeleton
 	url = https://github.com/Simiacryptus/opt-skeleton.git
 	branch = main
+[submodule "experiments/text-block"]
+	path = experiments/text-block
+	url = https://github.com/Simiacryptus/text-block.git
+	branch = main
