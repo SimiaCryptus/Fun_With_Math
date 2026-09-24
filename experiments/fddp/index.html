@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FDDP Web — Frequency Domain Data Patches v1.0</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>FDDP&nbsp;Web</h1>
+    <nav>
+      <button data-tab="encode" class="tab active">Encode</button>
+      <button data-tab="decode" class="tab">Decode</button>
+      <button data-tab="inspect" class="tab">Inspect</button>
+    </nav>
+    <span id="caps" class="caps"></span>
+  </header>
+
+  <main>
+    <section id="tab-encode" class="panel">
+      <div class="row">
+        <label>Source
+         <!-- no `accept`: Profile A encodes the raw bytes of ANY file -->
+         <input type="file" id="file">
+        </label>
+        <button id="btn-cam">Camera…</button>
+        <button id="btn-shot" disabled>Capture</button>
+        <label>Preset
+          <select id="preset">
+            <option value="visual">visual — RAGGED · PATCH_Z · INT8 (default)</option>
+            <option value="analysis">analysis — RESAMPLE_FIXED K_p=16 · INT8</option>
+            <option value="analysis-tiny">analysis-tiny — K_p=4 · INT4</option>
+            <option value="faithful">faithful — RAGGED · NONE · f32</option>
+            <option value="bytes-a">Profile A — GENERIC_BYTE over raw file bytes</option>
+             <option value="bytes-faithful">Profile A faithful — RAGGED · NONE · f32 · CENTERED</option>
+          </select>
+        </label>
+        <label>Max edge
+          <input type="number" id="maxedge" value="512" min="32" max="4096" step="32">
+        </label>
+        <button id="btn-encode" disabled>Encode</button>
+      </div>
+      <video id="cam" playsinline muted hidden></video>
+      <div class="row">
+        <figure><figcaption>source</figcaption><canvas id="c-src"></canvas></figure>
+        <figure><figcaption>reconstruction</figcaption><canvas id="c-rec"></canvas></figure>
+        <figure><figcaption>error ×8</figcaption><canvas id="c-err"></canvas></figure>
+        <figure><figcaption>token grid</figcaption><canvas id="c-tok"></canvas></figure>
+      </div>
+      <pre id="report" class="report"></pre>
+      <div class="row">
+        <button id="btn-dl" disabled>Download .fddp</button>
+        <button id="btn-eps" disabled>Copy EPS JSON</button>
+      </div>
+    </section>
+
+    <section id="tab-decode" class="panel" hidden>
+      <div id="drop" class="drop">Drop a <code>.fddp</code> container here (or click)</div>
+      <input type="file" id="file-dec" accept=".fddp,application/octet-stream" hidden>
+      <div class="row">
+        <figure><figcaption>decoded</figcaption><canvas id="c-dec"></canvas></figure>
+      </div>
+      <pre id="report-dec" class="report"></pre>
+       <div class="row">
+         <button id="btn-dl-dec" disabled>Download decoded bytes</button>
+       </div>
+    </section>
+
+    <section id="tab-inspect" class="panel" hidden>
+      <pre id="tree" class="report"></pre>
+    </section>
+  </main>
+
+  <div id="toast" role="alert" class="toast" hidden></div>
+  <script type="module" src="./src/app/main.js"></script>
+</body>
+</html>
