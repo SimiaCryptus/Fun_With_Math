@@ -125,3 +125,7 @@
 	path = experiments/dihedral
 	url = https://github.com/Simiacryptus/dihedral.git
 	branch = main
+[submodule "experiments/opt_skeleton"]
+	path = experiments/opt_skeleton
+	url = https://github.com/Simiacryptus/opt-skeleton.git
+	branch = main
