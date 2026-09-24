@@ -113,3 +113,7 @@
 	path = experiments/point-cad
 	url = https://github.com/Simiacryptus/point-cad.git
 	branch = main
+[submodule "experiments/basic"]
+	path = experiments/basic
+	url = https://github.com/Simiacryptus/basic.git
+	branch = main
