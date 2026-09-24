@@ -117,3 +117,7 @@
 	path = experiments/basic
 	url = https://github.com/Simiacryptus/basic.git
 	branch = main
+[submodule "experiments/camera-tool"]
+	path = experiments/camera-tool
+	url = https://github.com/Simiacryptus/camera-tool.git
+	branch = main
