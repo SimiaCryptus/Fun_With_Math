@@ -1,0 +1,11 @@
+html,body{margin:0;height:100%;background:#05070b;color:#cfd6e0;font:13px system-ui,sans-serif;overflow:hidden}
+#view{position:absolute;inset:36px 240px 90px 200px}
+#top{position:absolute;top:0;left:0;right:0;height:36px;display:flex;gap:12px;align-items:center;padding:0 10px;background:#0c1118;border-bottom:1px solid #1d2733}
+#left{position:absolute;top:36px;left:0;width:200px;bottom:90px;padding:8px;box-sizing:border-box;background:#0a0e14;overflow:auto}
+#left button{display:block;width:100%;margin:4px 0}
+#right{position:absolute;top:36px;right:0;width:240px;bottom:90px;padding:8px;box-sizing:border-box;background:#0a0e14;overflow:auto}
+#log{position:absolute;left:0;right:0;bottom:0;height:90px;overflow:auto;background:#0c1118;border-top:1px solid #1d2733;padding:4px 10px;box-sizing:border-box;font-family:monospace}
+pre{white-space:pre-wrap;font-size:12px;margin:0}
+h3{margin:6px 0;font-size:13px;color:#8fb3d9}
+button,input,select{background:#141c26;color:#cfd6e0;border:1px solid #2a3848;border-radius:3px;padding:3px 6px}
+#time{margin-left:auto;font-family:monospace}

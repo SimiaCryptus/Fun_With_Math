@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Labrek Space Mining</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+</head>
+<body>
+<div id="top">
+  <b>LABREK</b>
+  <label>Seed <input id="seed" value="labrek-1" size="10"></label>
+  <label>Class <select id="cls">
+    <option value="rubble">Rubble pile</option><option value="monolith">Monolith</option>
+    <option value="stratified">Stratified</option><option value="cometary">Cometary</option>
+    <option value="metal">Metal fragment</option><option value="binary">Contact binary</option>
+  </select></label>
+  <label>Radius <input id="radius" type="number" value="24" min="8" max="60" style="width:4em"> m</label>
+  <label>G× <select id="gmul"><option>1</option><option>10</option><option>100</option></select></label>
+  <button id="gen">Generate</button>
+  <span id="time"></span>
+</div>
+<div id="left">
+  <h3>Test actions</h3>
+  <button data-cmd="engine">Mount 50 kN engine (bare)</button>
+  <button data-cmd="engineOff">Engine off</button>
+  <button data-cmd="spin">Spin up ×1.25</button>
+  <button data-cmd="throw">Throw boulder</button>
+  <button data-cmd="dust">Dust burst</button>
+  <h3>Keys</h3>
+  <p>1 material · 2 stress · 4 velocity · 6 axes<br>Space pause · , . warp · F focus</p>
+</div>
+<div id="right"><h3>Inspector</h3><pre id="insp"></pre><h3>Survey</h3><pre id="survey"></pre></div>
+<div id="log"></div>
+<div id="view"></div>
+<script type="module">
+   import('./src/main.js').catch((err) => {
+     console.error(err);
+     const d = document.createElement('pre');
+     d.style.cssText = 'position:absolute;inset:36px 240px 90px 200px;padding:16px;color:#ffb080;white-space:pre-wrap';
+     d.textContent = 'Failed to load game modules:\n' + err.message +
+       '\n\nVendored libraries are missing. From the game folder run:\n  node scripts/vendor.mjs\n' +
+       'then serve the folder over HTTP (e.g. python3 -m http.server).';
+     document.body.appendChild(d);
+   });
+</script>
+</body>
+</html>
