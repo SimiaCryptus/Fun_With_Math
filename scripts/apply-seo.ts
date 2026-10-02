@@ -8,7 +8,7 @@
  * Twitter card, and a JSON-LD blob.
  *
  *   npx tsx scripts/apply-seo.ts
- *   npx tsx scripts/apply-seo.ts --base=https://games.cognotik.com
+ *   npx tsx scripts/apply-seo.ts --base=https://math.cognotik.com
  *   npx tsx scripts/apply-seo.ts --check      # CI: fail on drift
  *
  * Everything is written inside a managed region:
@@ -24,7 +24,7 @@
  * Flags:
  *   --root=<path>     repository root (default: parent of scripts/)
  *   --base=<url>      site origin used for canonical/OG urls
- *                     (default: https://games.cognotik.com)
+ *                     (default: https://math.cognotik.com)
  *   --image=<path>    fallback social image (default: /assets/og-image.png)
  *   --site-name=<s>   og:site_name (default: Mathematical Explorations)
  *   --twitter=<@user> twitter:site handle (optional)
@@ -83,7 +83,7 @@ if (flag('help')) {
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(opt('root', path.join(HERE, '..')));
-const BASE = opt('base', 'https://games.cognotik.com').replace(/\/+$/, '');
+const BASE = opt('base', 'https://math.cognotik.com').replace(/\/+$/, '');
 const IMAGE = opt('image', '/assets/og-image.png');
 const SITE_NAME = opt('site-name', 'Mathematical Explorations');
 const TWITTER = opt('twitter', '');

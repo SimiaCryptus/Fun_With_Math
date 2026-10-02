@@ -6,12 +6,17 @@
     <mapping directory="$PROJECT_DIR$/ca/markov-analysis" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/ca/pid-ca" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/3inline" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/basic" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/camera-tool" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/dihedral" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal-mosaic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal_learning" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/magnet-lattice" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/no3sieve" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/opt_skeleton" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/pastaponics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/point-cad" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/text-block" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/NAM" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/PI_RCC" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/RCC" vcs="Git" />

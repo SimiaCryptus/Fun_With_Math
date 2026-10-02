@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-24T15:44:13.373Z",
+    "generatedAt": "2026-09-24T15:46:13.041Z",
     "counts": {
         "lab": 23,
         "essay": 6,
@@ -269,8 +269,11 @@
             "video": "/videos/demo_text_block.mp4",
             "order": 6,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/text-block"
+                "url": "https://github.com/Simiacryptus/text-block.git",
+                "branch": "main",
+                "commit": "3cbb12bcc1c4b458f111040dda9c74d4c7dd51b1",
+                "path": "experiments/text-block",
+                "submodule": true
             },
             "dir": "experiments/text-block",
             "source": "experiments/text-block/entry.json",
@@ -384,8 +387,11 @@
             "date": "2024-01-01",
             "order": 10,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/basic"
+                "url": "https://github.com/Simiacryptus/basic.git",
+                "branch": "main",
+                "commit": "b50d8a8ff86e4ab80c2c341f7153be6ddd7ff50b",
+                "path": "experiments/basic",
+                "submodule": true
             },
             "seo": {
                 "title": "Basic Math Experiments – Fun With Math",
@@ -699,8 +705,11 @@
             "readme": "README.md",
             "order": 9007199254740991,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/dihedral"
+                "url": "https://github.com/Simiacryptus/dihedral.git",
+                "branch": "main",
+                "commit": "582bbc8bede920c539924ec3700123f6076cb819",
+                "path": "experiments/dihedral",
+                "submodule": true
             },
             "seo": {
                 "title": "Dihedral Attractors — Sculpting Geometry by Optimizing Fold Angles",
@@ -784,8 +793,11 @@
             "license": "MIT",
             "order": 9007199254740991,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/opt_skeleton"
+                "url": "https://github.com/Simiacryptus/opt-skeleton.git",
+                "branch": "main",
+                "commit": "9f95deceb456037d066eebf9bce0dc036aebadb3",
+                "path": "experiments/opt_skeleton",
+                "submodule": true
             },
             "seo": {
                 "title": "Geometric Entropy Lab: Entropic Search for the No-Three-in-Line Problem",
@@ -826,8 +838,11 @@
             "license": "MIT",
             "order": 9007199254740991,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/camera-tool"
+                "url": "https://github.com/Simiacryptus/camera-tool.git",
+                "branch": "main",
+                "commit": "8397cfeb4d2efd2d9585a32bf812f27a40e5fd11",
+                "path": "experiments/camera-tool",
+                "submodule": true
             },
             "seo": {
                 "title": "Laser-Damage Camera Correction — Profile and Repair a Damaged Sensor In-Browser",
