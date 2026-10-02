@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-09-23T20:40:35.235Z",
+    "generatedAt": "2026-10-01T00:37:59.635Z",
     "counts": {
         "game": 16
     },
@@ -9,7 +9,7 @@
             "id": "arcade-of-life",
             "title": "The Arcade of Life",
             "category": "game",
-            "href": "https:/aol.cognotik.com",
+            "href": "https://aol.cognotik.com",
             "readme": "INTRO.md",
             "video": "/videos/arcade-of-life.mp4",
             "order": 0,
@@ -30,7 +30,7 @@
             "id": "vocal-parkour",
             "title": "Vocal Parkour",
             "category": "game",
-            "href": "https:/vp.cognotik.com",
+            "href": "https://vp.cognotik.com",
             "readme": "INTRO.md",
             "video": "/videos/demo_vp.mp4",
             "order": 1,
@@ -254,8 +254,11 @@
             "video": "/videos/demo_tomb.mp4",
             "order": 11,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "games/tomb-crawler"
+                "url": "https://github.com/Simiacryptus/tomb-crawler.git",
+                "branch": "main",
+                "commit": "630fe356283c1c450b271b7648c67164c7069cec",
+                "path": "games/tomb-crawler",
+                "submodule": true
             },
             "dir": "games/tomb-crawler",
             "source": "games/tomb-crawler/entry.json",

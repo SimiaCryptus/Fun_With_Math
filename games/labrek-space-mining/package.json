@@ -1,0 +1,10 @@
+{
+  "name": "labrek-space-mining",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Labrek Space Mining — headless physics core (src/sim) and browser game",
+  "scripts": {
+    "test": "node --test"
+  }
+}
