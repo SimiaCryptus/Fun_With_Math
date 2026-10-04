@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-04T06:56:17.716Z",
+    "generatedAt": "2026-10-04T07:10:15.914Z",
     "counts": {
         "game": 17
     },
@@ -363,15 +363,18 @@
             "readme": "README.md",
             "order": 9007199254740991,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "games/labrek-space-mining"
+                "url": "https://github.com/Simiacryptus/labrek-space-mining.git",
+                "branch": "main",
+                "commit": "be061201145ce629c55bf67a4da6972abf1efa40",
+                "path": "games/labrek-space-mining",
+                "submodule": true
             },
             "dir": "games/labrek-space-mining",
             "source": "games/labrek-space-mining/entry.json",
             "section": "games",
             "icon": "LS",
             "launchLabel": "Play Labrek Space Mining",
-            "pitch": "A 2D space mining game where you control a spaceship to mine resources from asteroids while avoiding obstacles and enemies. Upgrade your ship and explore different sectors of space."
+            "pitch": "A 3D microgravity astrogeology game where you mine asteroids for resources. Navigate your ship in zero gravity, extract valuable minerals, and manage your cargo while avoiding hazards in space."
         }
     ]
 }
