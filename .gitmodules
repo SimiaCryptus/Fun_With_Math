@@ -167,3 +167,7 @@
 	path = games/tomb-crawler
 	url = https://github.com/Simiacryptus/tomb-crawler.git
 	branch = main
+[submodule "games/labrek-space-mining"]
+	path = games/labrek-space-mining
+	url = https://github.com/Simiacryptus/labrek-space-mining.git
+	branch = main
