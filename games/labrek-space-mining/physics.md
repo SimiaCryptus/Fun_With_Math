@@ -463,18 +463,27 @@ I_b = Σ_i [ m_i (|r_i|² 𝟙 − r_i r_iᵀ) + (m_i h²/6) 𝟙 ]         (the
 
 Each step, given `F` and `τ` (with contact impulses already applied, §A.7.1):
 
-**1. Translation.** Coriolis is integrated by implicit midpoint, which is the Cayley map. It is exactly
-norm-preserving (energy-neutral) and needs no trigonometry:
+**1. Translation (observer-rotation step).** The real forces are integrated with symplectic Euler on the inertial
+velocity, expressed in the current frame axes. The result is then re-expressed in the next frame orientation with
+the same Cayley map that advances `q_f` (§A.2.4). Coriolis and centrifugal terms never appear explicitly; they are
+exactly the effect of the observer rotation. No trigonometry is needed.
 
 ~~~
-a = F/M − Ω × (Ω × X)
-(𝟙 + dt[Ω]×) U⁺ = (𝟙 − dt[Ω]×) U + dt·a
 
-Closed-form solve of (𝟙 + [b]×) w = v:
-    w = ( v − b × v + b (b·v) ) / (1 + |b|²),    b = dt·Ω
 
-X⁺ = X + dt·U⁺
+W   = U + Ω × X                    (inertial velocity, frame-n axes)
+W  += dt · F/M
+X'  = X + dt · W
+X⁺  = C(b) X',   W⁺ = C(b) W,      C(b) = (𝟙 + [b]×)⁻¹(𝟙 − [b]×),  b = ½ dt Ω   (= R_stepᵀ)
+U⁺  = W⁺ − Ω × X⁺
 ~~~
+Properties:
+- A free body in `𝓕` maps through `q_f` to an exact straight line in `𝓘` (to roundoff).
+- `Ω = 0` and `Ω ≠ 0` runs are the same inertial scheme, so re-basing changes only roundoff.
+- The Jacobi integral is conserved with the bounded O(dt) oscillation of symplectic Euler.
+An earlier draft integrated Coriolis by an implicit-midpoint Cayley solve with explicit centrifugal force. That
+scheme carries an O(Ω dt) phase error and is superseded. Particles (§A.9 step 6) use the same step.
+
 
 **2. Rotation.** Explicit torque, then an implicit gyroscopic step (Catto 2015). This is one Newton iteration in body
 coordinates:
@@ -486,12 +495,14 @@ J    = I_b + dt ( [ω₀]× I_b − [I_b ω₀]× )
 ω_b⁺ = ω₀ − J⁻¹ f(ω₀)
 ~~~
 
-**3. Orientation:**
+**3. Orientation.** The body increment is a Cayley quaternion of the absolute spin. The frame increment is undone on
+the left:
 
 ~~~
-ω_rel = ω_b⁺ − Rᵀ Ω
-q⁺ = normalize( q + ½ dt · q ⊗ [0, ω_rel] )
+q⁺ = normalize( q_step⁻¹ ⊗ q ⊗ normalize([1, ½ dt ω_b⁺]) )
 ~~~
+As a result, `q_f⁺ ⊗ q⁺ = q_f ⊗ q ⊗ Δq_body` exactly, independent of `Ω`.
+
 
 The conservation properties are summarized below. Non-principal tumbling, precession and Dzhanibekov flips emerge
 from step 2. They are acceptance tests.
@@ -1059,7 +1070,7 @@ Switching views is a pure display transform using `q_f`.
 | `math.test.js`         | Quaternion ops; `cayleySolve` inverse identity; Cayley preserves norm                       | 1e-15 relative            |
 | `purity.test.js`       | No DOM globals and no forbidden `Math.*` in `src/sim/**` (static scan; allowlist `math.js`) | 0 violations              |
 | `frame.test.js`        | Free particle integrated in `𝓕`, mapped to `𝓘` via `q_f`, is a straight line                | 1e-9 m over 1e5 steps     |
-|                        | Jacobi constant in a static point-mass potential                                            | drift < 1e-8 relative     |
+|                        | Jacobi constant in a static point-mass potential                                            | bounded < 2e-3, no drift  |
 |                        | Re-basing mid-run does not change `𝓘` trajectories                                          | 1e-12                     |
 | `rigid.test.js`        | Same torque-free body with `Ω = 0` vs `Ω ≠ 0`; compare in `𝓘`                               | 1e-9                      |
 |                        | Dzhanibekov flip period vs analytic (elliptic integral, reference value precomputed)        | ±5%                       |

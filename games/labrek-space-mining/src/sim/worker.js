@@ -3,6 +3,7 @@ import { generateAsteroid } from './gen/asteroid.js';
 import { MAT, L } from './voxels.js';
 import { key, worldPos } from './clusters.js';
 import { add, sub, scale, norm, len, mtv, quatToMat, PI } from './math.js';
+import { hashString } from './rng.js';
 
 let world = null, survey = null, paused = false, warp = 1, timer = null, engine = null;
 const WARPS = [1, 10, 100]; // ≥1000× needs quiescence detection (M5)
@@ -15,7 +16,8 @@ self.onerror = (e) => { self.postMessage({ type: 'error', message: String(e.mess
 self.onmessage = (e) => {
   const m = e.data;
   if (m.type === 'init') {
-    world = new World({ seed: 1, G: 6.674e-11 * (m.gmul || 1) });
+     // per-voxel strength/density heterogeneity must follow the asteroid seed
+     world = new World({ seed: hashString(String(m.seed) + '|vox'), G: 6.674e-11 * (m.gmul || 1) });
     survey = generateAsteroid(world, { seed: m.seed, cls: m.cls, radius: m.radius });
     sentOrder.clear(); engine = null;
     for (const c of world.clusters.values()) c.dirty = true;

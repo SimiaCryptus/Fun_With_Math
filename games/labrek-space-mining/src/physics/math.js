@@ -32,6 +32,7 @@ export const v3 = {
 
 // 3×3 matrices, row-major Float64Array(9).
 const _m = new Float64Array(9), _m2 = new Float64Array(9);
+const _m3 = new Float64Array(9);
 export const m3 = {
   create() { return new Float64Array(9); },
   identity(o) { o.fill(0); o[0] = 1; o[4] = 1; o[8] = 1; return o; },
@@ -84,7 +85,7 @@ export const m3 = {
   solve(o, m, v) { m3.invert(_m2, m); return m3.mulV(o, _m2, v); },
   // o = R S Rᵀ
   rotSym(o, R, S) {
-    const T = new Float64Array(9);
+     const T = _m3; // preallocated scratch (§B.1: allocation-free hot loops)
     m3.mul(T, R, S);
     for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
       _m[3 * r + c] = T[3 * r] * R[3 * c] + T[3 * r + 1] * R[3 * c + 1] + T[3 * r + 2] * R[3 * c + 2];

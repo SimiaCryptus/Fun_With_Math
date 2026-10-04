@@ -1,16 +1,17 @@
-// §B.1: src/sim/** is DOM-free, deterministic, and uses relative .js imports.
+// §B.1: the physics core (staged in src/physics until it replaces the src/sim prototype) is
+// DOM-free, deterministic, and uses relative .js imports. tests/ is excluded (tests may use any Math.*).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SIM = fileURLToPath(new URL('../src/sim/', import.meta.url));
+const SIM = fileURLToPath(new URL('../', import.meta.url));
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir).sort()) {
     const p = join(dir, name);
-    if (statSync(p).isDirectory()) walk(p, out);
+     if (statSync(p).isDirectory()) { if (name !== 'tests') walk(p, out); }
     else if (name.endsWith('.js')) out.push(p);
   }
   return out;
@@ -25,11 +26,11 @@ const FORBIDDEN_MATH = /\bMath\.(random|sin|cos|tan|asin|acos|atan|atan2|sinh|co
 const FORBIDDEN_GLOBALS = /(?<![.\w$])(window|document|self|performance|Date|localStorage|requestAnimationFrame)\b/g;
 const BROWSER_ONLY = new Set(['worker.js']);
 
-test('src/sim contains modules', () => {
+test('physics core contains modules', () => {
   assert.ok(files.length > 0, `no files under ${SIM}`);
 });
 
-test('no forbidden Math.* in src/sim', () => {
+test('no forbidden Math.* in physics core', () => {
   const bad = [];
   for (const f of files) {
     const src = stripComments(readFileSync(f, 'utf8'));
@@ -38,7 +39,7 @@ test('no forbidden Math.* in src/sim', () => {
   assert.deepEqual(bad, []);
 });
 
-test('no DOM / time globals in src/sim (worker.js exempt)', () => {
+test('no DOM / time globals in physics core (worker.js exempt)', () => {
   const bad = [];
   for (const f of files) {
     if (BROWSER_ONLY.has(basename(f)) && dirname(f) === resolve(SIM)) continue;

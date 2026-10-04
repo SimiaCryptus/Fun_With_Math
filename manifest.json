@@ -1,8 +1,8 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-01T00:37:59.635Z",
+    "generatedAt": "2026-10-04T06:56:17.716Z",
     "counts": {
-        "game": 16
+        "game": 17
     },
     "entries": [
         {
@@ -15,7 +15,7 @@
             "order": 0,
             "repo": {
                 "url": "https://github.com/SimiaCryptus/Arcade_of_Life/",
-                "commit": "fad6bbe4d82518ffde035c487b236e85c17e2fc2",
+                "commit": "b6ca16cdc9665621c97dc7c7fb23c5c4ae2adb27",
                 "path": "games/aol",
                 "submodule": true
             },
@@ -36,7 +36,7 @@
             "order": 1,
             "repo": {
                 "url": "git@github.com:SimiaCryptus/SonicParkour.git",
-                "commit": "f2839b4dbd60bdf93429458d25d4825dac0115fe",
+                "commit": "1b6af377695d663a6ddaa0624b5500c5d7858223",
                 "path": "games/vocal_parkour",
                 "submodule": true
             },
@@ -58,7 +58,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/mineminer.git",
                 "branch": "main",
-                "commit": "232504700219106cb2560c2f94764e06aec451ca",
+                "commit": "4a16b313eee589c69b38e9ea7e53ca2c9f3cd19f",
                 "path": "games/mineminer",
                 "submodule": true
             },
@@ -80,7 +80,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/3d-checkers.git",
                 "branch": "main",
-                "commit": "e0c836a5eb745c85d387b58dc95851fe7b8aeadb",
+                "commit": "7eef3cc0522fbd0f981ab6c8f4205ecb7d014dc8",
                 "path": "games/3d-checkers",
                 "submodule": true
             },
@@ -146,7 +146,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/0x800.git",
                 "branch": "main",
-                "commit": "fd05eb918bcbd4f447f2dc8664615af5a26c3389",
+                "commit": "8418fa4e305e18130cb0927b34b827cc19c7ad2e",
                 "path": "games/0x800",
                 "submodule": true
             },
@@ -168,7 +168,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/wordsearch.git",
                 "branch": "main",
-                "commit": "772013bb8639ec2165ea64651c97d7929c71dec2",
+                "commit": "50b8d40ac5a7273931fb2e48ef0cac18540123c8",
                 "path": "games/wordsearch",
                 "submodule": true
             },
@@ -190,7 +190,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/troggle.git",
                 "branch": "main",
-                "commit": "cee7f3c84970a78c67cd6db706860d4783f21c21",
+                "commit": "4cadb744102b3c460a9ba11fd17fc384369026e1",
                 "path": "games/troggle",
                 "submodule": true
             },
@@ -256,7 +256,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/tomb-crawler.git",
                 "branch": "main",
-                "commit": "630fe356283c1c450b271b7648c67164c7069cec",
+                "commit": "63217e6f739e5d375e75881423e369f8aacba08a",
                 "path": "games/tomb-crawler",
                 "submodule": true
             },
@@ -278,7 +278,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/velocity-racer.git",
                 "branch": "main",
-                "commit": "c76728d5dc5b81d08cf0459e85e30838b5954936",
+                "commit": "4429b04020cd0e97219f39f8a122ff954736318f",
                 "path": "games/velocity-racer",
                 "submodule": true
             },
@@ -300,7 +300,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/stereo-tac-toe.git",
                 "branch": "main",
-                "commit": "0f913ace3341ca0dd958ad034af198958470a8be",
+                "commit": "8cc5fbbb313b9c1481aa543aaaa61f2f0b85b9a3",
                 "path": "games/stereo-arcade",
                 "submodule": true
             },
@@ -354,6 +354,24 @@
             "icon": "MC",
             "launchLabel": "Open Madame Claude",
             "pitch": "An agentic fortune teller (bring your own Anthropic API Key)"
+        },
+        {
+            "id": "labrek-space-mining",
+            "title": "Labrek Space Mining",
+            "category": "game",
+            "href": "index.html",
+            "readme": "README.md",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "games/labrek-space-mining"
+            },
+            "dir": "games/labrek-space-mining",
+            "source": "games/labrek-space-mining/entry.json",
+            "section": "games",
+            "icon": "LS",
+            "launchLabel": "Play Labrek Space Mining",
+            "pitch": "A 2D space mining game where you control a spaceship to mine resources from asteroids while avoiding obstacles and enemies. Upgrade your ship and explore different sectors of space."
         }
     ]
 }

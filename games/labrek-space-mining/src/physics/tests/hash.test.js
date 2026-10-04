@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { hashState } from '../src/sim/hash.js';
-import { createVoxelPool, allocVoxel } from '../src/sim/voxels.js';
+import { hashState } from '../hash.js';
+import { createVoxelPool, allocVoxel } from '../voxels.js';
 
 function cluster(id, alive = true) {
   return {

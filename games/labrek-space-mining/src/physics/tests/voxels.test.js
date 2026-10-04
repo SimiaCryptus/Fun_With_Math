@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { packKey, createVoxelPool, allocVoxel, freeVoxel } from '../src/sim/voxels.js';
+import { packKey, createVoxelPool, allocVoxel, freeVoxel } from '../voxels.js';
 
 test('packKey: bounds, clamping, injectivity', () => {
   assert.equal(packKey(-512, -512, -512), 0);

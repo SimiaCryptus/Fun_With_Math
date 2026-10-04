@@ -4,6 +4,7 @@ import { World } from '../src/sim/world.js';
 import { MAT, L } from '../src/sim/voxels.js';
 import { updateMassProps } from '../src/sim/clusters.js';
 import { add, sub, len, scale } from '../src/sim/math.js';
+import { gAccel } from '../src/sim/gravity.js';
 
 function block(world, n, mat, X = [0, 0, 0]) {
   const c = world.newCluster();
@@ -59,12 +60,10 @@ test('body-frame gravity grid ~ GM/r² outside a sphere', () => {
   const c = sphere(w, 8, MAT.SIL);
   w.buildGridSync(c);
   const r = 22;
-  const { gAccel } = awaitGravity;
   const g = len(gAccel(w, c, add(c.X, [r, 0, 0])));
   const exact = w.G * c.M / (r * r);
   assert.ok(Math.abs(g - exact) / exact < 0.02, `grid ${g} vs ${exact}`);
 });
-import * as awaitGravity from '../src/sim/gravity.js';
 
 test('Big Rocket: 50 kN on bare regolith tears off within 1 s', () => {
   const w = new World();

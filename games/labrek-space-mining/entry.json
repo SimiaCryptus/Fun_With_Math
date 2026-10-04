@@ -1,0 +1,11 @@
+{
+    "id": "labrek-space-mining",
+    "title": "Labrek Space Mining",
+    "category": "game",
+    "href": "index.html",
+    "readme": "README.md",
+    "section": "games",
+    "icon": "LS",
+    "launchLabel": "Play Labrek Space Mining",
+    "pitch": "A 2D space mining game where you control a spaceship to mine resources from asteroids while avoiding obstacles and enemies. Upgrade your ship and explore different sectors of space."
+}

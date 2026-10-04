@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULTS, makeParams } from '../src/sim/params.js';
+import { DEFAULTS, makeParams } from '../params.js';
 
 test('defaults match §A.11 and are frozen', () => {
   assert.ok(Object.isFrozen(DEFAULTS));

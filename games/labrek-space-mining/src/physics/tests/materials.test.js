@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { MAT, createMaterials, compatibility, pairProps } from '../src/sim/materials.js';
+import { MAT, createMaterials, compatibility, pairProps } from '../materials.js';
 import { relClose } from './helpers/close.js';
 
 const ids = Object.values(MAT);

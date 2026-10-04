@@ -50,7 +50,9 @@ export class ParticlePool {
         if (len(vrel) < 0.3 * vesc || this.age[i] > 600) {
           // re-deposit: mass + momentum into the hit voxel / cluster
           applyImpulse(c, p, scale(vrel, m * c.M / (c.M + m)));
-          vox.mass[hit] += m; vox.fill[hit] = Math.min(1, vox.fill[hit] + m / (vox.mass[hit] / Math.max(vox.fill[hit], 1e-3)));
+           // full-voxel mass must be taken *before* adding the deposit
+           const full = vox.mass[hit] / Math.max(vox.fill[hit], 1e-3);
+           vox.mass[hit] += m; vox.fill[hit] = Math.min(1, vox.fill[hit] + m / full);
           c.massDirty = true;
           this.kill(i); dead = true; break;
         }

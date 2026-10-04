@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createRng, fnv1a, mulberry32, sfc32 } from '../src/sim/rng.js';
+import { createRng, fnv1a, mulberry32, sfc32 } from '../rng.js';
 
 test('fnv1a reference values', () => {
   assert.equal(fnv1a(''), 0x811c9dc5);

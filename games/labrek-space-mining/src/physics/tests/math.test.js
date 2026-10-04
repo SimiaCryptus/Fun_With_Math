@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   v3, m3, quat, cayleySolve, cayleyRotate, clampDisk2, sqrtSafe, hypot3, clamp, nextPow2,
-} from '../src/sim/math.js';
-import { createRng } from '../src/sim/rng.js';
+} from '../math.js';
+import { createRng } from '../rng.js';
 import { close, relClose, closeVec } from './helpers/close.js';
 
 const rng = createRng('math-test');
