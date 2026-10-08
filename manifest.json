@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-04T07:10:15.914Z",
+    "generatedAt": "2026-10-04T13:49:08.891Z",
     "counts": {
         "game": 17
     },
@@ -365,7 +365,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/labrek-space-mining.git",
                 "branch": "main",
-                "commit": "be061201145ce629c55bf67a4da6972abf1efa40",
+                "commit": "162bdb3cd03cdd26c71556d4333dbc3c6db7db1f",
                 "path": "games/labrek-space-mining",
                 "submodule": true
             },
@@ -374,7 +374,7 @@
             "section": "games",
             "icon": "LS",
             "launchLabel": "Play Labrek Space Mining",
-            "pitch": "A 3D microgravity astrogeology game where you mine asteroids for resources. Navigate your ship in zero gravity, extract valuable minerals, and manage your cargo while avoiding hazards in space."
+            "pitch": "A microgravity engineering sandbox. Land robots on a tumbling, self-gravitating rubble pile, anchor, mine and build, then turn the rock itself into a spacecraft. Every voxel has mass, every push pushes back, and strapping a big rocket to loose gravel tears it apart."
         }
     ]
 }
