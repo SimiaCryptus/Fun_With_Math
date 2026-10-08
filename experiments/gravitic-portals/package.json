@@ -1,0 +1,16 @@
+{
+  "name": "gravitic-portals",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Field-theoretic gravitic portals — phase 1 (field solver + test particles)",
+  "scripts": {
+    "test": "node --test",
+    "serve": "npx http-server . -c-1",
+     "tabulate": "node tools/tabulate.js",
+    "scenario": "node test/run-scenario.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

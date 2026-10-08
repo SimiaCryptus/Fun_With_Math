@@ -1,0 +1,10 @@
+{
+    "id": "gravitic-portals",
+    "title": "Gravitic Portals",
+    "description": "An interactive lab exploring the dynamics of gravitic portals and their effects on point clouds.",
+    "tags": [
+    ],
+    "category": "labs",
+    "href": "index.html",
+    "readme": "README.md"
+}

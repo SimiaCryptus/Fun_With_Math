@@ -1,0 +1,16 @@
+{
+  "name": "floor-ceiling",
+  "gravity": { "g": 9.81, "up": [0, 1, 0] },
+  "dt": 0.008333333333333333,
+  "portals": [
+    { "id": 1, "center": [0, 0, 0], "normal": [0, 1, 0], "up": [0, 0, -1], "radius": 1.25, "linkId": 2 },
+    { "id": 2, "center": [0, 2.5, 0], "normal": [0, -1, 0], "up": [0, 0, -1], "radius": 1.25, "linkId": 1 }
+  ],
+  "particles": [
+    { "pos": [0.1, 1.2, 0.05], "vel": [0, -1, 0] }
+  ],
+  "emitter": {
+    "seed": 1234, "center": [0, 3.5, 0], "spread": [1.2, 0.1, 1.2],
+    "velocity": [0, -1, 0], "velocityJitter": 0.2, "rate": 25, "max": 250
+  }
+}
