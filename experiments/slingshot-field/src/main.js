@@ -1,32 +1,52 @@
 import {SYSTEMS} from './config/systems.js';
 import {DEFAULTS} from './config/defaults.js';
 import {lagrangePoints} from './core/lagrange.js';
-import {CORE_VERSION, hillRadius, LABEL} from './core/conventions.js';
-import {createGrid, FIELD_NAMES, nearestIndex, NF, xiAt} from './core/grid.js';
+import {CORE_VERSION, hillRadius, isExitLabel, LABEL} from './core/conventions.js';
+import {createGrid, F, FIELD_NAMES, nearestIndex, NF, xiAt} from './core/grid.js';
 import {postprocess} from './core/differential.js';
 import {propagate} from './core/encounter.js';
-import {inertialVel} from './core/cr3bp.js';
+import {inertialVel, omega} from './core/cr3bp.js';
 import {patchedConicPredict} from './core/patchedConic.js';
 import {WorkerPool} from './compute/workerPool.js';
-import {SplitRenderer} from './render/renderer.js';
+import {ViewRenderer} from './render/renderer.js';
 import {PhysicalView} from './render/physicalView.js';
 import {ManifoldView} from './render/manifoldView.js';
 import {colorize, ringColors, SCALAR_LAYERS} from './render/colormaps.js';
 import {installPanels} from './ui/panels.js';
+import {hideTip, installTips, showTip} from './ui/tips.js';
+import {renderLegend} from './ui/legend.js';
+import {FIELD_DESC, LABEL_DESC, LABEL_SHORT, PRESET_DESC, SIG_DESC} from './ui/descriptions.js';
 
 const $ = (id) => document.getElementById(id);
+const TWO_PI = 2 * Math.PI;
+const deg = (r) => ((r * 180) / Math.PI).toFixed(2);
+const LABEL_NAME = Object.fromEntries(Object.entries(LABEL).map(([k, v]) => [v, k.toLowerCase()]));
+
 installPanels();
-const R = new SplitRenderer($('view'));
+installTips();
 const phys = new PhysicalView(), man = new ManifoldView();
-R.add(phys);
-R.add(man);
+const RP = new ViewRenderer($('view'), phys);
+const RM = new ViewRenderer($('mview'), man);
+const request = () => {
+    RP.request();
+    RM.request();
+};
 const pool = new WorkerPool(new URL('./compute/encounterWorker.js', import.meta.url));
 const cache = new Map();
-const S = {grid: null, lps: null, sel: null};
+const S = {grid: null, lps: null, sel: null, traj: false};
 
 for (const [k, s] of Object.entries(SYSTEMS)) $('system').add(new Option(s.name, k));
-for (const [k, L] of Object.entries(SCALAR_LAYERS)) $('scalar').add(new Option(L.name, k));
+for (const [k, L] of Object.entries(SCALAR_LAYERS)) {
+    const o = new Option(L.name, k);
+    o.title = L.desc;
+    $('scalar').add(o);
+}
 $('scalar').value = 'dE';
+
+function updateScalarTip() {
+    const L = SCALAR_LAYERS[$('scalar').value];
+    $('scalar').dataset.tip = `Which per-sample quantity colours the (α, β) map.\n\nCurrent — ${L.name}: ${L.desc}`;
+}
 
 function params() {
     const sys = SYSTEMS[$('system').value];
@@ -46,7 +66,7 @@ function setC(C, live = true) {
     $('C').value = C;
     $('Cnum').value = (+C).toFixed(6);
     phys.setC(+C);
-    if (live) R.request();
+    if (live) RP.request();
 }
 
 function onSystem(keepC) {
@@ -57,10 +77,13 @@ function onSystem(keepC) {
     $('Cticks').textContent = `C_L1 = ${L1.C.toFixed(5)}  C_L2 = ${L2.C.toFixed(5)}\nC_L3 = ${L3.C.toFixed(5)}  C_L4,5 = ${S.lps[3].C.toFixed(5)}`;
     $('C').min = L3.C - 0.05;
     $('C').max = L1.C + 0.05;
+    document.querySelectorAll('[data-preset]').forEach((b) => {
+        b.dataset.tip = `${PRESET_DESC[b.dataset.preset]}\nC = ${cPreset(b.dataset.preset).toFixed(5)}`;
+    });
     if (!keepC) setC(cPreset('l1open'), false);
     phys.setSystem(params(), S.lps);
     phys.fitSecondary();
-    R.request();
+    request();
 }
 
 function writeHash(p) {
@@ -74,7 +97,7 @@ function writeHash(p) {
 function readHash() {
     const q = new URLSearchParams(location.hash.slice(1));
     for (const id of ['system', 'rhoFactor', 'kFar', 'N', 'T', 'rtol']) if (q.has(id)) $(id).value = q.get(id);
-    if (q.has('layer')) $('scalar').value = q.get('layer');
+    if (q.has('layer') && SCALAR_LAYERS[q.get('layer')]) $('scalar').value = q.get('layer');
     return q.has('C') ? +q.get('C') : null;
 }
 
@@ -89,16 +112,17 @@ const scheduleRefresh = () => {
 function refresh() {
     const g = S.grid;
     if (!g) return;
-    const {rgba, range} = colorize(g, $('scalar').value);
+    const key = $('scalar').value;
+    const {rgba, range} = colorize(g, key);
     man.setImage(rgba, g.N);
-    $('legend').textContent = range ? `range: [${range[0].toPrecision(3)}, ${range[1].toPrecision(3)}]` : '';
+    renderLegend($('legend'), key, range);
     man.setOverlays(g, {
         quiver: $('showQuiver').checked,
         stream: $('showStream').checked,
         glyph: $('showGlyph').checked
     });
     phys.setRing(ringColors(g, $('ringReduce').value), g.N, $('showRing').checked);
-    R.request();
+    request();
 }
 
 async function compute() {
@@ -106,6 +130,7 @@ async function compute() {
     writeHash(p);
     phys.setSystem(p, S.lps);
     phys.setTrajectory(null);
+    S.traj = false;
     man.setCross(null);
     const key = JSON.stringify({...p, v: CORE_VERSION});
     if (cache.has(key)) {
@@ -145,9 +170,20 @@ async function compute() {
     cache.set(key, S.grid);
     const g = S.grid, counts = {};
     for (const l of g.label) counts[l] = (counts[l] || 0) + 1;
-    const name = Object.fromEntries(Object.entries(LABEL).map(([k, v]) => [v, k.toLowerCase()]));
     $('progress').textContent = `done in ${((performance.now() - t0) / 1000).toFixed(1)} s\n` +
-        Object.entries(counts).map(([l, c]) => `${name[l]}: ${c}`).join('  ');
+        Object.entries(counts).map(([l, c]) => `${LABEL_NAME[l]}: ${c}`).join('  ');
+}
+
+/** Inspector rows: [text, tooltip]. */
+function setInspector(rows) {
+    const pre = $('inspector');
+    pre.replaceChildren();
+    for (const [text, tip] of rows) {
+        const s = document.createElement('span');
+        s.textContent = text;
+        if (tip) s.dataset.tip = tip;
+        pre.append(s, '\n');
+    }
 }
 
 function pick(alpha, beta) {
@@ -160,22 +196,159 @@ function pick(alpha, beta) {
         const vIn = {at: r.sIn, v: inertialVel(r.sIn)};
         const vOut = r.exitY ? {at: [r.exitY[0], r.exitY[1]], v: inertialVel(r.exitY)} : null;
         phys.setTrajectory({pts: r.traj}, vIn, vOut);
-    } else phys.setTrajectory(null);
-    const lines = [`α = ${((a * 180) / Math.PI).toFixed(2)}°  β = ${((b * 180) / Math.PI).toFixed(2)}°`,
-        `label = ${Object.keys(LABEL).find((n) => LABEL[n] === g.label[k])}`];
+        S.traj = true;
+    } else {
+        phys.setTrajectory(null);
+        S.traj = false;
+    }
+    const rows = [
+        [`α = ${deg(a)}°  β = ${deg(b)}°`, 'Nearest grid node. α = entry position angle on the ρ circle around P2 (from +x); β = entry velocity angle from the inward normal (β > 0 prograde).'],
+        [`label = ${LABEL_NAME[g.label[k]]}`, LABEL_DESC[g.label[k]]],
+    ];
     for (let f = 0; f < NF; f++) {
         const v = g.data[k * NF + f];
-        if (Number.isFinite(v)) lines.push(`${FIELD_NAMES[f].padEnd(12)} ${v.toPrecision(6)}`);
+        if (Number.isFinite(v)) rows.push([`${FIELD_NAMES[f].padEnd(12)} ${v.toPrecision(6)}`, FIELD_DESC[FIELD_NAMES[f]]]);
     }
     if (g.post) for (const n of ['H00', 'H01', 'H11', 'detH', 'sig', 'asym']) {
         const v = g.post[n][k];
-        if (Number.isFinite(v)) lines.push(`${n.padEnd(12)} ${v.toPrecision(6)}`);
+        if (Number.isFinite(v)) rows.push([`${n.padEnd(12)} ${v.toPrecision(6)}`, FIELD_DESC[n]]);
     }
     const pc = patchedConicPredict(a, b, p);
-    if (pc) lines.push('— patched conic —', `δ_pc         ${pc.delta.toPrecision(6)}`, `ΔE_pc        ${pc.dE.toPrecision(6)}`, `b            ${pc.b.toPrecision(6)}`);
-    $('inspector').textContent = lines.join('\n');
-    R.request();
+    if (pc) rows.push(
+        ['— patched conic —', 'Classical two-body prediction for the same entry state, with the velocity of P2 frozen at the entry instant. Compare it with the full CR3BP values above.'],
+        [`δ_pc         ${pc.delta.toPrecision(6)}`, 'Patched-conic deflection of the relative velocity, signed by the sense of the flyby: sin(δ/2) = 1/√(1 + b²u⁴/μ²).'],
+        [`ΔE_pc        ${pc.dE.toPrecision(6)}`, 'Patched-conic energy change V_P · Δv.'],
+        [`b            ${pc.b.toPrecision(6)}`, 'Impact parameter of the relative velocity about P2.'],
+    );
+    setInspector(rows);
+    request();
 }
+
+function ringValue(g, i, mode) {
+    let acc = mode === 'max' ? -Infinity : mode === 'min' ? Infinity : 0, cnt = 0;
+    for (let j = 0; j < g.N; j++) {
+        const k = j * g.N + i;
+        if (!isExitLabel(g.label[k])) continue;
+        const v = g.data[k * NF + F.dE];
+        if (!Number.isFinite(v)) continue;
+        cnt++;
+        acc = mode === 'max' ? Math.max(acc, v) : mode === 'min' ? Math.min(acc, v) : acc + v;
+    }
+    return cnt ? (mode === 'mean' ? acc / cnt : acc) : null;
+}
+
+// ---- hover readouts
+function manifoldTip(e, h) {
+    const [a, b] = man.toWorld(h.u, h.v);
+    if (!(a >= 0 && a < TWO_PI && Math.abs(b) < Math.PI / 2)) {
+        hideTip();
+        return;
+    }
+    const lines = [`α = ${deg(a)}°  (entry position on the ρ circle)`, `β = ${deg(b)}°  (entry angle from inward normal${b > 0 ? ', prograde' : b < 0 ? ', retrograde' : ''})`];
+    const g = S.grid;
+    if (g) {
+        const [i, j] = nearestIndex(a, b, g.N), k = j * g.N + i, l = g.label[k];
+        lines.push(`outcome: ${LABEL_SHORT[l]}`);
+        const L = SCALAR_LAYERS[$('scalar').value];
+        const val = (f) => g.data[k * NF + F[f]];
+        if (L.field) {
+            const v = val(L.field);
+            if (Number.isFinite(v)) lines.push(`${L.name}: ${v.toPrecision(5)}`);
+        } else if (L.post && g.post) {
+            const v = g.post[L.post][k];
+            if (Number.isFinite(v)) lines.push(L.post === 'sig' ? `signature: ${SIG_DESC[v].short}` : `${L.name}: ${v.toPrecision(5)}`);
+        }
+        if (isExitLabel(l)) {
+            if ($('showQuiver').checked) lines.push(`Δv_I = (${val('dvx').toPrecision(4)}, ${val('dvy').toPrecision(4)})`);
+            if ($('showStream').checked) lines.push(`∇ΔE = (${val('gA').toPrecision(4)}, ${val('gB').toPrecision(4)})`);
+            if ($('showGlyph').checked) lines.push(`δ_eff = ${deg(val('deltaEff'))}°  s₁ = ${val('s1').toPrecision(4)}  s₂ = ${val('s2').toPrecision(4)}${val('flip') ? '  (flip)' : ''}`);
+        }
+    }
+    lines.push('', 'click: integrate & inspect · drag: pan · wheel: zoom');
+    showTip(e.clientX, e.clientY, lines.join('\n'));
+}
+
+function physTip(e, h) {
+    const p = phys.p;
+    if (!p || !S.lps) return;
+    const [x, y] = phys.toWorld(h.u, h.v);
+    const wpp = (2 * phys.hh) / h.h, C = phys.uniforms.C.value;
+    const dpx = (px, py) => Math.hypot(x - px, y - py) / wpp;
+    const lines = [];
+    if (dpx(-p.mu, 0) < 8) lines.push('P1 — primary, mass 1 − μ, at (−μ, 0)');
+    if (dpx(1 - p.mu, 0) < 8) lines.push('P2 — secondary, mass μ, at (1 − μ, 0)');
+    for (const L of S.lps) if (dpx(L.x, L.y) < 8) {
+        lines.push(`${L.name} — Lagrange point (equilibrium in the rotating frame)`,
+            `C_${L.name} = ${L.C.toFixed(5)}: ${C < L.C ? 'open' : 'closed'} at the current C`);
+    }
+    const x2 = 1 - p.mu, r2 = Math.hypot(x - x2, y), tol = 4 * wpp;
+    if (Math.abs(r2 - p.rho) < tol) lines.push(`encounter circle Σ (radius ρ = ${p.rho.toExponential(3)}): entry and exit states`);
+    else if (Math.abs(r2 - p.rhoFar) < tol) lines.push(`outer circle ρ_far = ${p.rhoFar.toExponential(3)}: encounter complete when reached`);
+    else if (Math.abs(r2 - p.Rbody) < tol) lines.push(`surface of P2 (R_body = ${p.Rbody.toExponential(3)}): collision threshold`);
+    else if ($('showRing').checked && S.grid && r2 > 1.04 * p.rho && r2 < 1.3 * p.rho) {
+        let a = Math.atan2(y, x - x2);
+        if (a < 0) a += TWO_PI;
+        const g = S.grid, i = Math.round(a / (TWO_PI / g.N)) % g.N, mode = $('ringReduce').value;
+        const rv = ringValue(g, i, mode);
+        lines.push(`ΔE ring at α = ${deg(a)}°: ${mode} over β = ${rv == null ? 'no exits' : rv.toPrecision(4)}`);
+    }
+    if (lines.length) lines.push('');
+    const om = omega(x, y, p.mu), z = 2 * om - C;
+    lines.push(`x = ${x.toFixed(5)}  y = ${y.toFixed(5)}`,
+        `r₂ = ${r2.toPrecision(4)}  (${(r2 / p.rho).toFixed(2)} ρ)`,
+        `Ω = ${om.toPrecision(6)}`,
+        z >= 0 ? `|v|² = 2Ω − C = ${z.toPrecision(4)}  (accessible)` : `2Ω − C = ${z.toPrecision(4)} < 0  (forbidden at this C)`);
+    if (S.traj) lines.push('', 'picked trajectory: yellow → blue with time;', 'green arrow = inertial v_in, red arrow = inertial v_out');
+    showTip(e.clientX, e.clientY, lines.join('\n'));
+}
+
+/** Pan / zoom / click / hover handling for a view canvas. */
+function interact(canvas, R, view, {onClick, onHover}) {
+    let drag = null;
+    canvas.addEventListener('pointerdown', (e) => {
+        if (e.button !== 0) return;
+        drag = {x: e.clientX, y: e.clientY, moved: false};
+        canvas.setPointerCapture(e.pointerId);
+        hideTip();
+    });
+    canvas.addEventListener('pointermove', (e) => {
+        if (!drag) {
+            onHover?.(e, R.hit(e));
+            return;
+        }
+        const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+        if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
+        if (drag.moved) {
+            const h = R.hit(e);
+            view.pan(dx / h.w, dy / h.h);
+            drag.x = e.clientX;
+            drag.y = e.clientY;
+            R.request();
+        }
+    });
+    canvas.addEventListener('pointerup', (e) => {
+        if (drag && !drag.moved) onClick?.(R.hit(e));
+        drag = null;
+    });
+    canvas.addEventListener('pointercancel', () => (drag = null));
+    canvas.addEventListener('pointerleave', hideTip);
+    canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const h = R.hit(e);
+        view.zoom(e.deltaY > 0 ? 1.15 : 1 / 1.15, h.u, h.v);
+        R.request();
+        onHover?.(e, h);
+    }, {passive: false});
+}
+
+interact($('view'), RP, phys, {onHover: physTip});
+interact($('mview'), RM, man, {
+    onHover: manifoldTip,
+    onClick: (h) => {
+        const [a, b] = man.toWorld(h.u, h.v);
+        if (a >= 0 && a < TWO_PI && Math.abs(b) < Math.PI / 2) pick(a, b);
+    },
+});
 
 // ---- events
 $('system').onchange = () => onSystem(false);
@@ -192,33 +365,42 @@ document.querySelectorAll('[data-preset]').forEach((b) => (b.onclick = () => {
 $('run').onclick = compute;
 $('cancel').onclick = () => pool.cancel();
 $('scalar').onchange = () => {
+    updateScalarTip();
     refresh();
     if (S.grid) writeHash(S.grid.meta);
 };
 for (const id of ['showQuiver', 'showStream', 'showGlyph', 'showRing', 'ringReduce']) $(id).onchange = refresh;
 $('showPot').onchange = () => {
     phys.uniforms.showPot.value = +$('showPot').checked;
-    R.request();
+    RP.request();
 };
 $('showZvc').onchange = () => {
     phys.uniforms.showZvc.value = +$('showZvc').checked;
-    R.request();
+    RP.request();
 };
 $('fitSys').onclick = () => {
     phys.fitSystem();
-    R.request();
+    RP.request();
 };
 $('fitSec').onclick = () => {
     phys.fitSecondary();
-    R.request();
+    RP.request();
 };
-$('png').onclick = () => {
+$('fitMan').onclick = () => {
+    man.fit();
+    RM.request();
+};
+
+function savePng(R, canvas, name) {
     R.draw();
     const a = document.createElement('a');
-    a.href = $('view').toDataURL('image/png');
-    a.download = 'slingshot-field.png';
+    a.href = canvas.toDataURL('image/png');
+    a.download = name;
     a.click();
-};
+}
+
+$('png').onclick = () => savePng(RP, $('view'), 'slingshot-physical.png');
+$('pngMan').onclick = () => savePng(RM, $('mview'), 'slingshot-manifold.png');
 $('bin').onclick = () => {
     const g = S.grid;
     if (!g) return;
@@ -234,40 +416,10 @@ $('bin').onclick = () => {
     a.click();
 };
 
-const canvas = $('view');
-let drag = null;
-canvas.addEventListener('pointerdown', (e) => {
-    drag = {x: e.clientX, y: e.clientY, moved: false, hit: R.hit(e)};
-    canvas.setPointerCapture(e.pointerId);
-});
-canvas.addEventListener('pointermove', (e) => {
-    if (!drag) return;
-    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true;
-    if (drag.moved) {
-        drag.hit.view.pan(dx / drag.hit.w, dy / drag.hit.h);
-        drag.x = e.clientX;
-        drag.y = e.clientY;
-        R.request();
-    }
-});
-canvas.addEventListener('pointerup', (e) => {
-    if (drag && !drag.moved && drag.hit.i === 1) {
-        const h = R.hit(e), [a, b] = man.toWorld(h.u, h.v);
-        if (a >= 0 && a < 2 * Math.PI && Math.abs(b) < Math.PI / 2) pick(a, b);
-    }
-    drag = null;
-});
-canvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const h = R.hit(e);
-    h.view.zoom(e.deltaY > 0 ? 1.15 : 1 / 1.15, h.u, h.v);
-    R.request();
-}, {passive: false});
-
 // ---- boot
 $('N').value = String(DEFAULTS.N);
 const hashC = readHash();
+updateScalarTip();
 onSystem(false);
 if (hashC != null) setC(hashC, false);
 compute();

@@ -46,34 +46,23 @@ export class OrthoView {
     }
 }
 
-/** One WebGLRenderer drawing two views side by side via scissor. Renders on demand. */
-export class SplitRenderer {
-    constructor(canvas) {
+/** One WebGLRenderer per canvas, drawing a single view on demand. Follows the canvas size. */
+export class ViewRenderer {
+    constructor(canvas, view) {
         this.canvas = canvas;
+        this.view = view;
         this.r = new THREE.WebGLRenderer({canvas, antialias: true});
         this.r.setPixelRatio(window.devicePixelRatio);
-        this.views = [];
         this.pending = false;
-        window.addEventListener('resize', () => this.resize());
-    }
-
-    add(v) {
-        this.views.push(v);
+        new ResizeObserver(() => this.resize()).observe(canvas);
         this.resize();
     }
 
-    rect(i) {
-        const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
-        return {x: (i * w) / 2, y: 0, w: w / 2, h};
-    }
-
     resize() {
-        this.r.setSize(this.canvas.clientWidth, this.canvas.clientHeight, false);
-        this.views.forEach((v, i) => {
-            const q = this.rect(i);
-            v.setAspect(q.w / Math.max(1, q.h));
-            v.onResize?.();
-        });
+        const w = Math.max(1, this.canvas.clientWidth), h = Math.max(1, this.canvas.clientHeight);
+        this.r.setSize(w, h, false);
+        this.view.setAspect(w / h);
+        this.view.onResize?.();
         this.request();
     }
 
@@ -87,20 +76,15 @@ export class SplitRenderer {
     }
 
     draw() {
-        this.r.setScissorTest(true);
-        this.views.forEach((v, i) => {
-            const q = this.rect(i);
-            this.r.setViewport(q.x, q.y, q.w, q.h);
-            this.r.setScissor(q.x, q.y, q.w, q.h);
-            this.r.render(v.scene, v.camera);
-        });
+        this.r.render(this.view.scene, this.view.camera);
     }
 
-    /** Which view (and local u, v) a pointer event falls in. */
+    /** Local viewport coordinates of a pointer event. */
     hit(e) {
         const b = this.canvas.getBoundingClientRect();
-        const x = e.clientX - b.left, y = e.clientY - b.top, half = b.width / 2;
-        const i = x < half ? 0 : 1;
-        return {i, view: this.views[i], u: (x - i * half) / half, v: y / b.height, w: half, h: b.height};
+        return {
+            u: (e.clientX - b.left) / Math.max(1, b.width), v: (e.clientY - b.top) / Math.max(1, b.height),
+            w: Math.max(1, b.width), h: Math.max(1, b.height),
+        };
     }
 }

@@ -21,22 +21,31 @@ export const LABEL_COLORS = {
     [LABEL.FORBIDDEN]: [28, 28, 34], [LABEL.EXIT]: [190, 190, 190], [LABEL.COLLISION]: [220, 40, 40],
     [LABEL.CAPTURED]: [120, 60, 170], [LABEL.MULTIPASS]: [240, 150, 30], [LABEL.PENDING]: [12, 12, 16],
 };
-const SIG_COLORS = [[70, 130, 220], [220, 70, 70], [80, 190, 110], [120, 120, 120]];
+export const SIG_COLORS = [[70, 130, 220], [220, 70, 70], [80, 190, 110], [120, 120, 120]];
 
 export const SCALAR_LAYERS = {
-    outcome: {name: 'L3 outcome ℓ'},
-    dE: {name: 'L4 ΔE (= Δh)', field: 'dE', map: 'div'},
-    dE1: {name: 'ΔE₁ (Kepler about P1)', field: 'dE1', map: 'div'},
-    sig: {name: 'L7 Hessian signature', post: 'sig'},
-    detH: {name: 'det H (symlog)', post: 'detH', map: 'div', symlog: true},
-    ftle: {name: 'L8 FTLE σ', field: 'ftle', map: 'gray'},
-    deltaEff: {name: 'δ_eff', field: 'deltaEff', map: 'div'},
-    tau: {name: 'time of flight τ', field: 'tau', map: 'seq'},
-    rPeri: {name: 'periapsis r₂ (log)', field: 'rPeri', map: 'seq', log: true},
-    kappaE: {name: 'κ_E (log)', field: 'kappaE', map: 'seq', log: true},
-    s1: {name: 'stretch s₁ (log)', field: 's1', map: 'seq', log: true},
-    errEH: {name: '|ΔE−Δh| (log, diagnostic)', field: 'errEH', map: 'seq', log: true},
-    jacobiDrift: {name: 'Jacobi drift (log)', field: 'jacobiDrift', map: 'seq', log: true},
+     outcome: {name: 'L3 outcome ℓ', desc: 'Fate of each entry state: exit, multi-pass exit, collision, capture until T, or forbidden.'},
+     dE: {
+         name: 'L4 ΔE (= Δh)', field: 'dE', map: 'div',
+         desc: 'Energy change of the inertial orbit across the encounter: the slingshot effect. Blue = loss, red = gain. Equals Δh because the Jacobi constant is conserved.'
+     },
+     dE1: {name: 'ΔE₁ (Kepler about P1)', field: 'dE1', map: 'div', desc: 'Change in Keplerian energy relative to the primary P1 alone.'},
+     sig: {name: 'L7 Hessian signature', post: 'sig', desc: 'Shape of the ΔE landscape over (α, β): minimum-like, maximum-like, saddle, or degenerate (fold).'},
+     detH: {
+         name: 'det H (symlog)', post: 'detH', map: 'div', symlog: true,
+         desc: 'Determinant of the ΔE Hessian on a symmetric-log scale. Zero crossings mark folds of the energy landscape.'
+     },
+     ftle: {
+         name: 'L8 FTLE σ', field: 'ftle', map: 'gray',
+         desc: 'Finite-time Lyapunov exponent: the exponential separation rate of neighbouring entry states. Bright ridges mark separatrices and chaotic sensitivity.'
+     },
+     deltaEff: {name: 'δ_eff', field: 'deltaEff', map: 'div', desc: 'Effective deflection angle: the rotation part of the polar decomposition of the velocity map A.'},
+     tau: {name: 'time of flight τ', field: 'tau', map: 'seq', desc: 'Time spent in the encounter, from entry on Σ_in to the last exit through ρ.'},
+     rPeri: {name: 'periapsis r₂ (log)', field: 'rPeri', map: 'seq', log: true, desc: 'Closest approach to P2 (log₁₀).'},
+     kappaE: {name: 'κ_E (log)', field: 'kappaE', map: 'seq', log: true, desc: 'Normalized sensitivity of ΔE to the entry coordinates (log₁₀).'},
+     s1: {name: 'stretch s₁ (log)', field: 's1', map: 'seq', log: true, desc: 'Largest principal stretch of the velocity map A (log₁₀): how strongly velocity perturbations are amplified.'},
+     errEH: {name: '|ΔE−Δh| (log, diagnostic)', field: 'errEH', map: 'seq', log: true, desc: 'Integration diagnostic: should be near round-off everywhere.'},
+     jacobiDrift: {name: 'Jacobi drift (log)', field: 'jacobiDrift', map: 'seq', log: true, desc: 'Integration diagnostic: drift of the Jacobi constant at exit.'},
 };
 
 function getter(grid, L) {

@@ -9,8 +9,9 @@
  * - click ▾/▸ or double-click the header to collapse / expand
  * - shift + double-click any header to reset the layout
  * - positions, sizes and collapsed states persist in localStorage
+  * - data-width / data-height set default sizes; data-dock="right" docks a panel to the right edge
  */
-const KEY = 'slingshot-field.panels.v1';
+const KEY = 'slingshot-field.panels.v2';
 const MARGIN = 8;
 let panels = [];
 let zTop = 10;
@@ -48,7 +49,7 @@ function build(p) {
             const h = document.createElement('span');
             h.className = 'help';
             h.textContent = '?';
-            h.title = p.dataset.help;
+             h.dataset.tip = p.dataset.help;
             header.appendChild(h);
         }
         const tog = document.createElement('button');
@@ -139,12 +140,21 @@ function clamp(p) {
 function defaultLayout() {
     let x = MARGIN, y = MARGIN, colW = 0;
     for (const p of panels) {
-        p.style.width = p.dataset.width ? `${p.dataset.width}px` : '';
-        p.style.height = '';
+         const dock = p.dataset.dock === 'right';
+         let w0 = p.dataset.width ? +p.dataset.width : 0, h0 = p.dataset.height ? +p.dataset.height : 0;
+         if (dock && w0) w0 = Math.min(w0, Math.max(260, window.innerWidth * 0.55));
+         if (h0) h0 = Math.min(h0, window.innerHeight - 2 * MARGIN);
+         p.style.width = w0 ? `${w0}px` : '';
+         p.style.height = h0 ? `${h0}px` : '';
         setCollapsed(p, p.dataset.collapsed === 'true');
         p.style.left = '0px';
         p.style.top = '0px';
         const w = p.offsetWidth, h = p.offsetHeight;
+         if (dock) {
+             p.style.left = `${Math.max(MARGIN, window.innerWidth - w - MARGIN)}px`;
+             p.style.top = `${MARGIN}px`;
+             continue;
+         }
         if (y > MARGIN && y + h > window.innerHeight - MARGIN) {
             x += colW + MARGIN;
             y = MARGIN;
