@@ -1,0 +1,10 @@
+{
+    "id": "slingshot-field",
+    "title": "Slingshot Field",
+    "pitch": "Gravitational slingshot effect in a rotating field.",
+    "category": "lab",
+    "href": "index.html",
+    "readme": "README.md",
+    "section": "featured",
+    "icon": "SF"
+}

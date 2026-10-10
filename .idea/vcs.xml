@@ -23,6 +23,7 @@
     <mapping directory="$PROJECT_DIR$/numbers/TEL" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/nam-calculator" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/primegen" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/openai-math" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/QQN" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/QQN-Visuals" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/optimization/QQN/qqn-jax" vcs="Git" />

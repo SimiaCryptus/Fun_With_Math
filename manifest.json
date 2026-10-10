@@ -1,8 +1,8 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-08T02:26:36.244Z",
+    "generatedAt": "2026-10-10T00:11:07.771Z",
     "counts": {
-        "lab": 23,
+        "lab": 24,
         "essay": 6,
         "labs": 7
     },
@@ -926,6 +926,23 @@
             "dir": "optimization/QQN/qqn-jax",
             "source": "optimization/QQN/qqn-jax/entry.json",
             "section": "labs"
+        },
+        {
+            "id": "slingshot-field",
+            "title": "Slingshot Field",
+            "pitch": "Gravitational slingshot effect in a rotating field.",
+            "category": "lab",
+            "href": "index.html",
+            "readme": "README.md",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/slingshot-field"
+            },
+            "dir": "experiments/slingshot-field",
+            "source": "experiments/slingshot-field/entry.json",
+            "section": "featured",
+            "icon": "SF"
         }
     ]
 }

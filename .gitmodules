@@ -133,3 +133,6 @@
 	path = experiments/text-block
 	url = https://github.com/Simiacryptus/text-block.git
 	branch = main
+[submodule "openai-math"]
+	path = openai-math
+	url = git@github.com:SimiaCryptus/openai-math.git
