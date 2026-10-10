@@ -1,16 +1,291 @@
-html, body { margin:0; height:100%; background:#0b0d12; color:#ddd; font:12px system-ui, sans-serif; }
-body { display:flex; }
-#panel { width:300px; overflow-y:auto; padding:8px; box-sizing:border-box; border-right:1px solid #222; }
-#panel h1 { font-size:14px; margin:4px 0 8px; }
-fieldset { border:1px solid #2a2f3a; margin:0 0 8px; padding:6px; }
-label { display:block; margin:3px 0; }
-input[type=number], select { width:110px; background:#151922; color:#ddd; border:1px solid #333; }
-input[type=range] { width:100%; }
-button { background:#1d2330; color:#ddd; border:1px solid #384050; padding:3px 6px; cursor:pointer; }
-.row { display:flex; gap:4px; flex-wrap:wrap; margin-top:4px; }
-.info { color:#9aa; font-size:11px; white-space:pre-wrap; }
-pre { font-size:10.5px; white-space:pre-wrap; margin:0; }
-main { flex:1; position:relative; }
-#view { width:100%; height:100%; display:block; }
-.cap { position:absolute; top:4px; color:#889; pointer-events:none; }
-.cap.left { left:8px; } .cap.right { left:calc(50% + 8px); }
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #07080b;
+    color: #ddd;
+    font: 12px system-ui, sans-serif;
+}
+/* ---- full-window canvas behind the floating panels ---- */
+main {
+    position: fixed;
+    inset: 0;
+}
+#view {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.cap {
+    position: absolute;
+    bottom: 6px;
+    color: #778;
+    font-size: 11px;
+    pointer-events: none;
+}
+.cap.left {
+    left: 8px;
+}
+.cap.right {
+    left: calc(50% + 8px);
+}
+
+
+/* ---- floating panels ---- */
+.panel {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 10;
+    max-height: calc(100vh - 16px);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    min-width: 180px;
+    background: rgba(16, 19, 26, 0.95);
+    border: 1px solid #2a2f3a;
+    border-radius: 6px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+}
+
+.panel > header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background: #1a1f2b;
+    border-bottom: 1px solid #262c38;
+    border-radius: 6px 6px 0 0;
+    cursor: move;
+    user-select: none;
+    touch-action: none;
+}
+
+.panel > header.dragging {
+    cursor: grabbing;
+    background: #222a3a;
+}
+
+.panel > header .ttl {
+    flex: 1;
+    font-weight: 600;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.panel > .body {
+    padding: 6px 8px;
+    min-height: 0;
+    overflow: auto;
+}
+
+.panel.collapsed {
+    height: auto !important;
+    min-height: 0 !important;
+    resize: none !important;
+}
+
+.panel.collapsed > .body {
+    display: none;
+}
+
+.panel.collapsed > header {
+    border-bottom: none;
+    border-radius: 6px;
+}
+
+.panel.plot, .panel.resizable {
+    resize: both;
+    overflow: hidden;
+}
+
+.panel.plot {
+    min-width: 260px;
+    min-height: 220px;
+}
+
+.panel.resizable {
+    min-height: 80px;
+}
+
+.panel.plot > .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.panel.resizable > .body {
+    flex: 1;
+    min-height: 0;
+}
+
+.help {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #556;
+    color: #9ab;
+    font-size: 10px;
+    cursor: help;
+    flex: none;
+}
+
+.tog {
+    border: none;
+    background: transparent;
+    padding: 0 4px;
+    font-size: 12px;
+    color: #aab;
+}
+
+.tog:hover {
+    background: transparent;
+    color: #fff;
+}
+
+/* ---- controls ---- */
+label {
+    display: block;
+    margin: 3px 0;
+}
+
+input[type=number], select {
+    width: 110px;
+    background: #151922;
+    color: #ddd;
+    border: 1px solid #333;
+}
+
+input[type=range] {
+    width: 100%;
+}
+
+button {
+    background: #1d2330;
+    color: #ddd;
+    border: 1px solid #384050;
+    padding: 3px 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #273044;
+}
+
+.row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.info {
+    color: #9aa;
+    font-size: 11px;
+    white-space: pre-wrap;
+}
+
+pre {
+    font-size: 10.5px;
+    white-space: pre-wrap;
+    margin: 0;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+    padding: 4px 6px;
+    border-bottom: 1px solid #222;
+}
+
+.toolbar label {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.toolbar select {
+    width: auto;
+    max-width: 190px;
+}
+
+#legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 3px 6px;
+    min-height: 16px;
+    font-size: 11px;
+    color: #9aa;
+    border-bottom: 1px solid #222;
+}
+
+#cbar {
+    flex: 1;
+    min-width: 80px;
+    height: 10px;
+    border: 1px solid #333;
+}
+
+.chip {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 3px;
+    vertical-align: middle;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+/* ---- plot surfaces ---- */
+.viewport {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+}
+
+.viewport canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+/* ---- hover readout ---- */
+#tip {
+    position: fixed;
+    z-index: 100000;
+    display: none;
+    pointer-events: none;
+    padding: 4px 7px;
+    max-width: 360px;
+    background: rgba(0, 0, 0, 0.88);
+    border: 1px solid #445;
+    border-radius: 4px;
+    color: #dde;
+    font: 11px ui-monospace, Menlo, Consolas, monospace;
+    white-space: pre;
+}
+#tip.wrap {
+     white-space: pre-wrap;
+     font: 11.5px system-ui, sans-serif;
+     line-height: 1.35;
+}
+#legend [data-tip], #cbar {
+     cursor: help;
+}

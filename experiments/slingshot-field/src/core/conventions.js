@@ -19,7 +19,7 @@
 export const CORE_VERSION = 1;
 
 export const LABEL = Object.freeze({
-  FORBIDDEN: 0, EXIT: 1, COLLISION: 2, CAPTURED: 3, MULTIPASS: 4, PENDING: 255,
+    FORBIDDEN: 0, EXIT: 1, COLLISION: 2, CAPTURED: 3, MULTIPASS: 4, PENDING: 255,
 });
 
 export const hillRadius = (mu) => Math.cbrt(mu / 3);
