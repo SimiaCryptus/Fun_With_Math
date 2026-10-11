@@ -18,7 +18,7 @@ import {ManifoldView} from './render/manifoldView.js';
 import {colorize, ringColors, SCALAR_LAYERS} from './render/colormaps.js';
 import {installPanels} from './ui/panels.js';
 import {hideTip, installTips, showTip} from './ui/tips.js';
-import {cssColor, onThemeChange, setTheme, storedTheme} from './ui/theme.js';
+import {cssColor, onThemeChange, populateThemeSelect, setTheme} from './ui/theme.js';
 import {renderLegend} from './ui/legend.js';
 import {
     FIELD_DESC, LABEL_DESC, LABEL_SHORT, PRESET_DESC, SHIP_LABEL_DESC, SHIP_LABEL_SHORT, SIG_DESC,
@@ -56,7 +56,7 @@ function applyPalette() {
      man.setBackground(cssColor('--color-plot-bg-2', [0.027, 0.031, 0.043]));
      request();
 }
-$('theme').value = storedTheme();
+populateThemeSelect($('theme'));
 $('theme').onchange = () => setTheme($('theme').value);
 onThemeChange(applyPalette);
 applyPalette();

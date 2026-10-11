@@ -5,12 +5,24 @@
      <meta name="color-scheme" content="dark light"/>
     <title>Momentum-Exchange Fields — CR3BP</title>
      <script>
-         try {
-             const t = localStorage.getItem('slingshot-field.theme');
-             if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
-         } catch (e) { /* storage unavailable */ }
+          // Restore the theme before first paint. Theme ids come from css/themes.js (validated again by
+          // src/ui/theme.js); the scheme ('dark' | 'light') is stored alongside so no import is needed here.
+          (function () {
+              var r = document.documentElement, t = null, s = null;
+              try {
+                  t = localStorage.getItem('slingshot-field.theme');
+                  s = localStorage.getItem('slingshot-field.theme.scheme');
+              } catch (e) { /* storage unavailable */ }
+              if (t && t !== 'system' && (s === 'dark' || s === 'light')) {
+                  r.dataset.theme = t;
+                  r.dataset.scheme = s;
+              } else {
+                  r.dataset.scheme = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+              }
+          })();
      </script>
      <link href="css/themes.css" rel="stylesheet"/>
+      <link href="css/app-tokens.css" rel="stylesheet"/>
     <link href="css/style.css" rel="stylesheet"/>
     <script type="importmap">
         { "imports": {
@@ -123,11 +135,7 @@
 
 <div class="panel" data-title="Physical view" data-width="250" id="p-physical"
      data-help="Display options for the full-window rotating-frame view behind the panels. Hover the view for coordinates, potential and accessibility.">
-     <label data-tip="Colour theme of the interface. 'System' follows the operating-system light/dark preference.">Theme <select id="theme">
-         <option value="system">System</option>
-         <option value="dark">Dark</option>
-         <option value="light">Light</option>
-     </select></label>
+      <label data-tip="Colour theme of the interface (generated themes from css/themes.css). 'System' follows the operating-system light/dark preference.">Theme <select id="theme"></select></label>
     <label data-tip="L0: contour lines of the effective potential Ω(x, y) = ½(x²+y²) + (1−μ)/r₁ + μ/r₂ (logarithmically spaced)."><input checked id="showPot" type="checkbox"> L0 potential</label>
     <label data-tip="L1: zero-velocity curve 2Ω = C (gold line) and the forbidden region 2Ω < C (shaded) that no trajectory can enter at the current Jacobi level."><input checked id="showZvc" type="checkbox"> L1 zero-velocity</label>
     <label data-tip="Colour ring just outside ρ: ΔE reduced over all entry angles β for each entry position α (blue = energy loss, red = energy gain). Encounter mode only."><input checked id="showRing" type="checkbox"> ΔE ring</label>

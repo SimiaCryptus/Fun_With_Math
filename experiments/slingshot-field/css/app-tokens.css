@@ -1,0 +1,40 @@
+/*
+ Hand-maintained tokens that the theme generator (css/theme_design.html → css/themes.css) does not
+ produce: accent, state colours, shadows and the colours read by the WebGL views.
+ They are derived from the generated tokens where possible, and switch on data-scheme
+ (set by src/ui/theme.js and the boot script in index.html from css/themes.js).
+*/
+:root {
+    color-scheme: dark;
+    --color-accent: oklch(68% 0.14 245);
+    --color-accent-strong: oklch(75% 0.15 245);
+    --color-accent-soft: color-mix(in oklab, var(--color-accent) 28%, transparent);
+    --color-on-accent: oklch(16% 0.02 265);
+    --color-danger: oklch(66% 0.19 25);
+    --color-shadow: oklch(0% 0 0 / 0.55);
+    --color-highlight: oklch(100% 0 0 / 0.04);
+    --color-tip-bg: color-mix(in oklab, var(--color-canvas) 90%, transparent);
+
+    /* plot surfaces (CSS) and WebGL palette (read by src/main.js via cssColor) */
+    --color-plot-bg: var(--color-canvas);
+    --color-plot-bg-2: color-mix(in oklab, var(--color-canvas) 75%, black);
+    --color-plot-caption: var(--color-text-faint);
+    --color-plot-line: color-mix(in oklab, var(--color-border-strong) 80%, var(--color-accent));
+    --color-plot-forbid: color-mix(in oklab, var(--color-canvas) 60%, var(--color-border));
+    --color-plot-zvc: oklch(86% 0.13 85);
+}
+
+:root[data-scheme="light"] {
+    color-scheme: light;
+    --color-accent: oklch(52% 0.15 250);
+    --color-accent-strong: oklch(45% 0.16 250);
+    --color-accent-soft: color-mix(in oklab, var(--color-accent) 20%, transparent);
+    --color-on-accent: oklch(99% 0 0);
+    --color-danger: oklch(52% 0.2 25);
+    --color-shadow: oklch(0% 0 0 / 0.18);
+    --color-highlight: oklch(100% 0 0 / 0.5);
+    --color-tip-bg: color-mix(in oklab, var(--color-canvas) 94%, transparent);
+    --color-plot-bg-2: color-mix(in oklab, var(--color-canvas) 85%, white);
+    --color-plot-forbid: color-mix(in oklab, var(--color-canvas) 75%, var(--color-text-faint));
+    --color-plot-zvc: oklch(60% 0.15 65);
+}
