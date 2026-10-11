@@ -5,19 +5,20 @@ import {omega} from '../core/cr3bp.js';
 
 const VS = `varying vec2 vP;
 void main(){ vec4 w = modelMatrix*vec4(position,1.0); vP = w.xy; gl_Position = projectionMatrix*viewMatrix*w; }`;
-const FS = `uniform float mu; uniform float C; uniform float showPot; uniform float showZvc; varying vec2 vP;
+const FS = `uniform float mu; uniform float C; uniform float showPot; uniform float showZvc;
+uniform vec3 uBg; uniform vec3 uLine; uniform vec3 uForbid; uniform vec3 uZvc; varying vec2 vP;
 float Om(vec2 p){ float r1=max(length(p-vec2(-mu,0.0)),1e-6); float r2=max(length(p-vec2(1.0-mu,0.0)),1e-6);
   return 0.5*dot(p,p)+(1.0-mu)/r1+mu/r2; }
 void main(){
-  float o = Om(vP); vec3 col = vec3(0.043,0.051,0.07);
+   float o = Om(vP); vec3 col = uBg;
   float v = log(o)*24.0; float fw = fwidth(v);
   float d = abs(fract(v-0.5)-0.5)/max(fw,1e-6);
   float line = (1.0-min(d,1.0))*(1.0-smoothstep(0.2,0.5,fw));
-  col = mix(col, vec3(0.25,0.35,0.5), showPot*line);
+   col = mix(col, uLine, showPot*line);
   float z = 2.0*o - C;
-  if (z < 0.0) col = mix(col, vec3(0.2,0.2,0.24), 0.85*showZvc);
+   if (z < 0.0) col = mix(col, uForbid, 0.85*showZvc);
   float e = abs(z)/max(fwidth(z),1e-9);
-  col = mix(col, vec3(0.95,0.8,0.4), showZvc*(1.0-min(e,1.0)));
+   col = mix(col, uZvc, showZvc*(1.0-min(e,1.0)));
   gl_FragColor = vec4(col,1.0);
 }`;
 
@@ -33,21 +34,23 @@ float elev(vec2 p){ float d = max(Om(p)-uOmL4,0.0)/max(uOmL1-uOmL4,1e-12); retur
 const TVS = ELEV + `varying vec3 vW;
 void main(){ vec4 w = modelMatrix*vec4(position,1.0); w.z = elev(w.xy); vW = w.xyz; gl_Position = projectionMatrix*viewMatrix*w; }`;
 const TFS = `uniform float C; uniform float showPot; uniform float showZvc;
+uniform vec3 uBg; uniform vec3 uLine; uniform vec3 uForbid; uniform vec3 uZvc;
 ` + ELEV + `varying vec3 vW;
 void main(){
   vec2 p = vW.xy; float o = Om(p);
   float depth = clamp(-vW.z/max(uH*uLmax,1e-12),0.0,1.0);
-  vec3 col = mix(vec3(0.17,0.21,0.31), vec3(0.035,0.045,0.07), sqrt(depth));
+   vec3 hi = min(uBg*2.6 + vec3(0.05,0.06,0.09), vec3(1.0));
+   vec3 col = mix(hi, uBg*0.75, sqrt(depth));
   vec3 cr = cross(dFdx(vW), dFdy(vW)); vec3 n = cr/max(length(cr),1e-30);
   col *= 0.4 + 0.75*abs(dot(n, normalize(vec3(-0.45,-0.55,0.7))));
   float v = log(o)*24.0; float fw = fwidth(v);
   float d = abs(fract(v-0.5)-0.5)/max(fw,1e-6);
   float line = (1.0-min(d,1.0))*(1.0-smoothstep(0.2,0.5,fw));
-  col = mix(col, vec3(0.3,0.42,0.6), showPot*line);
+   col = mix(col, min(uLine*1.2, vec3(1.0)), showPot*line);
   float z = 2.0*o - C;
-  if (z < 0.0) col = mix(col, vec3(0.32,0.30,0.32), 0.6*showZvc);
+   if (z < 0.0) col = mix(col, uForbid*1.5, 0.6*showZvc);
   float e = abs(z)/max(fwidth(z),1e-9);
-  col = mix(col, vec3(0.95,0.8,0.4), showZvc*(1.0-min(e,1.0)));
+   col = mix(col, uZvc, showZvc*(1.0-min(e,1.0)));
   gl_FragColor = vec4(col,1.0);
 }`;
 
@@ -102,6 +105,11 @@ export class PhysicalView extends OrthoView {
         this.uniforms = {
             mu: {value: 0.01}, C: {value: 3}, showPot: {value: 1}, showZvc: {value: 1},
             uOmL4: {value: 1.5}, uOmL1: {value: 1.6}, uH: {value: 0.1}, uLmax: {value: 10}, uDrape: {value: 0},
+             // Raw sRGB values (the shaders write them straight to the framebuffer).
+             uBg: {value: new THREE.Color().setRGB(0.043, 0.051, 0.07)},
+             uLine: {value: new THREE.Color().setRGB(0.25, 0.35, 0.5)},
+             uForbid: {value: new THREE.Color().setRGB(0.2, 0.2, 0.24)},
+             uZvc: {value: new THREE.Color().setRGB(0.95, 0.8, 0.4)},
         };
         this.bg = new THREE.Mesh(new THREE.PlaneGeometry(200, 200),
             new THREE.ShaderMaterial({
@@ -135,6 +143,18 @@ export class PhysicalView extends OrthoView {
     }
 
     // ---- 3D relief
+     /** Theme colours as sRGB triples in [0, 1]: background, potential contours, forbidden shade, zero-velocity curve. */
+     setPalette({bg, line, forbid, zvc}) {
+         const U = this.uniforms;
+         if (bg) {
+             U.uBg.value.setRGB(...bg);
+             this.scene.background.setRGB(bg[0], bg[1], bg[2], THREE.SRGBColorSpace);
+         }
+         if (line) U.uLine.value.setRGB(...line);
+         if (forbid) U.uForbid.value.setRGB(...forbid);
+         if (zvc) U.uZvc.value.setRGB(...zvc);
+     }
+
     /** Canvas that receives the orbit controls, and a callback on every camera change. */
     init3D(canvas, onChange) {
         this.canvas3 = canvas;

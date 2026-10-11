@@ -18,6 +18,7 @@ import {ManifoldView} from './render/manifoldView.js';
 import {colorize, ringColors, SCALAR_LAYERS} from './render/colormaps.js';
 import {installPanels} from './ui/panels.js';
 import {hideTip, installTips, showTip} from './ui/tips.js';
+import {cssColor, onThemeChange, setTheme, storedTheme} from './ui/theme.js';
 import {renderLegend} from './ui/legend.js';
 import {
     FIELD_DESC, LABEL_DESC, LABEL_SHORT, PRESET_DESC, SHIP_LABEL_DESC, SHIP_LABEL_SHORT, SIG_DESC,
@@ -44,6 +45,22 @@ const request = () => {
 };
 const pool = new WorkerPool(new URL('./compute/encounterWorker.js', import.meta.url));
 const cache = new Map();
+// ---- theme
+function applyPalette() {
+     phys.setPalette({
+         bg: cssColor('--color-plot-bg', [0.043, 0.051, 0.07]),
+         line: cssColor('--color-plot-line', [0.25, 0.35, 0.5]),
+         forbid: cssColor('--color-plot-forbid', [0.2, 0.2, 0.24]),
+         zvc: cssColor('--color-plot-zvc', [0.95, 0.8, 0.4]),
+     });
+     man.setBackground(cssColor('--color-plot-bg-2', [0.027, 0.031, 0.043]));
+     request();
+}
+$('theme').value = storedTheme();
+$('theme').onchange = () => setTheme($('theme').value);
+onThemeChange(applyPalette);
+applyPalette();
+
 /**
  * busy: a computation/refinement is running (viewRunning: it is the viewport-locked grid).
  * token: bumps on every start/abort so stale awaits bail out.

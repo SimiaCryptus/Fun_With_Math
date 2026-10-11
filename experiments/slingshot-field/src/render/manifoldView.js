@@ -67,9 +67,14 @@ export class ManifoldView extends OrthoView {
         this.dom = null;
         this.setDomain(FULL_DOMAIN);
     }
+     /** Theme background colour (sRGB triple in [0, 1]). */
+     setBackground(rgb) {
+         if (rgb) this.scene.background.setRGB(rgb[0], rgb[1], rgb[2], THREE.SRGBColorSpace);
+     }
 
-    /** Switch the plotted domain (encounter manifold or burn manifold). Clears image, inset and overlays. */
-    setDomain(d) {
+
+/** Switch the plotted domain (encounter manifold or burn manifold). Clears image, inset and overlays. */
+setDomain(d) {
         this.dom = d;
         place(this.quad, d);
         this.tex?.dispose();

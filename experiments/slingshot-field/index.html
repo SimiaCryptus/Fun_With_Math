@@ -2,7 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
+     <meta name="color-scheme" content="dark light"/>
     <title>Momentum-Exchange Fields — CR3BP</title>
+     <script>
+         try {
+             const t = localStorage.getItem('slingshot-field.theme');
+             if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t;
+         } catch (e) { /* storage unavailable */ }
+     </script>
+     <link href="css/themes.css" rel="stylesheet"/>
     <link href="css/style.css" rel="stylesheet"/>
     <script type="importmap">
         { "imports": {
@@ -69,7 +77,7 @@
     <label data-tip="Impulse magnitude in normalized velocity units (separation × angular rate). Instant and unbudgeted; changing it replots the map.">|Δv| <input id="shipDv" min="0" step="0.01" type="number" value="0.05"></label>
     <label data-tip="Length (in time) of the current path shown along the horizontal axis of the map. 2π = one revolution of the primaries.">Path span <input id="shipSpan" min="0.1" step="0.5" type="number" value="6.2832"></label>
     <div class="row">
-        <button id="shipGo" data-tip="Fly the selected burn: the post-burn orbit becomes the new path and the map is replotted.">Navigate</button>
+         <button class="primary" id="shipGo" data-tip="Fly the selected burn: the post-burn orbit becomes the new path and the map is replotted.">Navigate</button>
         <button id="shipBack" data-tip="Undo the last navigation.">Back</button>
         <button id="shipReset" data-tip="Return to the start orbit.">Reset</button>
         <button id="fitShip" data-tip="Zoom the physical view to the current path.">Fit path</button>
@@ -107,14 +115,19 @@
         <option>1e-12</option>
     </select></label>
     <div class="row">
-        <button id="run" data-tip="Integrate the whole grid at the start resolution. Results are cached per parameter set.">Compute</button>
-        <button id="cancel" data-tip="Abort the running computation or refinement.">Cancel</button>
+         <button class="primary" id="run" data-tip="Integrate the whole grid at the start resolution. Results are cached per parameter set.">Compute</button>
+         <button class="danger" id="cancel" data-tip="Abort the running computation or refinement.">Cancel</button>
     </div>
     <div class="info" id="progress" data-tip="Progress of the current computation, then total time and the number of samples per outcome label.">idle</div>
 </div>
 
 <div class="panel" data-title="Physical view" data-width="250" id="p-physical"
      data-help="Display options for the full-window rotating-frame view behind the panels. Hover the view for coordinates, potential and accessibility.">
+     <label data-tip="Colour theme of the interface. 'System' follows the operating-system light/dark preference.">Theme <select id="theme">
+         <option value="system">System</option>
+         <option value="dark">Dark</option>
+         <option value="light">Light</option>
+     </select></label>
     <label data-tip="L0: contour lines of the effective potential Ω(x, y) = ½(x²+y²) + (1−μ)/r₁ + μ/r₂ (logarithmically spaced)."><input checked id="showPot" type="checkbox"> L0 potential</label>
     <label data-tip="L1: zero-velocity curve 2Ω = C (gold line) and the forbidden region 2Ω < C (shaded) that no trajectory can enter at the current Jacobi level."><input checked id="showZvc" type="checkbox"> L1 zero-velocity</label>
     <label data-tip="Colour ring just outside ρ: ΔE reduced over all entry angles β for each entry position α (blue = energy loss, red = energy gain). Encounter mode only."><input checked id="showRing" type="checkbox"> ΔE ring</label>
@@ -149,7 +162,7 @@
         <button id="bin" data-tip="Download the raw grid: one JSON header line (metadata, field names, dtype), then the outcome labels (Uint8, N²) and the field array (Float32, N² × fields, sample-major).">Export grid</button>
     </div>
     <div class="toolbar">
-        <button id="refine" data-tip="Increase the resolution of the whole map ×3 (capped at 4096²). Samples that coincide with the current grid are reused; the image refines progressively while the rest is computed.">Refine</button>
+         <button class="primary" id="refine" data-tip="Increase the resolution of the whole map ×3 (capped at 4096²). Samples that coincide with the current grid are reused; the image refines progressively while the rest is computed.">Refine</button>
         <label data-tip="Resolution of the viewport-locked refinement grid.">view <select id="viewN">
             <option>128</option>
             <option selected>256</option>
