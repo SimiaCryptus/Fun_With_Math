@@ -53,8 +53,9 @@ export class PhysicalView extends OrthoView {
             }));
         this.markers = new THREE.Group();
         this.ringG = new THREE.Group();
+        this.basisG = new THREE.Group();
         this.trajG = new THREE.Group();
-        this.scene.add(this.bg, this.ringG, this.markers, this.trajG);
+        this.scene.add(this.bg, this.ringG, this.markers, this.basisG, this.trajG);
     }
 
     setSystem(p, lps) {
@@ -140,6 +141,42 @@ export class PhysicalView extends OrthoView {
             this.trajG.add(ar);
         }
     }
+    /** Spaceship mode: the current basis path (dim cyan) with a marker at the ship's state. */
+    setBasis(pts) {
+        clearGroup(this.basisG);
+        if (!pts || pts.length < 2) return;
+        const g = new THREE.BufferGeometry();
+        g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(
+            Array.from({length: pts.length / 2}, (_, i) => [pts[2 * i], pts[2 * i + 1], 0]).flat()), 3));
+        const line = new THREE.Line(g, new THREE.LineBasicMaterial({
+            color: 0x55aacc, transparent: true, opacity: 0.75, depthTest: false
+        }));
+        line.renderOrder = 4;
+        const pg = new THREE.BufferGeometry();
+        pg.setAttribute('position', new THREE.Float32BufferAttribute([pts[0], pts[1], 0], 3));
+        const ship = new THREE.Points(pg, new THREE.PointsMaterial({
+            size: 10, sizeAttenuation: false, color: 0x66ffff, depthTest: false
+        }));
+        ship.renderOrder = 7;
+        this.basisG.add(line, ship);
+    }
+    /** Fit the camera to a polyline [x0, y0, x1, y1, …]. */
+    fitPoints(pts) {
+        if (!pts || pts.length < 2) return;
+        let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+        for (let i = 0; i < pts.length; i += 2) {
+            x0 = Math.min(x0, pts[i]);
+            x1 = Math.max(x1, pts[i]);
+            y0 = Math.min(y0, pts[i + 1]);
+            y1 = Math.max(y1, pts[i + 1]);
+        }
+        const w = Math.max(x1 - x0, 1e-3), h = Math.max(y1 - y0, 1e-3);
+        this.cx = (x0 + x1) / 2;
+        this.cy = (y0 + y1) / 2;
+        this.hh = Math.max(h / 2, w / 2 / this.aspect) * 1.25;
+        this.updateCam();
+    }
+
 
     fitSystem() {
         this.cx = 0;

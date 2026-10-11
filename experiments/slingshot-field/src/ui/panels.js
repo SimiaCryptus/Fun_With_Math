@@ -11,7 +11,7 @@
  * - positions, sizes and collapsed states persist in localStorage
   * - data-width / data-height set default sizes; data-dock="right" docks a panel to the right edge
  */
-const KEY = 'slingshot-field.panels.v2';
+const KEY = 'slingshot-field.panels.v3';
 const MARGIN = 8;
 let panels = [];
 let zTop = 10;

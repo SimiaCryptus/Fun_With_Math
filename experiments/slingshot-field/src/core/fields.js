@@ -2,11 +2,22 @@ import {angMom, gradEnergy, inertialEnergy, inertialVel, jacobi, keplerE1, rhs4}
 import {eigSym2, polar2, rot2} from './linalg.js';
 import {F} from './grid.js';
 
+/** DP = D · ∂s_in/∂ξ (4×2). */
+function projectSeed(D, sJac) {
+    const DP = new Float64Array(8);
+    for (let i = 0; i < 4; i++) for (let k = 0; k < 2; k++) {
+        let s = 0;
+        for (let m = 0; m < 4; m++) s += D[i * 4 + m] * sJac[m * 2 + k];
+        DP[i * 2 + k] = s;
+    }
+    return DP;
+}
+
 /** Crossing-corrected map Jacobian (§8.2 step 5). */
 export function mapJacobian(r, mu, cx = 1 - mu) {
     const y = r.exitY, sOut = [y[0], y[1], y[2], y[3]];
     const f = rhs4(sOut, mu);
-     const dx = sOut[0] - cx, dy = sOut[1], r2 = Math.hypot(dx, dy);
+    const dx = sOut[0] - cx, dy = sOut[1], r2 = Math.hypot(dx, dy);
     const gs0 = dx / r2, gs1 = dy / r2;
     const gf = gs0 * f[0] + gs1 * f[1];
     const gP = [0, 0, 0, 0];
@@ -14,21 +25,23 @@ export function mapJacobian(r, mu, cx = 1 - mu) {
     const D = new Float64Array(16);
     for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) D[i * 4 + j] = y[4 + i * 4 + j] - f[i] * gP[j] / gf;
     const dtau = gP.map((v) => -v / gf);
-    const DP = new Float64Array(8);
-    for (let i = 0; i < 4; i++) for (let k = 0; k < 2; k++) {
-        let s = 0;
-        for (let m = 0; m < 4; m++) s += D[i * 4 + m] * r.sJac[m * 2 + k];
-        DP[i * 2 + k] = s;
-    }
-    return {D, dtau, DP, sOut};
+    return {D, dtau, DP: projectSeed(D, r.sJac), sOut};
+}
+
+/** Fixed-time map Jacobian (spaceship coast to a fixed physical horizon): D = Φ, ∂τ = 0. */
+export function fixedTimeJacobian(r) {
+    const y = r.exitY, sOut = [y[0], y[1], y[2], y[3]];
+    const D = new Float64Array(16);
+    for (let i = 0; i < 16; i++) D[i] = y[4 + i];
+    return {D, dtau: [0, 0, 0, 0], DP: projectSeed(D, r.sJac), sOut};
 }
 
 /** Write all per-sample fields of an exit sample into out[o + F.*]. */
 export function computeFields(r, p, out, o) {
     const {mu, rho} = p;
-     const cx = p.cx ?? 1 - mu;
+    const cx = p.cx ?? 1 - mu;
     const sIn = r.sIn, tau = r.exitY[20];
-     const {D, dtau, DP, sOut} = mapJacobian(r, mu, cx);
+    const {D, dtau, DP, sOut} = r.fixedTime ? fixedTimeJacobian(r) : mapJacobian(r, mu, cx);
 
     const vIin = inertialVel(sIn), vR = inertialVel(sOut), vIout = rot2(tau, vR);
     const Ein = inertialEnergy(sIn, mu), Eout = inertialEnergy(sOut, mu);
@@ -66,7 +79,7 @@ export function computeFields(r, p, out, o) {
     const lam = eigSym2(g00, g01, g11);
     const ftle = tau > 0 ? Math.log(Math.sqrt(Math.max(lam[0], 1e-300))) / tau : NaN;
 
-     const dx = sOut[0] - cx, dy = sOut[1], r2 = Math.hypot(dx, dy);
+    const dx = sOut[0] - cx, dy = sOut[1], r2 = Math.hypot(dx, dy);
     const nx = dx / r2, ny = dy / r2;
     let aOut = Math.atan2(dy, dx);
     if (aOut < 0) aOut += 2 * Math.PI;
@@ -97,6 +110,6 @@ export function computeFields(r, p, out, o) {
     out[o + F.gB] = gB;
     out[o + F.alphaOut] = aOut;
     out[o + F.betaOut] = Math.atan2(-sOut[2] * ny + sOut[3] * nx, sOut[2] * nx + sOut[3] * ny);
-    out[o + F.jacobiDrift] = Math.abs(jacobi(sOut, mu) - p.C);
+    out[o + F.jacobiDrift] = Math.abs(jacobi(sOut, mu) - (r.C ?? p.C));
     out[o + F.nPasses] = r.nPasses;
 }

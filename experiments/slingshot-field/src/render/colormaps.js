@@ -80,7 +80,7 @@ export function computeRange(grid, L) {
 }
 
 /** RGBA8 image (N×N, row j = β index, bottom to top). */
-export function colorize(grid, key) {
+export function colorize(grid, key, rangeOverride = null) {
     const L = SCALAR_LAYERS[key], N = grid.N, rgba = new Uint8Array(N * N * 4);
     let range = null;
     const put = (k, c) => {
@@ -115,7 +115,7 @@ export function colorize(grid, key) {
         }
         return {rgba, range: [lo, hi]};
     }
-    range = computeRange(grid, L);
+    range = rangeOverride ?? computeRange(grid, L);
     const get = getter(grid, L);
     for (let k = 0; k < N * N; k++) {
         const l = grid.label[k], v = get(k);

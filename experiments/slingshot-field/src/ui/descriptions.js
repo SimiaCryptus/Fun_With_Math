@@ -19,6 +19,24 @@ export const LABEL_DESC = {
     [LABEL.MULTIPASS]: 'Multi-pass: exits only after re-entering the ρ circle one or more times. The recorded exit is the last ρ crossing.',
     [LABEL.PENDING]: 'Pending: this sample has not been computed yet.',
 };
+/** Outcome labels re-read for the spaceship burn manifold. */
+export const SHIP_LABEL_SHORT = {
+    ...LABEL_SHORT,
+    [LABEL.FORBIDDEN]: 'n/a',
+    [LABEL.EXIT]: 'coasted to horizon',
+    [LABEL.MULTIPASS]: 'coasted, entered ρ',
+    [LABEL.COLLISION]: 'collision',
+    [LABEL.CAPTURED]: 'step limit',
+};
+export const SHIP_LABEL_DESC = {
+    ...LABEL_DESC,
+    [LABEL.FORBIDDEN]: 'Not used in spaceship mode.',
+    [LABEL.EXIT]: 'After the burn the ship coasts the full horizon T without entering the ρ circle.',
+    [LABEL.MULTIPASS]: 'After the burn the ship coasts the full horizon T and passes inside the ρ circle at least once (an encounter).',
+    [LABEL.COLLISION]: 'The ship hits P1 or P2 after the burn, or the current path itself collides before this burn point.',
+    [LABEL.CAPTURED]: 'The integrator hit its step limit before the horizon (extremely close pass).',
+};
+
 
 export const SIG_DESC = [
     {short: '(+,+)', long: 'Hessian of ΔE positive definite: ΔE is locally bowl-shaped (minimum-like) in (α, β).'},

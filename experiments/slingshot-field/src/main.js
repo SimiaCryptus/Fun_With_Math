@@ -1,12 +1,16 @@
 import {SYSTEMS} from './config/systems.js';
 import {DEFAULTS} from './config/defaults.js';
 import {lagrangePoints} from './core/lagrange.js';
-import {centerOf, CORE_VERSION, hillRadius, isExitLabel, LABEL} from './core/conventions.js';
-import {createGrid, exactParent, F, FIELD_NAMES, nearestIndex, nextN, NF, xiAt} from './core/grid.js';
+import {centerOf, CORE_VERSION, hillRadius, isExitLabel} from './core/conventions.js';
+import {
+    coordAt, createGrid, F, FIELD_NAMES, FULL_DOMAIN, inDomain, nearestIndex, nextN, NF,
+    parentX, parentY, SHIP_DOMAIN, windowDomain,
+} from './core/grid.js';
 import {postprocess} from './core/differential.js';
-import {propagate} from './core/encounter.js';
-import {inertialVel, omega} from './core/cr3bp.js';
+import {propagate, seed} from './core/encounter.js';
+import {inertialEnergy, inertialVel, jacobi, omega} from './core/cr3bp.js';
 import {patchedConicPredict} from './core/patchedConic.js';
+import {applyImpulse, BasisWalker, propagateShip, SHIP_PRESETS, shipPath} from './core/ship.js';
 import {WorkerPool} from './compute/workerPool.js';
 import {ViewRenderer} from './render/renderer.js';
 import {PhysicalView} from './render/physicalView.js';
@@ -15,14 +19,16 @@ import {colorize, ringColors, SCALAR_LAYERS} from './render/colormaps.js';
 import {installPanels} from './ui/panels.js';
 import {hideTip, installTips, showTip} from './ui/tips.js';
 import {renderLegend} from './ui/legend.js';
-import {FIELD_DESC, LABEL_DESC, LABEL_SHORT, PRESET_DESC, SIG_DESC} from './ui/descriptions.js';
+import {
+    FIELD_DESC, LABEL_DESC, LABEL_SHORT, PRESET_DESC, SHIP_LABEL_DESC, SHIP_LABEL_SHORT, SIG_DESC,
+} from './ui/descriptions.js';
 
 const $ = (id) => document.getElementById(id);
 const TWO_PI = 2 * Math.PI;
 const deg = (r) => ((r * 180) / Math.PI).toFixed(2);
-const LABEL_NAME = Object.fromEntries(Object.entries(LABEL).map(([k, v]) => [v, k.toLowerCase()]));
 const CENTER_NAME = {secondary: 'P2', primary: 'P1', barycentre: 'the barycentre'};
-const PARAM_IDS = ['mu', 'Lkm', 'R1km', 'R2km', 'center', 'rhoFactor', 'kFar', 'N', 'T', 'rtol'];
+const PARAM_IDS = ['mu', 'Lkm', 'R1km', 'R2km', 'center', 'rhoFactor', 'kFar', 'N', 'T', 'rtol',
+    'mode', 'shipPreset', 'shipDv', 'shipSpan', 'viewN'];
 
 installPanels();
 installTips();
@@ -35,8 +41,19 @@ const request = () => {
 };
 const pool = new WorkerPool(new URL('./compute/encounterWorker.js', import.meta.url));
 const cache = new Map();
-/** busy: a computation/refinement is running. token: bumps on every start/abort so stale awaits bail out. */
-const S = {grid: null, key: null, lps: null, sel: null, traj: false, busy: false, token: 0};
+/**
+ * busy: a computation/refinement is running (viewRunning: it is the viewport-locked grid).
+ * token: bumps on every start/abort so stale awaits bail out.
+ * view: viewport-locked refinement grid (or null). ship: {s0, origin} in spaceship mode.
+ */
+const S = {
+    grid: null, view: null, key: null, lps: null, sel: null, traj: false, busy: false, viewRunning: false, token: 0,
+    mode: 'encounter', ship: null, shipHist: [], basisPts: null,
+};
+const isShip = () => S.mode === 'ship';
+const labelTables = () => (isShip()
+    ? {short: SHIP_LABEL_SHORT, desc: SHIP_LABEL_DESC}
+    : {short: LABEL_SHORT, desc: LABEL_DESC});
 
 for (const [k, s] of Object.entries(SYSTEMS)) $('system').add(new Option(s.name, k));
 $('system').add(new Option('Custom', 'custom'));
@@ -46,10 +63,11 @@ for (const [k, L] of Object.entries(SCALAR_LAYERS)) {
     $('scalar').add(o);
 }
 $('scalar').value = 'dE';
+for (const [k, s] of Object.entries(SHIP_PRESETS)) $('shipPreset').add(new Option(s.name, k));
 
 function updateScalarTip() {
     const L = SCALAR_LAYERS[$('scalar').value];
-    $('scalar').dataset.tip = `Which per-sample quantity colours the (α, β) map.\n\nCurrent — ${L.name}: ${L.desc}`;
+    $('scalar').dataset.tip = `Which per-sample quantity colours the map.\n\nCurrent — ${L.name}: ${L.desc}`;
 }
 
 // ---- system parameters
@@ -69,6 +87,11 @@ function validate() {
     if (!(R1 >= 0) || !(R2 >= 0)) return 'radii must be ≥ 0';
     if (!(+$('rhoFactor').value > 0)) return 'ρ / r_H must be > 0';
     if (!(+$('kFar').value > 1)) return 'k_far must be > 1';
+    if (!(+$('T').value > 0)) return 'T must be > 0';
+    if (isShip()) {
+        if (!(+$('shipDv').value >= 0)) return '|Δv| must be ≥ 0';
+        if (!(+$('shipSpan').value > 0)) return 'path span must be > 0';
+    }
     return null;
 }
 
@@ -76,12 +99,20 @@ function params() {
     const mu = +$('mu').value, L = +$('Lkm').value, center = $('center').value;
     const {cx, m} = centerOf(center, mu);
     const rho = hillRadius(mu) * +$('rhoFactor').value;
-    return {
-        system: $('system').value, mu, L, R1: +$('R1km').value / L, Rbody: +$('R2km').value / L,
+    const p = {
+        system: $('system').value, mode: 'encounter', dom: FULL_DOMAIN,
+        mu, L, R1: +$('R1km').value / L, Rbody: +$('R2km').value / L,
         center, cx, mc: m,
         C: +$('Cnum').value, rho, rhoFar: rho * +$('kFar').value,
         T: +$('T').value, rtol: +$('rtol').value, atol: +$('rtol').value, N: +$('N').value,
     };
+    if (isShip() && S.ship) {
+        p.mode = 'ship';
+        p.dom = SHIP_DOMAIN;
+        p.C = jacobi(S.ship.s0, mu);
+        p.ship = {s0: Array.from(S.ship.s0), dv: +$('shipDv').value, span: +$('shipSpan').value};
+    }
+    return p;
 }
 
 function cPreset(name) {
@@ -96,22 +127,74 @@ function setC(C, live = true) {
     if (live) RP.request();
 }
 
+// ---- spaceship state
+function resetShipState() {
+    const mu = +$('mu').value;
+    let key = $('shipPreset').value;
+    if (!SHIP_PRESETS[key]) key = Object.keys(SHIP_PRESETS)[0];
+    S.ship = {s0: SHIP_PRESETS[key].make(mu), origin: SHIP_PRESETS[key].name};
+    S.shipHist = [];
+}
+
+/** Show/hide mode-specific UI and switch the manifold domain. */
+function syncMode() {
+    const ship = isShip(), dom = ship ? SHIP_DOMAIN : FULL_DOMAIN;
+    $('p-ship').style.display = ship ? '' : 'none';
+    for (const id of ['C', 'Cnum', 'Cpreset']) $(id).disabled = ship;
+    if (man.dom !== dom) {
+        S.grid = null;
+        S.view = null;
+        man.setDomain(dom);
+        if (phys.p) phys.setRing(null, 0, false);
+    }
+    const ttl = document.querySelector('#p-manifold .ttl');
+    if (ttl) ttl.textContent = ship ? 'Burn manifold (t along path, θ)' : 'Encounter manifold (α, β)';
+    if (!ship) {
+        S.basisPts = null;
+        phys.setBasis(null);
+    }
+    updateButtons();
+}
+
+/** Recompute the basis path, C and the ship readout. */
+function updateShip() {
+    if (!isShip() || !S.ship) {
+        S.basisPts = null;
+        phys.setBasis(null);
+        $('shipInfo').textContent = '';
+        updateButtons();
+        return;
+    }
+    const p = params(), s = S.ship.s0;
+    setC(p.C, false);
+    S.basisPts = shipPath(s, p);
+    phys.setBasis(S.basisPts);
+    $('shipInfo').textContent =
+        `${S.ship.origin}\n` +
+        `(x, y) = (${s[0].toFixed(5)}, ${s[1].toFixed(5)})\n` +
+        `(ẋ, ẏ) = (${s[2].toFixed(5)}, ${s[3].toFixed(5)})\n` +
+        `C = ${p.C.toFixed(6)}   E = ${inertialEnergy(s, p.mu).toFixed(6)}\n` +
+        `burns flown: ${S.shipHist.length}`;
+    updateButtons();
+    RP.request();
+}
+
 /** Re-derive everything that depends on the system parameters. Returns false if they are invalid. */
-function onSystem(keepC) {
+function onSystem(keepC, resetShip = false) {
     const err = validate();
     if (err) {
         $('muInfo').textContent = `⚠ ${err}`;
         return false;
     }
-    const p = params();
-    S.lps = lagrangePoints(p.mu);
+    const p0 = params();
+    S.lps = lagrangePoints(p0.mu);
     const [L1, L2, L3] = S.lps;
-    const cBodyR = p.center === 'primary' ? p.R1 : p.center === 'secondary' ? p.Rbody : 0;
+    const cBodyR = p0.center === 'primary' ? p0.R1 : p0.center === 'secondary' ? p0.Rbody : 0;
     $('muInfo').textContent =
-        `r_H = ${hillRadius(p.mu).toExponential(4)}  ρ = ${p.rho.toExponential(4)}\n` +
-        `R₁ = ${p.R1.toExponential(3)}  R₂ = ${p.Rbody.toExponential(3)}  (units of L)\n` +
-        `Σ centred on ${CENTER_NAME[p.center]} at x = ${p.cx.toFixed(6)}` +
-        (cBodyR >= p.rho ? '\n⚠ ρ lies inside the central body: every entry collides' : '');
+        `r_H = ${hillRadius(p0.mu).toExponential(4)}  ρ = ${p0.rho.toExponential(4)}\n` +
+        `R₁ = ${p0.R1.toExponential(3)}  R₂ = ${p0.Rbody.toExponential(3)}  (units of L)\n` +
+        `Σ centred on ${CENTER_NAME[p0.center]} at x = ${p0.cx.toFixed(6)}` +
+        (cBodyR >= p0.rho ? '\n⚠ ρ lies inside the central body: every entry collides' : '');
     $('Cticks').textContent = `C_L1 = ${L1.C.toFixed(5)}  C_L2 = ${L2.C.toFixed(5)}\nC_L3 = ${L3.C.toFixed(5)}  C_L4,5 = ${S.lps[3].C.toFixed(5)}`;
     $('C').min = L3.C - 0.05;
     $('C').max = L1.C + 0.05;
@@ -123,9 +206,13 @@ function onSystem(keepC) {
         tips.push(`${o.text} (C = ${c.toFixed(5)}): ${PRESET_DESC[o.value]}`);
     }
     $('Cpreset').dataset.tip = `Jacobi-level presets. Picking one sets C and recomputes.\n\n${tips.join('\n\n')}`;
-    if (!keepC) setC(cPreset('l1open'), false);
-    phys.setSystem(params(), S.lps);
-    phys.fitCircle();
+    if (isShip()) {
+        if (resetShip || !S.ship) resetShipState();
+    } else if (!keepC) setC(cPreset('l1open'), false);
+    const p = params();
+    phys.setSystem(p, S.lps);
+    updateShip();
+    if (isShip() && S.basisPts) phys.fitPoints(S.basisPts); else phys.fitCircle();
     request();
     return true;
 }
@@ -144,6 +231,9 @@ function readHash() {
     for (const id of PARAM_IDS) if (q.has(id)) $(id).value = q.get(id);
     if (!$('N').value) $('N').value = String(DEFAULTS.N);
     if (!$('center').value) $('center').value = DEFAULTS.center;
+    if (!$('mode').value) $('mode').value = 'encounter';
+    if (!$('shipPreset').value) $('shipPreset').value = Object.keys(SHIP_PRESETS)[0];
+    if (!$('viewN').value) $('viewN').value = '256';
     if (q.has('layer') && SCALAR_LAYERS[q.get('layer')]) $('scalar').value = q.get('layer');
     return q.has('C') ? +q.get('C') : null;
 }
@@ -152,7 +242,7 @@ function readHash() {
 let refreshTimer = null;
 const scheduleRefresh = () => {
     if (refreshTimer) return;
-    const N = S.grid?.N ?? 0;
+    const N = Math.max(S.grid?.N ?? 0, S.view?.N ?? 0);
     refreshTimer = setTimeout(() => {
         refreshTimer = null;
         refresh();
@@ -165,13 +255,18 @@ function refresh() {
     const key = $('scalar').value;
     const {rgba, range} = colorize(g, key);
     man.setImage(rgba, g.N);
-    renderLegend($('legend'), key, range);
+    if (S.view) {
+        // Same colour scale as the base map, so the inset blends in.
+        const v = colorize(S.view, key, range);
+        man.setInset(v.rgba, S.view.N, S.view.dom);
+    } else man.clearInset();
+    renderLegend($('legend'), key, range, labelTables());
     man.setOverlays(g, {
         quiver: $('showQuiver').checked,
         stream: $('showStream').checked,
         glyph: $('showGlyph').checked
-    });
-    phys.setRing(ringColors(g, $('ringReduce').value), g.N, $('showRing').checked);
+    }, S.view);
+    phys.setRing(isShip() ? null : ringColors(g, $('ringReduce').value), g.N, $('showRing').checked);
     request();
 }
 
@@ -186,14 +281,20 @@ function updateButtons() {
     const g = S.grid, nx = g?.complete ? nextN(g.N) : null;
     $('refine').disabled = S.busy || !nx;
     $('refine').textContent = nx ? `Refine → ${nx}²` : g?.complete ? 'Refine (max)' : 'Refine';
+    $('refineView').disabled = S.busy || !g?.complete;
+    $('dismissView').disabled = !S.view;
     $('run').disabled = S.busy;
     $('cancel').disabled = !S.busy;
+    $('shipGo').disabled = !isShip() || !S.sel || !g;
+    $('shipBack').disabled = !isShip() || !S.shipHist.length;
+    $('toShip').disabled = isShip() || !S.sel || !g;
 }
 
 function abortRunning() {
     if (!S.busy) return;
     S.token++;
     S.busy = false;
+    S.viewRunning = false;
     pool.cancel();
 }
 
@@ -203,19 +304,31 @@ function cacheSet(key, g) {
     while (cache.size > 3) cache.delete(cache.keys().next().value);
 }
 
-/** Fill a fine grid from the nearest sample of a coarse one (exact where nodes coincide; a preview elsewhere). */
+/** Fill a fine grid from the nearest sample of a coarse one over the same domain (exact where nodes coincide). */
 function inheritFrom(g, parent) {
-    const N = g.N, No = parent.N, src = parent.data, dst = g.data, ls = parent.label, ld = g.label;
+    const N = g.N, No = parent.N, dom = g.dom, src = parent.data, dst = g.data, ls = parent.label, ld = g.label;
     const io = new Int32Array(N);
-    for (let i = 0; i < N; i++) io[i] = Math.round((i * No) / N) % No;
+    for (let i = 0; i < N; i++) {
+        io[i] = dom.xNodes ? Math.round((i * No) / N) % No : Math.min(No - 1, Math.floor(((i + 0.5) * No) / N));
+    }
     for (let j = 0; j < N; j++) {
         const jo = Math.min(No - 1, Math.floor(((j + 0.5) * No) / N));
         for (let i = 0; i < N; i++) {
             const k = j * N + i, ko = jo * No + io[i];
             ld[k] = ls[ko];
-            const s = ko * NF, t = k * NF;
-            for (let f = 0; f < NF; f++) dst[t + f] = src[s + f];
+            dst.set(src.subarray(ko * NF, ko * NF + NF), k * NF);
         }
+    }
+}
+
+/** Preview of a window grid from the nearest base sample (any domains). */
+function previewFrom(g, base) {
+    const N = g.N;
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+        const [a, b] = coordAt(i, j, N, g.dom), [io, jo] = nearestIndex(a, b, base.N, base.dom);
+        const k = j * N + i, ko = jo * base.N + io;
+        g.label[k] = base.label[ko];
+        g.data.set(base.data.subarray(ko * NF, ko * NF + NF), k * NF);
     }
 }
 
@@ -235,21 +348,22 @@ function merge(g, job, d) {
     }
 }
 
-/** Run all tiles of g (skipping samples reused exactly from parent). */
-async function runGrid(g, parent, key) {
+/** Run all tiles of g (skipping samples reused exactly from parent). view: g is the viewport-locked grid. */
+async function runGrid(g, parent, key, {view = false} = {}) {
     const token = ++S.token;
     S.busy = true;
+    S.viewRunning = view;
     g.key = key;
-    const N = g.N, rows = Math.max(1, Math.floor(2048 / N)), jobs = [];
+    const N = g.N, dom = g.dom, rows = Math.max(1, Math.floor(2048 / N)), jobs = [];
     let total = 0;
-    const colOk = parent ? Uint8Array.from({length: N}, (_, i) => ((i * parent.N) % N === 0 ? 1 : 0)) : null;
+    const colOk = parent ? Uint8Array.from({length: N}, (_, i) => (parentX(i, N, parent.N, dom) >= 0 ? 1 : 0)) : null;
     for (let j0 = 0; j0 < N; j0 += rows) {
         const j1 = Math.min(N, j0 + rows);
         let mask = null, count = (j1 - j0) * N;
         if (parent) {
             mask = new Uint8Array(count).fill(1);
             for (let j = j0; j < j1; j++) {
-                if (exactParent(0, j, N, parent.N) < 0) continue;
+                if (parentY(j, N, parent.N) < 0) continue;
                 for (let i = 0; i < N; i++) if (colOk[i]) {
                     mask[(j - j0) * N + i] = 0;
                     count--;
@@ -263,9 +377,9 @@ async function runGrid(g, parent, key) {
     jobs.sort((a, b) => Math.abs(a.j0 - N / 2) - Math.abs(b.j0 - N / 2));
     const byId = new Map(jobs.map((j) => [j.tileId, j]));
     const reused = N * N - total;
-    const what = parent ? `refine ${parent.N}² → ${N}²` : `compute ${N}²`;
+    const what = view ? `view ${N}²` : parent ? `refine ${parent.N}² → ${N}²` : `compute ${N}²`;
     const suffix = reused ? ` (${reused} reused)` : '';
-    S.grid = g;
+    if (view) S.view = g; else S.grid = g;
     updateButtons();
     refresh();
     setProgress(0, `${what}: 0%${suffix}`);
@@ -280,22 +394,23 @@ async function runGrid(g, parent, key) {
     });
     if (token !== S.token) return; // superseded by a newer computation
     S.busy = false;
+    S.viewRunning = false;
     if (!ok) {
-        if (parent) S.grid = parent;
-        setProgress(0, parent ? `refinement cancelled (kept ${parent.N}²)` : 'cancelled');
+        if (view) S.view = null; else if (parent) S.grid = parent;
+        setProgress(0, view ? 'view refinement cancelled' : parent ? `refinement cancelled (kept ${parent.N}²)` : 'cancelled');
         refresh();
         updateButtons();
         return;
     }
     postprocess(g);
     g.complete = true;
-    cacheSet(key, g);
+    if (!view) cacheSet(key, g);
     refresh();
     updateButtons();
-    const counts = {};
+    const counts = {}, names = labelTables().short;
     for (const l of g.label) counts[l] = (counts[l] || 0) + 1;
-    setProgress(1, `${N}² done in ${((performance.now() - t0) / 1000).toFixed(1)} s${suffix}\n` +
-        Object.entries(counts).map(([l, c]) => `${LABEL_NAME[l]}: ${c}`).join('  '));
+    setProgress(1, `${what} done in ${((performance.now() - t0) / 1000).toFixed(1)} s${suffix}\n` +
+        Object.entries(counts).map(([l, c]) => `${names[l]}: ${c}`).join('  '));
     if (S.sel) pickAt(S.sel.a, S.sel.b);
 }
 
@@ -304,6 +419,24 @@ function clearSelection() {
     S.traj = false;
     phys.setTrajectory(null);
     man.setCross(null);
+    updateButtons();
+}
+
+/** Remove the viewport-locked grid (and optionally zoom back out). */
+function dismissView(fit = true) {
+    if (S.busy && S.viewRunning) {
+        abortRunning();
+        setProgress(0, 'view refinement cancelled');
+    }
+    const had = !!S.view;
+    S.view = null;
+    man.clearInset();
+    if (fit) {
+        man.fit();
+        RM.request();
+    }
+    if (had) refresh();
+    updateButtons();
 }
 
 async function compute() {
@@ -312,6 +445,7 @@ async function compute() {
         setProgress(0, `invalid parameters: ${err}`);
         return;
     }
+    dismissView(false);
     abortRunning();
     const p = params();
     writeHash();
@@ -356,6 +490,55 @@ async function refine() {
     await runGrid(g, parent, parent.key ?? S.key);
 }
 
+/** Compute a grid locked to the currently visible window of the manifold. */
+async function refineView() {
+    if (S.busy) return;
+    const base = S.grid;
+    if (!base?.complete) return;
+    const b = man.viewBounds(), d = base.dom;
+    const x0 = Math.max(d.x0, b.x0), x1 = Math.min(d.x1, b.x1), y0 = Math.max(d.y0, b.y0), y1 = Math.min(d.y1, b.y1);
+    if (!(x1 > x0 && y1 > y0)) {
+        setProgress(0, 'the view does not overlap the map');
+        return;
+    }
+    if ((x1 - x0) / (d.x1 - d.x0) > 0.98 && (y1 - y0) / (d.y1 - d.y0) > 0.98) {
+        setProgress(0, 'zoom in first (use “Refine” for the whole map)');
+        return;
+    }
+    const g = createGrid({...base.meta, N: +$('viewN').value, dom: windowDomain(x0, x1, y0, y1)});
+    previewFrom(g, base);
+    await runGrid(g, null, null, {view: true});
+}
+
+// ---- spaceship navigation
+function basisStateAt(p, x) {
+    return new BasisWalker(p.ship.s0, p).at(Math.max(0, (x / TWO_PI) * p.ship.span));
+}
+
+function navigate() {
+    if (!isShip() || !S.sel || !S.grid) return;
+    const p = S.grid.meta, sb = basisStateAt(p, S.sel.a);
+    if (!sb) {
+        setProgress(0, 'the current path collides before that burn point');
+        return;
+    }
+    const t = (S.sel.a / TWO_PI) * p.ship.span;
+    const {sPost} = applyImpulse(sb, S.sel.b, p.ship.dv, p.mu);
+    S.shipHist.push(S.ship);
+    S.ship = {s0: sPost, origin: `after burn at t = ${t.toFixed(3)}, θ = ${deg(S.sel.b)}°, |Δv| = ${p.ship.dv}`};
+    clearSelection();
+    updateShip();
+    compute();
+}
+
+function shipBack() {
+    if (!isShip() || !S.shipHist.length) return;
+    S.ship = S.shipHist.pop();
+    clearSelection();
+    updateShip();
+    compute();
+}
+
 // ---- selection / inspector
 /** Inspector rows: [text, tooltip]. */
 function setInspector(rows) {
@@ -369,27 +552,58 @@ function setInspector(rows) {
     }
 }
 
-function pickIndex(i, j) {
-    const g = S.grid;
+/** The grid that covers (a, b): the locked view if it contains the point, else the base grid. */
+function gridAt(a, b) {
+    if (S.view && inDomain(S.view.dom, a, b)) return S.view;
+    return S.grid;
+}
+
+function pickIndex(g, i, j) {
     if (!g) return;
-    const [a, b] = xiAt(i, j, g.N), p = g.meta, k = j * g.N + i;
+    const [a, b] = coordAt(i, j, g.N, g.dom), p = g.meta, k = j * g.N + i;
+    const tables = labelTables(), inView = g === S.view;
     S.sel = {a, b};
-    const r = propagate(a, b, p, {withSTM: false, record: true});
     man.setCross(a, b);
-    if (r.sIn) {
-        const vIn = {at: r.sIn, v: inertialVel(r.sIn)};
-        const vOut = r.exitY ? {at: [r.exitY[0], r.exitY[1]], v: inertialVel(r.exitY)} : null;
-        phys.setTrajectory({pts: r.traj}, vIn, vOut);
-        S.traj = true;
+    let rows;
+    if (p.mode === 'ship') {
+        const t = (a / TWO_PI) * p.ship.span, sb = basisStateAt(p, a);
+        const r = sb ? propagateShip(sb, b, p, {withSTM: false, record: true}) : null;
+        if (r) {
+            phys.setTrajectory({pts: r.traj}, {at: r.sIn, v: inertialVel(r.sIn)},
+                r.exitY ? {at: [r.exitY[0], r.exitY[1]], v: inertialVel(r.exitY)} : null);
+            S.traj = true;
+        } else {
+            phys.setTrajectory(null);
+            S.traj = false;
+        }
+        rows = [
+            [`t = ${t.toFixed(4)}  θ = ${deg(b)}°`, 'Burn point: time along the current path, and impulse direction θ from the rotating-frame velocity (0° prograde, ±180° retrograde, +90° to the left).'],
+            [`node (${i}, ${j}) of ${g.N}²${inView ? ' (locked view)' : ''}${g.complete ? '' : ' (computing)'}`, 'Grid index. Arrow keys step the selection: ←/→ along the path, ↑/↓ in θ. Hold shift for larger steps.'],
+            [`label = ${tables.short[g.label[k]]}`, tables.desc[g.label[k]]],
+        ];
+        if (r && sb) rows.push(
+            [`Δv_R         (${(r.sIn[2] - sb[2]).toPrecision(4)}, ${(r.sIn[3] - sb[3]).toPrecision(4)})`, 'Impulse vector in rotating-frame components.'],
+            [`ΔE_burn      ${(inertialEnergy(r.sIn, p.mu) - inertialEnergy(sb, p.mu)).toPrecision(6)}`, 'Inertial energy added directly by the impulse (the field ΔE below is the gravitational exchange during the coast).'],
+            [`C_after      ${r.C.toFixed(6)}`, 'Jacobi constant of the post-burn orbit.'],
+        );
+        if (!sb) rows.push(['current path collides before this point', 'No burn is possible after the basis trajectory has hit a body.']);
     } else {
-        phys.setTrajectory(null);
-        S.traj = false;
+        const r = propagate(a, b, p, {withSTM: false, record: true});
+        if (r.sIn) {
+            const vIn = {at: r.sIn, v: inertialVel(r.sIn)};
+            const vOut = r.exitY ? {at: [r.exitY[0], r.exitY[1]], v: inertialVel(r.exitY)} : null;
+            phys.setTrajectory({pts: r.traj}, vIn, vOut);
+            S.traj = true;
+        } else {
+            phys.setTrajectory(null);
+            S.traj = false;
+        }
+        rows = [
+            [`α = ${deg(a)}°  β = ${deg(b)}°`, 'Nearest grid node. α = entry position angle on the ρ circle about its centre (from +x); β = entry velocity angle from the inward normal (β > 0 prograde).'],
+            [`node (${i}, ${j}) of ${g.N}²${inView ? ' (locked view)' : ''}${g.complete ? '' : ' (computing)'}`, 'Grid index. Arrow keys step the selection: ←/→ in α, ↑/↓ in β. Hold shift for larger steps.'],
+            [`label = ${tables.short[g.label[k]]}`, tables.desc[g.label[k]]],
+        ];
     }
-    const rows = [
-        [`α = ${deg(a)}°  β = ${deg(b)}°`, 'Nearest grid node. α = entry position angle on the ρ circle about its centre (from +x); β = entry velocity angle from the inward normal (β > 0 prograde).'],
-        [`node (${i}, ${j}) of ${g.N}²${g.complete ? '' : ' (computing)'}`, 'Grid index. Arrow keys step the selection: ←/→ in α (wrapping), ↑/↓ in β. Hold shift for larger steps.'],
-        [`label = ${LABEL_NAME[g.label[k]]}`, LABEL_DESC[g.label[k]]],
-    ];
     for (let f = 0; f < NF; f++) {
         const v = g.data[k * NF + f];
         if (Number.isFinite(v)) rows.push([`${FIELD_NAMES[f].padEnd(12)} ${v.toPrecision(6)}`, FIELD_DESC[FIELD_NAMES[f]]]);
@@ -398,22 +612,27 @@ function pickIndex(i, j) {
         const v = g.post[n][k];
         if (Number.isFinite(v)) rows.push([`${n.padEnd(12)} ${v.toPrecision(6)}`, FIELD_DESC[n]]);
     }
-    const pc = patchedConicPredict(a, b, p);
-    if (pc) rows.push(
-        ['— patched conic —', 'Classical two-body prediction about the circle centre for the same entry state, with the centre velocity frozen at the entry instant. Compare it with the full CR3BP values above.'],
-        [`δ_pc         ${pc.delta.toPrecision(6)}`, 'Patched-conic deflection of the relative velocity, signed by the sense of the flyby: sin(δ/2) = 1/√(1 + b²u⁴/μ²).'],
-        [`ΔE_pc        ${pc.dE.toPrecision(6)}`, 'Patched-conic energy change V_c · Δv.'],
-        [`b            ${pc.b.toPrecision(6)}`, 'Impact parameter of the relative velocity about the circle centre.'],
-    );
+    if (p.mode === 'ship') {
+        rows.push(['— press Navigate to fly this burn —', 'The post-burn orbit becomes your new path and the map is replotted around it.']);
+    } else {
+        const pc = patchedConicPredict(a, b, p);
+        if (pc) rows.push(
+            ['— patched conic —', 'Classical two-body prediction about the circle centre for the same entry state, with the centre velocity frozen at the entry instant. Compare it with the full CR3BP values above.'],
+            [`δ_pc         ${pc.delta.toPrecision(6)}`, 'Patched-conic deflection of the relative velocity, signed by the sense of the flyby: sin(δ/2) = 1/√(1 + b²u⁴/μ²).'],
+            [`ΔE_pc        ${pc.dE.toPrecision(6)}`, 'Patched-conic energy change V_c · Δv.'],
+            [`b            ${pc.b.toPrecision(6)}`, 'Impact parameter of the relative velocity about the circle centre.'],
+        );
+    }
     setInspector(rows);
+    updateButtons();
     request();
 }
 
-function pickAt(alpha, beta) {
-    const g = S.grid;
+function pickAt(a, b) {
+    const g = gridAt(a, b);
     if (!g) return;
-    const [i, j] = nearestIndex(alpha, beta, g.N);
-    pickIndex(i, j);
+    const [i, j] = nearestIndex(a, b, g.N, g.dom);
+    pickIndex(g, i, j);
 }
 
 window.addEventListener('keydown', (e) => {
@@ -423,11 +642,13 @@ window.addEventListener('keydown', (e) => {
     const d = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1]}[e.key];
     if (!d) return;
     e.preventDefault();
-    const N = S.grid.N, [i, j] = nearestIndex(S.sel.a, S.sel.b, N);
+    const g = gridAt(S.sel.a, S.sel.b), N = g.N, [i, j] = nearestIndex(S.sel.a, S.sel.b, N, g.dom);
     const step = e.shiftKey ? Math.max(1, Math.round(N / 32)) : 1;
-    const ni = (((i + d[0] * step) % N) + N) % N;
+    const ni = g.dom.periodicX
+        ? (((i + d[0] * step) % N) + N) % N
+        : Math.min(N - 1, Math.max(0, i + d[0] * step));
     const nj = Math.min(N - 1, Math.max(0, j + d[1] * step));
-    pickIndex(ni, nj);
+    pickIndex(g, ni, nj);
 });
 
 function ringValue(g, i, mode) {
@@ -446,15 +667,22 @@ function ringValue(g, i, mode) {
 // ---- hover readouts
 function manifoldTip(e, h) {
     const [a, b] = man.toWorld(h.u, h.v);
-    if (!(a >= 0 && a < TWO_PI && Math.abs(b) < Math.PI / 2)) {
+    if (!inDomain(man.dom, a, b)) {
         hideTip();
         return;
     }
-    const lines = [`α = ${deg(a)}°  (entry position on the ρ circle)`, `β = ${deg(b)}°  (entry angle from inward normal${b > 0 ? ', prograde' : b < 0 ? ', retrograde' : ''})`];
-    const g = S.grid;
+    let lines;
+    if (isShip()) {
+        const span = S.grid?.meta.ship?.span ?? +$('shipSpan').value;
+        lines = [`t = ${((a / TWO_PI) * span).toFixed(4)}  (time along the current path)`,
+            `θ = ${deg(b)}°  (impulse direction from velocity${Math.abs(b) < 0.1 ? ', prograde' : Math.abs(b) > 3.04 ? ', retrograde' : ''})`];
+    } else {
+        lines = [`α = ${deg(a)}°  (entry position on the ρ circle)`, `β = ${deg(b)}°  (entry angle from inward normal${b > 0 ? ', prograde' : b < 0 ? ', retrograde' : ''})`];
+    }
+    const g = gridAt(a, b);
     if (g) {
-        const [i, j] = nearestIndex(a, b, g.N), k = j * g.N + i, l = g.label[k];
-        lines.push(`outcome: ${LABEL_SHORT[l]}`);
+        const [i, j] = nearestIndex(a, b, g.N, g.dom), k = j * g.N + i, l = g.label[k];
+        lines.push(`outcome: ${labelTables().short[l]}${g === S.view ? '  (locked view)' : ''}`);
         const L = SCALAR_LAYERS[$('scalar').value];
         const val = (f) => g.data[k * NF + F[f]];
         if (L.field) {
@@ -470,7 +698,7 @@ function manifoldTip(e, h) {
             if ($('showGlyph').checked) lines.push(`δ_eff = ${deg(val('deltaEff'))}°  s₁ = ${val('s1').toPrecision(4)}  s₂ = ${val('s2').toPrecision(4)}${val('flip') ? '  (flip)' : ''}`);
         }
     }
-    lines.push('', 'click: integrate & inspect · drag: pan · wheel: zoom');
+    lines.push('', 'click: integrate & inspect · drag: pan · wheel: zoom', 'zoom in + “Refine view”: sharper grid locked to the window');
     if (S.sel) lines.push('arrow keys: step the selection (shift: larger steps)');
     showTip(e.clientX, e.clientY, lines.join('\n'));
 }
@@ -484,6 +712,7 @@ function physTip(e, h) {
     const lines = [];
     if (dpx(-p.mu, 0) < 8) lines.push('P1 — primary, mass 1 − μ, at (−μ, 0)');
     if (dpx(1 - p.mu, 0) < 8) lines.push('P2 — secondary, mass μ, at (1 − μ, 0)');
+    if (isShip() && S.basisPts && dpx(S.basisPts[0], S.basisPts[1]) < 8) lines.push('ship — current state (start of the cyan path)');
     for (const L of S.lps) if (dpx(L.x, L.y) < 8) {
         lines.push(`${L.name} — Lagrange point (equilibrium in the rotating frame)`,
             `C_${L.name} = ${L.C.toFixed(5)}: ${C < L.C ? 'open' : 'closed'} at the current C`);
@@ -494,7 +723,7 @@ function physTip(e, h) {
     else if (Math.abs(rc - p.rhoFar) < tol) lines.push(`outer circle ρ_far = ${p.rhoFar.toExponential(3)}: encounter complete when reached`);
     else if (Math.abs(r2 - p.Rbody) < tol) lines.push(`surface of P2 (R₂ = ${p.Rbody.toExponential(3)}): collision threshold`);
     else if (p.R1 > 0 && Math.abs(r1 - p.R1) < tol) lines.push(`surface of P1 (R₁ = ${p.R1.toExponential(3)}): collision threshold`);
-    else if ($('showRing').checked && S.grid && rc > 1.04 * p.rho && rc < 1.3 * p.rho) {
+    else if (!isShip() && $('showRing').checked && S.grid && rc > 1.04 * p.rho && rc < 1.3 * p.rho) {
         let a = Math.atan2(y, x - cx);
         if (a < 0) a += TWO_PI;
         const g = S.grid, i = Math.round(a / (TWO_PI / g.N)) % g.N, mode = $('ringReduce').value;
@@ -507,7 +736,9 @@ function physTip(e, h) {
         `r_Σ = ${rc.toPrecision(4)}  (${(rc / p.rho).toFixed(2)} ρ)   r₁ = ${r1.toPrecision(4)}  r₂ = ${r2.toPrecision(4)}`,
         `Ω = ${om.toPrecision(6)}`,
         z >= 0 ? `|v|² = 2Ω − C = ${z.toPrecision(4)}  (accessible)` : `2Ω − C = ${z.toPrecision(4)} < 0  (forbidden at this C)`);
-    if (S.traj) lines.push('', 'picked trajectory: yellow → blue with time;', 'green arrow = inertial v_in, red arrow = inertial v_out');
+    if (isShip()) lines.push('', 'cyan = current path of the ship (the map’s basis)');
+    if (S.traj) lines.push('', isShip() ? 'picked burn: post-burn coast, yellow → blue with time;' : 'picked trajectory: yellow → blue with time;',
+        'green arrow = inertial v_in, red arrow = inertial v_out');
     showTip(e.clientX, e.clientY, lines.join('\n'));
 }
 
@@ -555,21 +786,66 @@ interact($('mview'), RM, man, {
     onHover: manifoldTip,
     onClick: (h) => {
         const [a, b] = man.toWorld(h.u, h.v);
-        if (a >= 0 && a < TWO_PI && Math.abs(b) < Math.PI / 2) pickAt(a, b);
+        if (inDomain(man.dom, a, b)) pickAt(a, b);
     },
 });
 
 // ---- events
 $('system').onchange = () => {
     if ($('system').value !== 'custom') fillPreset($('system').value);
-    if (onSystem(false)) compute();
+    if (onSystem(false, true)) compute();
 };
 for (const id of ['mu', 'Lkm', 'R1km', 'R2km']) $(id).onchange = () => {
     $('system').value = 'custom';
-    if (onSystem(true)) compute();
+    if (onSystem(true, true)) compute();
 };
 for (const id of ['center', 'rhoFactor', 'kFar']) $(id).onchange = () => {
     if (onSystem(true)) compute();
+};
+$('mode').onchange = () => {
+    S.mode = $('mode').value === 'ship' ? 'ship' : 'encounter';
+    dismissView(false);
+    abortRunning();
+    syncMode();
+    clearSelection();
+    if (onSystem(true)) compute();
+};
+$('toShip').onclick = () => {
+    if (isShip() || !S.sel || !S.grid) return;
+    const p = S.grid.meta, s = seed(S.sel.a, S.sel.b, p.C, p.mu, p.rho, p.cx);
+    if (!s) return;
+    S.ship = {s0: s, origin: `Σ entry α = ${deg(S.sel.a)}°, β = ${deg(S.sel.b)}°`};
+    S.shipHist = [];
+    $('mode').value = 'ship';
+    S.mode = 'ship';
+    dismissView(false);
+    abortRunning();
+    syncMode();
+    clearSelection();
+    if (onSystem(true)) compute();
+};
+$('shipPreset').onchange = () => {
+    if (!isShip()) return;
+    resetShipState();
+    clearSelection();
+    updateShip();
+    if (S.basisPts) phys.fitPoints(S.basisPts);
+    compute();
+};
+$('shipReset').onclick = () => $('shipPreset').onchange();
+$('shipDv').onchange = () => {
+    if (isShip()) compute();
+};
+$('shipSpan').onchange = () => {
+    if (!isShip()) return;
+    updateShip();
+    compute();
+};
+$('shipGo').onclick = () => navigate();
+$('shipBack').onclick = () => shipBack();
+$('fitShip').onclick = () => {
+    if (S.basisPts) phys.fitPoints(S.basisPts);
+    RP.request();
 };
 $('C').oninput = () => setC($('C').value);
 $('C').onchange = () => compute();
@@ -580,7 +856,7 @@ $('Cnum').onchange = () => {
 $('Cpreset').onchange = () => {
     const v = $('Cpreset').value;
     $('Cpreset').value = '';
-    if (!v || !S.lps) return;
+    if (!v || !S.lps || isShip()) return;
     setC(cPreset(v));
     compute();
 };
@@ -588,6 +864,8 @@ $('run').onclick = () => {
     if (!S.busy) compute();
 };
 $('refine').onclick = () => refine();
+$('refineView').onclick = () => refineView();
+$('dismissView').onclick = () => dismissView(true);
 $('cancel').onclick = () => pool.cancel();
 $('scalar').onchange = () => {
     updateScalarTip();
@@ -647,9 +925,11 @@ $('bin').onclick = () => {
 $('N').value = String(DEFAULTS.N);
 $('center').value = DEFAULTS.center;
 const hashC = readHash();
+S.mode = $('mode').value === 'ship' ? 'ship' : 'encounter';
+syncMode();
 updateScalarTip();
 updateButtons();
-if (onSystem(false)) {
-    if (hashC != null) setC(hashC, false);
+if (onSystem(false, true)) {
+    if (hashC != null && !isShip()) setC(hashC, false);
     compute();
 }

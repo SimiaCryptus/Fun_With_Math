@@ -21,11 +21,11 @@ function chip(color, text, tip) {
 }
 
 /** Fill the legend element for the current layer. */
-export function renderLegend(el, key, range) {
+export function renderLegend(el, key, range, labels = {short: LABEL_SHORT, desc: LABEL_DESC}) {
     el.replaceChildren();
     const L = SCALAR_LAYERS[key];
     if (key === 'outcome') {
-        for (const v of Object.values(LABEL)) el.append(chip(LABEL_COLORS[v], LABEL_SHORT[v], LABEL_DESC[v]));
+        for (const v of Object.values(LABEL)) el.append(chip(LABEL_COLORS[v], labels.short[v], labels.desc[v]));
         return;
     }
     if (key === 'sig') {
