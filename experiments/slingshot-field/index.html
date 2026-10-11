@@ -14,7 +14,7 @@
 <body>
 <main>
     <canvas id="view"></canvas>
-    <div class="cap left">rotating frame (x, y) about the barycentre — hover for readout · drag to pan · wheel to zoom</div>
+     <div class="cap left" id="physCap">rotating frame (x, y) about the barycentre — hover for readout · drag to pan · wheel to zoom</div>
 </main>
 
 <div class="panel" data-title="System" data-width="270" id="p-system"
@@ -76,6 +76,17 @@
     </div>
     <div class="info" id="shipInfo"></div>
 </div>
+<div class="panel resizable" data-title="Journey" data-width="300" id="p-journey"
+      data-help="Log of the burns you have flown in spaceship mode, with running totals. The energy change of your orbit is split into what the burns put in directly and what gravity (slingshots) added or removed while coasting. Click an earlier entry to return to that state.">
+     <div class="info" id="journeyStats"
+          data-tip="Journey totals. E = inertial energy ½|v_I|² − (1−μ)/r₁ − μ/r₂. 'from burns' is the energy the impulses added directly; 'from gravity' is the exchange with the primaries during the coasts (the slingshot effect). Mission time is the time flown along the paths up to the last burn (2π = one revolution of the primaries)."></div>
+     <div class="sep">Move history</div>
+     <ol id="journeyList"></ol>
+     <div class="row">
+         <button id="journeyExport" data-tip="Download the journey (start state and every burn) as JSON.">Export log</button>
+     </div>
+</div>
+
 
 <div class="panel" data-title="Computation" data-width="250" id="p-compute"
      data-help="Every grid sample integrates one trajectory together with its 4×4 state-transition matrix (for the analytic derivatives) in parallel web workers.">
@@ -112,6 +123,8 @@
         <option>max</option>
         <option>min</option>
     </select></label>
+     <label data-tip="Show the effective potential as a 3D landscape: height = −log(1 + (Ω − Ω_L4)/(Ω_L1 − Ω_L4)), so L4/L5 are hilltops, L1–L3 are saddles and the primaries sit in wells. Overlays drape over the surface. Drag to orbit, right-drag to pan, wheel to zoom."><input id="show3d" type="checkbox"> 3D relief (potential as elevation)</label>
+     <label data-tip="Vertical exaggeration of the 3D relief. The base height scales with the view size when you enter 3D or press a Fit button.">relief <input id="relief3d" min="0" step="0.25" type="number" value="1"></label>
     <div class="row">
         <button id="fitSys" data-tip="Zoom out to both primaries and all five Lagrange points.">Fit system</button>
         <button id="fitSec" data-tip="Zoom to the encounter circles ρ and ρ_far.">Fit Σ</button>

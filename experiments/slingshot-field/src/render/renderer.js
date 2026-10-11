@@ -11,6 +11,26 @@ export class OrthoView {
         this.hh = 1;
         this.aspect = 1;
     }
+     /**
+      * World rectangle the camera must stay on, plus a zoom-out ceiling (relative to the fit of that
+      * rectangle). null = unconstrained. Subclasses override.
+      */
+     limits() {
+         return null;
+     }
+     /** Keep the camera on the plot: never pan or zoom entirely off it. */
+     constrain() {
+         const L = this.limits();
+         if (!L) return;
+         const fitHH = Math.max((L.y1 - L.y0) / 2, (L.x1 - L.x0) / 2 / this.aspect);
+         this.hh = Math.min(Math.max(this.hh, fitHH * 1e-7), fitHH * (L.maxZoomOut ?? 1.5));
+         const axis = (c, h, a, b) => (2 * h >= b - a
+             ? Math.min(Math.max(c, b - h), a + h)   // view larger than the plot: keep the plot fully visible
+             : Math.min(Math.max(c, a + h), b - h)); // view smaller: keep the view inside the plot
+         this.cx = axis(this.cx, this.hh * this.aspect, L.x0, L.x1);
+         this.cy = axis(this.cy, this.hh, L.y0, L.y1);
+     }
+
 
     setAspect(a) {
         this.aspect = a;
@@ -18,6 +38,7 @@ export class OrthoView {
     }
 
     updateCam() {
+         this.constrain();
         const c = this.camera, hw = this.hh * this.aspect;
         c.left = this.cx - hw;
         c.right = this.cx + hw;
@@ -76,7 +97,8 @@ export class ViewRenderer {
     }
 
     draw() {
-        this.r.render(this.view.scene, this.view.camera);
+         this.view.beforeRender?.();
+         this.r.render(this.view.scene, this.view.renderCamera?.() ?? this.view.camera);
     }
 
     /** Local viewport coordinates of a pointer event. */

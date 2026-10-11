@@ -312,3 +312,25 @@ pre {
 #legend [data-tip], #cbar {
      cursor: help;
 }
+/* ---- journey log ---- */
+#journeyList {
+     margin: 2px 0 0;
+     padding: 0;
+     list-style: none;
+     font: 10.5px ui-monospace, Menlo, Consolas, monospace;
+}
+#journeyList li {
+     padding: 2px 4px;
+     border-radius: 3px;
+     white-space: pre-wrap;
+     cursor: pointer;
+     color: #bcc;
+}
+#journeyList li:hover {
+     background: #222a3a;
+}
+#journeyList li.cur {
+     background: #1f3040;
+     color: #fff;
+     cursor: default;
+}

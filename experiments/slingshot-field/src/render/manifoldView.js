@@ -94,6 +94,14 @@ export class ManifoldView extends OrthoView {
         this.userMoved = false;
         this.updateCam();
     }
+     /** The domain plus a small margin; zooming out stops a little beyond the full-map fit. */
+     limits() {
+         const d = this.dom;
+         if (!d) return null;
+         const mx = 0.05 * (d.x1 - d.x0), my = 0.05 * (d.y1 - d.y0);
+         return {x0: d.x0 - mx, x1: d.x1 + mx, y0: d.y0 - my, y1: d.y1 + my, maxZoomOut: 1.2};
+     }
+
 
     /** Refit on resize only while the user has not panned/zoomed. */
     onResize() {
