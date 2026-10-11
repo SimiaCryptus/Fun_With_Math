@@ -1,8 +1,8 @@
 import {SYSTEMS} from './config/systems.js';
 import {DEFAULTS} from './config/defaults.js';
 import {lagrangePoints} from './core/lagrange.js';
-import {CORE_VERSION, hillRadius, isExitLabel, LABEL} from './core/conventions.js';
-import {createGrid, F, FIELD_NAMES, nearestIndex, NF, xiAt} from './core/grid.js';
+import {centerOf, CORE_VERSION, hillRadius, isExitLabel, LABEL} from './core/conventions.js';
+import {createGrid, exactParent, F, FIELD_NAMES, nearestIndex, nextN, NF, xiAt} from './core/grid.js';
 import {postprocess} from './core/differential.js';
 import {propagate} from './core/encounter.js';
 import {inertialVel, omega} from './core/cr3bp.js';
@@ -21,6 +21,8 @@ const $ = (id) => document.getElementById(id);
 const TWO_PI = 2 * Math.PI;
 const deg = (r) => ((r * 180) / Math.PI).toFixed(2);
 const LABEL_NAME = Object.fromEntries(Object.entries(LABEL).map(([k, v]) => [v, k.toLowerCase()]));
+const CENTER_NAME = {secondary: 'P2', primary: 'P1', barycentre: 'the barycentre'};
+const PARAM_IDS = ['mu', 'Lkm', 'R1km', 'R2km', 'center', 'rhoFactor', 'kFar', 'N', 'T', 'rtol'];
 
 installPanels();
 installTips();
@@ -33,9 +35,11 @@ const request = () => {
 };
 const pool = new WorkerPool(new URL('./compute/encounterWorker.js', import.meta.url));
 const cache = new Map();
-const S = {grid: null, lps: null, sel: null, traj: false};
+/** busy: a computation/refinement is running. token: bumps on every start/abort so stale awaits bail out. */
+const S = {grid: null, key: null, lps: null, sel: null, traj: false, busy: false, token: 0};
 
 for (const [k, s] of Object.entries(SYSTEMS)) $('system').add(new Option(s.name, k));
+$('system').add(new Option('Custom', 'custom'));
 for (const [k, L] of Object.entries(SCALAR_LAYERS)) {
     const o = new Option(L.name, k);
     o.title = L.desc;
@@ -48,12 +52,35 @@ function updateScalarTip() {
     $('scalar').dataset.tip = `Which per-sample quantity colours the (α, β) map.\n\nCurrent — ${L.name}: ${L.desc}`;
 }
 
+// ---- system parameters
+function fillPreset(key) {
+    const s = SYSTEMS[key];
+    if (!s) return;
+    $('mu').value = s.mu;
+    $('Lkm').value = s.L;
+    $('R1km').value = s.R1;
+    $('R2km').value = s.R2;
+}
+
+function validate() {
+    const mu = +$('mu').value, L = +$('Lkm').value, R1 = +$('R1km').value, R2 = +$('R2km').value;
+    if (!(mu > 0 && mu <= 0.5)) return 'μ must lie in (0, 0.5]';
+    if (!(L > 0)) return 'L must be > 0';
+    if (!(R1 >= 0) || !(R2 >= 0)) return 'radii must be ≥ 0';
+    if (!(+$('rhoFactor').value > 0)) return 'ρ / r_H must be > 0';
+    if (!(+$('kFar').value > 1)) return 'k_far must be > 1';
+    return null;
+}
+
 function params() {
-    const sys = SYSTEMS[$('system').value];
-    const rho = hillRadius(sys.mu) * +$('rhoFactor').value;
+    const mu = +$('mu').value, L = +$('Lkm').value, center = $('center').value;
+    const {cx, m} = centerOf(center, mu);
+    const rho = hillRadius(mu) * +$('rhoFactor').value;
     return {
-        system: $('system').value, mu: sys.mu, C: +$('Cnum').value, rho, rhoFar: rho * +$('kFar').value,
-        Rbody: sys.Rbody, T: +$('T').value, rtol: +$('rtol').value, atol: +$('rtol').value, N: +$('N').value,
+        system: $('system').value, mu, L, R1: +$('R1km').value / L, Rbody: +$('R2km').value / L,
+        center, cx, mc: m,
+        C: +$('Cnum').value, rho, rhoFar: rho * +$('kFar').value,
+        T: +$('T').value, rtol: +$('rtol').value, atol: +$('rtol').value, N: +$('N').value,
     };
 }
 
@@ -69,44 +96,67 @@ function setC(C, live = true) {
     if (live) RP.request();
 }
 
+/** Re-derive everything that depends on the system parameters. Returns false if they are invalid. */
 function onSystem(keepC) {
+    const err = validate();
+    if (err) {
+        $('muInfo').textContent = `⚠ ${err}`;
+        return false;
+    }
     const p = params();
     S.lps = lagrangePoints(p.mu);
     const [L1, L2, L3] = S.lps;
-    $('muInfo').textContent = `μ = ${p.mu}\nρ = ${p.rho.toExponential(4)}  R_body = ${p.Rbody.toExponential(3)}`;
+    const cBodyR = p.center === 'primary' ? p.R1 : p.center === 'secondary' ? p.Rbody : 0;
+    $('muInfo').textContent =
+        `r_H = ${hillRadius(p.mu).toExponential(4)}  ρ = ${p.rho.toExponential(4)}\n` +
+        `R₁ = ${p.R1.toExponential(3)}  R₂ = ${p.Rbody.toExponential(3)}  (units of L)\n` +
+        `Σ centred on ${CENTER_NAME[p.center]} at x = ${p.cx.toFixed(6)}` +
+        (cBodyR >= p.rho ? '\n⚠ ρ lies inside the central body: every entry collides' : '');
     $('Cticks').textContent = `C_L1 = ${L1.C.toFixed(5)}  C_L2 = ${L2.C.toFixed(5)}\nC_L3 = ${L3.C.toFixed(5)}  C_L4,5 = ${S.lps[3].C.toFixed(5)}`;
     $('C').min = L3.C - 0.05;
     $('C').max = L1.C + 0.05;
-    document.querySelectorAll('[data-preset]').forEach((b) => {
-        b.dataset.tip = `${PRESET_DESC[b.dataset.preset]}\nC = ${cPreset(b.dataset.preset).toFixed(5)}`;
-    });
+    const tips = [];
+    for (const o of $('Cpreset').options) {
+        if (!o.value) continue;
+        const c = cPreset(o.value);
+        o.title = `${PRESET_DESC[o.value]}\nC = ${c.toFixed(5)}`;
+        tips.push(`${o.text} (C = ${c.toFixed(5)}): ${PRESET_DESC[o.value]}`);
+    }
+    $('Cpreset').dataset.tip = `Jacobi-level presets. Picking one sets C and recomputes.\n\n${tips.join('\n\n')}`;
     if (!keepC) setC(cPreset('l1open'), false);
     phys.setSystem(params(), S.lps);
-    phys.fitSecondary();
+    phys.fitCircle();
     request();
+    return true;
 }
 
-function writeHash(p) {
-    const q = new URLSearchParams({
-        system: p.system, C: p.C, rhoFactor: $('rhoFactor').value, kFar: $('kFar').value,
-        N: p.N, T: p.T, rtol: p.rtol, layer: $('scalar').value
-    });
+function writeHash() {
+    const q = new URLSearchParams({system: $('system').value, C: $('Cnum').value, layer: $('scalar').value});
+    for (const id of PARAM_IDS) q.set(id, $(id).value);
     history.replaceState(null, '', '#' + q);
 }
 
 function readHash() {
     const q = new URLSearchParams(location.hash.slice(1));
-    for (const id of ['system', 'rhoFactor', 'kFar', 'N', 'T', 'rtol']) if (q.has(id)) $(id).value = q.get(id);
+    if (q.has('system')) $('system').value = q.get('system');
+    if (!$('system').value) $('system').value = DEFAULTS.system;
+    if ($('system').value !== 'custom') fillPreset($('system').value);
+    for (const id of PARAM_IDS) if (q.has(id)) $(id).value = q.get(id);
+    if (!$('N').value) $('N').value = String(DEFAULTS.N);
+    if (!$('center').value) $('center').value = DEFAULTS.center;
     if (q.has('layer') && SCALAR_LAYERS[q.get('layer')]) $('scalar').value = q.get('layer');
     return q.has('C') ? +q.get('C') : null;
 }
 
+// ---- rendering
 let refreshTimer = null;
 const scheduleRefresh = () => {
-    if (!refreshTimer) refreshTimer = setTimeout(() => {
+    if (refreshTimer) return;
+    const N = S.grid?.N ?? 0;
+    refreshTimer = setTimeout(() => {
         refreshTimer = null;
         refresh();
-    }, 150);
+    }, Math.max(150, (N * N) / 1e4));
 };
 
 function refresh() {
@@ -125,55 +175,188 @@ function refresh() {
     request();
 }
 
-async function compute() {
-    const p = params();
-    writeHash(p);
-    phys.setSystem(p, S.lps);
-    phys.setTrajectory(null);
-    S.traj = false;
-    man.setCross(null);
-    const key = JSON.stringify({...p, v: CORE_VERSION});
-    if (cache.has(key)) {
-        S.grid = cache.get(key);
-        refresh();
-        $('progress').textContent = 'cached';
-        return;
-    }
-    const passes = p.N > 64 ? [64, p.N] : [p.N];
-    const t0 = performance.now();
-    for (const N of passes) {
-        const g = createGrid({...p, N});
-        S.grid = g;
-        const rows = Math.max(1, Math.floor(2048 / N)), jobs = [];
-        for (let j0 = 0; j0 < N; j0 += rows) jobs.push({
-            tileId: jobs.length,
-            p: {...p, N},
-            j0,
-            j1: Math.min(N, j0 + rows)
-        });
-        jobs.sort((a, b) => Math.abs(a.j0 - N / 2) - Math.abs(b.j0 - N / 2));
-        let done = 0;
-        const ok = await pool.submit(jobs, (d) => {
-            g.label.set(d.label, d.j0 * N);
-            g.data.set(d.data, d.j0 * N * NF);
-            done += d.j1 - d.j0;
-            $('progress').textContent = `pass ${N}²: ${((100 * done) / N).toFixed(0)}%`;
-            scheduleRefresh();
-        });
-        if (!ok) {
-            $('progress').textContent = 'cancelled';
-            return;
-        }
-        postprocess(g);
-        refresh();
-    }
-    cache.set(key, S.grid);
-    const g = S.grid, counts = {};
-    for (const l of g.label) counts[l] = (counts[l] || 0) + 1;
-    $('progress').textContent = `done in ${((performance.now() - t0) / 1000).toFixed(1)} s\n` +
-        Object.entries(counts).map(([l, c]) => `${LABEL_NAME[l]}: ${c}`).join('  ');
+// ---- computation
+function setProgress(frac, text) {
+    $('pbar').value = Math.min(1, Math.max(0, frac));
+    $('progress').textContent = text;
+    $('pstat').textContent = text.split('\n')[0];
 }
 
+function updateButtons() {
+    const g = S.grid, nx = g?.complete ? nextN(g.N) : null;
+    $('refine').disabled = S.busy || !nx;
+    $('refine').textContent = nx ? `Refine → ${nx}²` : g?.complete ? 'Refine (max)' : 'Refine';
+    $('run').disabled = S.busy;
+    $('cancel').disabled = !S.busy;
+}
+
+function abortRunning() {
+    if (!S.busy) return;
+    S.token++;
+    S.busy = false;
+    pool.cancel();
+}
+
+function cacheSet(key, g) {
+    cache.delete(key);
+    cache.set(key, g);
+    while (cache.size > 3) cache.delete(cache.keys().next().value);
+}
+
+/** Fill a fine grid from the nearest sample of a coarse one (exact where nodes coincide; a preview elsewhere). */
+function inheritFrom(g, parent) {
+    const N = g.N, No = parent.N, src = parent.data, dst = g.data, ls = parent.label, ld = g.label;
+    const io = new Int32Array(N);
+    for (let i = 0; i < N; i++) io[i] = Math.round((i * No) / N) % No;
+    for (let j = 0; j < N; j++) {
+        const jo = Math.min(No - 1, Math.floor(((j + 0.5) * No) / N));
+        for (let i = 0; i < N; i++) {
+            const k = j * N + i, ko = jo * No + io[i];
+            ld[k] = ls[ko];
+            const s = ko * NF, t = k * NF;
+            for (let f = 0; f < NF; f++) dst[t + f] = src[s + f];
+        }
+    }
+}
+
+function merge(g, job, d) {
+    const N = g.N, base = job.j0 * N;
+    if (!job.mask) {
+        g.label.set(d.label, base);
+        g.data.set(d.data, base * NF);
+        return;
+    }
+    const m = job.mask;
+    for (let k = 0; k < m.length; k++) {
+        if (!m[k]) continue;
+        g.label[base + k] = d.label[k];
+        const s = k * NF, t = (base + k) * NF;
+        for (let f = 0; f < NF; f++) g.data[t + f] = d.data[s + f];
+    }
+}
+
+/** Run all tiles of g (skipping samples reused exactly from parent). */
+async function runGrid(g, parent, key) {
+    const token = ++S.token;
+    S.busy = true;
+    g.key = key;
+    const N = g.N, rows = Math.max(1, Math.floor(2048 / N)), jobs = [];
+    let total = 0;
+    const colOk = parent ? Uint8Array.from({length: N}, (_, i) => ((i * parent.N) % N === 0 ? 1 : 0)) : null;
+    for (let j0 = 0; j0 < N; j0 += rows) {
+        const j1 = Math.min(N, j0 + rows);
+        let mask = null, count = (j1 - j0) * N;
+        if (parent) {
+            mask = new Uint8Array(count).fill(1);
+            for (let j = j0; j < j1; j++) {
+                if (exactParent(0, j, N, parent.N) < 0) continue;
+                for (let i = 0; i < N; i++) if (colOk[i]) {
+                    mask[(j - j0) * N + i] = 0;
+                    count--;
+                }
+            }
+            if (!count) continue;
+        }
+        total += count;
+        jobs.push({tileId: jobs.length, p: g.meta, j0, j1, mask, count});
+    }
+    jobs.sort((a, b) => Math.abs(a.j0 - N / 2) - Math.abs(b.j0 - N / 2));
+    const byId = new Map(jobs.map((j) => [j.tileId, j]));
+    const reused = N * N - total;
+    const what = parent ? `refine ${parent.N}² → ${N}²` : `compute ${N}²`;
+    const suffix = reused ? ` (${reused} reused)` : '';
+    S.grid = g;
+    updateButtons();
+    refresh();
+    setProgress(0, `${what}: 0%${suffix}`);
+    const t0 = performance.now();
+    let done = 0;
+    const ok = await pool.submit(jobs, (d) => {
+        const job = byId.get(d.tileId);
+        merge(g, job, d);
+        done += job.count;
+        setProgress(done / Math.max(1, total), `${what}: ${((100 * done) / Math.max(1, total)).toFixed(1)}%${suffix}`);
+        scheduleRefresh();
+    });
+    if (token !== S.token) return; // superseded by a newer computation
+    S.busy = false;
+    if (!ok) {
+        if (parent) S.grid = parent;
+        setProgress(0, parent ? `refinement cancelled (kept ${parent.N}²)` : 'cancelled');
+        refresh();
+        updateButtons();
+        return;
+    }
+    postprocess(g);
+    g.complete = true;
+    cacheSet(key, g);
+    refresh();
+    updateButtons();
+    const counts = {};
+    for (const l of g.label) counts[l] = (counts[l] || 0) + 1;
+    setProgress(1, `${N}² done in ${((performance.now() - t0) / 1000).toFixed(1)} s${suffix}\n` +
+        Object.entries(counts).map(([l, c]) => `${LABEL_NAME[l]}: ${c}`).join('  '));
+    if (S.sel) pickAt(S.sel.a, S.sel.b);
+}
+
+function clearSelection() {
+    S.sel = null;
+    S.traj = false;
+    phys.setTrajectory(null);
+    man.setCross(null);
+}
+
+async function compute() {
+    const err = validate();
+    if (err) {
+        setProgress(0, `invalid parameters: ${err}`);
+        return;
+    }
+    abortRunning();
+    const p = params();
+    writeHash();
+    phys.setSystem(p, S.lps);
+    clearSelection();
+    const key = JSON.stringify({...p, N: 0, v: CORE_VERSION});
+    S.key = key;
+    const hit = cache.get(key);
+    if (hit && hit.N >= p.N) {
+        S.grid = hit;
+        refresh();
+        updateButtons();
+        setProgress(1, `cached (${hit.N}²)`);
+        return;
+    }
+    await runGrid(createGrid(p), null, key);
+}
+
+async function refine() {
+    if (S.busy) return; // guard against repeated clicks
+    const parent = S.grid, Nn = parent?.complete ? nextN(parent.N) : null;
+    if (!Nn) return;
+    const bytes = Nn * Nn * (NF * 4 + 1 + 6 * 4);
+    if (bytes > 1e9 && !confirm(`Refining to ${Nn}² needs roughly ${(bytes / 1e9).toFixed(1)} GB of memory and may take a long time. Continue?`)) return;
+    S.busy = true;
+    const token = ++S.token;
+    updateButtons();
+    setProgress(0, `preparing ${Nn}²…`);
+    await new Promise((r) => setTimeout(r, 30)); // let the UI paint
+    if (token !== S.token) return;
+    let g;
+    try {
+        g = createGrid({...parent.meta, N: Nn});
+        inheritFrom(g, parent);
+    } catch (e) {
+        console.error(e);
+        S.busy = false;
+        updateButtons();
+        setProgress(0, `cannot allocate ${Nn}² (out of memory)`);
+        return;
+    }
+    await runGrid(g, parent, parent.key ?? S.key);
+}
+
+// ---- selection / inspector
 /** Inspector rows: [text, tooltip]. */
 function setInspector(rows) {
     const pre = $('inspector');
@@ -186,10 +369,11 @@ function setInspector(rows) {
     }
 }
 
-function pick(alpha, beta) {
+function pickIndex(i, j) {
     const g = S.grid;
     if (!g) return;
-    const [i, j] = nearestIndex(alpha, beta, g.N), [a, b] = xiAt(i, j, g.N), p = g.meta, k = j * g.N + i;
+    const [a, b] = xiAt(i, j, g.N), p = g.meta, k = j * g.N + i;
+    S.sel = {a, b};
     const r = propagate(a, b, p, {withSTM: false, record: true});
     man.setCross(a, b);
     if (r.sIn) {
@@ -202,7 +386,8 @@ function pick(alpha, beta) {
         S.traj = false;
     }
     const rows = [
-        [`α = ${deg(a)}°  β = ${deg(b)}°`, 'Nearest grid node. α = entry position angle on the ρ circle around P2 (from +x); β = entry velocity angle from the inward normal (β > 0 prograde).'],
+        [`α = ${deg(a)}°  β = ${deg(b)}°`, 'Nearest grid node. α = entry position angle on the ρ circle about its centre (from +x); β = entry velocity angle from the inward normal (β > 0 prograde).'],
+        [`node (${i}, ${j}) of ${g.N}²${g.complete ? '' : ' (computing)'}`, 'Grid index. Arrow keys step the selection: ←/→ in α (wrapping), ↑/↓ in β. Hold shift for larger steps.'],
         [`label = ${LABEL_NAME[g.label[k]]}`, LABEL_DESC[g.label[k]]],
     ];
     for (let f = 0; f < NF; f++) {
@@ -215,14 +400,35 @@ function pick(alpha, beta) {
     }
     const pc = patchedConicPredict(a, b, p);
     if (pc) rows.push(
-        ['— patched conic —', 'Classical two-body prediction for the same entry state, with the velocity of P2 frozen at the entry instant. Compare it with the full CR3BP values above.'],
+        ['— patched conic —', 'Classical two-body prediction about the circle centre for the same entry state, with the centre velocity frozen at the entry instant. Compare it with the full CR3BP values above.'],
         [`δ_pc         ${pc.delta.toPrecision(6)}`, 'Patched-conic deflection of the relative velocity, signed by the sense of the flyby: sin(δ/2) = 1/√(1 + b²u⁴/μ²).'],
-        [`ΔE_pc        ${pc.dE.toPrecision(6)}`, 'Patched-conic energy change V_P · Δv.'],
-        [`b            ${pc.b.toPrecision(6)}`, 'Impact parameter of the relative velocity about P2.'],
+        [`ΔE_pc        ${pc.dE.toPrecision(6)}`, 'Patched-conic energy change V_c · Δv.'],
+        [`b            ${pc.b.toPrecision(6)}`, 'Impact parameter of the relative velocity about the circle centre.'],
     );
     setInspector(rows);
     request();
 }
+
+function pickAt(alpha, beta) {
+    const g = S.grid;
+    if (!g) return;
+    const [i, j] = nearestIndex(alpha, beta, g.N);
+    pickIndex(i, j);
+}
+
+window.addEventListener('keydown', (e) => {
+    if (!S.sel || !S.grid) return;
+    const t = e.target;
+    if (t instanceof Element && t.closest('input, select, textarea')) return;
+    const d = {ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1]}[e.key];
+    if (!d) return;
+    e.preventDefault();
+    const N = S.grid.N, [i, j] = nearestIndex(S.sel.a, S.sel.b, N);
+    const step = e.shiftKey ? Math.max(1, Math.round(N / 32)) : 1;
+    const ni = (((i + d[0] * step) % N) + N) % N;
+    const nj = Math.min(N - 1, Math.max(0, j + d[1] * step));
+    pickIndex(ni, nj);
+});
 
 function ringValue(g, i, mode) {
     let acc = mode === 'max' ? -Infinity : mode === 'min' ? Infinity : 0, cnt = 0;
@@ -265,6 +471,7 @@ function manifoldTip(e, h) {
         }
     }
     lines.push('', 'click: integrate & inspect · drag: pan · wheel: zoom');
+    if (S.sel) lines.push('arrow keys: step the selection (shift: larger steps)');
     showTip(e.clientX, e.clientY, lines.join('\n'));
 }
 
@@ -281,12 +488,14 @@ function physTip(e, h) {
         lines.push(`${L.name} — Lagrange point (equilibrium in the rotating frame)`,
             `C_${L.name} = ${L.C.toFixed(5)}: ${C < L.C ? 'open' : 'closed'} at the current C`);
     }
-    const x2 = 1 - p.mu, r2 = Math.hypot(x - x2, y), tol = 4 * wpp;
-    if (Math.abs(r2 - p.rho) < tol) lines.push(`encounter circle Σ (radius ρ = ${p.rho.toExponential(3)}): entry and exit states`);
-    else if (Math.abs(r2 - p.rhoFar) < tol) lines.push(`outer circle ρ_far = ${p.rhoFar.toExponential(3)}: encounter complete when reached`);
-    else if (Math.abs(r2 - p.Rbody) < tol) lines.push(`surface of P2 (R_body = ${p.Rbody.toExponential(3)}): collision threshold`);
-    else if ($('showRing').checked && S.grid && r2 > 1.04 * p.rho && r2 < 1.3 * p.rho) {
-        let a = Math.atan2(y, x - x2);
+    const cx = p.cx ?? 1 - p.mu;
+    const rc = Math.hypot(x - cx, y), r1 = Math.hypot(x + p.mu, y), r2 = Math.hypot(x - 1 + p.mu, y), tol = 4 * wpp;
+    if (Math.abs(rc - p.rho) < tol) lines.push(`encounter circle Σ (radius ρ = ${p.rho.toExponential(3)} about ${CENTER_NAME[p.center] ?? 'P2'}): entry and exit states`);
+    else if (Math.abs(rc - p.rhoFar) < tol) lines.push(`outer circle ρ_far = ${p.rhoFar.toExponential(3)}: encounter complete when reached`);
+    else if (Math.abs(r2 - p.Rbody) < tol) lines.push(`surface of P2 (R₂ = ${p.Rbody.toExponential(3)}): collision threshold`);
+    else if (p.R1 > 0 && Math.abs(r1 - p.R1) < tol) lines.push(`surface of P1 (R₁ = ${p.R1.toExponential(3)}): collision threshold`);
+    else if ($('showRing').checked && S.grid && rc > 1.04 * p.rho && rc < 1.3 * p.rho) {
+        let a = Math.atan2(y, x - cx);
         if (a < 0) a += TWO_PI;
         const g = S.grid, i = Math.round(a / (TWO_PI / g.N)) % g.N, mode = $('ringReduce').value;
         const rv = ringValue(g, i, mode);
@@ -295,7 +504,7 @@ function physTip(e, h) {
     if (lines.length) lines.push('');
     const om = omega(x, y, p.mu), z = 2 * om - C;
     lines.push(`x = ${x.toFixed(5)}  y = ${y.toFixed(5)}`,
-        `r₂ = ${r2.toPrecision(4)}  (${(r2 / p.rho).toFixed(2)} ρ)`,
+        `r_Σ = ${rc.toPrecision(4)}  (${(rc / p.rho).toFixed(2)} ρ)   r₁ = ${r1.toPrecision(4)}  r₂ = ${r2.toPrecision(4)}`,
         `Ω = ${om.toPrecision(6)}`,
         z >= 0 ? `|v|² = 2Ω − C = ${z.toPrecision(4)}  (accessible)` : `2Ω − C = ${z.toPrecision(4)} < 0  (forbidden at this C)`);
     if (S.traj) lines.push('', 'picked trajectory: yellow → blue with time;', 'green arrow = inertial v_in, red arrow = inertial v_out');
@@ -346,28 +555,44 @@ interact($('mview'), RM, man, {
     onHover: manifoldTip,
     onClick: (h) => {
         const [a, b] = man.toWorld(h.u, h.v);
-        if (a >= 0 && a < TWO_PI && Math.abs(b) < Math.PI / 2) pick(a, b);
+        if (a >= 0 && a < TWO_PI && Math.abs(b) < Math.PI / 2) pickAt(a, b);
     },
 });
 
 // ---- events
-$('system').onchange = () => onSystem(false);
+$('system').onchange = () => {
+    if ($('system').value !== 'custom') fillPreset($('system').value);
+    if (onSystem(false)) compute();
+};
+for (const id of ['mu', 'Lkm', 'R1km', 'R2km']) $(id).onchange = () => {
+    $('system').value = 'custom';
+    if (onSystem(true)) compute();
+};
+for (const id of ['center', 'rhoFactor', 'kFar']) $(id).onchange = () => {
+    if (onSystem(true)) compute();
+};
 $('C').oninput = () => setC($('C').value);
 $('C').onchange = () => compute();
 $('Cnum').onchange = () => {
     setC($('Cnum').value);
     compute();
 };
-document.querySelectorAll('[data-preset]').forEach((b) => (b.onclick = () => {
-    setC(cPreset(b.dataset.preset));
+$('Cpreset').onchange = () => {
+    const v = $('Cpreset').value;
+    $('Cpreset').value = '';
+    if (!v || !S.lps) return;
+    setC(cPreset(v));
     compute();
-}));
-$('run').onclick = compute;
+};
+$('run').onclick = () => {
+    if (!S.busy) compute();
+};
+$('refine').onclick = () => refine();
 $('cancel').onclick = () => pool.cancel();
 $('scalar').onchange = () => {
     updateScalarTip();
     refresh();
-    if (S.grid) writeHash(S.grid.meta);
+    writeHash();
 };
 for (const id of ['showQuiver', 'showStream', 'showGlyph', 'showRing', 'ringReduce']) $(id).onchange = refresh;
 $('showPot').onchange = () => {
@@ -383,7 +608,7 @@ $('fitSys').onclick = () => {
     RP.request();
 };
 $('fitSec').onclick = () => {
-    phys.fitSecondary();
+    phys.fitCircle();
     RP.request();
 };
 $('fitMan').onclick = () => {
@@ -407,6 +632,8 @@ $('bin').onclick = () => {
     const header = new TextEncoder().encode(JSON.stringify({
         meta: g.meta,
         fields: FIELD_NAMES,
+        dtype: 'float32',
+        complete: g.complete,
         version: CORE_VERSION
     }) + '\n');
     const blob = new Blob([header, g.label, g.data.buffer]);
@@ -418,8 +645,11 @@ $('bin').onclick = () => {
 
 // ---- boot
 $('N').value = String(DEFAULTS.N);
+$('center').value = DEFAULTS.center;
 const hashC = readHash();
 updateScalarTip();
-onSystem(false);
-if (hashC != null) setC(hashC, false);
-compute();
+updateButtons();
+if (onSystem(false)) {
+    if (hashC != null) setC(hashC, false);
+    compute();
+}

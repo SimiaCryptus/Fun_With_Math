@@ -1,12 +1,12 @@
 import {gradOmega, omega} from './cr3bp.js';
-import {LABEL} from './conventions.js';
+import {hillRadius, LABEL} from './conventions.js';
 import {Dopri5, stepFactor} from './dopri5.js';
 import {makeAugRhs} from './variational.js';
 
-/** Entry state on Σ_in (convention C1), or null if the point is in the forbidden region. */
-export function seed(alpha, beta, C, mu, rho) {
+/** Entry state on Σ_in (convention C1) about centre (cx, 0), or null if the point is in the forbidden region. */
+export function seed(alpha, beta, C, mu, rho, cx = 1 - mu) {
     const ca = Math.cos(alpha), sa = Math.sin(alpha);
-    const x = 1 - mu + rho * ca, y = rho * sa;
+    const x = cx + rho * ca, y = rho * sa;
     const v2 = 2 * omega(x, y, mu) - C;
     if (!(v2 > 0)) return null;
     const v = Math.sqrt(v2), cb = Math.cos(beta), sb = Math.sin(beta);
@@ -15,9 +15,9 @@ export function seed(alpha, beta, C, mu, rho) {
 }
 
 /** ∂s_in/∂(α, β), returned as a 4×2 row-major Float64Array. */
-export function seedJacobian(alpha, beta, C, mu, rho) {
+export function seedJacobian(alpha, beta, C, mu, rho, cx = 1 - mu) {
     const ca = Math.cos(alpha), sa = Math.sin(alpha), cb = Math.cos(beta), sb = Math.sin(beta);
-    const x = 1 - mu + rho * ca, y = rho * sa;
+    const x = cx + rho * ca, y = rho * sa;
     const v = Math.sqrt(2 * omega(x, y, mu) - C);
     const n = [-ca, -sa], t = [-sa, ca];
     const drda = [rho * t[0], rho * t[1]];
@@ -59,13 +59,28 @@ function refine(integ, y, h, fn, out) {
 
 /**
  * Propagate one encounter.
- * p: {mu, C, rho, rhoFar, Rbody, T, rtol, atol}
+ * p: {mu, C, rho, rhoFar, Rbody, T, rtol, atol, cx?, R1?}
+ *   cx: x of the circle centre (default P2), R1: primary radius (default 1e-3), Rbody: secondary radius.
  */
 export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSteps = 200000} = {}) {
     const {mu, C, rho, rhoFar, Rbody, T} = p;
-    const sIn = seed(alpha, beta, C, mu, rho);
+    const cx = p.cx ?? 1 - mu;
+    const R1 = Math.max(p.R1 ?? 1e-3, 1e-5), R2 = Math.max(Rbody, 1e-7);
+    const sIn = seed(alpha, beta, C, mu, rho, cx);
     if (!sIn) return {label: LABEL.FORBIDDEN, alpha, beta};
-    const rhs = makeAugRhs(mu, {withSTM, e1: 0.01, e2: rho / 10});
+    const x2 = 1 - mu;
+    const r2of = (v) => Math.hypot(v[0] - x2, v[1]);
+    const r1of = (v) => Math.hypot(v[0] + mu, v[1]);
+    const rcOf = (v) => Math.hypot(v[0] - cx, v[1]);
+    const sJac = seedJacobian(alpha, beta, C, mu, rho, cx);
+    if (r2of(sIn) <= R2 || r1of(sIn) <= R1) {
+        // The entry point itself lies inside a body.
+        return {
+            label: LABEL.COLLISION, alpha, beta, sIn, exitY: null, rPeri: rho, nPasses: 0,
+            traj: record ? [sIn[0], sIn[1]] : null, sJac,
+        };
+    }
+    const rhs = makeAugRhs(mu, {withSTM, e1: 0.01, e2: Math.min(rho, hillRadius(mu)) / 10});
     const integ = new Dopri5(21, rhs, {rtol: p.rtol ?? 1e-12, atol: p.atol ?? 1e-12, nerr: 4});
     const y = new Float64Array(21), yn = new Float64Array(21), yr = new Float64Array(21);
     y.set(sIn);
@@ -73,9 +88,6 @@ export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSt
         y[4] = y[9] = y[14] = y[19] = 1;
     }
     rhs(y, integ.k1);
-    const x2 = 1 - mu;
-    const r2of = (v) => Math.hypot(v[0] - x2, v[1]);
-    const r1of = (v) => Math.hypot(v[0] + mu, v[1]);
     const traj = record ? [y[0], y[1]] : null;
     let h = 1e-4, outside = false, passes = 1, exitY = null, rPeri = rho, label = null;
 
@@ -83,16 +95,16 @@ export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSt
         if (y[20] >= T) break;
         const err = integ.attempt(y, h, yn);
         if (err <= 1) {
-            const ra = r2of(y), rb = r2of(yn);
+            const ra = rcOf(y), rb = rcOf(yn);
             let refined = false;
             if (rb < rPeri) rPeri = rb;
-            if (rb <= Rbody || r1of(yn) < 1e-3) {
+            if (r2of(yn) <= R2 || r1of(yn) <= R1) {
                 label = LABEL.COLLISION;
                 if (record) traj.push(yn[0], yn[1]);
                 break;
             }
             if (!outside && ra < rho && rb >= rho) {
-                refine(integ, y, h, (v) => r2of(v) - rho, yr);
+                refine(integ, y, h, (v) => rcOf(v) - rho, yr);
                 exitY = Float64Array.from(yr);
                 outside = true;
                 refined = true;
@@ -113,8 +125,5 @@ export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSt
     }
     if (label === null) label = outside && exitY ? (passes === 1 ? LABEL.EXIT : LABEL.MULTIPASS) : LABEL.CAPTURED;
     if (label !== LABEL.EXIT && label !== LABEL.MULTIPASS) exitY = null;
-    return {
-        label, alpha, beta, sIn, exitY, rPeri, nPasses: passes, traj,
-        sJac: seedJacobian(alpha, beta, C, mu, rho),
-    };
+    return {label, alpha, beta, sIn, exitY, rPeri, nPasses: passes, traj, sJac};
 }

@@ -59,10 +59,13 @@ function getter(grid, L) {
 function percentile(sorted, q) {
     return sorted.length ? sorted[Math.floor(q * (sorted.length - 1))] : 0;
 }
+/** Stride that keeps percentile estimates to ≲ 400k samples on large grids. */
+const sampleStride = (n) => Math.max(1, Math.floor(n / 400000)) | 1;
+
 
 export function computeRange(grid, L) {
-    const get = getter(grid, L), vals = [];
-    for (let k = 0; k < grid.N * grid.N; k++) {
+     const get = getter(grid, L), vals = [], n = grid.N * grid.N, st = sampleStride(n);
+     for (let k = 0; k < n; k += st) {
         if (!isExitLabel(grid.label[k])) continue;
         const v = get(k);
         if (Number.isFinite(v)) vals.push(L.map === 'div' ? Math.abs(v) : v);
@@ -93,7 +96,12 @@ export function colorize(grid, key) {
     const dim = (l) => LABEL_COLORS[l].map((v) => v * 0.35);
     if (key === 'sig') {
         const det = grid.post?.detH;
-        const ld = det ? Array.from(det).filter(Number.isFinite).map((v) => Math.log10(Math.abs(v) + 1e-300)).sort((a, b) => a - b) : [];
+         const ld = [];
+         if (det) {
+             const st = sampleStride(det.length);
+             for (let k = 0; k < det.length; k += st) if (Number.isFinite(det[k])) ld.push(Math.log10(Math.abs(det[k]) + 1e-300));
+             ld.sort((a, b) => a - b);
+         }
         const lo = percentile(ld, 0.02), hi = percentile(ld, 0.98) || lo + 1;
         for (let k = 0; k < N * N; k++) {
             const s = grid.post?.sig[k];

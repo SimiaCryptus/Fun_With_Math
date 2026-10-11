@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-10T00:11:07.771Z",
+    "generatedAt": "2026-10-10T21:31:37.731Z",
     "counts": {
         "lab": 24,
         "essay": 6,
@@ -124,7 +124,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/rcc.git",
                 "branch": "main",
-                "commit": "a53cf15427300096854eecefbebb58ce9446e194",
+                "commit": "e3beb8e7ed1b1d0abfe759bab1b446def73c06f3",
                 "path": "numbers/RCC",
                 "submodule": true
             },
@@ -166,7 +166,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/pi-rcc.git",
                 "branch": "main",
-                "commit": "ec3dadfbc8aca31f78d176535effa4ae9b937753",
+                "commit": "70ac68c2b2cb2f99b83985d35af8e0b94862f258",
                 "path": "numbers/PI_RCC",
                 "submodule": true
             },

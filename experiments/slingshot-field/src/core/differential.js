@@ -9,7 +9,7 @@ import {isExitLabel} from './conventions.js';
 export function postprocess(grid) {
     const {N, label, data} = grid;
     const n = N * N, da = (2 * Math.PI) / N, db = Math.PI / N;
-    const H00 = new Float64Array(n).fill(NaN), H01 = H00.slice(), H11 = H00.slice();
+     const H00 = new Float32Array(n).fill(NaN), H01 = H00.slice(), H11 = H00.slice();
     const detH = H00.slice(), sig = H00.slice(), asym = H00.slice();
     const ok = (k, l) => label[k] === l && data[k * NF + F.flip] === 0 && Number.isFinite(data[k * NF + F.gA]);
     const g = (k, c) => data[k * NF + c];

@@ -193,6 +193,28 @@ button:hover {
     font-size: 11px;
     white-space: pre-wrap;
 }
+.sep {
+     margin: 8px 0 3px;
+     padding-top: 5px;
+     border-top: 1px solid #262c38;
+     font-weight: 600;
+     color: #bcc;
+}
+button:disabled {
+     opacity: 0.45;
+     cursor: default;
+}
+#pbar {
+     flex: 1;
+     min-width: 80px;
+     height: 10px;
+}
+#pstat {
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     max-width: 260px;
+}
 
 pre {
     font-size: 10.5px;

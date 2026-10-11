@@ -78,7 +78,9 @@ export class PhysicalView extends OrthoView {
             depthTest: false
         }));
         pts.renderOrder = 4;
-        this.markers.add(pts, circle(x2, 0, p.rho, 0x66ccff), circle(x2, 0, p.rhoFar, 0x335566), circle(x2, 0, p.Rbody, 0xaaaaaa, 64));
+         const cx = p.cx ?? x2;
+         this.markers.add(pts, circle(cx, 0, p.rho, 0x66ccff), circle(cx, 0, p.rhoFar, 0x335566), circle(x2, 0, p.Rbody, 0xaaaaaa, 64));
+         if (p.R1 > 0) this.markers.add(circle(-p.mu, 0, p.R1, 0xccaa66, 128));
     }
 
     setC(C) {
@@ -102,7 +104,7 @@ export class PhysicalView extends OrthoView {
             side: THREE.DoubleSide,
             depthTest: false
         }));
-        m.position.x = 1 - this.p.mu;
+         m.position.x = this.p.cx ?? 1 - this.p.mu;
         m.renderOrder = 2;
         this.ringG.add(m);
     }
@@ -146,10 +148,14 @@ export class PhysicalView extends OrthoView {
         this.updateCam();
     }
 
-    fitSecondary() {
-        this.cx = 1 - this.p.mu;
+     /** Zoom to the encounter circles (centred on P2, P1 or the barycentre). */
+     fitCircle() {
+         this.cx = this.p.cx ?? 1 - this.p.mu;
         this.cy = 0;
         this.hh = this.p.rhoFar * 1.3;
         this.updateCam();
     }
+     fitSecondary() {
+         this.fitCircle();
+     }
 }
