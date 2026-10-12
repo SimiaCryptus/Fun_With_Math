@@ -10,6 +10,7 @@ import {postprocess} from './core/differential.js';
 import {propagate, seed} from './core/encounter.js';
 import {inertialEnergy, inertialVel, jacobi, keplerE1, omega} from './core/cr3bp.js';
 import {patchedConicPredict} from './core/patchedConic.js';
+import {fmtEnergy, fmtLen, fmtTime, fmtVel, unitsOf} from './core/units.js';
 import {applyImpulse, BasisWalker, propagateShip, SHIP_PRESETS, shipPath} from './core/ship.js';
 import {WorkerPool} from './compute/workerPool.js';
 import {ViewRenderer} from './render/renderer.js';
@@ -28,7 +29,7 @@ const $ = (id) => document.getElementById(id);
 const TWO_PI = 2 * Math.PI;
 const deg = (r) => ((r * 180) / Math.PI).toFixed(2);
 const CENTER_NAME = {secondary: 'P2', primary: 'P1', barycentre: 'the barycentre'};
-const PARAM_IDS = ['mu', 'Lkm', 'R1km', 'R2km', 'center', 'rhoFactor', 'kFar', 'N', 'T', 'rtol',
+const PARAM_IDS = ['mu', 'Lkm', 'R1km', 'R2km', 'GMkm', 'center', 'rhoFactor', 'kFar', 'N', 'T', 'rtol',
       'mode', 'shipPreset', 'shipDv', 'shipSpan', 'viewN', 'ringReduce', 'relief3d'];
 /** Checkbox options persisted in the URL. */
 const CHECK_IDS = ['showPot', 'showZvc', 'showRing', 'showQuiver', 'showStream', 'showGlyph', 'show3d', 'inertial'];
@@ -120,13 +121,33 @@ function fillPreset(key) {
     $('Lkm').value = s.L;
     $('R1km').value = s.R1;
     $('R2km').value = s.R2;
+    $('GMkm').value = s.GM;
 }
+/** Physical units of the system currently entered in the System panel (or null). */
+const curUnits = () => unitsOf({L: +$('Lkm').value, GM: +$('GMkm').value});
+/** Physical-unit hints next to T, |Δv| and the path span. */
+function updateUnitHints() {
+    const U = curUnits();
+    if (!U) {
+        $('Tphys').textContent = '';
+        $('shipPhys').textContent = '';
+        return;
+    }
+    const T = +$('T').value, dv = +$('shipDv').value, span = +$('shipSpan').value;
+    $('Tphys').textContent = Number.isFinite(T) && T > 0
+        ? `T ≈ ${fmtTime(T, U)}  (${(T / TWO_PI).toFixed(2)} rev)` : '';
+    $('shipPhys').textContent =
+        (Number.isFinite(dv) ? `|Δv| ≈ ${fmtVel(dv, U)}` : '') +
+        (Number.isFinite(span) && span > 0 ? `   span ≈ ${fmtTime(span, U)}` : '');
+}
+
 
 function validate() {
     const mu = +$('mu').value, L = +$('Lkm').value, R1 = +$('R1km').value, R2 = +$('R2km').value;
     if (!(mu > 0 && mu <= 0.5)) return 'μ must lie in (0, 0.5]';
     if (!(L > 0)) return 'L must be > 0';
     if (!(R1 >= 0) || !(R2 >= 0)) return 'radii must be ≥ 0';
+    if (!(+$('GMkm').value > 0)) return 'GM must be > 0';
     if (!(+$('rhoFactor').value > 0)) return 'ρ / r_H must be > 0';
     if (!(+$('kFar').value > 1)) return 'k_far must be > 1';
     if (!(+$('T').value > 0)) return 'T must be > 0';
@@ -144,6 +165,7 @@ function params() {
     const p = {
         system: $('system').value, mode: 'encounter', dom: FULL_DOMAIN,
         mu, L, R1: +$('R1km').value / L, Rbody: +$('R2km').value / L,
+        GM: +$('GMkm').value,
         center, cx, mc: m,
         C: +$('Cnum').value, rho, rhoFar: rho * +$('kFar').value,
         T: +$('T').value, rtol: +$('rtol').value, atol: +$('rtol').value, N: +$('N').value,
@@ -239,6 +261,7 @@ function updateJourney() {
          return;
      }
      const mu = +$('mu').value, legs = journeyLegs(), E = (s) => inertialEnergy(s, mu);
+     const U = curUnits();
      let dvTot = 0, time = 0, eBurn = 0, eCoast = 0, nBurns = 0, r1min = Infinity, r2min = Infinity;
      const trails = [];
      // Total mission time up to the current state (t = 0 of the inertial display).
@@ -261,7 +284,8 @@ function updateJourney() {
              }
              const t0 = time - b.t - total; // start of this leg, relative to the current state
              trails.push({pts: b.trail, t: b.trailT ? b.trailT.map((v) => v + t0) : null});
-             li.textContent = `${k}. T+${time.toFixed(3)}  θ ${deg(b.theta)}°  |Δv| ${b.dv}\n` +
+             li.textContent = `${k}. T+${time.toFixed(3)}${U ? ` (${fmtTime(time, U)})` : ''}  θ ${deg(b.theta)}°\n` +
+                 `   |Δv| ${b.dv}${U ? ` (${fmtVel(b.dv, U)})` : ''}\n` +
                  `   ΔE coast ${fmtS(coast)}  burn ${fmtS(burnE)}\n` +
                  `   C ${b.Cbefore.toFixed(5)} → ${b.Cafter.toFixed(5)}`;
          }
@@ -278,14 +302,15 @@ function updateJourney() {
      });
      const s0 = legs[0].s0, s1 = S.ship.s0, E0 = E(s0), E1 = E(s1), K1 = keplerE1(s1, mu);
      const lines = [
-         `burns ${nBurns}   total |Δv| ${dvTot.toPrecision(4)}`,
-         `mission time ${time.toFixed(3)}  (${(time / TWO_PI).toFixed(2)} rev)`,
+         `burns ${nBurns}   total |Δv| ${dvTot.toPrecision(4)}${U ? ` (${fmtVel(dvTot, U)})` : ''}`,
+         `mission time ${time.toFixed(3)}  (${(time / TWO_PI).toFixed(2)} rev${U ? `, ${fmtTime(time, U)}` : ''})`,
          `E  ${E0.toFixed(6)} → ${E1.toFixed(6)}  (${fmtS(E1 - E0)})`,
          `   from burns ${fmtS(eBurn)}   from gravity ${fmtS(eCoast)}`,
      ];
      if (dvTot > 0) lines.push(`   gravity ΔE per unit |Δv| ${(eCoast / dvTot).toPrecision(3)}`);
      lines.push(`C  ${jacobi(s0, mu).toFixed(6)} → ${jacobi(s1, mu).toFixed(6)}`);
      if (Number.isFinite(r2min)) lines.push(`closest  r₂ ${r2min.toExponential(3)}  r₁ ${r1min.toExponential(3)}`);
+     if (Number.isFinite(r2min) && U) lines.push(`         r₂ ${fmtLen(r2min, U)}  r₁ ${fmtLen(r1min, U)}  (centre distances)`);
      lines.push(`about P1: ${K1 < 0 ? 'bound' : 'unbound (escape)'}  (E₁ = ${K1.toPrecision(4)})`);
      $('journeyStats').textContent = lines.join('\n');
      phys.setJourney(trails);
@@ -313,11 +338,16 @@ function onSystem(keepC, resetShip = false) {
     S.lps = lagrangePoints(p0.mu);
     const [L1, L2, L3] = S.lps;
     const cBodyR = p0.center === 'primary' ? p0.R1 : p0.center === 'secondary' ? p0.Rbody : 0;
+    const U = unitsOf(p0), rH = hillRadius(p0.mu);
     $('muInfo').textContent =
-        `r_H = ${hillRadius(p0.mu).toExponential(4)}  ρ = ${p0.rho.toExponential(4)}\n` +
+        `r_H = ${rH.toExponential(4)}  (${fmtLen(rH, U)})\n` +
+        `ρ = ${p0.rho.toExponential(4)}  (${fmtLen(p0.rho, U)})\n` +
         `R₁ = ${p0.R1.toExponential(3)}  R₂ = ${p0.Rbody.toExponential(3)}  (units of L)\n` +
+        `time unit ${fmtTime(1, U)} · period 2π = ${fmtTime(TWO_PI, U)}\n` +
+        `velocity unit ${fmtVel(1, U)} · energy unit ${fmtEnergy(1, U)}\n` +
         `Σ centred on ${CENTER_NAME[p0.center]} at x = ${p0.cx.toFixed(6)}` +
         (cBodyR >= p0.rho ? '\n⚠ ρ lies inside the central body: every entry collides' : '');
+    updateUnitHints();
     $('Cticks').textContent = `C_L1 = ${L1.C.toFixed(5)}  C_L2 = ${L2.C.toFixed(5)}\nC_L3 = ${L3.C.toFixed(5)}  C_L4,5 = ${S.lps[3].C.toFixed(5)}`;
     $('C').min = L3.C - 0.05;
     $('C').max = L1.C + 0.05;
@@ -368,6 +398,7 @@ function readHash() {
     if (!$('mode').value) $('mode').value = 'encounter';
     if (!$('shipPreset').value) $('shipPreset').value = Object.keys(SHIP_PRESETS)[0];
     if (!$('viewN').value) $('viewN').value = '256';
+    if (!(+$('GMkm').value > 0)) $('GMkm').value = String(SYSTEMS[DEFAULTS.system].GM);
     if (q.has('layer') && SCALAR_LAYERS[q.get('layer')]) $('scalar').value = q.get('layer');
      if (!$('ringReduce').value) $('ringReduce').value = 'mean';
      for (const id of CHECK_IDS) if (q.has(id)) $(id).checked = q.get(id) === '1';
@@ -813,6 +844,20 @@ function pickIndex(g, i, j) {
         const v = g.post[n][k];
         if (Number.isFinite(v)) rows.push([`${n.padEnd(12)} ${v.toPrecision(6)}`, FIELD_DESC[n]]);
     }
+    const U = unitsOf(p);
+    if (U) {
+        const fv = (f) => g.data[k * NF + F[f]];
+        const pr = [];
+        if (p.mode === 'ship') pr.push([`|Δv| burn    ${fmtVel(p.ship.dv, U)}`, 'Impulse magnitude in physical units.']);
+        if (Number.isFinite(fv('tau'))) pr.push([`τ            ${fmtTime(fv('tau'), U)}`, 'Time of flight (coast horizon in spaceship mode) in physical time.']);
+        if (Number.isFinite(fv('dE'))) pr.push([`ΔE           ${fmtEnergy(fv('dE'), U)}`, 'Specific inertial energy change (km²/s² = MJ/kg).']);
+        if (Number.isFinite(fv('dvx')) && Number.isFinite(fv('dvy'))) {
+            pr.push([`|Δv_I|       ${fmtVel(Math.hypot(fv('dvx'), fv('dvy')), U)}`, 'Magnitude of the inertial velocity change across the encounter / coast.']);
+        }
+        if (Number.isFinite(fv('rPeri'))) pr.push([`r_peri       ${fmtLen(fv('rPeri'), U)}`, 'Closest approach to the centre of the encounter circle.']);
+        if (Number.isFinite(fv('rMin2'))) pr.push([`r₂,min       ${fmtLen(fv('rMin2'), U)}`, 'Closest approach to the centre of P2.']);
+        if (pr.length) rows.push(['— physical units —', `Conversions with L = ${U.L} km and GM = ${U.GM} km³/s² (time unit ${fmtTime(1, U)}, velocity unit ${fmtVel(1, U)}).`], ...pr);
+    }
     if (p.mode === 'ship') {
         rows.push(['— press Navigate to fly this burn —', 'The post-burn orbit becomes your new path and the map is replotted around it.']);
     } else {
@@ -885,7 +930,8 @@ function manifoldTip(e, h) {
     let lines;
     if (isShip()) {
         const span = S.grid?.meta.ship?.span ?? +$('shipSpan').value;
-        lines = [`t = ${((a / TWO_PI) * span).toFixed(4)}  (time along the current path)`,
+        const tt = (a / TWO_PI) * span, U = curUnits();
+        lines = [`t = ${tt.toFixed(4)}${U ? ` ≈ ${fmtTime(tt, U)}` : ''}  (time along the current path)`,
             `θ = ${deg(b)}°  (impulse direction from velocity${Math.abs(b) < 0.1 ? ', prograde' : Math.abs(b) > 3.04 ? ', retrograde' : ''})`];
     } else {
         lines = [`α = ${deg(a)}°  (entry position on the ρ circle)`, `β = ${deg(b)}°  (entry angle from inward normal${b > 0 ? ', prograde' : b < 0 ? ', retrograde' : ''})`];
@@ -1036,10 +1082,11 @@ $('system').onchange = () => {
     if ($('system').value !== 'custom') fillPreset($('system').value);
     if (onSystem(false, true)) compute();
 };
-for (const id of ['mu', 'Lkm', 'R1km', 'R2km']) $(id).onchange = () => {
+for (const id of ['mu', 'Lkm', 'R1km', 'R2km', 'GMkm']) $(id).onchange = () => {
     $('system').value = 'custom';
     if (onSystem(true, true)) compute();
 };
+for (const id of ['T', 'shipDv', 'shipSpan']) $(id).addEventListener('input', updateUnitHints);
 for (const id of ['center', 'rhoFactor', 'kFar']) $(id).onchange = () => {
     if (onSystem(true)) compute();
 };

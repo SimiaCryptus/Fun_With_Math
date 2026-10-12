@@ -44,6 +44,7 @@
     <label data-tip="Separation of the primaries in km. Only used to normalize the physical radii.">L [km] <input id="Lkm" min="0" step="any" type="number"></label>
     <label data-tip="Physical radius of the primary P1 in km. Trajectories reaching it are labelled 'collision'.">R₁ [km] <input id="R1km" min="0" step="any" type="number"></label>
     <label data-tip="Physical radius of the secondary P2 in km. Trajectories reaching it are labelled 'collision'.">R₂ [km] <input id="R2km" min="0" step="any" type="number"></label>
+    <label data-tip="Gravitational parameter G(m₁+m₂) of the pair in km³/s². With L it fixes the physical units: time unit √(L³/GM) (the primaries' period is 2π of these), velocity unit L·n.">GM [km³/s²] <input id="GMkm" min="0" step="any" type="number"></label>
 </div>
 
 <div class="panel" data-title="Initial conditions" data-width="270" id="p-initial"
@@ -88,6 +89,7 @@
     <label data-tip="Orbit the ship starts on (circular two-body orbit expressed in the rotating frame).">Start orbit <select id="shipPreset"></select></label>
     <label data-tip="Impulse magnitude in normalized velocity units (separation × angular rate). Instant and unbudgeted; changing it replots the map.">|Δv| <input id="shipDv" min="0" step="0.01" type="number" value="0.05"></label>
     <label data-tip="Length (in time) of the current path shown along the horizontal axis of the map. 2π = one revolution of the primaries.">Path span <input id="shipSpan" min="0.1" step="0.5" type="number" value="6.2832"></label>
+    <div class="info" id="shipPhys" data-tip="The impulse and the path span converted to physical units of the current system."></div>
     <div class="row">
          <button class="primary" id="shipGo" data-tip="Fly the selected burn: the post-burn orbit becomes the new path and the map is replotted.">Navigate</button>
         <button id="shipBack" data-tip="Undo the last navigation.">Back</button>
@@ -121,6 +123,7 @@
         <option>512</option>
     </select></label>
     <label data-tip="Encounter mode: maximum integration time (trajectories not exited by T are 'captured'). Spaceship mode: the coast horizon after each burn. 2π = one revolution of the primaries.">T <input id="T" step="1" type="number" value="20"></label>
+    <div class="info" id="Tphys" data-tip="The time limit / coast horizon T in physical time of the current system."></div>
     <label data-tip="Relative (and absolute) error tolerance of the adaptive Dormand–Prince 5(4) integrator. Smaller = more accurate but slower.">rtol <select id="rtol">
         <option>1e-10</option>
         <option selected>1e-11</option>
