@@ -31,7 +31,7 @@ const CENTER_NAME = {secondary: 'P2', primary: 'P1', barycentre: 'the barycentre
 const PARAM_IDS = ['mu', 'Lkm', 'R1km', 'R2km', 'center', 'rhoFactor', 'kFar', 'N', 'T', 'rtol',
       'mode', 'shipPreset', 'shipDv', 'shipSpan', 'viewN', 'ringReduce', 'relief3d'];
 /** Checkbox options persisted in the URL. */
-const CHECK_IDS = ['showPot', 'showZvc', 'showRing', 'showQuiver', 'showStream', 'showGlyph', 'show3d'];
+const CHECK_IDS = ['showPot', 'showZvc', 'showRing', 'showQuiver', 'showStream', 'showGlyph', 'show3d', 'inertial'];
 
 installPanels();
 installTips();
@@ -212,8 +212,9 @@ function updateShip() {
     }
     const p = params(), s = S.ship.s0;
     setC(p.C, false);
-    S.basisPts = shipPath(s, p);
-    phys.setBasis(S.basisPts);
+    const tb = [];
+    S.basisPts = shipPath(s, p, 800, tb);
+    phys.setBasis(S.basisPts, tb);
     $('shipInfo').textContent =
         `${S.ship.origin}\n` +
         `(x, y) = (${s[0].toFixed(5)}, ${s[1].toFixed(5)})\n` +
@@ -240,6 +241,8 @@ function updateJourney() {
      const mu = +$('mu').value, legs = journeyLegs(), E = (s) => inertialEnergy(s, mu);
      let dvTot = 0, time = 0, eBurn = 0, eCoast = 0, nBurns = 0, r1min = Infinity, r2min = Infinity;
      const trails = [];
+     // Total mission time up to the current state (t = 0 of the inertial display).
+     const total = legs.reduce((s, l, k) => s + (k && l.burn ? l.burn.t : 0), 0);
      legs.forEach((leg, k) => {
          const b = leg.burn, li = document.createElement('li');
          if (k === 0 || !b) {
@@ -256,7 +259,8 @@ function updateJourney() {
                  r1min = Math.min(r1min, Math.hypot(x + mu, y));
                  r2min = Math.min(r2min, Math.hypot(x - 1 + mu, y));
              }
-             trails.push(b.trail);
+             const t0 = time - b.t - total; // start of this leg, relative to the current state
+             trails.push({pts: b.trail, t: b.trailT ? b.trailT.map((v) => v + t0) : null});
              li.textContent = `${k}. T+${time.toFixed(3)}  θ ${deg(b.theta)}°  |Δv| ${b.dv}\n` +
                  `   ΔE coast ${fmtS(coast)}  burn ${fmtS(burnE)}\n` +
                  `   C ${b.Cbefore.toFixed(5)} → ${b.Cafter.toFixed(5)}`;
@@ -331,7 +335,7 @@ function onSystem(keepC, resetShip = false) {
     const p = params();
     phys.setSystem(p, S.lps);
     updateShip();
-    if (isShip() && S.basisPts) phys.fitPoints(S.basisPts); else phys.fitCircle();
+    if (isShip() && S.basisPts) phys.fitBasis(); else phys.fitCircle();
     request();
     return true;
 }
@@ -679,11 +683,12 @@ function navigate() {
     const t = (S.sel.a / TWO_PI) * p.ship.span;
      const {sPost, dv} = applyImpulse(sb, S.sel.b, p.ship.dv, p.mu);
      // The leg actually flown: the basis path from its start up to the burn point.
-     const trail = shipPath(p.ship.s0, {...p, ship: {...p.ship, span: t}}, Math.max(32, Math.min(1500, Math.ceil(t * 120))));
+     const trailT = [];
+     const trail = shipPath(p.ship.s0, {...p, ship: {...p.ship, span: t}}, Math.max(32, Math.min(1500, Math.ceil(t * 120))), trailT);
      const burn = {
          t, theta: S.sel.b, dv: p.ship.dv, dvVec: dv, at: [sb[0], sb[1]],
          Ebefore: inertialEnergy(sb, p.mu), Eafter: inertialEnergy(sPost, p.mu),
-         Cbefore: jacobi(sb, p.mu), Cafter: jacobi(sPost, p.mu), trail,
+         Cbefore: jacobi(sb, p.mu), Cafter: jacobi(sPost, p.mu), trail, trailT,
      };
     S.shipHist.push(S.ship);
      S.ship = {s0: sPost, origin: `after burn at t = ${t.toFixed(3)}, θ = ${deg(S.sel.b)}°, |Δv| = ${p.ship.dv}`, burn};
@@ -705,16 +710,17 @@ function shipBack() {
 function integrateOrbit(p, a, b) {
      if (p.mode === 'ship') {
          const sb = basisStateAt(p, a);
-         return {sb, r: sb ? propagateShip(sb, b, p, {withSTM: false, record: true}) : null};
+         const t0 = Math.max(0, (a / TWO_PI) * p.ship.span);
+         return {sb, t0, r: sb ? propagateShip(sb, b, p, {withSTM: false, record: true}) : null};
      }
      const r = propagate(a, b, p, {withSTM: false, record: true});
-     return {sb: null, r: r.sIn ? r : null};
+     return {sb: null, t0: 0, r: r.sIn ? r : null};
 }
-/** Arguments for phys.setTrajectory, or null. */
-const orbitArgs = (r) => (r ? [
-     {pts: r.traj},
-     {at: r.sIn, v: inertialVel(r.sIn)},
-     r.exitY ? {at: [r.exitY[0], r.exitY[1]], v: inertialVel(r.exitY)} : null,
+/** Arguments for phys.setTrajectory, or null. Times are relative to t = 0 of the display (t0 = start of the orbit). */
+const orbitArgs = ({r, t0 = 0}) => (r ? [
+     {pts: r.traj, t: r.trajT ? r.trajT.map((v) => v + t0) : null},
+     {at: r.sIn, v: inertialVel(r.sIn), t: t0},
+     r.exitY ? {at: [r.exitY[0], r.exitY[1]], v: inertialVel(r.exitY), t: t0 + r.exitY[20]} : null,
 ] : null);
 function showOrbit(args) {
      if (args) phys.setTrajectory(...args); else phys.setTrajectory(null);
@@ -740,7 +746,7 @@ function previewAt(a, b) {
          if (!PV.on || !PV.at) return;
          const [pa, pb] = PV.at, g = gridAt(pa, pb);
          if (!g) return;
-         showOrbit(orbitArgs(integrateOrbit(previewParams(g.meta), pa, pb).r));
+         showOrbit(orbitArgs(integrateOrbit(previewParams(g.meta), pa, pb)));
      });
 }
 /** Stop the live preview and restore the selected trajectory. */
@@ -775,8 +781,8 @@ function pickIndex(g, i, j) {
     const tables = labelTables(), inView = g === S.view;
     S.sel = {a, b};
     man.setCross(a, b);
-     const {r, sb} = integrateOrbit(p, a, b);
-     S.selTraj = orbitArgs(r);
+     const orb = integrateOrbit(p, a, b), {r, sb} = orb;
+     S.selTraj = orbitArgs(orb);
      if (!PV.on) showOrbit(S.selTraj);
     let rows;
     if (p.mode === 'ship') {
@@ -923,7 +929,7 @@ function physTip(e, h) {
     if (dpx(-p.mu, 0) < 8) lines.push('P1 — primary, mass 1 − μ, at (−μ, 0)');
     if (dpx(1 - p.mu, 0) < 8) lines.push('P2 — secondary, mass μ, at (1 − μ, 0)');
     if (isShip() && S.basisPts && dpx(S.basisPts[0], S.basisPts[1]) < 8) lines.push('ship — current state (start of the cyan path)');
-    for (const L of S.lps) if (dpx(L.x, L.y) < 8) {
+    for (const L of phys.inertial ? [] : S.lps) if (dpx(L.x, L.y) < 8) {
         lines.push(`${L.name} — Lagrange point (equilibrium in the rotating frame)`,
             `C_${L.name} = ${L.C.toFixed(5)}: ${C < L.C ? 'open' : 'closed'} at the current C`);
     }
@@ -933,6 +939,8 @@ function physTip(e, h) {
     else if (Math.abs(rc - p.rhoFar) < tol) lines.push(`outer circle ρ_far = ${p.rhoFar.toExponential(3)}: encounter complete when reached`);
     else if (Math.abs(r2 - p.Rbody) < tol) lines.push(`surface of P2 (R₂ = ${p.Rbody.toExponential(3)}): collision threshold`);
     else if (p.R1 > 0 && Math.abs(r1 - p.R1) < tol) lines.push(`surface of P1 (R₁ = ${p.R1.toExponential(3)}): collision threshold`);
+    else if (phys.inertial && Math.abs(Math.hypot(x, y) - (1 - p.mu)) < tol) lines.push('orbit of P2 about the barycentre (radius 1 − μ, period 2π)');
+    else if (phys.inertial && Math.abs(Math.hypot(x, y) - p.mu) < tol) lines.push('orbit of P1 about the barycentre (radius μ, period 2π)');
     else if (!isShip() && $('showRing').checked && S.grid && rc > 1.04 * p.rho && rc < 1.3 * p.rho) {
         let a = Math.atan2(y, x - cx);
         if (a < 0) a += TWO_PI;
@@ -941,11 +949,17 @@ function physTip(e, h) {
         lines.push(`ΔE ring at α = ${deg(a)}°: ${mode} over β = ${rv == null ? 'no exits' : rv.toPrecision(4)}`);
     }
     if (lines.length) lines.push('');
-    const om = omega(x, y, p.mu), z = 2 * om - C;
-    lines.push(`x = ${x.toFixed(5)}  y = ${y.toFixed(5)}`,
-        `r_Σ = ${rc.toPrecision(4)}  (${(rc / p.rho).toFixed(2)} ρ)   r₁ = ${r1.toPrecision(4)}  r₂ = ${r2.toPrecision(4)}`,
-        `Ω = ${om.toPrecision(6)}`,
-        z >= 0 ? `|v|² = 2Ω − C = ${z.toPrecision(4)}  (accessible)` : `2Ω − C = ${z.toPrecision(4)} < 0  (forbidden at this C)`);
+    if (phys.inertial) {
+        lines.push(`X = ${x.toFixed(5)}  Y = ${y.toFixed(5)}  (inertial, axes of t = 0)`,
+            `r = ${Math.hypot(x, y).toPrecision(4)} from the barycentre`,
+            `r_Σ = ${rc.toPrecision(4)}  r₁ = ${r1.toPrecision(4)}  r₂ = ${r2.toPrecision(4)}  (bodies at t = 0)`);
+    } else {
+        const om = omega(x, y, p.mu), z = 2 * om - C;
+        lines.push(`x = ${x.toFixed(5)}  y = ${y.toFixed(5)}`,
+            `r_Σ = ${rc.toPrecision(4)}  (${(rc / p.rho).toFixed(2)} ρ)   r₁ = ${r1.toPrecision(4)}  r₂ = ${r2.toPrecision(4)}`,
+            `Ω = ${om.toPrecision(6)}`,
+            z >= 0 ? `|v|² = 2Ω − C = ${z.toPrecision(4)}  (accessible)` : `2Ω − C = ${z.toPrecision(4)} < 0  (forbidden at this C)`);
+    }
     if (isShip()) lines.push('', 'cyan = current path of the ship (the map’s basis)');
     if (S.traj) lines.push('', isShip() ? 'picked burn: post-burn coast, yellow → blue with time;' : 'picked trajectory: yellow → blue with time;',
         'green arrow = inertial v_in, red arrow = inertial v_out');
@@ -1071,7 +1085,7 @@ $('shipSpan').onchange = () => {
 $('shipGo').onclick = () => navigate();
 $('shipBack').onclick = () => shipBack();
 $('fitShip').onclick = () => {
-    if (S.basisPts) phys.fitPoints(S.basisPts);
+    if (S.basisPts) phys.fitBasis();
     RP.request();
      scheduleHash();
 };
@@ -1105,22 +1119,36 @@ for (const id of ['showQuiver', 'showStream', 'showGlyph', 'showRing', 'ringRedu
      scheduleHash();
 };
 $('showPot').onchange = () => {
-    phys.uniforms.showPot.value = +$('showPot').checked;
-    RP.request();
+    applyFrame();
      scheduleHash();
 };
 $('showZvc').onchange = () => {
-    phys.uniforms.showZvc.value = +$('showZvc').checked;
-    RP.request();
+    applyFrame();
      scheduleHash();
+};
+/** Rotating vs inertial display: the potential layers and the relief only exist in the rotating frame. */
+function applyFrame() {
+    const on = $('inertial').checked;
+    phys.setFrame(on);
+    phys.uniforms.showPot.value = +($('showPot').checked && !on);
+    phys.uniforms.showZvc.value = +($('showZvc').checked && !on);
+    for (const id of ['showPot', 'showZvc', 'show3d', 'relief3d']) $(id).disabled = on;
+    RP.request();
+}
+$('inertial').onchange = () => {
+    applyFrame();
+    apply3D();
+    scheduleHash();
 };
 function apply3D() {
      const k = +$('relief3d').value;
      phys.setRelief(Number.isFinite(k) && k >= 0 ? k : 1);
-     phys.set3D($('show3d').checked);
-     $('physCap').textContent = phys.is3D
-         ? 'rotating frame, 3D relief (height ∝ −Ω) — hover for readout · drag to orbit · right-drag to pan · wheel to zoom'
-         : 'rotating frame (x, y) about the barycentre — hover for readout · drag to pan · wheel to zoom';
+     phys.set3D($('show3d').checked && !phys.inertial);
+     $('physCap').textContent = phys.inertial
+         ? 'inertial (non-rotating) frame about the barycentre, axes of t = 0 — primaries shown at t = 0 on their orbits · drag to pan · wheel to zoom'
+         : phys.is3D
+             ? 'rotating frame, 3D relief (height ∝ −Ω) — hover for readout · drag to orbit · right-drag to pan · wheel to zoom'
+             : 'rotating frame (x, y) about the barycentre — hover for readout · drag to pan · wheel to zoom';
      RP.request();
 }
 $('show3d').onchange = () => {
@@ -1137,7 +1165,7 @@ $('journeyExport').onclick = () => {
      const log = {
          mu: +$('mu').value, start: Array.from(legs[0].s0), origin: legs[0].origin,
          burns: legs.slice(1).map((l) => {
-             const {trail, ...b} = l.burn ?? {};
+             const {trail, trailT, ...b} = l.burn ?? {};
              return {...b, sAfter: Array.from(l.s0)};
          }),
      };
@@ -1194,8 +1222,7 @@ $('center').value = DEFAULTS.center;
 const hash = readHash();
 S.mode = $('mode').value === 'ship' ? 'ship' : 'encounter';
 if (hash.ship) S.ship = {s0: hash.ship, origin: 'shared state (from link)'};
-phys.uniforms.showPot.value = +$('showPot').checked;
-phys.uniforms.showZvc.value = +$('showZvc').checked;
+applyFrame();
 syncMode();
 updateScalarTip();
 updateButtons();

@@ -10,6 +10,7 @@ import {hillRadius, LABEL} from './conventions.js';
 import {jacobi, rhs4} from './cr3bp.js';
 import {Dopri5, integrateTo, stepFactor} from './dopri5.js';
 import {makeAugRhs} from './variational.js';
+import {approachTracker} from './approach.js';
 
 const TWO_PI = 2 * Math.PI;
 
@@ -98,13 +99,15 @@ export class BasisWalker {
     }
 }
 
-/** Polyline of the basis path over [0, span] (stops at a collision). */
-export function shipPath(s0, p, n = 800) {
+/** Polyline of the basis path over [0, span] (stops at a collision). times (optional array) receives the sample times. */
+export function shipPath(s0, p, n = 800, times = null) {
     const w = new BasisWalker(s0, p), pts = [s0[0], s0[1]];
+    if (times) times.push(0);
     for (let q = 1; q <= n; q++) {
-        const s = w.at((q * p.ship.span) / n);
+        const t = (q * p.ship.span) / n, s = w.at(t);
         if (!s) break;
         pts.push(s[0], s[1]);
+        if (times) times.push(t);
     }
     return pts;
 }
@@ -115,10 +118,13 @@ export function propagateShip(sb, theta, p, {withSTM = true, record = false, max
     const {R1, R2} = bodyRadii(p);
     const {sPost, sJac} = applyImpulse(sb, theta, p.ship.dv, mu, p.ship.span / TWO_PI);
     const rcOf = (v) => Math.hypot(v[0] - cx, v[1]);
+    const near = approachTracker(mu);
+    near.update(sPost);
     const res = {
         alpha: null, beta: theta, sBurn: sb, sIn: sPost, sJac, fixedTime: true, C: jacobi(sPost, mu),
         label: LABEL.COLLISION, exitY: null, rPeri: rcOf(sPost), nPasses: 0,
         traj: record ? [sPost[0], sPost[1]] : null,
+        trajT: record ? [0] : null, near: near.result(),
     };
     if (hitsBody(sPost, mu, R1, R2)) return res;
     const rhs = makeAugRhs(mu, {withSTM});
@@ -132,7 +138,11 @@ export function propagateShip(sb, theta, p, {withSTM = true, record = false, max
         const last = y[20] + h >= T, hh = last ? T - y[20] : h;
         const err = integ.attempt(y, hh, yn);
         if (err <= 1) {
-            if (record) res.traj.push(yn[0], yn[1]);
+            if (record) {
+                res.traj.push(yn[0], yn[1]);
+                res.trajT.push(yn[20]);
+            }
+            near.update(yn);
             if (hitsBody(yn, mu, R1, R2)) {
                 label = LABEL.COLLISION;
                 break;
@@ -154,5 +164,6 @@ export function propagateShip(sb, theta, p, {withSTM = true, record = false, max
     res.label = label ?? LABEL.CAPTURED;
     res.exitY = res.label === LABEL.EXIT || res.label === LABEL.MULTIPASS ? exitY : null;
     res.nPasses = passes;
+    res.near = near.result();
     return res;
 }

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {OrthoView} from './renderer.js';
 import {omega} from '../core/cr3bp.js';
+import {rot2} from '../core/linalg.js';
 
 const VS = `varying vec2 vP;
 void main(){ vec4 w = modelMatrix*vec4(position,1.0); vP = w.xy; gl_Position = projectionMatrix*viewMatrix*w; }`;
@@ -81,7 +82,7 @@ gl_Position = projectionMatrix * mvPosition;`);
     m.needsUpdate = true;
 }
 
-function circle(cx, cy, r, color, n = 256) {
+function circle(cx, cy, r, color, n = 256, opacity = 1) {
     const pts = [];
     for (let i = 0; i < n; i++) {
         const t = (i / n) * 2 * Math.PI;
@@ -89,7 +90,9 @@ function circle(cx, cy, r, color, n = 256) {
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-    const l = new THREE.LineLoop(g, new THREE.LineBasicMaterial({color, depthTest: false}));
+    const l = new THREE.LineLoop(g, new THREE.LineBasicMaterial({
+        color, depthTest: false, transparent: opacity < 1, opacity,
+    }));
     l.renderOrder = 3;
     return l;
 }
@@ -155,7 +158,10 @@ export class PhysicalView extends OrthoView {
         this.lps = null;
         this._traj = null;
         this._basis = null;
+        this._basisShown = null;
         this._journey = null;
+        /** Inertial (non-rotating) display: axes coincide with the rotating frame at t = 0. */
+        this.inertial = false;
     }
 
     // ---- 3D relief
@@ -176,7 +182,7 @@ export class PhysicalView extends OrthoView {
          for (const k of Object.keys(DEFAULT_PAL)) if (pal[k]) this.pal[k] = pal[k];
          if (this.p) this.setSystem(this.p, this.lps);
          if (this._traj) this.setTrajectory(...this._traj);
-         this.setBasis(this._basis);
+         this.setBasis(this._basis?.pts ?? null, this._basis?.t ?? null);
          this.setJourney(this._journey);
      }
 
@@ -314,9 +320,10 @@ export class PhysicalView extends OrthoView {
             this.uniforms.uOmL1.value = lps[0].C / 2;
         }
         clearGroup(this.markers);
-        const x2 = 1 - p.mu, P = this.pal;
+        const x2 = 1 - p.mu, P = this.pal, inertial = this.inertial;
         const pos = [-p.mu, 0, 0, x2, 0, 0], cs = [srgb(P.p1), srgb(P.p2)];
-        for (const L of lps ?? []) {
+        // In the inertial frame the Lagrange points rotate with the primaries; they are omitted.
+        if (!inertial) for (const L of lps ?? []) {
             pos.push(L.x, L.y, 0);
             cs.push(srgb(P.lagrange));
         }
@@ -335,10 +342,46 @@ export class PhysicalView extends OrthoView {
         this.markers.add(pts, circle(cx, 0, p.rho, srgb(P.rho)), circle(cx, 0, p.rhoFar, srgb(P.rhoFar)),
             circle(x2, 0, p.Rbody, srgb(P.body), 64));
         if (p.R1 > 0) this.markers.add(circle(-p.mu, 0, p.R1, srgb(P.body1), 128));
+        if (inertial) {
+            // Circular orbits of the primaries about the barycentre (bodies drawn at t = 0).
+            this.markers.add(circle(0, 0, p.mu, srgb(P.p1), 256, 0.45), circle(0, 0, x2, srgb(P.p2), 512, 0.45));
+        }
     }
 
     setC(C) {
         this.uniforms.C.value = C;
+    }
+    /** Switch between the rotating frame and the inertial (non-rotating) frame; rebuilds the overlays. */
+    setFrame(on) {
+        on = !!on;
+        if (on === this.inertial) return;
+        this.inertial = on;
+        if (this.p) this.setSystem(this.p, this.lps);
+        if (this._traj) this.setTrajectory(...this._traj);
+        this.setBasis(this._basis?.pts ?? null, this._basis?.t ?? null);
+        this.setJourney(this._journey);
+    }
+    /** Rotating-frame polyline → displayed polyline (rotated by R(t_i) in the inertial frame). */
+    _xf(pts, t) {
+        if (!pts || !this.inertial || !t || !t.length) return pts;
+        const n = pts.length >> 1, out = new Array(2 * n);
+        for (let i = 0; i < n; i++) {
+            const ti = t[Math.min(i, t.length - 1)], c = Math.cos(ti), s = Math.sin(ti);
+            const x = pts[2 * i], y = pts[2 * i + 1];
+            out[2 * i] = c * x - s * y;
+            out[2 * i + 1] = s * x + c * y;
+        }
+        return out;
+    }
+    /** Arrow {at, v, t} (rotating axes at time t) → displayed arrow. */
+    _xv(a) {
+        if (!a || !this.inertial) return a;
+        const t = a.t ?? 0;
+        return {at: rot2(t, a.at), v: rot2(t, a.v)};
+    }
+    /** Fit the camera to the displayed basis path. */
+    fitBasis() {
+        this.fitPoints(this._basisShown);
     }
 
     setRing(colors, N, visible) {
@@ -367,12 +410,15 @@ export class PhysicalView extends OrthoView {
         this._traj = traj ? [traj, vIn, vOut] : null;
         clearGroup(this.trajG);
         if (!traj) return;
+        const pts = this._xf(traj.pts, traj.t);
+        vIn = this._xv(vIn);
+        vOut = this._xv(vOut);
         const ca = srgb(this.pal.trajStart), cb = srgb(this.pal.trajEnd);
-        const g = new THREE.BufferGeometry(), n = traj.pts.length / 2;
+        const g = new THREE.BufferGeometry(), n = pts.length / 2;
         const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
         for (let i = 0; i < n; i++) {
-            pos[3 * i] = traj.pts[2 * i];
-            pos[3 * i + 1] = traj.pts[2 * i + 1];
+            pos[3 * i] = pts[2 * i];
+            pos[3 * i + 1] = pts[2 * i + 1];
             const t = i / Math.max(1, n - 1);
             col[3 * i] = ca.r + (cb.r - ca.r) * t;
             col[3 * i + 1] = ca.g + (cb.g - ca.g) * t;
@@ -397,10 +443,12 @@ export class PhysicalView extends OrthoView {
         }
     }
 
-    /** Spaceship mode: the current basis path (dim cyan) with a marker at the ship's state. */
-    setBasis(pts) {
-        this._basis = pts;
+    /** Spaceship mode: the current basis path (dim cyan) with a marker at the ship's state. times: sample times. */
+    setBasis(raw, times = null) {
+        this._basis = raw ? {pts: raw, t: times} : null;
         clearGroup(this.basisG);
+        const pts = this._xf(raw, times);
+        this._basisShown = pts;
         if (!pts || pts.length < 2) return;
         const line = polyline(pts, new THREE.LineBasicMaterial({
             color: srgb(this.pal.basis), transparent: true, opacity: 0.75, depthTest: false
@@ -415,13 +463,14 @@ export class PhysicalView extends OrthoView {
         this.basisG.add(line, ship);
     }
 
-    /** Spaceship mode: the legs already flown (orange) with a marker at every burn. */
+    /** Spaceship mode: the legs already flown (orange) with a marker at every burn. trails: [{pts, t}]. */
     setJourney(trails) {
         this._journey = trails;
         clearGroup(this.journeyG);
         if (!trails?.length) return;
         const burns = [];
-        for (const pts of trails) {
+        for (const tr of trails) {
+            const pts = tr && this._xf(tr.pts, tr.t);
             if (!pts || pts.length < 4) continue;
             const line = polyline(pts, new THREE.LineBasicMaterial({
                 color: srgb(this.pal.journey), transparent: true, opacity: 0.6, depthTest: false

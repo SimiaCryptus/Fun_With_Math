@@ -19,7 +19,7 @@
  * Regularization: a smooth Sundman time transform dt/ds = g(r1, r2), with
  *     g = r1/(r1+ε1) · r2/(r2+ε2). The STM stays in physical coordinates.
  */
-export const CORE_VERSION = 2;
+export const CORE_VERSION = 3;
 
 export const LABEL = Object.freeze({
     FORBIDDEN: 0, EXIT: 1, COLLISION: 2, CAPTURED: 3, MULTIPASS: 4, PENDING: 255,

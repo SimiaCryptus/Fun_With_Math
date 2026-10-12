@@ -5,6 +5,7 @@ export const FIELD_NAMES = [
     'dE', 'dH', 'errEH', 'dE1', 'dvx', 'dvy', 'dvRx', 'dvRy',
     'A00', 'A01', 'A10', 'A11', 'bx', 'by', 'deltaEff', 's1', 's2', 'flip',
     'tau', 'rPeri', 'ftle', 'kappaE', 'gA', 'gB', 'alphaOut', 'betaOut', 'jacobiDrift', 'nPasses',
+    'rMin1', 'rMin2', 'dL1', 'dL2', 'dL3', 'dL4', 'dL5',
 ];
 export const NF = FIELD_NAMES.length;
 export const F = Object.fromEntries(FIELD_NAMES.map((n, i) => [n, i]));

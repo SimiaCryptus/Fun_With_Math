@@ -1,6 +1,7 @@
 import {angMom, gradEnergy, inertialEnergy, inertialVel, jacobi, keplerE1, rhs4} from './cr3bp.js';
 import {eigSym2, polar2, rot2} from './linalg.js';
 import {F} from './grid.js';
+import {APPROACH_FIELDS} from './approach.js';
 
 /** DP = D · ∂s_in/∂ξ (4×2). */
 function projectSeed(D, sJac) {
@@ -112,4 +113,8 @@ export function computeFields(r, p, out, o) {
     out[o + F.betaOut] = Math.atan2(-sOut[2] * ny + sOut[3] * nx, sOut[2] * nx + sOut[3] * ny);
     out[o + F.jacobiDrift] = Math.abs(jacobi(sOut, mu) - (r.C ?? p.C));
     out[o + F.nPasses] = r.nPasses;
+    const near = r.near;
+    APPROACH_FIELDS.forEach((name, q) => {
+        out[o + F[name]] = near && Number.isFinite(near[q]) ? near[q] : NaN;
+    });
 }

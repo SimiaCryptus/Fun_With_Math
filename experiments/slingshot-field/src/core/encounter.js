@@ -2,6 +2,7 @@ import {gradOmega, omega} from './cr3bp.js';
 import {hillRadius, LABEL} from './conventions.js';
 import {Dopri5, stepFactor} from './dopri5.js';
 import {makeAugRhs} from './variational.js';
+import {approachTracker} from './approach.js';
 
 /** Entry state on Σ_in (convention C1) about centre (cx, 0), or null if the point is in the forbidden region. */
 export function seed(alpha, beta, C, mu, rho, cx = 1 - mu) {
@@ -73,11 +74,13 @@ export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSt
     const r1of = (v) => Math.hypot(v[0] + mu, v[1]);
     const rcOf = (v) => Math.hypot(v[0] - cx, v[1]);
     const sJac = seedJacobian(alpha, beta, C, mu, rho, cx);
+    const near = approachTracker(mu);
+    near.update(sIn);
     if (r2of(sIn) <= R2 || r1of(sIn) <= R1) {
         // The entry point itself lies inside a body.
         return {
             label: LABEL.COLLISION, alpha, beta, sIn, exitY: null, rPeri: rho, nPasses: 0,
-            traj: record ? [sIn[0], sIn[1]] : null, sJac,
+            traj: record ? [sIn[0], sIn[1]] : null, trajT: record ? [0] : null, sJac, near: near.result(),
         };
     }
     const rhs = makeAugRhs(mu, {withSTM, e1: 0.01, e2: Math.min(rho, hillRadius(mu)) / 10});
@@ -89,6 +92,12 @@ export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSt
     }
     rhs(y, integ.k1);
     const traj = record ? [y[0], y[1]] : null;
+    const trajT = record ? [0] : null;
+    /** Record a state (position and physical time y[20]). */
+    const rec = (v) => {
+        traj.push(v[0], v[1]);
+        trajT.push(v[20]);
+    };
     let h = 1e-4, outside = false, passes = 1, exitY = null, rPeri = rho, label = null;
 
     for (let step = 0; step < maxSteps; step++) {
@@ -98,9 +107,10 @@ export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSt
             const ra = rcOf(y), rb = rcOf(yn);
             let refined = false;
             if (rb < rPeri) rPeri = rb;
+            near.update(yn);
             if (r2of(yn) <= R2 || r1of(yn) <= R1) {
                 label = LABEL.COLLISION;
-                if (record) traj.push(yn[0], yn[1]);
+                if (record) rec(yn);
                 break;
             }
             if (!outside && ra < rho && rb >= rho) {
@@ -114,16 +124,16 @@ export function propagate(alpha, beta, p, {withSTM = true, record = false, maxSt
             }
             if (outside && ra < rhoFar && rb >= rhoFar) {
                 label = passes === 1 ? LABEL.EXIT : LABEL.MULTIPASS;
-                if (record) traj.push(yn[0], yn[1]);
+                if (record) rec(yn);
                 break;
             }
             y.set(yn);
             if (refined) rhs(y, integ.k1); else integ.k1.set(integ.k7);
-            if (record) traj.push(y[0], y[1]);
+            if (record) rec(y);
         }
         h *= stepFactor(err);
     }
     if (label === null) label = outside && exitY ? (passes === 1 ? LABEL.EXIT : LABEL.MULTIPASS) : LABEL.CAPTURED;
     if (label !== LABEL.EXIT && label !== LABEL.MULTIPASS) exitY = null;
-    return {label, alpha, beta, sIn, exitY, rPeri, nPasses: passes, traj, sJac};
+    return {label, alpha, beta, sIn, exitY, rPeri, nPasses: passes, traj, trajT, sJac, near: near.result()};
 }
