@@ -54,8 +54,13 @@ export function effectiveTheme() {
 function applyScheme() {
     root.dataset.scheme = effectiveScheme();
 }
+let animTimer = 0;
+
 
 export function setTheme(mode) {
+    root.classList.add('theme-anim');
+    clearTimeout(animTimer);
+    animTimer = setTimeout(() => root.classList.remove('theme-anim'), 450);
     if (isTheme(mode)) root.dataset.theme = mode;
     else delete root.dataset.theme;
     applyScheme();

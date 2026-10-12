@@ -22,6 +22,17 @@ export const LABEL_COLORS = {
     [LABEL.CAPTURED]: [120, 60, 170], [LABEL.MULTIPASS]: [240, 150, 30], [LABEL.PENDING]: [12, 12, 16],
 };
 export const SIG_COLORS = [[70, 130, 220], [220, 70, 70], [80, 190, 110], [120, 120, 120]];
+const mixRGB = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+let plotBg = [7, 8, 11];
+/** Theme hook: plot background and "no data" colour as sRGB triples in [0, 1]. */
+export function setPlotTheme({bg, nodata} = {}) {
+    if (bg) plotBg = bg.map((v) => v * 255);
+    if (nodata) LABEL_COLORS[LABEL.FORBIDDEN] = nodata.map((v) => v * 255);
+    LABEL_COLORS[LABEL.PENDING] = mixRGB(plotBg, LABEL_COLORS[LABEL.FORBIDDEN], 0.35);
+}
+/** Outcome colour faded toward the plot background (samples without a value). */
+export const dimColor = (l) => mixRGB(LABEL_COLORS[l], plotBg, 0.65);
+
 
 export const SCALAR_LAYERS = {
      outcome: {name: 'L3 outcome ℓ', desc: 'Fate of each entry state: exit, multi-pass exit, collision, capture until T, or forbidden.'},
@@ -93,7 +104,7 @@ export function colorize(grid, key, rangeOverride = null) {
         for (let k = 0; k < N * N; k++) put(k, LABEL_COLORS[grid.label[k]]);
         return {rgba, range};
     }
-    const dim = (l) => LABEL_COLORS[l].map((v) => v * 0.35);
+    const dim = dimColor;
     if (key === 'sig') {
         const det = grid.post?.detH;
          const ld = [];
@@ -111,7 +122,7 @@ export function colorize(grid, key, rangeOverride = null) {
             }
             const t = (Math.log10(Math.abs(det[k]) + 1e-300) - lo) / (hi - lo || 1);
             const f = 0.35 + 0.65 * Math.min(1, Math.max(0, t));
-            put(k, SIG_COLORS[s].map((v) => v * f));
+            put(k, mixRGB(plotBg, SIG_COLORS[s], f));
         }
         return {rgba, range: [lo, hi]};
     }
@@ -148,7 +159,7 @@ export function ringColors(grid, mode = 'mean') {
             cnt++;
             acc = mode === 'max' ? Math.max(acc, v) : mode === 'min' ? Math.min(acc, v) : acc + v;
         }
-        const c = cnt ? diverging((mode === 'mean' ? acc / cnt : acc) / range[1]) : [40, 40, 40];
+        const c = cnt ? diverging((mode === 'mean' ? acc / cnt : acc) / range[1]) : mixRGB(plotBg, [128, 128, 128], 0.3);
         out.set(c.map(Math.round), i * 3);
     }
     return out;

@@ -32,7 +32,7 @@ main {
     font-size: 11px;
     letter-spacing: 0.01em;
     pointer-events: none;
-    text-shadow: 0 1px 2px oklch(0% 0 0 / 0.6);
+    text-shadow: 0 1px 2px var(--color-cap-shadow);
 }
 
 .cap.left {
@@ -60,6 +60,9 @@ main {
     border: 1px solid var(--color-border);
     border-radius: 10px;
     box-shadow: 0 12px 32px var(--color-shadow), 0 1px 0 var(--color-highlight) inset;
+    animation: panel-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 60ms);
+    transition: box-shadow 0.2s, scale 0.2s;
 }
 
 .panel > header {
@@ -67,9 +70,8 @@ main {
     align-items: center;
     gap: 6px;
     padding: 6px 8px;
-    background: linear-gradient(180deg,
-    color-mix(in oklab, var(--color-surface-3) 92%, var(--color-text) 8%),
-    var(--color-surface-3));
+    background: linear-gradient(180deg, var(--color-header-top), var(--color-header-bottom));
+    color: var(--color-header-text);
     border-bottom: 1px solid var(--color-border);
     border-radius: 10px 10px 0 0;
     cursor: move;
@@ -80,6 +82,10 @@ main {
 .panel > header.dragging {
     cursor: grabbing;
     background: var(--color-surface-active);
+}
+.panel:has(> header.dragging) {
+    scale: 1.012;
+    box-shadow: 0 22px 48px var(--color-shadow), 0 0 0 1px var(--color-accent-soft), 0 1px 0 var(--color-highlight) inset;
 }
 
 .panel > header .ttl {
@@ -108,6 +114,7 @@ main {
     padding: 8px 10px 10px;
     min-height: 0;
     overflow: auto;
+    animation: body-in 0.28s ease-out backwards;
 }
 
 .panel.collapsed {
@@ -181,11 +188,18 @@ main {
     font-size: 12px;
     color: var(--color-icon);
     box-shadow: none;
+    transition: rotate 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.15s;
 }
 
-.tog:hover {
+.panel.collapsed > header .tog {
+    rotate: -90deg;
+}
+
+.tog:hover, .tog:active {
     background: transparent;
     color: var(--color-icon-hover);
+    transform: none;
+    box-shadow: none;
 }
 
 /* ---- controls ---- */
@@ -239,6 +253,10 @@ input[type=range] {
 input[type=checkbox] {
     width: 14px;
     height: 14px;
+    transition: transform 0.15s;
+}
+input[type=checkbox]:active {
+    transform: scale(0.85);
 }
 
 button {
@@ -250,7 +268,7 @@ button {
     padding: 4px 9px;
     cursor: pointer;
     box-shadow: 0 1px 0 var(--color-highlight) inset;
-    transition: background 0.15s, border-color 0.15s, transform 0.05s, box-shadow 0.15s;
+    transition: background 0.15s, border-color 0.15s, transform 0.15s, box-shadow 0.2s;
 }
 
 button:hover {
@@ -258,8 +276,14 @@ button:hover {
     border-color: var(--color-accent);
 }
 
-button:active {
+button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--color-accent-soft), 0 1px 0 var(--color-highlight) inset;
+}
+
+button:active:not(:disabled) {
     transform: translateY(1px);
+    transition-duration: 0.05s;
 }
 
 button:focus-visible {
@@ -278,6 +302,22 @@ button.primary {
 button.primary:hover {
     background: var(--color-accent-strong);
     border-color: var(--color-accent-strong);
+}
+button.primary {
+    position: relative;
+    overflow: hidden;
+}
+button.primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, oklch(100% 0 0 / 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+}
+button.primary:hover:not(:disabled)::after {
+    transform: translateX(120%);
 }
 
 button.danger:hover:not(:disabled) {
@@ -366,6 +406,20 @@ button.primary:disabled:hover {
     background: linear-gradient(90deg, var(--color-accent), var(--color-accent-strong));
     border-radius: 999px;
 }
+body.busy #pbar::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-strong), var(--color-accent));
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+}
+body.busy #pbar::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent-strong), var(--color-accent));
+    background-size: 200% 100%;
+    animation: shimmer 1.2s linear infinite;
+}
+body.busy #p-manifold > header .ttl::before,
+body.busy #p-compute > header .ttl::before {
+    animation: dot-pulse 1s ease-in-out infinite;
+}
 
 #pstat {
     white-space: nowrap;
@@ -386,6 +440,7 @@ pre {
 
 #inspector span[data-tip] {
     border-radius: 3px;
+    animation: fade-in 0.3s ease-out backwards;
 }
 
 #inspector span[data-tip]:hover {
@@ -489,6 +544,7 @@ pre {
     color: var(--color-tip-text);
     font: 11px/1.45 ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
     white-space: pre;
+    animation: tip-in 0.14s ease-out;
 }
 
 #tip.wrap {
@@ -517,6 +573,7 @@ pre {
     cursor: pointer;
     color: var(--color-heading);
     transition: background 0.12s, border-color 0.12s;
+    animation: li-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 
 #journeyList li:hover {
@@ -560,5 +617,55 @@ pre {
 @media (prefers-reduced-motion: reduce) {
     * {
         transition: none !important;
+        animation: none !important;
+    }
+}
+/* ---- theme cross-fade (class toggled briefly by src/ui/theme.js) ---- */
+html.theme-anim, html.theme-anim * {
+    transition: background-color 0.35s, color 0.35s, border-color 0.35s, box-shadow 0.35s !important;
+}
+/* ---- keyframes ---- */
+@keyframes panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+}
+@keyframes body-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+}
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+}
+@keyframes tip-in {
+    from {
+        opacity: 0;
+        transform: translateY(3px);
+    }
+}
+@keyframes li-in {
+    from {
+        opacity: 0;
+        transform: translateX(-6px);
+    }
+}
+@keyframes shimmer {
+    to {
+        background-position: -200% 0;
+    }
+}
+@keyframes dot-pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 4px var(--color-accent);
+    }
+    50% {
+        transform: scale(1.4);
+        box-shadow: 0 0 14px var(--color-accent);
     }
 }

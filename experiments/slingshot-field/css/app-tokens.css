@@ -1,8 +1,11 @@
 /*
  Hand-maintained tokens that the theme generator (css/theme_design.html → css/themes.css) does not
- produce: accent, state colours, shadows and the colours read by the WebGL views.
- They are derived from the generated tokens where possible, and switch on data-scheme
- (set by src/ui/theme.js and the boot script in index.html from css/themes.js).
+ produce: accent, state colours, shadows, panel headers and the colours read by the WebGL views.
+ They switch on data-scheme / data-theme (set by src/ui/theme.js and the boot script in index.html).
+
+ The block "Corrections" overrides generated tokens whose current solve is broken (light surfaces
+ below 25 % L, negative-L text, a green field outline, purple-tinted grays in midnight). The selectors
+ are more specific than css/themes.css, so they win; delete them once the generator output is fixed.
 */
 :root {
     color-scheme: dark;
@@ -14,6 +17,15 @@
     --color-shadow: oklch(0% 0 0 / 0.55);
     --color-highlight: oklch(100% 0 0 / 0.04);
     --color-tip-bg: color-mix(in oklab, var(--color-canvas) 90%, transparent);
+    --color-cap-shadow: oklch(0% 0 0 / 0.6);
+
+    /* panel title bars */
+    --color-header-top: color-mix(in oklab, var(--color-surface-3) 92%, var(--color-text) 8%);
+    --color-header-bottom: var(--color-surface-3);
+    --color-header-text: var(--color-text);
+
+    /* Corrections (generated field outline is a saturated green in every dark theme) */
+    --color-border-field: oklch(46% 0.012 265.5);
 
     /* plot surfaces (CSS) and WebGL palette (read by src/main.js via cssColor) */
     --color-plot-bg: var(--color-canvas);
@@ -22,6 +34,29 @@
     --color-plot-line: color-mix(in oklab, var(--color-border-strong) 80%, var(--color-accent));
     --color-plot-forbid: color-mix(in oklab, var(--color-canvas) 60%, var(--color-border));
     --color-plot-zvc: oklch(86% 0.13 85);
+    --color-plot-nodata: oklch(22% 0.01 265);
+    --color-plot-p1: oklch(88% 0.15 90);
+    --color-plot-p2: oklch(82% 0.06 250);
+    --color-plot-lagrange: oklch(85% 0.17 150);
+    --color-plot-rho: oklch(80% 0.11 230);
+    --color-plot-rho-far: oklch(45% 0.04 230);
+    --color-plot-body: oklch(72% 0 0);
+    --color-plot-body1: oklch(75% 0.09 80);
+    --color-plot-traj-start: oklch(95% 0.17 105);
+    --color-plot-traj-end: oklch(65% 0.25 320);
+    --color-plot-vin: oklch(85% 0.2 150);
+    --color-plot-vout: oklch(68% 0.2 15);
+    --color-plot-basis: oklch(70% 0.09 225);
+    --color-plot-ship: oklch(90% 0.13 195);
+    --color-plot-journey: oklch(75% 0.14 55);
+    --color-plot-burn: oklch(80% 0.13 60);
+    --color-plot-frame: oklch(43% 0.03 240);
+    --color-plot-cross: oklch(90% 0.15 195);
+    --color-plot-inset: oklch(85% 0.16 85);
+    --color-plot-stream: oklch(97% 0 0);
+    --color-plot-glyph: oklch(88% 0.06 220);
+    --color-plot-glyph-flip: oklch(68% 0.2 25);
+    --color-plot-tick: oklch(95% 0.15 105);
 }
 
 :root[data-scheme="light"] {
@@ -31,10 +66,109 @@
     --color-accent-soft: color-mix(in oklab, var(--color-accent) 20%, transparent);
     --color-on-accent: oklch(99% 0 0);
     --color-danger: oklch(52% 0.2 25);
-    --color-shadow: oklch(0% 0 0 / 0.18);
-    --color-highlight: oklch(100% 0 0 / 0.5);
-    --color-tip-bg: color-mix(in oklab, var(--color-canvas) 94%, transparent);
+    --color-shadow: oklch(30% 0.02 265 / 0.18);
+    --color-highlight: oklch(100% 0 0 / 0.6);
+    --color-tip-bg: color-mix(in oklab, var(--color-surface-1) 94%, transparent);
+    --color-cap-shadow: oklch(100% 0 0 / 0.75);
+
+    /* Corrections: a proper light ramp (the generated light solve diverged) */
+    --color-canvas: oklch(95% 0.004 265);
+    --color-surface-1: oklch(98.5% 0.006 265.5);
+    --color-surface-2: oklch(96% 0.008 265.5);
+    --color-surface-3: oklch(92.5% 0.012 265.5);
+    --color-surface-active: oklch(88.5% 0.018 265.5);
+    --color-surface-hover: oklch(89.5% 0.02 265.5);
+    --color-border: oklch(84% 0.014 265.5);
+    --color-border-strong: oklch(64% 0.03 265.5);
+    --color-border-field: oklch(68% 0.01 265.5);
+    --color-border-subtle: oklch(90% 0.006 265.5);
+    --color-text: oklch(24% 0.01 265);
+    --color-text-muted: oklch(45% 0.02 196.8);
+    --color-heading: oklch(34% 0.02 196.8);
+    --color-text-faint: oklch(50% 0.026 285.5);
+    --color-icon: oklch(42% 0.02 285.5);
+    --color-icon-hover: oklch(15% 0.01 285.5);
+    --color-help: oklch(45% 0.06 249);
+    --color-help-border: oklch(66% 0.03 285.5);
+    --color-tip-text: oklch(22% 0.02 285.5);
+    --color-tip-border: oklch(76% 0.02 285.5);
+
+    --color-header-top: var(--color-surface-1);
+    --color-header-bottom: var(--color-surface-3);
+    --color-header-text: var(--color-text);
+
     --color-plot-bg-2: color-mix(in oklab, var(--color-canvas) 85%, white);
     --color-plot-forbid: color-mix(in oklab, var(--color-canvas) 75%, var(--color-text-faint));
     --color-plot-zvc: oklch(60% 0.15 65);
+    --color-plot-nodata: oklch(87% 0.01 265);
+    --color-plot-p1: oklch(62% 0.16 75);
+    --color-plot-p2: oklch(50% 0.12 255);
+    --color-plot-lagrange: oklch(55% 0.16 150);
+    --color-plot-rho: oklch(52% 0.14 240);
+    --color-plot-rho-far: oklch(72% 0.05 240);
+    --color-plot-body: oklch(50% 0 0);
+    --color-plot-body1: oklch(55% 0.1 70);
+    --color-plot-traj-start: oklch(65% 0.17 65);
+    --color-plot-traj-end: oklch(45% 0.22 300);
+    --color-plot-vin: oklch(52% 0.17 150);
+    --color-plot-vout: oklch(52% 0.2 25);
+    --color-plot-basis: oklch(52% 0.11 225);
+    --color-plot-ship: oklch(48% 0.14 210);
+    --color-plot-journey: oklch(60% 0.17 50);
+    --color-plot-burn: oklch(55% 0.18 45);
+    --color-plot-frame: oklch(70% 0.03 250);
+    --color-plot-cross: oklch(50% 0.17 210);
+    --color-plot-inset: oklch(62% 0.17 70);
+    --color-plot-stream: oklch(25% 0.02 265);
+    --color-plot-glyph: oklch(42% 0.1 240);
+    --color-plot-glyph-flip: oklch(52% 0.2 25);
+    --color-plot-tick: oklch(48% 0.15 85);
+}
+
+/* Corrections: sepia (warm paper) — must come after the light-scheme block */
+:root[data-theme="sepia"] {
+    --color-canvas: oklch(93% 0.025 85);
+    --color-surface-1: oklch(96.5% 0.02 85);
+    --color-surface-2: oklch(93.5% 0.026 80);
+    --color-surface-3: oklch(89.5% 0.03 78);
+    --color-surface-active: oklch(85% 0.035 75);
+    --color-surface-hover: oklch(86.5% 0.035 75);
+    --color-border: oklch(80% 0.03 75);
+    --color-border-strong: oklch(60% 0.04 70);
+    --color-border-field: oklch(64% 0.03 70);
+    --color-border-subtle: oklch(87% 0.025 78);
+    --color-text: oklch(27% 0.02 60);
+    --color-text-muted: oklch(44% 0.035 55);
+    --color-heading: oklch(34% 0.035 55);
+    --color-text-faint: oklch(50% 0.03 60);
+    --color-icon: oklch(42% 0.03 60);
+    --color-icon-hover: oklch(18% 0.02 60);
+    --color-help: oklch(45% 0.06 50);
+    --color-help-border: oklch(64% 0.035 60);
+    --color-tip-text: oklch(25% 0.02 60);
+    --color-tip-border: oklch(72% 0.03 60);
+    --color-accent: oklch(52% 0.13 45);
+    --color-accent-strong: oklch(45% 0.14 45);
+    --color-plot-forbid: color-mix(in oklab, var(--color-canvas) 78%, oklch(45% 0.04 60));
+    --color-plot-nodata: oklch(84% 0.025 75);
+    --color-plot-frame: oklch(68% 0.04 70);
+}
+
+/* Corrections: midnight (generated reading grays came out strongly purple) */
+:root[data-theme="midnight"] {
+    --color-text-faint: oklch(60% 0.035 270);
+    --color-icon: oklch(74% 0.035 270);
+    --color-help-border: oklch(45% 0.035 270);
+    --color-tip-text: oklch(88% 0.025 270);
+    --color-tip-border: oklch(40% 0.035 270);
+    --color-plot-nodata: oklch(20% 0.025 262);
+}
+
+/* Corrections: high contrast (strong outlines must be stronger than dividers) */
+:root[data-theme="highcontrast"] {
+    --color-border-strong: oklch(68% 0.03 265.5);
+    --color-border-field: oklch(64% 0.012 265.5);
+    --color-accent: oklch(78% 0.15 235);
+    --color-accent-strong: oklch(85% 0.15 235);
+    --color-plot-frame: oklch(60% 0.03 240);
 }

@@ -15,7 +15,7 @@ import {WorkerPool} from './compute/workerPool.js';
 import {ViewRenderer} from './render/renderer.js';
 import {PhysicalView} from './render/physicalView.js';
 import {ManifoldView} from './render/manifoldView.js';
-import {colorize, ringColors, SCALAR_LAYERS} from './render/colormaps.js';
+import {colorize, ringColors, SCALAR_LAYERS, setPlotTheme} from './render/colormaps.js';
 import {installPanels} from './ui/panels.js';
 import {hideTip, installTips, showTip} from './ui/tips.js';
 import {cssColor, onThemeChange, populateThemeSelect, setTheme} from './ui/theme.js';
@@ -46,14 +46,32 @@ const request = () => {
 const pool = new WorkerPool(new URL('./compute/encounterWorker.js', import.meta.url));
 const cache = new Map();
 // ---- theme
+/** Palette key → CSS custom property (css/app-tokens.css). */
+const PLOT_TOKENS = {
+    bg: '--color-plot-bg', bg2: '--color-plot-bg-2', line: '--color-plot-line', forbid: '--color-plot-forbid',
+    zvc: '--color-plot-zvc', nodata: '--color-plot-nodata',
+    p1: '--color-plot-p1', p2: '--color-plot-p2', lagrange: '--color-plot-lagrange',
+    rho: '--color-plot-rho', rhoFar: '--color-plot-rho-far', body: '--color-plot-body', body1: '--color-plot-body1',
+    trajStart: '--color-plot-traj-start', trajEnd: '--color-plot-traj-end',
+    vin: '--color-plot-vin', vout: '--color-plot-vout', basis: '--color-plot-basis', ship: '--color-plot-ship',
+    journey: '--color-plot-journey', burn: '--color-plot-burn',
+    frame: '--color-plot-frame', cross: '--color-plot-cross', inset: '--color-plot-inset',
+    stream: '--color-plot-stream', glyph: '--color-plot-glyph', glyphFlip: '--color-plot-glyph-flip',
+    tick: '--color-plot-tick',
+};
+/** Set once the app state exists (the first applyPalette runs before it). */
+let booted = false;
 function applyPalette() {
-     phys.setPalette({
-         bg: cssColor('--color-plot-bg', [0.043, 0.051, 0.07]),
-         line: cssColor('--color-plot-line', [0.25, 0.35, 0.5]),
-         forbid: cssColor('--color-plot-forbid', [0.2, 0.2, 0.24]),
-         zvc: cssColor('--color-plot-zvc', [0.95, 0.8, 0.4]),
-     });
-     man.setBackground(cssColor('--color-plot-bg-2', [0.027, 0.031, 0.043]));
+     const pal = {};
+     for (const [k, tok] of Object.entries(PLOT_TOKENS)) {
+         const v = cssColor(tok, null);
+         if (v) pal[k] = v;
+     }
+     phys.setPalette(pal);
+     man.setBackground(pal.bg2);
+     man.setPalette(pal);
+     setPlotTheme(pal);
+     if (booted) refresh(); // recolour the map image, legend and ring for the new theme
      request();
 }
 populateThemeSelect($('theme'));
@@ -418,6 +436,7 @@ function updateButtons() {
     $('shipGo').disabled = !isShip() || !S.sel || !g;
     $('shipBack').disabled = !isShip() || !S.shipHist.length;
     $('toShip').disabled = isShip() || !S.sel || !g;
+    document.body.classList.toggle('busy', S.busy);
 }
 
 function abortRunning() {
@@ -1186,3 +1205,4 @@ if (onSystem(false, !hash.ship)) {
       apply3D();
     compute();
 }
+booted = true;

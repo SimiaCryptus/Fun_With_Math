@@ -1,5 +1,5 @@
 import {LABEL} from '../core/conventions.js';
-import {diverging, gray, LABEL_COLORS, SCALAR_LAYERS, SIG_COLORS, viridis} from '../render/colormaps.js';
+import {dimColor, diverging, gray, LABEL_COLORS, SCALAR_LAYERS, SIG_COLORS, viridis} from '../render/colormaps.js';
 import {LABEL_DESC, LABEL_SHORT, SIG_DESC} from './descriptions.js';
 
 const css = (c) => `rgb(${c.map((v) => Math.round(v)).join(',')})`;
@@ -51,6 +51,6 @@ export function renderLegend(el, key, range, labels = {short: LABEL_SHORT, desc:
         (div ? '; symmetric range set by the 98th percentile of |v|, white = 0.' : '; clipped at the 2nd–98th percentiles.') +
         ' Non-exit samples are drawn dimmed in their outcome colour.';
     el.append(cv, span(fmt(range[1]), `Upper end of the colour scale (98th percentile), in units of ${tr}.`));
-    el.append(chip(LABEL_COLORS[LABEL.COLLISION].map((v) => v * 0.35), 'dim = no exit',
+    el.append(chip(dimColor(LABEL.COLLISION), 'dim = no exit',
         'Samples without an exit (forbidden, collision, captured) have no value and are drawn in a darkened outcome colour.'));
 }

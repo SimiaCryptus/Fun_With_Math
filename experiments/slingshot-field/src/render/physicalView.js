@@ -55,6 +55,16 @@ void main(){
 }`;
 
 const DRAPE_KEYS = ['mu', 'uOmL4', 'uOmL1', 'uH', 'uLmax', 'uDrape'];
+/** THREE.Color from an sRGB triple in [0, 1] (components become linear, as three.js expects). */
+const srgb = (c) => new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
+/** Overlay palette (sRGB triples); replaced from the theme tokens via setPalette. */
+const DEFAULT_PAL = {
+    p1: [1, 0.85, 0.3], p2: [0.7, 0.8, 1], lagrange: [0.4, 1, 0.6], rho: [0.4, 0.8, 1], rhoFar: [0.2, 0.33, 0.4],
+    body: [0.67, 0.67, 0.67], body1: [0.8, 0.67, 0.4], trajStart: [1, 1, 0.3], trajEnd: [1, 0.3, 1],
+    vin: [0.27, 1, 0.53], vout: [1, 0.33, 0.4], basis: [0.33, 0.67, 0.8], ship: [0.4, 1, 1],
+    journey: [1, 0.6, 0.27], burn: [1, 0.67, 0.33],
+};
+
 
 /** Patch a built-in material so its vertices follow the relief (uDrape = 1) or stay flat (uDrape = 0). */
 function drape(m, uniforms) {
@@ -140,11 +150,21 @@ export class PhysicalView extends OrthoView {
         this.onChange3 = null;
         this._rc = new THREE.Raycaster();
         this._ndc = new THREE.Vector2();
+        // Overlay palette and the last overlay arguments (replayed on a theme change).
+        this.pal = {...DEFAULT_PAL};
+        this.lps = null;
+        this._traj = null;
+        this._basis = null;
+        this._journey = null;
     }
 
     // ---- 3D relief
-     /** Theme colours as sRGB triples in [0, 1]: background, potential contours, forbidden shade, zero-velocity curve. */
-     setPalette({bg, line, forbid, zvc}) {
+     /**
+      * Theme colours as sRGB triples in [0, 1]: background, potential contours, forbidden shade,
+      * zero-velocity curve, plus the overlay keys of DEFAULT_PAL. Rebuilds the overlays.
+      */
+     setPalette(pal) {
+         const {bg, line, forbid, zvc} = pal;
          const U = this.uniforms;
          if (bg) {
              U.uBg.value.setRGB(...bg);
@@ -153,6 +173,11 @@ export class PhysicalView extends OrthoView {
          if (line) U.uLine.value.setRGB(...line);
          if (forbid) U.uForbid.value.setRGB(...forbid);
          if (zvc) U.uZvc.value.setRGB(...zvc);
+         for (const k of Object.keys(DEFAULT_PAL)) if (pal[k]) this.pal[k] = pal[k];
+         if (this.p) this.setSystem(this.p, this.lps);
+         if (this._traj) this.setTrajectory(...this._traj);
+         this.setBasis(this._basis);
+         this.setJourney(this._journey);
      }
 
     /** Canvas that receives the orbit controls, and a callback on every camera change. */
@@ -281,6 +306,7 @@ export class PhysicalView extends OrthoView {
     // ---- scene content
     setSystem(p, lps) {
         this.p = p;
+        this.lps = lps;
         this.uniforms.mu.value = p.mu;
         this.uniforms.C.value = p.C;
         if (lps?.length >= 4) {
@@ -288,12 +314,13 @@ export class PhysicalView extends OrthoView {
             this.uniforms.uOmL1.value = lps[0].C / 2;
         }
         clearGroup(this.markers);
-        const x2 = 1 - p.mu;
-        const pos = [-p.mu, 0, 0, x2, 0, 0], col = [1, 0.85, 0.3, 0.7, 0.8, 1];
-        for (const L of lps) {
+        const x2 = 1 - p.mu, P = this.pal;
+        const pos = [-p.mu, 0, 0, x2, 0, 0], cs = [srgb(P.p1), srgb(P.p2)];
+        for (const L of lps ?? []) {
             pos.push(L.x, L.y, 0);
-            col.push(0.4, 1, 0.6);
+            cs.push(srgb(P.lagrange));
         }
+        const col = cs.flatMap((c) => [c.r, c.g, c.b]);
         const g = new THREE.BufferGeometry();
         g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
         g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
@@ -305,8 +332,9 @@ export class PhysicalView extends OrthoView {
         }));
         pts.renderOrder = 4;
         const cx = p.cx ?? x2;
-        this.markers.add(pts, circle(cx, 0, p.rho, 0x66ccff), circle(cx, 0, p.rhoFar, 0x335566), circle(x2, 0, p.Rbody, 0xaaaaaa, 64));
-        if (p.R1 > 0) this.markers.add(circle(-p.mu, 0, p.R1, 0xccaa66, 128));
+        this.markers.add(pts, circle(cx, 0, p.rho, srgb(P.rho)), circle(cx, 0, p.rhoFar, srgb(P.rhoFar)),
+            circle(x2, 0, p.Rbody, srgb(P.body), 64));
+        if (p.R1 > 0) this.markers.add(circle(-p.mu, 0, p.R1, srgb(P.body1), 128));
     }
 
     setC(C) {
@@ -336,17 +364,19 @@ export class PhysicalView extends OrthoView {
     }
 
     setTrajectory(traj, vIn, vOut) {
+        this._traj = traj ? [traj, vIn, vOut] : null;
         clearGroup(this.trajG);
         if (!traj) return;
+        const ca = srgb(this.pal.trajStart), cb = srgb(this.pal.trajEnd);
         const g = new THREE.BufferGeometry(), n = traj.pts.length / 2;
         const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
         for (let i = 0; i < n; i++) {
             pos[3 * i] = traj.pts[2 * i];
             pos[3 * i + 1] = traj.pts[2 * i + 1];
             const t = i / Math.max(1, n - 1);
-            col[3 * i] = 1;
-            col[3 * i + 1] = 1 - 0.7 * t;
-            col[3 * i + 2] = 0.3 + 0.7 * t;
+            col[3 * i] = ca.r + (cb.r - ca.r) * t;
+            col[3 * i + 1] = ca.g + (cb.g - ca.g) * t;
+            col[3 * i + 2] = ca.b + (cb.b - ca.b) * t;
         }
         g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         g.setAttribute('color', new THREE.BufferAttribute(col, 3));
@@ -354,7 +384,7 @@ export class PhysicalView extends OrthoView {
         line.renderOrder = 5;
         this.trajG.add(line);
         const sc = this.p.rho * 0.6 / Math.max(Math.hypot(...vIn.v), vOut ? Math.hypot(...vOut.v) : 0, 1e-9);
-        for (const [a, color] of [[vIn, 0x44ff88], [vOut, 0xff5566]]) {
+        for (const [a, color] of [[vIn, srgb(this.pal.vin)], [vOut, srgb(this.pal.vout)]]) {
             if (!a) continue;
             const L = Math.hypot(...a.v) * sc;
             const ar = new THREE.ArrowHelper(new THREE.Vector3(a.v[0], a.v[1], 0).normalize(),
@@ -369,16 +399,17 @@ export class PhysicalView extends OrthoView {
 
     /** Spaceship mode: the current basis path (dim cyan) with a marker at the ship's state. */
     setBasis(pts) {
+        this._basis = pts;
         clearGroup(this.basisG);
         if (!pts || pts.length < 2) return;
         const line = polyline(pts, new THREE.LineBasicMaterial({
-            color: 0x55aacc, transparent: true, opacity: 0.75, depthTest: false
+            color: srgb(this.pal.basis), transparent: true, opacity: 0.75, depthTest: false
         }));
         line.renderOrder = 4;
         const pg = new THREE.BufferGeometry();
         pg.setAttribute('position', new THREE.Float32BufferAttribute([pts[0], pts[1], 0], 3));
         const ship = new THREE.Points(pg, new THREE.PointsMaterial({
-            size: 10, sizeAttenuation: false, color: 0x66ffff, depthTest: false
+            size: 10, sizeAttenuation: false, color: srgb(this.pal.ship), depthTest: false
         }));
         ship.renderOrder = 7;
         this.basisG.add(line, ship);
@@ -386,13 +417,14 @@ export class PhysicalView extends OrthoView {
 
     /** Spaceship mode: the legs already flown (orange) with a marker at every burn. */
     setJourney(trails) {
+        this._journey = trails;
         clearGroup(this.journeyG);
         if (!trails?.length) return;
         const burns = [];
         for (const pts of trails) {
             if (!pts || pts.length < 4) continue;
             const line = polyline(pts, new THREE.LineBasicMaterial({
-                color: 0xff9944, transparent: true, opacity: 0.6, depthTest: false
+                color: srgb(this.pal.journey), transparent: true, opacity: 0.6, depthTest: false
             }));
             line.renderOrder = 4;
             this.journeyG.add(line);
@@ -402,7 +434,7 @@ export class PhysicalView extends OrthoView {
         const pg = new THREE.BufferGeometry();
         pg.setAttribute('position', new THREE.Float32BufferAttribute(burns, 3));
         const pm = new THREE.Points(pg, new THREE.PointsMaterial({
-            size: 7, sizeAttenuation: false, color: 0xffaa55, depthTest: false
+            size: 7, sizeAttenuation: false, color: srgb(this.pal.burn), depthTest: false
         }));
         pm.renderOrder = 6;
         this.journeyG.add(pm);

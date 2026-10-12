@@ -44,6 +44,13 @@ function makeTex(rgba, N) {
 }
 
 const cellOf = (g) => Math.min(g.dom.x1 - g.dom.x0, g.dom.y1 - g.dom.y0) / g.N;
+/** THREE.Color from an sRGB triple in [0, 1]. */
+const srgb = (c) => new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
+const DEFAULT_PAL = {
+    frame: [0.27, 0.33, 0.4], cross: [0, 1, 1], inset: [1, 0.8, 0.2], stream: [1, 1, 1],
+    glyph: [0.6, 0.9, 1], glyphFlip: [1, 0.3, 0.3], tick: [1, 1, 0.3],
+};
+
 
 export class ManifoldView extends OrthoView {
     constructor() {
@@ -65,11 +72,34 @@ export class ManifoldView extends OrthoView {
         this.insetN = 0;
         this.userMoved = false;
         this.dom = null;
+        this.pal = {...DEFAULT_PAL};
+        this._ov = null;
+        this._cross = null;
+        this._insetDom = null;
         this.setDomain(FULL_DOMAIN);
     }
      /** Theme background colour (sRGB triple in [0, 1]). */
      setBackground(rgb) {
          if (rgb) this.scene.background.setRGB(rgb[0], rgb[1], rgb[2], THREE.SRGBColorSpace);
+     }
+     /** Overlay colours (sRGB triples) from the theme; rebuilds frame, inset outline, overlays and cross. */
+     setPalette(pal) {
+         for (const k of Object.keys(DEFAULT_PAL)) if (pal[k]) this.pal[k] = pal[k];
+         this._buildFrame();
+         if (this._insetDom) {
+             clearGroup(this.insetFrameG);
+             this.insetFrameG.add(rect(this._insetDom, srgb(this.pal.inset)));
+         }
+         if (this._ov) this.setOverlays(...this._ov);
+         if (this._cross) this.setCross(...this._cross);
+     }
+     _buildFrame() {
+         const d = this.dom;
+         clearGroup(this.frameG);
+         if (!d) return;
+         const c = srgb(this.pal.frame);
+         this.frameG.add(rect(d, c));
+         if (d.y0 < 0 && d.y1 > 0) this.frameG.add(segments([d.x0, 0, 0, d.x1, 0, 0], null, c));
      }
 
 
@@ -82,9 +112,7 @@ setDomain(d) {
         this.texN = 0;
         this.quad.material.dispose();
         this.quad.material = new THREE.MeshBasicMaterial({color: 0x111111, depthTest: false});
-        clearGroup(this.frameG);
-        this.frameG.add(rect(d, 0x445566));
-        if (d.y0 < 0 && d.y1 > 0) this.frameG.add(segments([d.x0, 0, 0, d.x1, 0, 0], null, 0x445566));
+        this._buildFrame();
         this.clearInset();
         this.setOverlays(null);
         this.setCross(null);
@@ -156,16 +184,19 @@ setDomain(d) {
         }
         place(this.inset, d);
         this.inset.visible = true;
+        this._insetDom = d;
         clearGroup(this.insetFrameG);
-        this.insetFrameG.add(rect(d, 0xffcc33));
+        this.insetFrameG.add(rect(d, srgb(this.pal.inset)));
     }
 
     clearInset() {
         this.inset.visible = false;
+        this._insetDom = null;
         clearGroup(this.insetFrameG);
     }
 
     setOverlays(grid, opts = {}, view = null) {
+        this._ov = grid ? [grid, opts, view] : null;
         clearGroup(this.overlays);
         if (!grid) return;
         const ex = view?.dom ?? null, grids = view ? [view, grid] : [grid];
@@ -173,18 +204,19 @@ setDomain(d) {
             this.overlays.add(buildQuiver(grid, ex));
             if (view) this.overlays.add(buildQuiver(view));
         }
-        if (opts.stream) this.overlays.add(buildStreamlines(grids, this.dom));
+        if (opts.stream) this.overlays.add(buildStreamlines(grids, this.dom, srgb(this.pal.stream)));
         if (opts.glyph) {
-            this.overlays.add(buildGlyphs(grid, ex));
-            if (view) this.overlays.add(buildGlyphs(view));
+            this.overlays.add(buildGlyphs(grid, ex, this.pal));
+            if (view) this.overlays.add(buildGlyphs(view, null, this.pal));
         }
     }
 
     setCross(a, b) {
+        this._cross = a == null ? null : [a, b];
         clearGroup(this.crossG);
         if (a == null) return;
         const s = 0.08;
-        this.crossG.add(segments([a - s, b, 0, a + s, b, 0, a, b - s, 0, a, b + s, 0], null, 0x00ffff));
+        this.crossG.add(segments([a - s, b, 0, a + s, b, 0, a, b - s, 0, a, b + s, 0], null, srgb(this.pal.cross)));
     }
 }
 
@@ -220,7 +252,7 @@ function buildQuiver(g, ex = null) {
 }
 
 /** Streamlines of ∇ΔE, sampling the finest grid (locked view first) that covers each point. */
-function buildStreamlines(grids, dom) {
+function buildStreamlines(grids, dom, color = 0xffffff) {
     const W = dom.x1 - dom.x0, H = dom.y1 - dom.y0, pos = [], lastG = grids[grids.length - 1];
     const wrap = (a) => (dom.periodicX ? ((((a - dom.x0) % W) + W) % W) + dom.x0 : a);
     const sample = (a, b) => {
@@ -249,11 +281,16 @@ function buildStreamlines(grids, dom) {
             b = nb;
         }
     }
-    return segments(pos, null, 0xffffff, 0.55);
+    return segments(pos, null, color, 0.55);
 }
 
-function buildGlyphs(g, ex = null) {
+function buildGlyphs(g, ex = null, pal = DEFAULT_PAL) {
     const N = g.N, st = Math.max(1, Math.round(N / 24)), cell = st * cellOf(g), pos = [], col = [];
+    const lin = (c) => {
+        const t = srgb(c);
+        return [t.r, t.g, t.b];
+    };
+    const cOk = lin(pal.glyph), cFlip = lin(pal.glyphFlip), cTick = lin(pal.tick);
     for (let j = st >> 1; j < N; j += st) for (let i = st >> 1; i < N; i += st) {
         const k = j * N + i;
         if (!isExitLabel(g.label[k])) continue;
@@ -263,7 +300,7 @@ function buildGlyphs(g, ex = null) {
         const smax = Math.max(Math.abs(val(g, k, 's1')), Math.abs(val(g, k, 's2')));
         if (!A.every(Number.isFinite) || !(smax > 0)) continue;
         const sc = (cell * 0.45) / smax;
-        const c = val(g, k, 'flip') ? [1, 0.3, 0.3] : [0.6, 0.9, 1];
+        const c = val(g, k, 'flip') ? cFlip : cOk;
         let px, py;
         for (let q = 0; q <= 24; q++) {
             const t = (q / 24) * 2 * Math.PI, ct = Math.cos(t), s = Math.sin(t);
@@ -277,7 +314,7 @@ function buildGlyphs(g, ex = null) {
         }
         const d = val(g, k, 'deltaEff');
         pos.push(a, b, 0, a + cell * 0.45 * Math.cos(d), b + cell * 0.45 * Math.sin(d), 0);
-        col.push(1, 1, 0.3, 1, 1, 0.3);
+        col.push(...cTick, ...cTick);
     }
     return segments(pos, col);
 }

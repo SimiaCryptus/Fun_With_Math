@@ -22,7 +22,10 @@ export function installPanels() {
         console.error('panels.js: .panel is not position:absolute — css/style.css was not loaded ' +
             '(check the <link href> path relative to index.html). Panels cannot float, move or collapse.');
     }
-    panels.forEach(build);
+    panels.forEach((p, i) => {
+        p.style.setProperty('--i', String(i)); // staggers the entry animation
+        build(p);
+    });
     defaultLayout();
     const saved = load();
     if (saved) apply(saved);
@@ -112,7 +115,7 @@ function updateToggle(p) {
     const tog = p.querySelector(':scope > header .tog');
     if (!tog) return;
     const c = p.classList.contains('collapsed');
-    tog.textContent = c ? '▸' : '▾';
+    tog.textContent = '▾'; // rotated by CSS when collapsed
     tog.title = c ? 'expand' : 'collapse';
 }
 
