@@ -11,11 +11,15 @@
     <mapping directory="$PROJECT_DIR$/experiments/dihedral" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal-mosaic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal_learning" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/gravitic-portals" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/magnet-lattice" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/no3sieve" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/number-circuits" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/opt_skeleton" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/pastaponics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/point-cad" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/rotor" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/slingshot-field" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/text-block" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/NAM" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/PI_RCC" vcs="Git" />

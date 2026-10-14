@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-14T01:57:20.205Z",
+    "generatedAt": "2026-10-14T11:24:52.507Z",
     "counts": {
         "lab": 26,
         "essay": 6,
@@ -499,12 +499,15 @@
             "title": "Rotor",
             "pitch": "A single-file notebook where notes live in a multi-dimensional space, and you rotate which two dimensions you look at.",
             "category": "lab",
-            "href": "rotor.html",
+            "href": "dist/rotor.html",
             "readme": "README.md",
             "order": 12,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/rotor"
+                "url": "https://github.com/Simiacryptus/rotor.git",
+                "branch": "main",
+                "commit": "d310d4cc9cfc65802dd486f03e2e38b745572deb",
+                "path": "experiments/rotor",
+                "submodule": true
             },
             "dir": "experiments/rotor",
             "source": "experiments/rotor/entry.json",
@@ -541,8 +544,11 @@
             "readme": "README.md",
             "order": 13,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/number-circuits"
+                "url": "https://github.com/Simiacryptus/number-circuits.git",
+                "branch": "main",
+                "commit": "80283846b48a7e33e8501182a04bffa9009c8635",
+                "path": "experiments/number-circuits",
+                "submodule": true
             },
             "dir": "experiments/number-circuits",
             "source": "experiments/number-circuits/entry.json",
@@ -859,8 +865,11 @@
             "readme": "README.md",
             "order": 9007199254740991,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/gravitic-portals"
+                "url": "https://github.com/Simiacryptus/gravitic-portals.git",
+                "branch": "main",
+                "commit": "28f00cdedc6d800a63d6d815860e78416145a23c",
+                "path": "experiments/gravitic-portals",
+                "submodule": true
             },
             "dir": "experiments/gravitic-portals",
             "source": "experiments/gravitic-portals/entry.json",
@@ -970,8 +979,11 @@
             "readme": "README.md",
             "order": 9007199254740991,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/slingshot-field"
+                "url": "https://github.com/Simiacryptus/slingshot-field.git",
+                "branch": "main",
+                "commit": "69d54fde8927d55903be65410fd214da941bd55c",
+                "path": "experiments/slingshot-field",
+                "submodule": true
             },
             "dir": "experiments/slingshot-field",
             "source": "experiments/slingshot-field/entry.json",
