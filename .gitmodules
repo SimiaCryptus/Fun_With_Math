@@ -144,3 +144,7 @@
 	path = experiments/number-circuits
 	url = https://github.com/Simiacryptus/number-circuits.git
 	branch = main
+[submodule "experiments/rotor"]
+	path = experiments/rotor
+	url = https://github.com/Simiacryptus/rotor.git
+	branch = main
