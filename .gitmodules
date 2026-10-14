@@ -148,3 +148,7 @@
 	path = experiments/rotor
 	url = https://github.com/Simiacryptus/rotor.git
 	branch = main
+[submodule "experiments/slingshot-field"]
+	path = experiments/slingshot-field
+	url = https://github.com/Simiacryptus/slingshot-field.git
+	branch = main
