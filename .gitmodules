@@ -140,3 +140,7 @@
 	path = experiments/gravitic-portals
 	url = https://github.com/Simiacryptus/gravitic-portals.git
 	branch = main
+[submodule "experiments/number-circuits"]
+	path = experiments/number-circuits
+	url = https://github.com/Simiacryptus/number-circuits.git
+	branch = main
