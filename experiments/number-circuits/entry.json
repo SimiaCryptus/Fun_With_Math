@@ -1,0 +1,10 @@
+{
+    "id": "number-circuits",
+    "title": "Number Circuits",
+    "pitch": "What is the cheapest way to build a number using only 1s, addition and multiplication? Calculate, search and explore integer complexity.",
+    "category": "lab",
+    "href": "index.html",
+    "readme": "README.md",
+    "order": 13,
+    "icon": "NC"
+}

@@ -1,8 +1,8 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-10T21:31:37.731Z",
+    "generatedAt": "2026-10-14T01:57:20.205Z",
     "counts": {
-        "lab": 24,
+        "lab": 26,
         "essay": 6,
         "labs": 7
     },
@@ -495,6 +495,23 @@
             "launchLabel": "Open the Relativistic 2-Body Gravity lab"
         },
         {
+            "id": "rotor",
+            "title": "Rotor",
+            "pitch": "A single-file notebook where notes live in a multi-dimensional space, and you rotate which two dimensions you look at.",
+            "category": "lab",
+            "href": "rotor.html",
+            "readme": "README.md",
+            "order": 12,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/rotor"
+            },
+            "dir": "experiments/rotor",
+            "source": "experiments/rotor/entry.json",
+            "icon": "RO",
+            "section": "lab"
+        },
+        {
             "id": "markov-analysis",
             "title": "Bidirectional Markov Text Analyzer",
             "pitch": "Build a language model from your own corpus, then watch another text light up token-by-token by how <em>surprising</em> it is. Forward and backward order-n Markov models are merged into a single surprise heatmap, with click-to-replace predictions, add-k smoothing, backoff, and live perplexity.",
@@ -514,6 +531,23 @@
             "section": "featured",
             "icon": "MA",
             "launchLabel": "Open the Bidirectional Markov Text Analyzer lab"
+        },
+        {
+            "id": "number-circuits",
+            "title": "Number Circuits",
+            "pitch": "What is the cheapest way to build a number using only 1s, addition and multiplication? Calculate, search and explore integer complexity.",
+            "category": "lab",
+            "href": "index.html",
+            "readme": "README.md",
+            "order": 13,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/number-circuits"
+            },
+            "dir": "experiments/number-circuits",
+            "source": "experiments/number-circuits/entry.json",
+            "icon": "NC",
+            "section": "lab"
         },
         {
             "id": "mesh",

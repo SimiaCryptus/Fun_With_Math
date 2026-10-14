@@ -1,0 +1,27 @@
+body { font-family: system-ui, sans-serif; margin: 0; color: #222; }
+header { display: flex; align-items: center; gap: 2em; padding: .5em 1em; background: #f2f2f2; }
+h1 { font-size: 1.3em; margin: 0; }
+.tab { border: none; background: none; padding: .5em 1em; cursor: pointer; }
+.tab.active { border-bottom: 2px solid #36c; font-weight: bold; }
+.ops { display: flex; gap: .8em; align-items: center; font-size: .9em; }
+.panel { display: none; padding: 1em; }
+.panel.active { display: block; }
+.row { display: flex; gap: .5em; align-items: center; flex-wrap: wrap; margin: .5em 0; }
+#c-input { flex: 1; font-family: monospace; font-size: 1.1em; padding: .3em; }
+.error { color: #b00; }
+pre.src mark { background: #fbb; }
+dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: .2em 1em; }
+dl.kv dt { font-weight: bold; }
+dl.kv dd { margin: 0; font-family: monospace; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1em; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border-bottom: 1px solid #ddd; padding: .2em .5em; text-align: left; }
+th[data-key] { cursor: pointer; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: #eef; }
+td.expr, .reps li { font-family: monospace; }
+.tree ul { list-style: none; padding-left: 1.2em; border-left: 1px dashed #aaa; margin: 0; }
+.tree li { margin: .1em 0; }
+.tree .op { font-weight: bold; color: #36c; }
+.tree .val { color: #888; font-size: .85em; }
+canvas { border: 1px solid #ddd; max-width: 100%; }

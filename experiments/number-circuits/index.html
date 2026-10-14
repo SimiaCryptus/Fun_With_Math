@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Number Circuits</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Number Circuits</h1>
+    <nav>
+      <button data-tab="calc" class="tab active">Calculator</button>
+      <button data-tab="browser" class="tab">Browser</button>
+    </nav>
+     <div class="ops">
+       Operations: <b>+</b> <b>*</b>
+       <label><input id="op-pow" type="checkbox"> ^ (exponent)</label>
+       <label><input id="op-fact" type="checkbox"> ! (factorial)</label>
+     </div>
+  </header>
+
+  <section id="calc" class="panel active">
+    <div class="row">
+      <select id="c-mode">
+        <option value="expr">Expression</option>
+        <option value="int">Integer → minimal reps</option>
+      </select>
+      <input id="c-input" type="text" value="(1+1)*(1+1+1)" spellcheck="false" autocomplete="off">
+    </div>
+    <div id="c-output"></div>
+  </section>
+
+  <section id="browser" class="panel">
+    <div class="row controls">
+      <label>N <input id="b-N" type="number" value="1000" min="1"></label>
+      <label>K <input id="b-K" type="number" placeholder="auto" min="1"></label>
+      <label>Mode
+        <select id="b-mode">
+          <option value="value">value</option>
+          <option value="tree">tree</option>
+        </select>
+      </label>
+      <label><input id="b-minimal" type="checkbox" checked> minimal only (dominance)</label>
+       <label><input id="b-identity" type="checkbox"> include x*1, 1^y, x^1</label>
+      <button id="b-run">Run</button>
+      <button id="b-stop" disabled>Stop</button>
+      <span id="b-progress"></span>
+    </div>
+    <div class="grid">
+      <div>
+        <table id="b-table">
+          <thead><tr>
+            <th data-key="n">n</th><th data-key="cost">C(n)</th>
+            <th data-key="count" title="value mode: binary trees modulo commutativity">#reps</th>
+            <th>example</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row">
+          <button id="b-prev">◀</button><span id="b-page"></span><button id="b-next">▶</button>
+          <button id="b-json">Export JSON</button><button id="b-csv">Export CSV</button>
+        </div>
+      </div>
+      <div>
+        <canvas id="b-chart" width="520" height="280"></canvas>
+        <div id="b-detail"></div>
+        <div id="b-records"></div>
+      </div>
+    </div>
+  </section>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

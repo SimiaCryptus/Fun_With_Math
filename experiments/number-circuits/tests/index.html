@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Number Circuits tests</title></head>
+<body>
+  <div id="out">Running…</div>
+  <script type="module">
+    import { report } from './harness.js';
+    import './parser.test.js';
+    import './canonical.test.js';
+    import './aggregator.test.js';
+    report(document.getElementById('out'));
+  </script>
+</body>
+</html>
