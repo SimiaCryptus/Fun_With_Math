@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-14T12:29:25.739Z",
+    "generatedAt": "2026-10-14T22:05:31.828Z",
     "counts": {
         "lab": 26,
         "essay": 6,
@@ -505,7 +505,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/rotor.git",
                 "branch": "main",
-                "commit": "03d49c6a91be956e4d1013bae93254909f67df48",
+                "commit": "13df9da56d9bdc30cfcfc48f1581372e64ef07b3",
                 "path": "experiments/rotor",
                 "submodule": true
             },
@@ -546,7 +546,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/number-circuits.git",
                 "branch": "main",
-                "commit": "80283846b48a7e33e8501182a04bffa9009c8635",
+                "commit": "cd1e5c480f1b0fae10ce049a14e9a9298fb24f64",
                 "path": "experiments/number-circuits",
                 "submodule": true
             },
@@ -602,7 +602,7 @@
             "title": "Static Secrets",
             "pitch": "Publish encrypted content anywhere and decrypt it entirely in your browser. The host serves opaque bytes; only you hold the key.",
             "category": "lab",
-            "href": "index.html?url=https%3A%2F%2Fmath.cognotik.com%2Fexperiments%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
+            "href": "index.html?url=https%3A%2F%2Fmath.cognotik.com%2Ftools%2Fstatic-secrets%2Fdemo-site%2Findex.ssec",
             "readme": "README.md",
             "order": 16,
             "repo": {
