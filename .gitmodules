@@ -136,3 +136,7 @@
 [submodule "openai-math"]
 	path = openai-math
 	url = git@github.com:SimiaCryptus/openai-math.git
+[submodule "experiments/gravitic-portals"]
+	path = experiments/gravitic-portals
+	url = https://github.com/Simiacryptus/gravitic-portals.git
+	branch = main
