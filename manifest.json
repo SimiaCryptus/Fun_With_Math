@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-14T22:05:31.828Z",
+    "generatedAt": "2026-10-14T22:07:28.094Z",
     "counts": {
         "lab": 26,
         "essay": 6,
@@ -505,7 +505,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/rotor.git",
                 "branch": "main",
-                "commit": "13df9da56d9bdc30cfcfc48f1581372e64ef07b3",
+                "commit": "2a299f075d3ae6ed1f8ded0d0c37ed00235a8b9e",
                 "path": "experiments/rotor",
                 "submodule": true
             },
@@ -608,7 +608,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/static-secrets.git",
                 "branch": "main",
-                "commit": "b21867021cb097cdd5790dd8f5716d94259b314a",
+                "commit": "2b3dae25b3e35a249fda8606ce620bbea70d7d1d",
                 "path": "tools/static-secrets",
                 "submodule": true
             },
