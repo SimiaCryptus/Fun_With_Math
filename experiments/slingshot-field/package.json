@@ -1,9 +1,0 @@
-{
-  "name": "slingshot-field",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "node --test tests/",
-    "serve": "npx http-server . -c-1"
-  }
-}
