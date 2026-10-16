@@ -1,0 +1,35 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #0d0f15; color: #dde1ea; font: 14px/1.45 system-ui, sans-serif; }
+#app { display: grid; grid-template-columns: 270px 1fr 330px; grid-template-rows: 1fr 160px; height: 100vh; }
+#panel { grid-row: 1 / 3; padding: 14px; overflow: auto; border-right: 1px solid #252a36; display: flex; flex-direction: column; gap: 10px; background: #11141c; }
+#viewport { position: relative; overflow: hidden; }
+#viewport canvas { display: block; width: 100%; height: 100%; }
+#readout { grid-row: 1 / 3; padding: 14px; overflow: auto; border-left: 1px solid #252a36; background: #11141c; }
+#diagram { overflow: auto; border-top: 1px solid #252a36; padding: 8px; background: #0f121a; }
+h1 { font-size: 18px; margin: 0 0 4px; }
+h3 { font-size: 14px; margin: 12px 0 6px; color: #9fb4ff; }
+h4 { margin: 8px 0 4px; }
+label { display: flex; flex-direction: column; gap: 3px; }
+label.row, .row { flex-direction: row; display: flex; gap: 6px; align-items: center; }
+.wrap { flex-wrap: wrap; }
+input, select, textarea, button { background: #1a1e29; color: inherit; border: 1px solid #333a4c; border-radius: 6px; padding: 6px 8px; font: inherit; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #6d84ff; }
+input[type="range"], input[type="checkbox"] { padding: 0; }
+textarea { font-family: ui-monospace, monospace; resize: vertical; }
+button { cursor: pointer; }
+button:hover { border-color: #6d84ff; }
+button.primary { background: #3a4fd6; border-color: #3a4fd6; font-weight: 600; }
+.error { color: #ff6b6b; min-height: 1em; font-size: 12px; }
+.muted { color: #8a90a0; font-size: 12px; }
+.adv { display: none; }
+body.advanced .adv { display: block; }
+dl { display: grid; grid-template-columns: 110px 1fr; gap: 3px 8px; margin: 0; }
+dt { color: #8a90a0; }
+dd { margin: 0; word-break: break-word; }
+code { font-family: ui-monospace, monospace; color: #ffd479; }
+ul.cycles { list-style: none; padding: 0; margin: 6px 0; }
+ul.cycles li { padding: 2px 0; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+table { border-collapse: collapse; width: 100%; font-size: 12px; }
+td, th { border-bottom: 1px solid #252a36; padding: 2px 4px; text-align: left; }
+#diagram svg .col:hover { fill: rgba(110, 130, 255, 0.18); }
