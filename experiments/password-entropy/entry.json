@@ -1,0 +1,9 @@
+{
+    "id": "password-entropy",
+    "title": "Password Entropy",
+    "pitch": "A tool to calculate the entropy of a password.",
+    "category": "lab",
+    "href": "index.html",
+    "readme": "README.md",
+    "icon": "PE"
+}
