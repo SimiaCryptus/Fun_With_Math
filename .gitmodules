@@ -152,3 +152,7 @@
 	path = experiments/slingshot-field
 	url = https://github.com/Simiacryptus/slingshot-field.git
 	branch = main
+[submodule "experiments/password-entropy"]
+	path = experiments/password-entropy
+	url = https://github.com/Simiacryptus/password-entropy.git
+	branch = main
