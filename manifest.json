@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-15T11:30:16.822Z",
+    "generatedAt": "2026-10-16T23:59:04.833Z",
     "counts": {
         "lab": 26,
         "essay": 6,
@@ -146,7 +146,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/irrational-lattice.git",
                 "branch": "main",
-                "commit": "bed45947b79d356778cbef526ef321f1dae886a5",
+                "commit": "47ffcd8d8498bd7b76c0a2f0c5afb6d06ef4fd23",
                 "path": "quadratics/irrational_lattice",
                 "submodule": true
             },
@@ -505,7 +505,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/rotor.git",
                 "branch": "main",
-                "commit": "0019919539e768e2a45be3f697e7fbda252de0e8",
+                "commit": "cb5981227c8f7b6000941ec2ee6ba64f0def7afd",
                 "path": "experiments/rotor",
                 "submodule": true
             },
