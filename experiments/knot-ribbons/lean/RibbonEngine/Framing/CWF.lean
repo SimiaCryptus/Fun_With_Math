@@ -8,9 +8,14 @@ All quantities are measured in half-twists.
 
 namespace RibbonEngine
 
+/-- Călugăreanu–White–Fuller ribbon state storing doubled twist `2·Tw` and writhe `2·Wr`
+    (in half-twists). -/
+
 structure CWFRibbonState where
-  twist2  : ℤ   -- 2·Tw
-  writhe2 : ℤ   -- 2·Wr
+  /-- Doubled ribbon twist `2·Tw` (in half-twists). -/
+  twist2 : ℤ
+  /-- Doubled centerline writhe `2·Wr` (in half-twists). -/
+  writhe2 : ℤ
   deriving DecidableEq, Repr
 
 namespace CWFRibbonState

@@ -1,8 +1,8 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-17T12:54:36.419Z",
+    "generatedAt": "2026-10-17T18:13:16.916Z",
     "counts": {
-        "lab": 26,
+        "lab": 27,
         "essay": 6,
         "labs": 7
     },
@@ -505,7 +505,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/rotor.git",
                 "branch": "main",
-                "commit": "c740c25f9e051090ebc98f2203e8948a8b7b2f23",
+                "commit": "712f9f4bdca62fbc99b05530a0ba29aab51bb9ee",
                 "path": "experiments/rotor",
                 "submodule": true
             },
@@ -923,6 +923,26 @@
             "dir": "experiments/camera-tool",
             "source": "experiments/camera-tool/entry.json",
             "section": "labs"
+        },
+        {
+            "id": "password-entropy",
+            "title": "Password Entropy",
+            "pitch": "A tool to calculate the entropy of a password.",
+            "category": "lab",
+            "href": "index.html",
+            "readme": "README.md",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "https://github.com/Simiacryptus/password-entropy.git",
+                "branch": "main",
+                "commit": "c48b20f58259a24dbd192be497107b19b33dff13",
+                "path": "experiments/password-entropy",
+                "submodule": true
+            },
+            "dir": "experiments/password-entropy",
+            "source": "experiments/password-entropy/entry.json",
+            "icon": "PE",
+            "section": "lab"
         },
         {
             "id": "qqn-jax",

@@ -11,9 +11,12 @@ namespace RibbonEngine
     where `infimum = p` is the global half-twist power and `factors = [w₁, …, w_r]`
     is a left-weighted chain of simple elements in `Sₙ`. -/
 structure GarsideBraid (n : ℕ) where
-  infimum  : ℕ
-  factors  : List (Equiv.Perm (Fin n))
-  weighted : factors.Chain' IsLeftWeighted
+  /-- Power `p` of the fundamental Garside half-twist `Δₙ^p`. -/
+  infimum : ℕ
+  /-- Sequence of simple permutation factors `[w₁, …, w_r]` in `[1, Δₙ] ≅ Sₙ`. -/
+  factors : List (Equiv.Perm (Fin n))
+  /-- Left-weightedness certificate `RightDescent(wₖ) ⊇ LeftDescent(wₖ₊₁)`. -/
+  weighted : factors.IsChain IsLeftWeighted
 
 namespace GarsideBraid
 variable {n : ℕ}
@@ -40,9 +43,9 @@ theorem garside_bruhat_knot_criterion (B : GarsideBraid n) :
 
 /-- Empty Garside braid with `m` half-twists `Δₙ^m`. -/
 def ofHalfTwists (n m : ℕ) : GarsideBraid n where
-  infimum  := m
-  factors  := []
-  weighted := List.chain'_nil
+  infimum := m
+  factors := []
+  weighted := List.IsChain.nil
 
 /-- Trefoil knot `Δ₂³` in Garside normal form compiles to a 1-component knot by `rfl`. -/
 theorem trefoil_garside_is_knot :

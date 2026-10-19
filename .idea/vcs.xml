@@ -16,6 +16,7 @@
     <mapping directory="$PROJECT_DIR$/experiments/no3sieve" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/number-circuits" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/opt_skeleton" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/password-entropy" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/pastaponics" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/point-cad" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/rotor" vcs="Git" />

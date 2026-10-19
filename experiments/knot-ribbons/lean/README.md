@@ -18,6 +18,9 @@ lake exe cache get
 
 # Build the library (default target: RibbonEngine)
 lake build
+
+# Run the linter across the library
+lake lint
 ```
 
 To check a single file:
@@ -52,38 +55,46 @@ lean/
       │   └── LeftNormalForm.lean
       ├── DoubleCategory/
       │   ├── HorizontalGauge.lean
+       │   ├── VerticalConstructive.lean
       │   └── TorusReciprocity.lean
       ├── Certificates/
       │   ├── MarkovTrace.lean
       │   └── FoxRibbon.lean
-     └── Wreath/
-         ├── Monodromy.lean
-         └── CascadeParity.lean
+      ├── Wreath/
+      │   ├── Monodromy.lean
+      │   ├── CascadeParity.lean
+      │   └── CantorSolenoid.lean
+      └── Meta/
+          ├── GarsideSimproc.lean
+          └── DSL.lean
 ```
 
 ### Modules
 
-
-| Module | Purpose |
-|---|---|
-| `Basic.ArtinBraid` | Artin generators, braid words, right-action strand tracing (**T1**) |
-| `Basic.CycleCalculus` | Executable orbit cycle counter, `numCycles`, Figure-Eight Möbius fracture (**T2–T4**) |
-| `Basic.SwitchingLaw` | Fundamental Switching Law (`Δk = ±1`) and concrete instances (**T5**) |
-| `Framing.CWF` | Călugăreanu–White–Fuller `Lk = Tw + Wr` state and Fuller uncoiling (**T6**) |
-| `Framing.BisectionAudit` | Reconciliation of `4m₀` (Seifert) vs `2m₀ + 2` (planar) framing (**T7**) |
-| `Framing.MagneticHelicity` | Moffatt–Berger–Field helicity conservation and reconnection quanta (**T8–T9**) |
-| `Compiler.RibbonIR` | Dependently typed `RibbonIR` indexed by `(n, τ, pol, m)` |
-| `Compiler.Typechecker` | Compile-time knot and `5' → 3'` DNA polarity verification (**T10**) |
-| `Compiler.AncillaGuard` | Pure-braid ancilla checksum and single-fault detection (**T11**) |
-| `Garside.DiagramInvolution` | Garside mirror involution `Δₙ σᵢ Δₙ⁻¹ = σ_{n-i}` (**T12**) |
-| `Garside.SimpleElements` | Simple elements `[1, Δₙ] ≅ Sₙ`, descent sets, and `IsLeftWeighted` |
-| `Garside.LeftNormalForm` | `GarsideBraid` and the Bruhat walk knot criterion (**T13**) |
-| `DoubleCategory.HorizontalGauge` | Relational ribbon states, conjugation invariance, and stabilization (**T14**) |
-| `DoubleCategory.TorusReciprocity` | Torus axis duality `T(p,q) ≃ T(q,p)` and modular reciprocity (**T15**) |
-| `Certificates.MarkovTrace` | Explicit Markov certificate reducing `4₁ + Δ₃` to the Hopf link (**T16**) |
-| `Certificates.FoxRibbon` | Symmetric union palindromes and Fox slice-ribbon certificates (**T17**) |
-| `Wreath.Monodromy` | Symbolic wreath product `S_{n₂} ≀ S_{n₁}` and monodromy conjugacy (**T18**) |
-| `Wreath.CascadeParity` | Bisection death (`n = 2`) vs. immortal trisection (`n = 3`) parity |
+| Module                                | Purpose                                                                               |
+|---------------------------------------|---------------------------------------------------------------------------------------|
+| `Basic.ArtinBraid`                    | Artin generators, braid words, right-action strand tracing (**T1**)                   |
+| `Basic.CycleCalculus`                 | Executable orbit cycle counter, `numCycles`, Figure-Eight Möbius fracture (**T2–T4**) |
+| `Basic.SwitchingLaw`                  | Fundamental Switching Law (`Δk = ±1`) and concrete instances (**T5**)                 |
+| `Framing.CWF`                         | Călugăreanu–White–Fuller `Lk = Tw + Wr` state and Fuller uncoiling (**T6**)           |
+| `Framing.BisectionAudit`              | Reconciliation of `4m₀` (Seifert) vs `2m₀ + 2` (planar) framing (**T7**)              |
+| `Framing.MagneticHelicity`            | Moffatt–Berger–Field helicity conservation and reconnection quanta (**T8–T9**)        |
+| `Compiler.RibbonIR`                   | Dependently typed `RibbonIR` indexed by `(n, τ, pol, m)`                              |
+| `Compiler.Typechecker`                | Compile-time knot and `5' → 3'` DNA polarity verification (**T10**)                   |
+| `Compiler.AncillaGuard`               | Pure-braid ancilla checksum and single-fault detection (**T11**)                      |
+| `Garside.DiagramInvolution`           | Garside mirror involution `Δₙ σᵢ Δₙ⁻¹ = σ_{n-i}` (**T12**)                            |
+| `Garside.SimpleElements`              | Simple elements `[1, Δₙ] ≅ Sₙ`, descent sets, and `IsLeftWeighted`                    |
+| `Garside.LeftNormalForm`              | `GarsideBraid` and the Bruhat walk knot criterion (**T13**)                           |
+| `DoubleCategory.HorizontalGauge`      | Relational ribbon states, conjugation invariance, and stabilization (**T14**)         |
+| `DoubleCategory.VerticalConstructive` | Vertical constructive operators (`concat`, `foliate`, `framingTwist`, `reconnect`)    |
+| `DoubleCategory.TorusReciprocity`     | Torus axis duality `T(p,q) ≃ T(q,p)` and modular reciprocity (**T15**)                |
+| `Certificates.MarkovTrace`            | Explicit Markov certificate reducing `4₁ + Δ₃` to the Hopf link (**T16**)             |
+| `Certificates.FoxRibbon`              | Symmetric union palindromes and Fox slice-ribbon certificates (**T17**)               |
+| `Wreath.Monodromy`                    | Symbolic wreath product `S_{n₂} ≀ S_{n₁}` and monodromy conjugacy (**T18**)           |
+| `Wreath.CascadeParity`                | Bisection death (`n = 2`) vs. immortal trisection (`n = 3`) parity                    |
+| `Wreath.CantorSolenoid`               | Self-similar Nekrashevych wreath automaton on profinite Cantor streams                |
+| `Meta.GarsideSimproc`                 | Verified `O(L)` Reidemeister-II `freeReduce` and Garside `pushTwistsRight` passes     |
+| `Meta.DSL`                            | `braid[n \| …]` and `ribbon_ir[n \| …]` macros for 1-based signed braid words         |
 
 To use the whole library from another Lean file:
 
@@ -93,9 +104,10 @@ import RibbonEngine
 
 ## Configuration notes
 
-- **`autoImplicit` is disabled.** Every variable must be declared explicitly
-  (e.g. with `variable {n : ℕ}`). This catches typos that would otherwise
+- **`autoImplicit` is disabled.** Every variable must be declared explicitly (e.g. with `variable {n : ℕ}`). This
+  catches typos that would otherwise
   silently become implicit arguments.
+- **Linter enabled.** `lake lint` invokes `batteries/runLinter` and compile-time linters (`mathlibStandardSet`, unused variables/tactics, unreachable tactics) are enabled in `lakefile.lean`.
 - **Mathlib is unpinned.** The Mathlib dependency tracks the default branch, and
   the exact revision is recorded in `lake-manifest.json`. Commit that file for
   reproducible builds. When upgrading, bump `lean-toolchain` to match Mathlib's,
@@ -110,6 +122,6 @@ import RibbonEngine
 
 - Add each new file under `RibbonEngine/` and import it from `RibbonEngine.lean`.
   Otherwise `lake build` will not check it.
-- Keep `lake build` free of errors. Avoid leaving `sorry` in merged code, or
+- Keep `lake build` and `lake lint` free of errors. Avoid leaving `sorry` in merged code, or
   document any that remain.
 - Toolchain: `leanprover/lean4:v4.35.0` (pinned in `lean-toolchain`, selected automatically by elan)

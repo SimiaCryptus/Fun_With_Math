@@ -12,9 +12,13 @@ namespace RibbonEngine
 
 /-- Elementary Artin generator `σᵢ^{±1}` in `Bₙ`, with `i : Fin (n - 1)`. -/
 structure ArtinGen (n : ℕ) where
-  idx  : Fin (n - 1)
-  sign : Bool   -- true = +1 (over), false = -1 (under)
+  /-- 0-based index `i : Fin (n - 1)` of the adjacent strand pair `(i, i + 1)`. -/
+  idx : Fin (n - 1)
+  /-- Crossing sign: `true` for `+1` (over), `false` for `-1` (under). -/
+  sign : Bool
   deriving DecidableEq, Repr
+
+/-- A braid word on `n` strands, represented as a list of elementary Artin generators. -/
 
 abbrev BraidWord (n : ℕ) := List (ArtinGen n)
 

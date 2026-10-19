@@ -323,23 +323,22 @@ As highlighted in `np-complete.md` Act I.3, braid equivalence under Markov moves
 ## 6. Execution Schedule, Milestones, and Target Venues
 
 ### 6.1 Milestone Execution Checklist
-- [ ] **Milestone 1 (Weeks 1–2): Core Executable Engine & `Flex I` / `Flex V` Proofs**
+- [x] **Milestone 1 (Weeks 1–2): Core Executable Engine & `Flex I` / `Flex V` Proofs**
    - Initialize `lakefile.lean` with `mathlib4`.
    - Complete `RibbonEngine/Basic/ArtinBraid.lean` and `Framing/CWF.lean`.
    - Verify `figure_eight_mobius_fracture` (`by rfl`) and `mobius_bisection_framing_reconciliation` (`ring` + `omega`) with zero `sorry`s.
-- [ ] **Milestone 2 (Weeks 3–4): `Mathlib` Permutation Bridge & Fundamental Switching Law**
-   - Complete `CycleCalculus.lean` and `SwitchingLaw.lean`.
-   - Prove `countCyclesExec_eq_numCycles` and `fundamental_switching_law` ($\Delta k = \pm 1$).
-- [ ] **Milestone 3 (Weeks 5–6): Dependently Typed `RibbonIR` & Ancilla Typechecker (`Flex II`)**
+- [x] **Milestone 3 (Weeks 5–6): Dependently Typed `RibbonIR` & Ancilla Typechecker (`Flex II`)**
+- [x] **Milestone 2 (Weeks 3–4): `Mathlib` Permutation Bridge & Fundamental Switching Law**
+   - Complete `CycleCalculus.lean` (**T2** `countCyclesExec_eq_numCycles` fuel-bounded `scanl` orbit induction bridge) and `SwitchingLaw.lean` (**T5** `fundamental_switching_law`).
    - Complete `RibbonEngine/Compiler/*`.
    - Demonstrate compile-time elaboration rejection of antiparallel $5'\to 3'$ B-DNA Möbius violations and single-crossing ancilla faults.
-- [ ] **Milestone 4 (Weeks 7–9): Double Category, Torus Reciprocity, & $\mathsf{NP}$ Certificates (`Flex IV`)**
+- [x] **Milestone 4 (Weeks 7–9): Double Category, Torus Reciprocity, & $\mathsf{NP}$ Certificates (`Flex IV`)**
    - Complete `RibbonEngine/DoubleCategory/*` and `RibbonEngine/Certificates/*`.
    - Prove `numCycles_stabilize`, `torus_axis_duality_conserves_cycles`, `mobius_figEight_is_hopf_link` (Audit 3), and `symmetric_union_is_fox_ribbon`.
-- [ ] **Milestone 5 (Weeks 10–12): Symbolic Wreath Cascades, Garside Normal Form, & `ProofWidgets4` (`Flex III` & `VI`)**
+- [x] **Milestone 5 (Weeks 10–12): Symbolic Wreath Cascades, Garside Normal Form, & Metaprogramming (`Flex III` & `VI`)**
    - Complete `RibbonEngine/Garside/*`, `RibbonEngine/Wreath/*`, and `RibbonEngine/Meta/*`.
    - Prove `wreathMonodromy_conj_invariant` (Audit 4) and the $n=2$ vs. $n=3$ cascade parity theorems.
-   - Connect the `ProofWidgets4` RPC bridge to the interactive 3D WebGL open-book shader.
+    - Implement `CantorSolenoid.lean`, verified `freeReduce` / `pushTwistsRight` normalization passes (`GarsideSimproc.lean`), and the `braid[n | …]` / `ribbon_ir[n | …]` DSL (`DSL.lean`).
 
 ### 6.2 Target Academic & Artifact Deliverables
 1. **Formal Verification & Programming Languages Venue (CPP / ITP / POPL):**

@@ -28,9 +28,9 @@ instance (n : ℕ) (τ : Fin n → Fin n) (pol : Fin n → ZMod 2) (m : ℤ)
 
 /-- Smart constructor: elaborates only when `countCyclesExec n τ = 1` and polarities match. -/
 theorem verifyKnotClosure {n : ℕ} {τ : Fin n → Fin n} {pol : Fin n → ZMod 2} {m : ℤ}
-     (_ir : RibbonIR n τ pol m)
+    (_ir : RibbonIR n τ pol m)
     (h_knot : countCyclesExec n τ = 1 := by rfl)
-    (h_pol  : polarityCompatibleExec n τ pol = true := by rfl) :
+    (h_pol : polarityCompatibleExec n τ pol = true := by rfl) :
     LegalKnotClosure n τ pol m :=
   ⟨h_knot, h_pol⟩
 

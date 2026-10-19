@@ -14,9 +14,12 @@ namespace RibbonEngine
 
 /-- `N` magnetic flux ribbons with flux weights, internal CWF states, and mutual linking. -/
 structure FluxEnsemble (N : ℕ) where
-  flux  : Fin N → ℤ
+  /-- Magnetic flux weight `Φᵢ` carried by tube `i`. -/
+  flux : Fin N → ℤ
+  /-- Internal CWF twist/writhe state of tube `i`. -/
   state : Fin N → CWFRibbonState
-  lk    : Fin N → Fin N → ℤ
+  /-- Pairwise Gauss linking number `Lkᵢⱼ` between tubes `i` and `j`. -/
+  lk : Fin N → Fin N → ℤ
 
 namespace FluxEnsemble
 variable {N : ℕ}

@@ -59,8 +59,8 @@ theorem traceStrand_symmetric_union (w : BraidWord n) (s : Fin n) :
     have h_eq : (g :: w) ++ BraidWord.inv (g :: w) = [g] ++ (w ++ BraidWord.inv w) ++ [g.inv] := by
       simp [BraidWord.inv_cons, List.append_assoc]
     rw [h_eq, traceStrand_append, traceStrand_append]
-     have h_first : traceStrand [g] s = g.act s := rfl
-     rw [h_first, ih (g.act s)]
-     exact g.act_act s
+    have h_first : traceStrand [g] s = g.act s := rfl
+    rw [h_first, ih (g.act s)]
+    exact g.act_act s
 
 end RibbonEngine

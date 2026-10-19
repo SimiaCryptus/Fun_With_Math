@@ -8,8 +8,11 @@ namespace RibbonEngine
 
 /-- A relational ribbon state `R = (K rel A)` wound around an axis `A` with strand count `n`. -/
 structure RelationalRibbonState where
-  n       : ℕ
-  word    : BraidWord n
+  /-- Transverse strand register width `n`. -/
+  n : ℕ
+  /-- Internal braid word on `n` strands. -/
+  word : BraidWord n
+  /-- Global carrier framing in half-twists. -/
   framing : ℕ
   deriving Repr
 

@@ -21,7 +21,8 @@ theorem sliceFraming_two (m₀ : ℤ) : sliceFraming 2 m₀ = ⟨2 * m₀, 2 * m
   simp only [sliceFraming, CWFRibbonState.mk.injEq]
   constructor <;> push_cast <;> ring
 
-/-- **T7**: the Seifert budget is `4m₀`, the planar unfolding gives `2m₀ + 2`, and the twist is even in every gauge. -/
+/-- **T7**: the Seifert budget is `4m₀`, the planar unfolding gives `2m₀ + 2`, and the twist is
+    even in every gauge. -/
 theorem mobius_bisection_framing_reconciliation (m₀ : ℤ) :
     (⟨2 * m₀, 2 * m₀⟩ : CWFRibbonState).linkingBudget = 4 * m₀ ∧
     ((⟨2 * m₀, 2 * m₀⟩ : CWFRibbonState).fullerUncoil 1).twist2 = 2 * m₀ + 2 ∧

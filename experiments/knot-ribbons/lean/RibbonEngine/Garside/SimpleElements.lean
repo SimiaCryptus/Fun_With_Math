@@ -31,7 +31,7 @@ instance (w₁ w₂ : Equiv.Perm (Fin n)) : Decidable (IsLeftWeighted w₁ w₂)
 /-- The identity permutation has no left descents. -/
 theorem inLeftDescent_one (i : Fin (n - 1)) :
     inLeftDescent (1 : Equiv.Perm (Fin n)) i = false := by
-   simp only [inLeftDescent, Equiv.Perm.coe_one, id_eq, gt_iff_lt, decide_eq_false_iff_not, not_lt]
+  simp only [inLeftDescent, Equiv.Perm.coe_one, id_eq, gt_iff_lt, decide_eq_false_iff_not, not_lt]
   omega
 
 /-- Every element `w` is left-weighted with respect to `1` on the right. -/
@@ -39,6 +39,6 @@ theorem isLeftWeighted_one_right (w : Equiv.Perm (Fin n)) :
     IsLeftWeighted w (1 : Equiv.Perm (Fin n)) := by
   intro i h
   rw [inLeftDescent_one] at h
-   contradiction
+  contradiction
 
 end RibbonEngine

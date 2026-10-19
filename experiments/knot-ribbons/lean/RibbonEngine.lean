@@ -11,8 +11,12 @@ import RibbonEngine.Garside.DiagramInvolution
 import RibbonEngine.Garside.SimpleElements
 import RibbonEngine.Garside.LeftNormalForm
 import RibbonEngine.DoubleCategory.HorizontalGauge
+import RibbonEngine.DoubleCategory.VerticalConstructive
 import RibbonEngine.DoubleCategory.TorusReciprocity
 import RibbonEngine.Certificates.MarkovTrace
 import RibbonEngine.Certificates.FoxRibbon
 import RibbonEngine.Wreath.Monodromy
 import RibbonEngine.Wreath.CascadeParity
+import RibbonEngine.Wreath.CantorSolenoid
+import RibbonEngine.Meta.GarsideSimproc
+import RibbonEngine.Meta.DSL
