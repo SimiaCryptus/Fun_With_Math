@@ -6,6 +6,7 @@
   import { registry } from './tests/harness.js';
   await import('./tests/core.test.js');
   await import('./tests/invariants.test.js');
+   await import('./tests/learn.test.js');
   const out = document.getElementById('out');
   let pass = 0, fail = 0;
   for (const t of registry) {

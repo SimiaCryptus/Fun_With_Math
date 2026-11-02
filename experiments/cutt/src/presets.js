@@ -7,6 +7,8 @@
 const COMMON = {
   maxIter: 300, tol: 1e-6, deltaD: 0.02, deltaEnv: 0.01, maxTheories: 6,
   leakThr: 0.05, G: 0, maxSweeps: 50,
+   // structural learning (M8)
+   mLeaf: 5, minGain: 0.5, gamma: 0.05, maxCand: 64, deltaV: 0.5, maxRebuilds: 5,
 };
 
 export const PRESETS = {

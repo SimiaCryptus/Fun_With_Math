@@ -25,6 +25,10 @@ const SCHEMA = [
   { k: 'spanFrac', l: 'Spanning fraction', t: 'range', min: 0, max: 0.6, step: 0.05, only: ['S3', 'S4'] },
   { k: 'control', l: 'Control (x informative)', t: 'check', only: ['S3', 'S4'] },
   { k: 'herd', l: 'Herd init', t: 'check', only: ['S3', 'S4'] },
+   { k: 'dMax', l: 'Max depth', t: 'range', min: 1, max: 8, step: 1, only: ['S5', 'S8'] },
+   { k: 'crit', l: 'Split criterion', t: 'select', opts: ['S1', 'S3'], only: ['S5', 'S8'] },
+   { k: 'fragBudget', l: 'Fragment budget (×N)', t: 'range', min: 1, max: 10, step: 0.5, only: ['S5', 'S8'] },
+   { k: 'rebuild', l: 'Rebuild loop (P6)', t: 'check', only: ['S5', 'S8'] },
 ];
 const ADV = [
   ['beta', 0.25, 16, 0.25], ['mMin', 1, 30, 1], ['alphaExcl', 0.001, 0.2, 0.001], ['tauExcl', 0.01, 0.6, 0.01],
@@ -139,6 +143,7 @@ document.querySelectorAll('[data-stage]').forEach(b => b.onclick = () => busy(()
   const s = b.dataset.stage;
   st.snap = -1; st.iter = -1;
   if (s === 'compile') { run.compile(); st.view = 'data'; }
+   if (s === 'rebuild') { run.rebuild(); st.view = 'partition'; }
   if (s === 'supportStep') { run.support(true); st.view = 'contraction'; st.snap = run.sup.snaps.length - 1; }
   if (s === 'support') { run.support(); st.view = 'contraction'; setTimeout(() => play('snap'), 0); }
   if (s === 'solve') { run.solve(); st.view = 'mass'; setTimeout(() => play('iter'), 0); }
@@ -212,6 +217,8 @@ function metricsTable() {
   let anchors = 0;
   for (let i = 0; i < T.N; i++) if (T.start[i + 1] - T.start[i] === 1) anchors++;
   h += row('fragments / per obs / anchor frac', `${T.n} / ${f(T.n / T.N)} / ${f(anchors / T.N)}`);
+   if (run.scn.learned) h += row('leaves / criterion', `${run.tree.leaves.length} / ${run.p.crit}`);
+   if (run.rebuildLog) h += row('rebuild iterations', run.rebuildLog.length);
   if (run.evalRec.info.occupancy !== undefined) h += row('off-diagonal occupancy', f(run.evalRec.info.occupancy));
   const sf = run.statusFractions();
   if (sf) h += row('status (obs)', STATUS.map((s, k) => sf[k] ? `${s[0]}${s[1]}:${(sf[k] * 100).toFixed(0)}%` : '').join(' '));

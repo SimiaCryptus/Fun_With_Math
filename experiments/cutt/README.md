@@ -27,6 +27,12 @@ and point the import map there.
 
 ## Status vs plan milestones
 
-M0–M7 implemented (fixed-tree core, all fixed-tree scenarios, safeguard toggles).
-M8 (structural learner, S5) not implemented; incremental recompilation, which M8
-needs, is implemented and tested.
+M0–M8 implemented:
+- fixed-tree core, all fixed-tree scenarios, safeguard toggles;
+- structural learner `src/core/learn.js` (S1 expected Gini, S3 ambiguity per
+   fragment complexity, prior-mass stopping, fragment budget);
+- support-driven rebuild loop (P6: relearns from contracted supports only);
+- S5 (circle) and S8 (learned XOR, E1(b));
+- CART-equivalence test on exact data.
+
+Not implemented: S2 worst-case criterion, residual-driven growth, topology union.

@@ -6,6 +6,7 @@ import { ST } from '../core/status.js';
 const Q = [0.25, 0.5, 0.75];
 const xor2 = x => ((x[0] > 0.5) !== (x[1] > 0.5) ? 1 : 0);
 const parity3 = x => ((x[0] > 0.5) + (x[1] > 0.5) + (x[2] > 0.5)) % 2;
+const circle = x => ((x[0] - 0.5) ** 2 + (x[1] - 0.5) ** 2 < 0.09 ? 1 : 0);
 const noisy = (t, c, C, r) => (c === t ? 1 - r : r / (C - 1));
 const clip01 = v => Math.min(1, Math.max(0, v));
 const unifGen = (d, lab) => (rng, p) => {
@@ -25,6 +26,15 @@ function xorChecks(run) {
   out.push(['M5 (fitted) low', m.m5fit < 0.05]);
   return out;
 }
+function learnedChecks(run) {
+   const m = run.metrics(), out = [];
+   if (run.p.noise === 0) out.push(['M4 = 0 (no false exclusion)', m.falseExcl === 0]);
+   out.push(['M2b > 0 (latent information gain)', m.ig > 0]);
+   out.push(['fragment budget respected', run.table.n <= run.p.fragBudget * run.table.N + 1e-9]);
+   out.push(['§7 invariants hold', run.violations.length === 0]);
+   return out;
+}
+
 
 function xorBase(id, name, maps, extra = {}) {
   return {
@@ -164,11 +174,15 @@ export const SCENARIOS = {
     },
   },
   S5: {
-    id: 'S5', name: 'Circle & fragment blowup (needs M8)', maps: 'E4', d: 2, C: 2, unavailable: true,
-    defaults: { N: 400, width: 0.1 },
-    narrative: 'Requires the structural learner (milestone M8), which is not implemented yet.',
-    tree: () => null, generate: unifGen(2, () => 0), density: () => 1, labelProb: (x, c) => (c === 0 ? 1 : 0),
-    corruption: p => ({ widths: [p.width, p.width] }), checks: () => [['not available (M8)', false]],
+     id: 'S5', name: 'Circle & fragment blowup', maps: 'E4', d: 2, C: 2, learned: true,
+     defaults: { N: 400, width: 0.1, anchorFloor: 0.15, dMax: 5, crit: 'S1', fragBudget: 4, rebuild: true },
+     narrative: 'Circular boundary with a learned tree. Deeper trees fit the circle better but shatter boundary observations into more fragments. Compare S1 and S3 (S3 charges for new fragments) and watch fragments/obs.',
+     tree: () => null,
+     generate: unifGen(2, circle),
+     density: () => 1,
+     labelProb: (x, c, p) => noisy(circle(x), c, 2, p.noise),
+     corruption: p => ({ widths: [p.width, p.width], anchorFloor: p.anchorFloor, partial: p.partial, noise: p.noise }),
+     checks: learnedChecks,
   },
   S6: {
     id: 'S6', name: '3D parity', maps: 'E1 in 3D', d: 3, C: 2,
@@ -190,4 +204,11 @@ export const SCENARIOS = {
       return [['M4 = 0', run.p.noise > 0 || m.falseExcl === 0], ['M2b > 0', m.ig > 0]];
     },
   }),
+   S8: xorBase('S8', 'Uncertain XOR (learned tree)', 'E1(b)', {
+     learned: true,
+     tree: () => null,
+     defaults: { N: 600, width: 0.1, anchorFloor: 0.15, dMax: 4, crit: 'S1', fragBudget: 4, rebuild: true },
+     narrative: 'XOR with a tree learned from supports (rebuild loop: learn → contract → relearn from contracted supports only, P6).',
+     checks: learnedChecks,
+   }),
 };
