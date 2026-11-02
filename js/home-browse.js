@@ -120,6 +120,7 @@
     sort: 'curated',
     view: 'grid',
     expanded: new Set(), // group keys the user has expanded
+   entry: null, // id of the entry whose notes are open (bookmarkable)
   };
 
   /** @type {Array<object>} normalized entries */
@@ -236,18 +237,21 @@
       : 'curated';
     state.view = params.get('view') === 'list' ? 'list' : 'grid';
     state.tags = new Set((params.get('tag') || '').split(',').filter(Boolean));
+   state.entry = params.get('entry') || null;
   }
 
-  function writeUrlState() {
+  function writeUrlState(push = false) {
     const params = new URLSearchParams();
     if (state.q) params.set('q', state.q);
     if (state.cat !== 'all') params.set('cat', state.cat);
     if (state.sort !== 'curated') params.set('sort', state.sort);
     if (state.view !== 'grid') params.set('view', state.view);
     if (state.tags.size) params.set('tag', Array.from(state.tags).join(','));
+   if (state.entry) params.set('entry', state.entry);
     const qs = params.toString();
     const url = `${location.pathname}${qs ? `?${qs}` : ''}${location.hash}`;
-    history.replaceState(null, '', url);
+    if (push) history.pushState({ entry: state.entry }, '', url);
+    else history.replaceState({ entry: state.entry }, '', url);
   }
 
   const filtersActive = () => Boolean(state.q || state.cat !== 'all' || state.tags.size);
@@ -576,10 +580,16 @@
 
   let lastFocus = null;
 
-  async function openModal(id) {
+  async function openModal(id, { push = true } = {}) {
     const entry = BY_ID.get(id);
     if (!entry) return;
-    lastFocus = document.activeElement;
+    if (!el.overlay.classList.contains('open')) lastFocus = document.activeElement;
+
+    // Reflect the open entry in the URL so it can be linked / bookmarked.
+    if (state.entry !== id || !new URLSearchParams(location.search).has('entry')) {
+      state.entry = id;
+      writeUrlState(push);
+    }
 
     el.modalIcon.textContent = entry.icon;
     el.modalTitle.textContent = entry.title;
@@ -611,6 +621,7 @@
       );
     }
     el.modalMeta.innerHTML = meta.join('');
+   renderShare(entry);
 
     el.modalMedia.innerHTML = entry.video
       ? `<div class="entry-media" data-video="${escapeHtml(entry.video)}" style="all:unset">
@@ -643,7 +654,7 @@
 
     if (entry.readme) {
       const md = await fetchReadme(entry.readme);
-      if (!el.overlay.classList.contains('open')) return;
+      if (!el.overlay.classList.contains('open') || state.entry !== id) return;
       const loading = el.modalBody.querySelector('.readme-loading');
       if (loading) loading.remove();
       if (md == null) {
@@ -659,6 +670,96 @@
       }
     }
   }
+/* ---------------------------------------------------------- *
+  * Share buttons
+  * ---------------------------------------------------------- */
+const SHARE_BASE = 'https://math.cognotik.com/';
+function shareUrlFor(entry) {
+   return `${SHARE_BASE}?entry=${encodeURIComponent(entry.id)}`;
+}
+const SHARE_ICONS = {
+    x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.2l-4.8-6.3L6.4 22H3.3l7.3-8.3L1 2h6.3l4.4 5.8L18.9 2Zm-1.1 18h1.7L6.3 3.9H4.5L17.8 20Z"/></svg>',
+    bluesky:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2 3.6C7.9 5.6 10.8 9.7 12 12c1.2-2.3 4.1-6.4 6.8-8.4 2-1.4 5.2-2.6 5.2 1 0 .7-.4 6.1-.7 7-.9 3.1-4.1 3.9-7 3.4 5 .9 6.3 3.7 3.5 6.5-5.2 5.4-7.5-1.4-8.1-3.1l-.2-.6-.2.6c-.6 1.7-2.9 8.5-8.1 3.1-2.8-2.8-1.5-5.6 3.5-6.5-2.9.5-6.1-.3-7-3.4-.3-.9-.7-6.3-.7-7 0-3.6 3.2-2.4 5.2-1Z"/></svg>',
+    reddit:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.1a2.2 2.2 0 0 0-3.7-1.6 10.7 10.7 0 0 0-5.8-1.8l1-4.6 3.2.7a1.6 1.6 0 1 0 .2-1l-3.6-.8a.5.5 0 0 0-.6.4l-1.1 5.3a10.8 10.8 0 0 0-5.9 1.8 2.2 2.2 0 1 0-2.4 3.6v.6c0 3.4 3.9 6.1 8.7 6.1s8.7-2.7 8.7-6.1v-.6a2.2 2.2 0 0 0 1.3-2Zm-14.9 1.6a1.6 1.6 0 1 1 1.6 1.6 1.6 1.6 0 0 1-1.6-1.6Zm8.7 4.1a5.7 5.7 0 0 1-3.8 1.2 5.7 5.7 0 0 1-3.8-1.2.4.4 0 0 1 .6-.6 4.9 4.9 0 0 0 3.2.9 4.9 4.9 0 0 0 3.2-.9.4.4 0 1 1 .6.6Zm-.3-2.5a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6Z"/></svg>',
+    linkedin:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 20.5h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.3V9h3.4v1.6h.1a3.8 3.8 0 0 1 3.4-1.9c3.6 0 4.3 2.4 4.3 5.5v6.3ZM5.3 7.4a2.1 2.1 0 1 1 2.1-2.1 2.1 2.1 0 0 1-2.1 2.1Zm1.8 13.1H3.5V9h3.6v11.5ZM22.2 0H1.8A1.8 1.8 0 0 0 0 1.7v20.6A1.8 1.8 0 0 0 1.8 24h20.4a1.8 1.8 0 0 0 1.8-1.7V1.7A1.8 1.8 0 0 0 22.2 0Z"/></svg>',
+    email:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm9 7.2L4.3 7H4v.6l8 5.4 8-5.4V7h-.3L12 12.2Z"/></svg>',
+    copy: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l3.5-3.5a3 3 0 1 1 4.3 4.3l-2 2a1 1 0 1 1-1.5-1.4l2-2a1 1 0 1 0-1.4-1.5l-3.5 3.5a1 1 0 0 1-1.4 0Zm2.8-2.8a1 1 0 0 1 0 1.4l-3.5 3.5a3 3 0 1 1-4.3-4.3l2-2a1 1 0 1 1 1.5 1.4l-2 2a1 1 0 1 0 1.4 1.5l3.5-3.5a1 1 0 0 1 1.4 0Z"/></svg>',
+    native:
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16a3 3 0 0 0-2.2 1l-7-4a3 3 0 0 0 0-2l7-4A3 3 0 1 0 15 5l-7 4a3 3 0 1 0 0 6l7 4a3 3 0 1 0 3-3Z"/></svg>',
+};
+function renderShare(entry) {
+   if (!el.modalShare) return;
+   const url = encodeURIComponent(shareUrlFor(entry));
+   const text = encodeURIComponent(
+     `${entry.title}${entry.subtitle ? ' — ' + entry.subtitle : ''} · Mathematical Explorations`
+   );
+   const links = [
+     ['x', 'X', `https://twitter.com/intent/tweet?url=${url}&text=${text}`],
+     ['bluesky', 'Bluesky', `https://bsky.app/intent/compose?text=${text}%20${url}`],
+     ['reddit', 'Reddit', `https://www.reddit.com/submit?url=${url}&title=${text}`],
+     ['linkedin', 'LinkedIn', `https://www.linkedin.com/sharing/share-offsite/?url=${url}`],
+     ['email', 'Email', `mailto:?subject=${text}&body=${url}`],
+   ];
+   const native = navigator.share
+     ? `<button type="button" class="share-btn" data-share="native">${SHARE_ICONS.native}<span class="share-name">Share…</span></button>`
+     : '';
+   el.modalShare.innerHTML =
+     '<span class="share-label">Share</span>' +
+     native +
+     `<button type="button" class="share-btn" data-share="copy">${SHARE_ICONS.copy}<span class="share-name">Copy link</span></button>` +
+     links
+       .map(
+         ([key, name, href]) =>
+           `<a class="share-btn" data-net="${key}" href="${escapeHtml(href)}" target="_blank" rel="noopener"
+               title="Share on ${name}"
+               aria-label="Share ${escapeHtml(entry.title)} on ${name}">${SHARE_ICONS[key]}<span class="share-name">${name}</span></a>`
+       )
+       .join('');
+   el.modalShare.dataset.id = entry.id;
+}
+async function onShareClick(ev) {
+   const btn = ev.target.closest('button[data-share]');
+   if (!btn) return;
+   const entry = BY_ID.get(el.modalShare.dataset.id);
+   if (!entry) return;
+   const url = shareUrlFor(entry);
+   if (btn.dataset.share === 'native') {
+     try {
+       await navigator.share({ title: entry.title, text: entry.subtitle || entry.title, url });
+     } catch (_) {
+       /* user cancelled */
+     }
+     return;
+   }
+   let ok = false;
+   try {
+     await navigator.clipboard.writeText(url);
+     ok = true;
+   } catch (_) {
+     const ta = document.createElement('textarea');
+     ta.value = url;
+     document.body.appendChild(ta);
+     ta.select();
+     try {
+       ok = document.execCommand('copy');
+     } catch (_) {}
+     ta.remove();
+   }
+    const label = btn.querySelector('.share-name') || btn;
+    label.textContent = ok ? 'Copied ✓' : 'Copy failed';
+    btn.classList.toggle('is-copied', ok);
+    btn.classList.toggle('is-failed', !ok);
+    clearTimeout(btn._resetTimer);
+    btn._resetTimer = setTimeout(() => {
+      label.textContent = 'Copy link';
+      btn.classList.remove('is-copied', 'is-failed');
+    }, 1600);
+}
+
 
   function typesetModal() {
     if (window.MathJax && window.MathJax.typesetPromise) {
@@ -681,6 +782,10 @@
     document.body.classList.remove('modal-open');
     el.modalBody.innerHTML = '';
     el.modalMedia.innerHTML = '';
+   if (state.entry) {
+     state.entry = null;
+     writeUrlState();
+   }
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
@@ -812,9 +917,20 @@
 
     // Modal
     el.modalClose.addEventListener('click', closeModal);
+   if (el.modalShare) el.modalShare.addEventListener('click', onShareClick);
     el.overlay.addEventListener('click', (ev) => {
       if (ev.target === el.overlay) closeModal();
     });
+   // Back / forward: restore (or dismiss) the bookmarked entry window.
+   window.addEventListener('popstate', () => {
+     const wanted = new URLSearchParams(location.search).get('entry');
+     if (wanted && BY_ID.has(wanted)) {
+       openModal(wanted, { push: false });
+     } else if (el.overlay.classList.contains('open')) {
+       state.entry = null;
+       closeModal();
+     }
+   });
 
     // Nav category jumps
     $$('[data-jump-cat]').forEach((a) => {
@@ -893,6 +1009,7 @@
       modalTitle: $('#modalTitle'),
       modalSubtitle: $('#modalSubtitle'),
       modalMeta: $('#modalMeta'),
+     modalShare: $('#modalShare'),
       modalMedia: $('#modalMedia'),
       modalBody: $('#modalBody'),
       modalLaunch: $('#modalLaunch'),
@@ -940,8 +1057,13 @@
     emitItemList();
 
     // Deep link: ?entry=<id> opens that entry's notes immediately.
-    const wanted = new URLSearchParams(location.search).get('entry');
-    if (wanted && BY_ID.has(wanted)) openModal(wanted);
+    const wanted = state.entry;
+    if (wanted && BY_ID.has(wanted)) {
+      openModal(wanted, { push: false });
+    } else if (wanted) {
+      state.entry = null;
+      writeUrlState();
+    }
   }
 
   if (document.readyState === 'loading') {

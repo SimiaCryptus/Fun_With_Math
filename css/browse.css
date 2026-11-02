@@ -757,6 +757,118 @@
   color: var(--accent);
   border-color: var(--accent);
 }
+/* ── Share strip ────────────────────────────────────────────── */
+.modal-share {
+   display: flex;
+   align-items: center;
+   flex-wrap: wrap;
+   gap: 0.4rem;
+   margin: 0.85rem 1.75rem 0;
+   padding: 0.55rem 0.65rem;
+   border: 1px solid rgba(255, 255, 255, 0.07);
+   border-radius: 12px;
+   background: linear-gradient(135deg, rgba(88, 166, 255, 0.05), rgba(188, 140, 255, 0.06));
+}
+.modal-share:empty {
+   display: none;
+}
+.share-label {
+   font-family: var(--font-mono);
+   font-size: 0.64rem;
+   letter-spacing: 0.16em;
+   text-transform: uppercase;
+   color: var(--text-muted);
+   opacity: 0.75;
+   margin-right: 0.35rem;
+}
+.share-btn {
+   --share-color: var(--accent);
+   display: inline-flex;
+   align-items: center;
+   gap: 0.4rem;
+   padding: 0.36rem 0.75rem;
+   border: 1px solid rgba(255, 255, 255, 0.1);
+   border-radius: 999px;
+   background: rgba(255, 255, 255, 0.04);
+   color: var(--text-muted);
+   font-family: var(--font-body);
+   font-size: 0.76rem;
+   font-weight: 500;
+   line-height: 1;
+   text-decoration: none;
+   cursor: pointer;
+   transition:
+     color 0.2s ease,
+     background 0.2s ease,
+     border-color 0.2s ease,
+     transform 0.18s ease,
+     box-shadow 0.2s ease;
+}
+.share-btn svg {
+   width: 14px;
+   height: 14px;
+   flex: none;
+   fill: currentColor;
+}
+.share-btn:hover,
+.share-btn:focus-visible {
+   color: var(--share-color);
+   border-color: color-mix(in srgb, var(--share-color) 55%, transparent);
+   background: color-mix(in srgb, var(--share-color) 12%, transparent);
+   box-shadow: 0 6px 16px -8px var(--share-color);
+   transform: translateY(-1px);
+   outline: none;
+}
+.share-btn:active {
+   transform: translateY(0);
+}
+.share-btn[data-share='native'],
+.share-btn[data-share='copy'] {
+   color: var(--text);
+}
+.share-btn[data-net='x'] {
+   --share-color: #e7e9ea;
+}
+.share-btn[data-net='bluesky'] {
+   --share-color: #1185fe;
+}
+.share-btn[data-net='reddit'] {
+   --share-color: #ff4500;
+}
+.share-btn[data-net='linkedin'] {
+   --share-color: #0a66c2;
+}
+.share-btn[data-net='email'] {
+   --share-color: var(--accent4, #ffa657);
+}
+.share-btn.is-copied {
+   color: #0a0d14;
+   background: var(--accent3, #7ee787);
+   border-color: transparent;
+}
+.share-btn.is-failed {
+   color: #ff7b72;
+   border-color: rgba(255, 123, 114, 0.5);
+}
+@media (max-width: 760px) {
+   .modal-share {
+     margin: 0.75rem 1rem 0;
+   }
+   .share-label {
+     width: 100%;
+     margin-bottom: 0.1rem;
+   }
+   .share-btn .share-name {
+     display: none;
+   }
+   .share-btn {
+     padding: 0.45rem 0.6rem;
+   }
+   .share-btn[data-share] .share-name {
+     display: inline;
+   }
+}
+
 
 .modal-body .mermaid {
   background: rgba(0, 0, 0, 0.35);

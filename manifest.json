@@ -1,8 +1,8 @@
 {
     "version": 1,
-    "generatedAt": "2026-11-02T01:57:52.455Z",
+    "generatedAt": "2026-11-02T02:07:09.245Z",
     "counts": {
-        "lab": 27,
+        "lab": 24,
         "essay": 6,
         "labs": 8
     },
@@ -281,28 +281,6 @@
             "icon": "TB"
         },
         {
-            "id": "theme-cad",
-            "title": "Theme CAD",
-            "pitch": "A theme designer for PointCAD, allowing you to create and customize themes for your CAD projects.",
-            "category": "lab",
-            "href": "index.html",
-            "readme": "README.md",
-            "video": "/videos/demo_themecad.mp4",
-            "order": 6,
-            "repo": {
-                "url": "https://github.com/Simiacryptus/point-cad.git",
-                "branch": "main",
-                "commit": "db3a4d4f312e48d895a2dbcebe862ee5973a0411",
-                "path": "experiments/point-cad",
-                "submodule": true,
-                "subpath": "theme-designer"
-            },
-            "dir": "experiments/point-cad/theme-designer",
-            "source": "experiments/point-cad/theme-designer/entry.json",
-            "section": "featured",
-            "icon": "TC"
-        },
-        {
             "id": "pastaponics",
             "title": "Pastaponics",
             "pitch": "A modular, 3D‑printed hydroponic medium enabling plant‑driven nutrient self‑regulation through spatially differentiated nutrient channels.",
@@ -495,26 +473,6 @@
             "launchLabel": "Open the Relativistic 2-Body Gravity lab"
         },
         {
-            "id": "rotor",
-            "title": "Rotor",
-            "pitch": "A single-file notebook where notes live in a multi-dimensional space, and you rotate which two dimensions you look at.",
-            "category": "lab",
-            "href": "https://rotor.cognotik.com/index.html",
-            "readme": "README.md",
-            "order": 12,
-            "repo": {
-                "url": "https://github.com/Simiacryptus/rotor.git",
-                "branch": "main",
-                "commit": "712f9f4bdca62fbc99b05530a0ba29aab51bb9ee",
-                "path": "experiments/rotor",
-                "submodule": true
-            },
-            "dir": "experiments/rotor",
-            "source": "experiments/rotor/entry.json",
-            "icon": "RO",
-            "section": "lab"
-        },
-        {
             "id": "markov-analysis",
             "title": "Bidirectional Markov Text Analyzer",
             "pitch": "Build a language model from your own corpus, then watch another text light up token-by-token by how <em>surprising</em> it is. Forward and backward order-n Markov models are merged into a single surprise heatmap, with click-to-replace predictions, add-k smoothing, backoff, and live perplexity.",
@@ -618,27 +576,6 @@
             "icon": "🔒"
         },
         {
-            "id": "point-cad",
-            "title": "Point CAD",
-            "pitch": "A point-based CAD system for designing complex geometries.",
-            "category": "lab",
-            "href": "index.html",
-            "readme": "README.md",
-            "order": 17,
-            "repo": {
-                "url": "https://github.com/Simiacryptus/point-cad.git",
-                "branch": "main",
-                "commit": "db3a4d4f312e48d895a2dbcebe862ee5973a0411",
-                "path": "experiments/point-cad",
-                "submodule": true,
-                "subpath": "theme-designer/demo"
-            },
-            "dir": "experiments/point-cad/theme-designer/demo",
-            "source": "experiments/point-cad/theme-designer/demo/entry.json",
-            "section": "featured",
-            "icon": "PC"
-        },
-        {
             "id": "optimization-mechanics",
             "title": "Optimization Mechanics Visualizer",
             "pitch": "Drop GD, Adam, L-BFGS, and QQN onto the same rugged 2D loss landscape and watch, step by step, how each finds its way downhill. Configurable terrain (slopes, bowls, high-frequency noise, confounding lattices), a fading path with live gradient arrows, and projected statistics bars that expose the running gradient and squared-gradient accumulations adaptive optimizers quietly maintain. Step through QQN's oracle point, quadratic path, and line-search probes to see the mechanics papers describe in equations.",
@@ -731,8 +668,11 @@
             "readme": "README.md",
             "order": 9007199254740991,
             "repo": {
-                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
-                "subpath": "experiments/cutt"
+                "url": "https://github.com/Simiacryptus/cutt.git",
+                "branch": "main",
+                "commit": "f70a3f9bc9f1863e1c3d2d7796d2847282af5462",
+                "path": "experiments/cutt",
+                "submodule": true
             },
             "dir": "experiments/cutt",
             "source": "experiments/cutt/entry.json",
