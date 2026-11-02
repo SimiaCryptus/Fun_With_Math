@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Coupled Uncertain Theory Trees — demonstrator</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+  { "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  } }
+  </script>
+</head>
+<body>
+<div id="app">
+  <aside id="left">
+    <h2>Scenario</h2>
+    <label>Scenario <select id="scenario"></select></label>
+    <div id="scnParams"></div>
+    <h2>Algorithm</h2>
+    <label>Preset <select id="preset"><option>strict</option><option selected>balanced</option><option>exploratory</option></select></label>
+    <details><summary>Advanced (overrides)</summary><div id="advParams"></div></details>
+    <h2>Safeguards (ablations)</h2>
+    <div id="safeParams"></div>
+    <h2>Stages</h2>
+    <div>
+      <button data-stage="compile">Compile</button>
+      <button data-stage="supportStep">Support step</button>
+      <button data-stage="support">Support run</button>
+      <button data-stage="solve">Solve run</button>
+      <button data-stage="challenge">Challenge</button>
+      <button data-stage="bounds">Bounds</button>
+      <button data-stage="all">Run all</button>
+    </div>
+    <label>Support sweep <input id="snapRange" type="range" min="-1" max="0" value="-1"><span id="snapV"></span></label>
+    <label>Solve iteration <input id="iterRange" type="range" min="-1" max="0" value="-1"><span id="iterV"></span></label>
+    <label>Theory <input id="theoryRange" type="range" min="0" max="0" value="0"><span id="theoryV"></span></label>
+    <h2>View</h2>
+    <div id="views"></div>
+    <label>Reveal truth (evaluation only) <input id="truth" type="checkbox"></label>
+    <label>Tile colour <select id="colorBy"><option value="anchors">anchor counts (hard)</option><option value="phi">φ (soft)</option></select></label>
+    <label>Envelope <select id="envMode"><option value="local">local convex</option><option value="ensemble">ensemble</option></select></label>
+    <label>Stack theories <input id="stack" type="checkbox"></label>
+    <h2>Run</h2>
+    <button id="sweepBtn">Width sweep</button>
+    <button id="exportBtn">Export run</button>
+  </aside>
+  <main id="center">
+    <div id="viewport"></div>
+    <div id="banner"></div>
+    <div id="warn">BROKEN ABLATION ACTIVE</div>
+    <div id="busy">working…</div>
+    <div id="statusbar"></div>
+  </main>
+  <aside id="right">
+    <h2>Narrative</h2><div id="narrative"></div>
+    <h2>Acceptance checks</h2><div id="checks"></div>
+    <h2>Metrics</h2><div id="metrics"></div>
+    <h2>Inspector</h2><div id="inspector"></div>
+    <h2>Prediction per theory</h2><div class="minimaps" id="minimaps"></div>
+    <h2>Diversity–fit</h2><canvas class="chart" id="chartDiv" width="340" height="150"></canvas>
+    <h2>Metric vs iteration</h2><canvas class="chart" id="chartIter" width="340" height="150"></canvas>
+    <h2>Reliability (M6)</h2><canvas class="chart" id="chartRel" width="340" height="150"></canvas>
+    <h2>Width sweep</h2><canvas class="chart" id="chartSweep" width="340" height="150"></canvas>
+  </aside>
+</div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-17T18:13:16.916Z",
+    "generatedAt": "2026-10-20T00:18:51.081Z",
     "counts": {
         "lab": 27,
         "essay": 6,
@@ -292,7 +292,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "bc334abdeb361432b054d2264c605a89b6dfe322",
+                "commit": "7029c679c591a7180c446eba506c6c70a2a1ff06",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "theme-designer"
@@ -628,7 +628,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "bc334abdeb361432b054d2264c605a89b6dfe322",
+                "commit": "7029c679c591a7180c446eba506c6c70a2a1ff06",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "demo"
@@ -935,7 +935,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/password-entropy.git",
                 "branch": "main",
-                "commit": "c48b20f58259a24dbd192be497107b19b33dff13",
+                "commit": "a8695e9f174279bcdc62a42c2a5ef66a267327c3",
                 "path": "experiments/password-entropy",
                 "submodule": true
             },

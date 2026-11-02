@@ -1,0 +1,41 @@
+* { box-sizing: border-box; }
+body { margin: 0; font: 12px/1.35 system-ui, sans-serif; color: #222; background: #fafafa; }
+#app { display: grid; grid-template-columns: 270px 1fr 360px; height: 100vh; }
+aside { overflow-y: auto; padding: 8px 10px; border-right: 1px solid #ddd; background: #fff; }
+#right { border-left: 1px solid #ddd; border-right: none; }
+h2 { font-size: 13px; margin: 12px 0 4px; border-bottom: 1px solid #eee; }
+label { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin: 3px 0; }
+label input[type=range] { width: 110px; }
+label input[type=number] { width: 70px; }
+button { margin: 2px 2px 2px 0; padding: 3px 7px; font-size: 12px; cursor: pointer; }
+button.active { background: #0072B2; color: #fff; }
+#center { position: relative; }
+#viewport { position: absolute; inset: 0; }
+#statusbar { position: absolute; left: 8px; bottom: 8px; right: 8px; background: rgba(255,255,255,.88);
+  padding: 4px 8px; border-radius: 4px; font-size: 11px; pointer-events: none; }
+#banner { position: absolute; top: 8px; left: 8px; right: 8px; padding: 6px; display: none;
+  background: #c62828; color: #fff; border-radius: 4px; }
+#warn { position: absolute; top: 8px; right: 8px; padding: 4px 8px; display: none;
+  background: repeating-linear-gradient(45deg,#ffd54f,#ffd54f 8px,#222 8px,#222 16px); color: #fff;
+  font-weight: bold; text-shadow: 0 0 3px #000; border-radius: 4px; }
+#busy { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); background: #222; color: #fff;
+  padding: 4px 10px; border-radius: 4px; display: none; }
+table { border-collapse: collapse; width: 100%; }
+td, th { padding: 2px 4px; border-bottom: 1px solid #eee; text-align: right; }
+td:first-child, th:first-child { text-align: left; }
+tr.fail td { color: #c62828; font-weight: bold; }
+.muted { color: #888; }
+.badge { display: inline-block; padding: 1px 5px; margin: 1px; border-radius: 3px; font-size: 11px; }
+.pass { background: #e0f2e9; color: #1b5e20; }
+.failb { background: #fde0dc; color: #b71c1c; }
+.caption { font-size: 11px; color: #a33; font-style: italic; }
+.ptree div { white-space: nowrap; font-family: ui-monospace, monospace; font-size: 11px; }
+.bar { display: inline-block; height: 8px; background: #0072B2; vertical-align: middle; }
+.bar.prior { background: #bbb; }
+.prov { cursor: pointer; text-decoration: underline dotted; }
+canvas.chart { width: 100%; height: 150px; border: 1px solid #eee; background: #fff; }
+.minimaps canvas { width: 80px; height: 80px; margin: 2px; border: 1px solid #ccc; }
+details { margin: 4px 0; }
+.ci { position: relative; height: 12px; background: #f0f0f0; margin: 2px 0; }
+.ci .hard { position: absolute; top: 0; height: 12px; background: #9ecae1; }
+.ci .soft { position: absolute; top: 3px; height: 6px; background: #08519c; }

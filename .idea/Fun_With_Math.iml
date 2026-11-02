@@ -5,6 +5,8 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/optimization/QQN/qqn-jax/.venv" />
       <excludeFolder url="file://$MODULE_DIR$/terraform/.terraform" />
+      <excludeFolder url="file://$MODULE_DIR$/experiments/rotor/terraform/.terraform" />
+      <excludeFolder url="file://$MODULE_DIR$/experiments/point-cad/terraform/.terraform" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

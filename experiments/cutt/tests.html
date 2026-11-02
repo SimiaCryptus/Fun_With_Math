@@ -1,0 +1,17 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>CUTT tests</title></head>
+<body style="font:13px monospace">
+<h3>Browser test runner</h3><pre id="out"></pre>
+<script type="module">
+  import { registry } from './tests/harness.js';
+  await import('./tests/core.test.js');
+  await import('./tests/invariants.test.js');
+  const out = document.getElementById('out');
+  let pass = 0, fail = 0;
+  for (const t of registry) {
+    try { await t.fn(); pass++; out.textContent += `ok   ${t.name}\n`; }
+    catch (e) { fail++; out.textContent += `FAIL ${t.name}: ${e.message}\n`; }
+  }
+  out.textContent += `\n${pass} passed, ${fail} failed`;
+</script>
+</body></html>
