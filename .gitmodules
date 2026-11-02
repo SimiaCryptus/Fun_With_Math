@@ -156,3 +156,7 @@
 	path = experiments/password-entropy
 	url = https://github.com/Simiacryptus/password-entropy.git
 	branch = main
+[submodule "experiments/cutt"]
+	path = experiments/cutt
+	url = https://github.com/Simiacryptus/cutt.git
+	branch = main
