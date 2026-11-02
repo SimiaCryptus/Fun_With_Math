@@ -8,9 +8,53 @@ import { renderInspector } from './ui/inspector.js';
 import { plotXY, drawMinimap } from './ui/charts.js';
 import { leafOfPoint } from './core/tree.js';
 import { STATUS } from './core/status.js';
+import { CLASS_COLORS, STATUS_COLORS } from './viz/palette.js';
 
 const $ = id => document.getElementById(id);
 const VIEWS = ['data', 'partition', 'contraction', 'mass', 'theory', 'envelope', 'status'];
+// One-line explanations of each view, shown in the viewport caption and as tab tooltips.
+const VIEW_HELP = {
+   data: 'Raw uncertain observations. Each box is where the point could be, coloured by allowed labels. Dashed boxes have partial labels (several allowed classes).',
+   partition: 'Master-tree leaves as floor tiles. Colour shows hard anchor counts or soft fitted φ (see the Tile colour selector). A cross marks a class that the leaf excludes.',
+   contraction: 'SUPPORT SOLVE (hard). Grey boxes are raw supports and coloured boxes are contracted ones. Orange slabs were removed by anchor evidence. Scrub sweeps on the left.',
+   mass: 'SOLVE (soft). Height is fitted mass density and outlines show the geometric prior. Click a box to see its fragments as columns relative to the prior lid.',
+   theory: 'CHALLENGE. Tiles are recoloured by the selected theory\'s φ. Compare the minimaps: same predictions with different mass placement is the latent Rashomon set.',
+   envelope: 'BOUNDS. Height is envelope width. For a selected box, solid columns show fitted mass, ghost columns the upper bound, and red rings the lower bound. Not certified.',
+   status: 'Epistemic status per observation. Dotted outlines failed the evidence test, so nothing in the data speaks to them. Click a box to see per-fragment status.',
+};
+// Tooltips for every tunable control.
+const HELP = {
+   seed: 'Random seed. Same seed and parameters give an identical run.',
+   N: 'Number of observations.',
+   width: 'Interval width as a fraction of each feature\'s range. The main sweep axis.',
+   asym: 'Make one coordinate much narrower than the others.',
+   anchorFloor: 'Fraction of observations given exact values so the hard layer has anchors (§8.1).',
+   partial: 'Probability of adding a distractor class to the allowed label set.',
+   noise: 'Probability of replacing the true label. Tests robustness of exclusion (M4).',
+   corr: 'Correlation between x and y. High values make x and y redundant explanations.',
+   offDiag: 'Fraction of points placed in the disagreeing quadrants so they have statistics.',
+   widen: 'Which feature receives the wide intervals.',
+   spanFrac: 'Fraction of observations whose box spans both modes.',
+   control: 'Make labels depend on x as well, so the modes become distinguishable.',
+   herd: 'Initialise all spanning boxes on the same mode (collective self-reinforcement test).',
+   dMax: 'Maximum depth of the learned tree.',
+   crit: 'S1: expected Gini. S3: ambiguity reduction per added fragment.',
+   fragBudget: 'Maximum total fragments, as a multiple of N.',
+   rebuild: 'Relearn the tree from contracted supports only (P6).',
+   beta: 'Temperature. 1 = Bayesian, higher = more conservative, ∞ = frozen at the prior.',
+   mMin: 'Minimum anchors before a leaf may exclude a class.',
+   alphaExcl: 'Family-wise error level for exclusion (divided by leaves × classes).',
+   tauExcl: 'A class is excluded when its upper confidence bound falls below this value.',
+   kProp: 'Maximum derivation depth of anchors allowed to vote (limits cascades).',
+   epsBar: 'Per-observation free-energy tolerance defining "near-optimal".',
+   eta: 'Damping of SOLVE updates.',
+   restarts: 'Number of perturbed SOLVE restarts.',
+   dirAlpha: 'Dirichlet pseudo-count in leaf class distributions.',
+   loo: 'Leave-one-out: an observation never uses its own contribution (P3).',
+   alternating: 'Update labels from locations and vice versa (within-point self-consumption).',
+   leak: 'Delete fragments with low fitted mass, so weights become support (violates P1).',
+};
+
 const SCHEMA = [
   { k: 'seed', l: 'Seed', t: 'number', step: 1 },
   { k: 'N', l: 'N', t: 'number', step: 50 },
@@ -59,6 +103,7 @@ function buildControls() {
     if (s.only && !s.only.includes(st.params.scenario)) continue;
     const lab = document.createElement('label');
     lab.textContent = s.l + ' ';
+     lab.title = HELP[s.k] || '';
     let inp;
     if (s.t === 'select') { inp = document.createElement('select'); inp.innerHTML = s.opts.map(o => `<option>${o}</option>`).join(''); inp.value = st.params[s.k]; }
     else {
@@ -82,6 +127,7 @@ function buildControls() {
   for (const [k, mn, mx, step] of ADV) {
     const lab = document.createElement('label');
     lab.textContent = k;
+     lab.title = HELP[k] || '';
     const inp = Object.assign(document.createElement('input'), { type: 'number', min: mn, max: mx, step, placeholder: 'preset', value: st.params.overrides[k] ?? '' });
     inp.onchange = () => { if (inp.value === '') delete st.params.overrides[k]; else st.params.overrides[k] = Number(inp.value); rebuild(); };
     lab.append(inp);
@@ -99,12 +145,13 @@ function buildControls() {
   for (const [k, l] of SAFE) {
     const lab = document.createElement('label');
     lab.textContent = l;
+     lab.title = HELP[k] || '';
     const inp = Object.assign(document.createElement('input'), { type: 'checkbox', checked: !!st.params[k] });
     inp.onchange = () => { st.params[k] = inp.checked; rebuild(); };
     lab.append(inp);
     safe.append(lab);
   }
-  $('views').innerHTML = VIEWS.map(v => `<button data-view="${v}" class="${v === st.view ? 'active' : ''}">${v}</button>`).join('');
+   $('views').innerHTML = VIEWS.map(v => `<button data-view="${v}" title="${VIEW_HELP[v]}" class="${v === st.view ? 'active' : ''}">${v}</button>`).join('');
 }
 
 $('preset').onchange = e => { st.params.preset = e.target.value; rebuild(); };
@@ -224,9 +271,27 @@ function metricsTable() {
   if (sf) h += row('status (obs)', STATUS.map((s, k) => sf[k] ? `${s[0]}${s[1]}:${(sf[k] * 100).toFixed(0)}%` : '').join(' '));
   return h + '</table>';
 }
+// Viewport caption and colour legend, so every view explains itself.
+const hex = c => '#' + c.toString(16).padStart(6, '0');
+function renderGuide() {
+   $('viewHelp').innerHTML = `<b>${st.view} view</b><br>${VIEW_HELP[st.view]}`;
+   const C = run ? run.prob.C : 2;
+   let h = '<div class="legend-row"><b>Classes</b>' +
+     CLASS_COLORS.slice(0, C).map((c, k) => `<span><span class="sw" style="background:${hex(c)}"></span>class ${k}</span>`).join('') +
+     '<span><span class="sw dash"></span>partial label</span></div>';
+   if (st.view === 'status') {
+     h += '<div class="legend-row"><b>Epistemic status</b>' +
+       STATUS.map((s, k) => `<span><span class="sw" style="background:${hex(STATUS_COLORS[k])}"></span>${s}</span>`).join('') + '</div>';
+   }
+   if (st.view === 'contraction') h += '<div class="legend-row"><b>Slabs</b><span><span class="sw" style="background:#D55E00"></span>removed by anchors</span></div>';
+   if (st.view === 'mass') h += '<div class="legend-row"><b>Height</b><span>blue → red = low → high density</span></div>';
+   $('legend').innerHTML = h;
+}
+
 
 function refresh() {
   renderScene(group, run, st);
+   renderGuide();
   if (!run) return;
   $('narrative').innerHTML = `<b>${run.scn.id} — ${run.scn.name}</b> <span class="muted">(${run.scn.maps})</span><br>${run.scn.narrative || ''}`;
   let checks = '';

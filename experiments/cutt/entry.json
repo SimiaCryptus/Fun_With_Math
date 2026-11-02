@@ -1,0 +1,8 @@
+{
+    "id": "cutt",
+    "title": "Coupled Uncertain Theory Trees",
+    "description": "A new approach to decision tree learning that incorporates uncertainty and coupling between features.",
+    "category": "labs",
+    "href": "index.html",
+    "readme": "README.md"
+}

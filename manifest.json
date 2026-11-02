@@ -1,10 +1,10 @@
 {
     "version": 1,
-    "generatedAt": "2026-10-20T00:18:51.081Z",
+    "generatedAt": "2026-11-02T01:57:52.455Z",
     "counts": {
         "lab": 27,
         "essay": 6,
-        "labs": 7
+        "labs": 8
     },
     "entries": [
         {
@@ -292,7 +292,7 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "7029c679c591a7180c446eba506c6c70a2a1ff06",
+                "commit": "db3a4d4f312e48d895a2dbcebe862ee5973a0411",
                 "path": "experiments/point-cad",
                 "submodule": true,
                 "subpath": "theme-designer"
@@ -499,7 +499,7 @@
             "title": "Rotor",
             "pitch": "A single-file notebook where notes live in a multi-dimensional space, and you rotate which two dimensions you look at.",
             "category": "lab",
-            "href": "dist/rotor.html",
+            "href": "https://rotor.cognotik.com/index.html",
             "readme": "README.md",
             "order": 12,
             "repo": {
@@ -628,13 +628,13 @@
             "repo": {
                 "url": "https://github.com/Simiacryptus/point-cad.git",
                 "branch": "main",
-                "commit": "7029c679c591a7180c446eba506c6c70a2a1ff06",
+                "commit": "db3a4d4f312e48d895a2dbcebe862ee5973a0411",
                 "path": "experiments/point-cad",
                 "submodule": true,
-                "subpath": "demo"
+                "subpath": "theme-designer/demo"
             },
-            "dir": "experiments/point-cad/demo",
-            "source": "experiments/point-cad/demo/entry.json",
+            "dir": "experiments/point-cad/theme-designer/demo",
+            "source": "experiments/point-cad/theme-designer/demo/entry.json",
             "section": "featured",
             "icon": "PC"
         },
@@ -721,6 +721,22 @@
             "section": "featured",
             "icon": "3L",
             "launchLabel": "Open the No-Three-in-Line Explorer lab"
+        },
+        {
+            "id": "cutt",
+            "title": "Coupled Uncertain Theory Trees",
+            "description": "A new approach to decision tree learning that incorporates uncertainty and coupling between features.",
+            "category": "labs",
+            "href": "index.html",
+            "readme": "README.md",
+            "order": 9007199254740991,
+            "repo": {
+                "url": "git@github.com:SimiaCryptus/Fun_With_Math.git",
+                "subpath": "experiments/cutt"
+            },
+            "dir": "experiments/cutt",
+            "source": "experiments/cutt/entry.json",
+            "section": "labs"
         },
         {
             "id": "dihedral-attractors",

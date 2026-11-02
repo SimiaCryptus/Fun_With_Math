@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Coupled Uncertain Theory Trees — demonstrator</title>
   <link rel="stylesheet" href="style.css">
   <script type="importmap">
@@ -13,56 +14,118 @@
 </head>
 <body>
 <div id="app">
+  <!-- ───────────────────────── LEFT: inputs and pipeline ───────────────────────── -->
   <aside id="left">
-    <h2>Scenario</h2>
-    <label>Scenario <select id="scenario"></select></label>
-    <div id="scnParams"></div>
-    <h2>Algorithm</h2>
-    <label>Preset <select id="preset"><option>strict</option><option selected>balanced</option><option>exploratory</option></select></label>
-    <details><summary>Advanced (overrides)</summary><div id="advParams"></div></details>
-    <h2>Safeguards (ablations)</h2>
-    <div id="safeParams"></div>
-    <h2>Stages</h2>
-    <div>
-      <button data-stage="compile">Compile</button>
-       <button data-stage="rebuild">Rebuild tree</button>
-      <button data-stage="supportStep">Support step</button>
-      <button data-stage="support">Support run</button>
-      <button data-stage="solve">Solve run</button>
-      <button data-stage="challenge">Challenge</button>
-      <button data-stage="bounds">Bounds</button>
-      <button data-stage="all">Run all</button>
-    </div>
-    <label>Support sweep <input id="snapRange" type="range" min="-1" max="0" value="-1"><span id="snapV"></span></label>
-    <label>Solve iteration <input id="iterRange" type="range" min="-1" max="0" value="-1"><span id="iterV"></span></label>
-    <label>Theory <input id="theoryRange" type="range" min="0" max="0" value="0"><span id="theoryV"></span></label>
-    <h2>View</h2>
-    <div id="views"></div>
-    <label>Reveal truth (evaluation only) <input id="truth" type="checkbox"></label>
-    <label>Tile colour <select id="colorBy"><option value="anchors">anchor counts (hard)</option><option value="phi">φ (soft)</option></select></label>
-    <label>Envelope <select id="envMode"><option value="local">local convex</option><option value="ensemble">ensemble</option></select></label>
-    <label>Stack theories <input id="stack" type="checkbox"></label>
-    <h2>Run</h2>
-    <button id="sweepBtn">Width sweep</button>
-    <button id="exportBtn">Export run</button>
+    <header class="brand">
+      <div class="logo">◩</div>
+      <div>
+        <h1>Coupled Uncertain Theory Trees</h1>
+        <div class="sub">interactive demonstrator · fixed-tree core (§5.1–5.7)</div>
+      </div>
+    </header>
+
+    <details class="about">
+      <summary>What am I looking at?</summary>
+      <p>Each observation is a <b>box</b> (where the point could be) with a <b>set</b> of allowed labels.
+        A master tree cuts each box into <b>fragments</b>. The algorithm then:</p>
+      <ol>
+        <li><b>Contracts</b> boxes using hard anchor evidence (floor, geometry).</li>
+        <li><b>Distributes</b> mass over the surviving fragments (height, soft).</li>
+        <li><b>Challenges</b> that answer with near-equally-good alternative theories.</li>
+        <li><b>Bounds</b> each fragment's mass, then classifies what is known and what is not.</li>
+      </ol>
+      <p class="muted">Firewall: things on the floor are hard knowledge. Things above it are preferences. Soft quantities never become hard ones.</p>
+    </details>
+
+    <section class="card">
+      <h2>Scenario</h2>
+      <p class="hint">A synthetic problem with known latent truth. Hover any control for an explanation.</p>
+      <label title="Each scenario maps to an experiment in idea.md §8.">Scenario <select id="scenario"></select></label>
+      <div id="scnParams"></div>
+    </section>
+
+    <section class="card">
+      <h2>Algorithm</h2>
+      <p class="hint">Hyperparameter bundle (§6). Overrides are shown in the status bar.</p>
+      <label title="strict: fewest false claims · balanced: default · exploratory: maps more of theory space">Preset
+        <select id="preset"><option>strict</option><option selected>balanced</option><option>exploratory</option></select></label>
+      <details><summary>Advanced overrides</summary><div id="advParams"></div></details>
+    </section>
+
+    <section class="card warnable">
+      <h2>Safeguards <span class="tag">ablations</span></h2>
+      <p class="hint">Turn these off to deliberately break the method (E6). <i>Run all</i> always ignores them.</p>
+      <div id="safeParams"></div>
+    </section>
+
+    <section class="card">
+      <h2>Pipeline</h2>
+      <p class="hint">Run stages in order, or press <b>Run all</b>.</p>
+      <div class="pipeline">
+        <button data-stage="compile" title="§5.1 Cut every box by the master tree into fragments with prior mass π.">① Compile</button>
+        <button data-stage="rebuild" title="§5.9 Learned scenarios only: learn → contract → relearn from contracted supports (P6).">② Rebuild tree</button>
+        <button data-stage="supportStep" title="§5.3 One synchronous sweep of anchor-based face erosion.">③ Support step</button>
+        <button data-stage="support" title="§5.3 Sweep until no face moves. Watch slabs being removed.">③ Support run</button>
+        <button data-stage="solve" title="§5.4 Leave-one-out EM: move mass toward fragments whose leaves fit the label.">④ Solve</button>
+        <button data-stage="challenge" title="§5.5 Search for maximally different theories that fit almost as well.">⑤ Challenge</button>
+        <button data-stage="bounds" title="§5.6–5.7 Fragment mass envelopes and epistemic status.">⑥ Bounds</button>
+        <button data-stage="all" class="primary" title="All stages with safeguards forced on.">▶ Run all</button>
+      </div>
+      <label title="Replay SUPPORT SOLVE sweep by sweep (contraction view).">Support sweep <input id="snapRange" type="range" min="-1" max="0" value="-1"><span id="snapV" class="val"></span></label>
+      <label title="Replay SOLVE iterations of θ₀ (mass view).">Solve iteration <input id="iterRange" type="range" min="-1" max="0" value="-1"><span id="iterV" class="val"></span></label>
+      <label title="Pick which accepted theory to display.">Theory <input id="theoryRange" type="range" min="0" max="0" value="0"><span id="theoryV" class="val"></span></label>
+    </section>
+
+    <section class="card">
+      <h2>View</h2>
+      <div id="views" class="tabs"></div>
+      <label title="Show latent points. Display only; never used by the algorithm.">Reveal truth <span class="muted">(evaluation only)</span> <input id="truth" type="checkbox"></label>
+      <label title="Partition view tile colour: hard anchor counts or soft fitted φ.">Tile colour <select id="colorBy"><option value="anchors">anchor counts (hard)</option><option value="phi">φ (soft)</option></select></label>
+      <label title="Ensemble: min/max over theories. Local: exponential-tilt bound per theory.">Envelope <select id="envMode"><option value="local">local convex</option><option value="ensemble">ensemble</option></select></label>
+      <label title="Theory view: draw all theories as stacked planes.">Stack theories <input id="stack" type="checkbox"></label>
+    </section>
+
+    <section class="card">
+      <h2>Run</h2>
+      <button id="sweepBtn" title="Run the full pipeline at 10 widths to show the identifiable → unknowable transition.">Width sweep</button>
+      <button id="exportBtn" title="Download everything listed in idea.md §6 as JSON.">Export run</button>
+    </section>
   </aside>
+
+  <!-- ───────────────────────── CENTER: 3D scene ───────────────────────── -->
   <main id="center">
     <div id="viewport"></div>
+    <div id="viewHelp" class="overlay"></div>
+    <div id="legend" class="overlay"></div>
     <div id="banner"></div>
-    <div id="warn">BROKEN ABLATION ACTIVE</div>
+    <div id="warn">⚠ BROKEN ABLATION ACTIVE</div>
     <div id="busy">working…</div>
     <div id="statusbar"></div>
   </main>
+
+  <!-- ───────────────────────── RIGHT: results ───────────────────────── -->
   <aside id="right">
-    <h2>Narrative</h2><div id="narrative"></div>
-    <h2>Acceptance checks</h2><div id="checks"></div>
-    <h2>Metrics</h2><div id="metrics"></div>
-    <h2>Inspector</h2><div id="inspector"></div>
-    <h2>Prediction per theory</h2><div class="minimaps" id="minimaps"></div>
-    <h2>Diversity–fit</h2><canvas class="chart" id="chartDiv" width="340" height="150"></canvas>
-    <h2>Metric vs iteration</h2><canvas class="chart" id="chartIter" width="340" height="150"></canvas>
-    <h2>Reliability (M6)</h2><canvas class="chart" id="chartRel" width="340" height="150"></canvas>
-    <h2>Width sweep</h2><canvas class="chart" id="chartSweep" width="340" height="150"></canvas>
+    <section class="card"><h2>Narrative</h2><div id="narrative"></div></section>
+    <section class="card"><h2>Acceptance checks</h2>
+      <p class="hint">Automatic pass/fail tests for this scenario's hypotheses.</p><div id="checks"></div></section>
+    <section class="card"><h2>Metrics</h2>
+      <p class="hint">B5 = geometric prior (floor to beat). B6-T = oracle within this partition (ceiling). Red rows are failure signals.</p>
+      <div id="metrics"></div></section>
+    <section class="card"><h2>Inspector</h2><div id="inspector"></div></section>
+    <section class="card"><h2>Prediction per theory</h2>
+      <p class="hint">Near-identical maps alongside different mass planes are the latent Rashomon signature.</p>
+      <div class="minimaps" id="minimaps"></div></section>
+    <section class="card"><h2>Diversity–fit</h2>
+      <p class="hint">How different can a theory become before it fits worse? Circles mark accepted theories.</p>
+      <canvas class="chart" id="chartDiv" width="340" height="150"></canvas></section>
+    <section class="card"><h2>Metric vs iteration</h2>
+      <p class="hint">Confidence rising while true-cell mass stays flat means manufactured confidence.</p>
+      <canvas class="chart" id="chartIter" width="340" height="150"></canvas></section>
+    <section class="card"><h2>Reliability (M6)</h2>
+      <p class="hint">Points on the diagonal mean fitted masses are calibrated.</p>
+      <canvas class="chart" id="chartRel" width="340" height="150"></canvas></section>
+    <section class="card"><h2>Width sweep</h2>
+      <canvas class="chart" id="chartSweep" width="340" height="150"></canvas></section>
   </aside>
 </div>
 <script type="module" src="src/main.js"></script>
