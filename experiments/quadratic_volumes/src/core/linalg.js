@@ -84,3 +84,16 @@ export function pca(points, idx, d = 3) {
   const { values, vectors } = symEig(cov);
   return { mean: m, values, vectors };
 }
+/** Inverse of a symmetric PSD matrix, with eigenvalue ridge. */
+export function inverseSym(A, ridge = 1e-9) {
+  const { values, vectors } = symEig(A);
+  const n = A.length;
+  const out = zeros(n);
+  for (let k = 0; k < n; k++) {
+    const lam = Math.max(values[k], ridge);
+    const v = vectors[k];
+    for (let i = 0; i < n; i++)
+      for (let j = 0; j < n; j++) out[i][j] += (v[i] * v[j]) / lam;
+  }
+  return out;
+}

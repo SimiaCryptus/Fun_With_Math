@@ -4,8 +4,13 @@
 
 import { tightBox } from './tightBox.js';
 import { axis } from './axis.js';
+import { affinePCA } from './affinePCA.js';
+import { quadEllipsoid } from './quadEllipsoid.js';
+import { quadImplicit } from './quadImplicit.js';
 
-export const GENERATORS = { tightBox, axis };
+export const GENERATORS = {
+  tightBox, axis, affinePCA, quadEllipsoid, quadImplicit,
+};
 
 export function resolveGenerators(names) {
   return names.map((n) => {

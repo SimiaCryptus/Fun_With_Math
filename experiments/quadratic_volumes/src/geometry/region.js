@@ -56,7 +56,7 @@ export function constraintHolds(con, x) {
   }
 }
 
-export function constraintText(con) {
+  export function constraintText(con) {
    if (!con) return '?';
    if (con.kind === 'contract') {
      return (con.constraints || []).map(constraintText).join('  ∧  ') || 'contract';
@@ -69,6 +69,16 @@ export function constraintText(con) {
     case 'slabIn': return `${con.t.toFixed(4)} <= ${f} < ${con.t2.toFixed(4)}`;
     case 'slabOut': return `NOT(${con.t.toFixed(4)} <= ${f} < ${con.t2.toFixed(4)})`;
     default: return f;
+  }
+}
+/** The complementary constraint, used to build the right child's region. */
+export function complementConstraint(con) {
+  switch (con.kind) {
+    case 'lt': return { ...con, kind: 'ge' };
+    case 'ge': return { ...con, kind: 'lt' };
+    case 'slabIn': return { ...con, kind: 'slabOut' };
+    case 'slabOut': return { ...con, kind: 'slabIn' };
+    default: throw new Error('cannot complement ' + con.kind);
   }
 }
 

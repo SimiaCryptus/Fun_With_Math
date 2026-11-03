@@ -5,7 +5,7 @@
 import { gainInterval, kt } from '../core/codelength.js';
 import { splitCost } from '../core/ledger.js';
 import { measure } from '../geometry/oracle.js';
-import { Region, constraintHolds } from '../geometry/region.js';
+import { Region, constraintHolds, complementConstraint } from '../geometry/region.js';
 import { unitBox } from '../geometry/box.js';
 import { resolveGenerators } from '../generators/index.js';
 import { sweepField } from './sweep.js';
@@ -17,7 +17,8 @@ const DEFAULTS = {
   nMin: 50,
   vEps: Math.pow(2, -30),
   protocol: 'fullSample',
-  families: ['tightBox', 'axis'],
+   families: ['tightBox', 'axis'],
+   slabs: true,
   measureOpts: { maxBoxes: 20000, minWidth: 1 / 1024 },
   treeOpts: { maxBoxes: 20000, minWidth: 1 / 1024 },
   refineBudget: 1500,
@@ -95,7 +96,8 @@ export function trainTree(points, opts = {}) {
         r = sweepField({
           cand: c, points, idx, region, d: o.d, vEps: o.vEps, numFamilies,
           protocol: o.protocol, treeOpts: o.treeOpts,
-          refineBudget: o.refineBudget, maxThresholds: o.maxThresholds,
+           refineBudget: o.refineBudget, maxThresholds: o.maxThresholds,
+           slabs: o.slabs,
         });
       }
       if (r && (!best || r.gain.lo > best.gain.lo)) best = r;
@@ -129,9 +131,7 @@ export function trainTree(points, opts = {}) {
 
     const parts = splitIdx(points, idx, best.constraint, o.d);
     const leftRegion = region.with(best.constraint);
-    const rightRegion = region.with({
-      ...best.constraint, kind: 'ge',
-    });
+     const rightRegion = region.with(complementConstraint(best.constraint));
     return makeNode({
       constraint: best.constraint,
       cost: best.cost,

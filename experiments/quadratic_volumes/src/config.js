@@ -7,7 +7,10 @@ export const DEFAULTS = {
   maxDepth: 6,
   epsK: 10,
   nMin: 50,
-  families: ['tightBox', 'axis'],
+   families: ['tightBox', 'axis', 'affinePCA', 'quadEllipsoid', 'quadImplicit'],
+   slabs: true,
+   showBoxes: true,
+   showSurfaces: true,
   protocol: 'fullSample',
   params: {},
 };

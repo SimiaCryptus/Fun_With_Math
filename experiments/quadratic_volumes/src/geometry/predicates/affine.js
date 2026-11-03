@@ -36,6 +36,14 @@ export class AffineField {
     if (Math.abs(this.c) > 1e-12) parts.push(this.c.toFixed(3));
     return parts.join(' + ') || '0';
   }
+  toJSON() {
+    return {
+      type: 'affine',
+      a: Array.from(this.a),
+      c: this.c,
+      meta: { family: this.family, paramCount: this.paramCount },
+    };
+  }
 }
 
 /** Coordinate field x_k, the axis-aligned (DET-like) family. */

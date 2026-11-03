@@ -26,6 +26,12 @@
       <label>N <input id="N" type="number" value="20000" step="1000" /></label>
       <label>max depth <input id="maxDepth" type="number" value="6" /></label>
       <label>eps = 2^-k, k <input id="epsK" type="number" value="10" /></label>
+       <h2>generators</h2>
+       <div id="families"></div>
+       <label class="inline"><input id="slabs" type="checkbox" checked /> two-sided slabs</label>
+       <h2>layers</h2>
+       <label class="inline"><input id="showBoxes" type="checkbox" checked /> leaf boxes</label>
+       <label class="inline"><input id="showSurfaces" type="checkbox" checked /> split surfaces</label>
       <div class="row">
         <button id="generate">Generate</button>
         <button id="train">Train</button>
@@ -35,6 +41,7 @@
     <main id="view"></main>
     <aside id="right">
       <h2>ledger</h2>
+       <canvas id="ledgerBar"></canvas>
       <pre id="ledger">—</pre>
       <h2>tree</h2>
       <pre id="tree">—</pre>
