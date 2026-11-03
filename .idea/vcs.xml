@@ -8,6 +8,7 @@
     <mapping directory="$PROJECT_DIR$/experiments/3inline" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/basic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/camera-tool" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/experiments/cutt" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/dihedral" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal-mosaic" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/fractal_learning" vcs="Git" />
@@ -18,8 +19,6 @@
     <mapping directory="$PROJECT_DIR$/experiments/opt_skeleton" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/password-entropy" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/pastaponics" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/point-cad" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/experiments/rotor" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/slingshot-field" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/experiments/text-block" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/numbers/NAM" vcs="Git" />

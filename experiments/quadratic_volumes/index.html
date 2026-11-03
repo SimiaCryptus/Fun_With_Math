@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Residual-Volume Coding Lab</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <aside id="left">
+      <h1>Residual-Volume Coding Lab</h1>
+      <label>dataset
+        <select id="dataset"></select>
+      </label>
+      <div id="params"></div>
+      <label>seed <input id="seed" type="number" value="1" /></label>
+      <label>N <input id="N" type="number" value="20000" step="1000" /></label>
+      <label>max depth <input id="maxDepth" type="number" value="6" /></label>
+      <label>eps = 2^-k, k <input id="epsK" type="number" value="10" /></label>
+      <div class="row">
+        <button id="generate">Generate</button>
+        <button id="train">Train</button>
+      </div>
+      <pre id="log"></pre>
+    </aside>
+    <main id="view"></main>
+    <aside id="right">
+      <h2>ledger</h2>
+      <pre id="ledger">—</pre>
+      <h2>tree</h2>
+      <pre id="tree">—</pre>
+      <p class="tiny"><a href="tests.html">test suite →</a></p>
+    </aside>
+  </div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
