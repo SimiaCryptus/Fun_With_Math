@@ -160,3 +160,7 @@
 	path = experiments/cutt
 	url = https://github.com/Simiacryptus/cutt.git
 	branch = main
+[submodule "experiments/quadratic_volumes"]
+	path = experiments/quadratic_volumes
+	url = https://github.com/Simiacryptus/quadratic-volumes.git
+	branch = main
