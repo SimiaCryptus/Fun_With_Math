@@ -2,6 +2,7 @@ import { createScene } from './viz/scene.js';
 import { createPointsLayer } from './viz/pointsLayer.js';
 import { createBoxLayer } from './viz/boxLayer.js';
 import { createSurfaceLayer } from './viz/surfaceLayer.js';
+import { createSampleLayer } from './viz/sampleLayer.js';
 import { createLedgerView } from './viz/ledgerView.js';
 import { createRaceView } from './viz/raceView.js';
 import { createProfileView } from './viz/profileView.js';
@@ -16,6 +17,7 @@ const { scene } = createScene(document.getElementById('view'));
 const pts = createPointsLayer(scene);
 const boxes = createBoxLayer(scene);
 const surfaces = createSurfaceLayer(scene);
+const samples = createSampleLayer(scene);
 
 const $ = (id) => document.getElementById(id);
 const log = (m) => { $('log').textContent = m + '\n' + $('log').textContent; };
@@ -26,6 +28,19 @@ const profileView = createProfileView($('profileCanvas'));
 const ALL_FAMILIES = [
   'tightBox', 'axis', 'affinePCA', 'quadEllipsoid', 'quadImplicit',
 ];
+const FAMILY_HELP = {
+   tightBox: 'Mandatory defensive baseline: contract the region to the tight ' +
+     'bounding box of its points. A curved split must beat this cheap ' +
+     'margin-trimming move before it is credited with finding structure.',
+   axis: 'Coordinate fields x, y, z. With the KT branch code this reproduces ' +
+     'a density-estimation-tree baseline.',
+   affinePCA: 'Principal directions of the node points. The smallest-variance ' +
+     'direction, as a slab, is the "plane law" candidate.',
+   quadEllipsoid: 'Mahalanobis distance from the node mean: sublevel sets are ' +
+     'ellipsoids, two-sided slabs are shells.',
+   quadImplicit: 'Algebraic quadric g(x) ≈ 0 fitted to the lifted scatter. ' +
+     'Slabs |g| < w are the implicit-relation (law) candidates.',
+};
 
 const sel = $('dataset');
 for (const id of Object.keys(DATASETS)) {
@@ -51,11 +66,15 @@ $('curve').checked = !!cfg.curve;
 $('slabs').checked = cfg.slabs !== false;
 $('showBoxes').checked = cfg.showBoxes !== false;
 $('showSurfaces').checked = cfg.showSurfaces !== false;
+$('showPoints').checked = cfg.showPoints !== false;
+$('showSamples').checked = cfg.showSamples !== false;
+$('sampleCount').value = cfg.sampleCount;
 
 const famHost = $('families');
 for (const f of ALL_FAMILIES) {
   const lab = document.createElement('label');
   lab.className = 'inline';
+   lab.title = FAMILY_HELP[f] || f;
   const cb = document.createElement('input');
   cb.type = 'checkbox';
   cb.dataset.fam = f;
@@ -67,11 +86,13 @@ for (const f of ALL_FAMILIES) {
 
 function renderParams() {
   const ds = getDataset(sel.value);
+   $('datasetDesc').textContent = ds.description || '';
   const host = $('params');
   host.innerHTML = '';
   for (const [k, p] of Object.entries(ds.params)) {
     const lab = document.createElement('label');
     lab.textContent = k;
+     lab.title = `${k}: ${p.min !== undefined ? `range ${p.min}…${p.max}, ` : ''}default ${p.value}`;
     const inp = document.createElement('input');
     inp.value = cfg.params[k] ?? p.value;
     inp.dataset.key = k;
@@ -95,6 +116,9 @@ function collect() {
   cfg.slabs = $('slabs').checked;
   cfg.showBoxes = $('showBoxes').checked;
   cfg.showSurfaces = $('showSurfaces').checked;
+   cfg.showPoints = $('showPoints').checked;
+   cfg.showSamples = $('showSamples').checked;
+   cfg.sampleCount = +$('sampleCount').value;
   cfg.families = [...famHost.querySelectorAll('input')]
     .filter((c) => c.checked).map((c) => c.dataset.fam);
   cfg.params = {};
@@ -157,10 +181,13 @@ worker.onmessage = (e) => {
   if (m.type !== MSG.DONE) return;
 
   pts.set(m.points, m.leafIds);
+   pts.setVisible && pts.setVisible(cfg.showPoints);
   boxes.set(m.boxes, m.boxLeafIds);
   boxes.setVisible(cfg.showBoxes);
   surfaces.set(m.splits);
   surfaces.setVisible(cfg.showSurfaces);
+   samples.set(m.sampled);
+   samples.setVisible(cfg.showSamples);
 
   const ev = m.evaluation;
   let txt =
@@ -217,5 +244,19 @@ $('showSurfaces').addEventListener('change', () => {
   cfg.showSurfaces = $('showSurfaces').checked;
   surfaces.setVisible(cfg.showSurfaces);
 });
+$('showPoints').addEventListener('change', () => {
+   cfg.showPoints = $('showPoints').checked;
+   pts.setVisible(cfg.showPoints);
+});
+$('showSamples').addEventListener('change', () => {
+   cfg.showSamples = $('showSamples').checked;
+   samples.setVisible(cfg.showSamples);
+});
+// collapsible floating panels
+for (const p of document.querySelectorAll('.panel')) {
+   p.querySelector('header').addEventListener('click', () =>
+     p.classList.toggle('collapsed'));
+}
+
 renderParams();
 generate();

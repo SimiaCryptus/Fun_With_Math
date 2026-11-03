@@ -1,5 +1,5 @@
 {
-  "lastUpdated" : "2026-11-02T01:56:36.529434231Z",
+  "lastUpdated" : "2026-11-03T12:04:51.327403516Z",
   "tasks" : {
     "quadratics/pentagon/docs/analysis.theory_graph.json" : {
       "target" : "quadratics/pentagon/docs/analysis.theory_graph.json",
@@ -490,6 +490,13 @@
       "sessionId" : "U-20261101-SEUg22oi",
       "startedAt" : "2026-11-02T01:55:48.798315706Z",
       "completedAt" : "2026-11-02T01:56:36.529434231Z"
+    },
+    "experiments/quadratic_volumes/README_REWRITE.md" : {
+      "target" : "experiments/quadratic_volumes/README_REWRITE.md",
+      "status" : "COMPLETED",
+      "sessionId" : "U-20261103-nqnj6XoY",
+      "startedAt" : "2026-11-03T12:03:30.313551486Z",
+      "completedAt" : "2026-11-03T12:04:51.327403516Z"
     }
   }
 }

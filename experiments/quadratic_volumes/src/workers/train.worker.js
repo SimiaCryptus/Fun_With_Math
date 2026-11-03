@@ -9,6 +9,7 @@ import { trainTree } from '../tree/train.js';
 import { evaluate, descend } from '../tree/evaluate.js';
 import { profile, estimatedCodim } from '../tree/profile.js';
 import { recover } from '../tree/recovery.js';
+import { sampleFromTree } from '../tree/sample.js';
 import { mdlHistogram } from '../baselines/mdlHistogram.js';
 import { kdeBaseline } from '../baselines/kde.js';
 import {
@@ -126,11 +127,16 @@ self.onmessage = (e) => {
     const { boxes, boxLeafIds } = collectLeafBoxes(tree);
     const points = Float32Array.from(xs);
     const counts = countNodes(tree);
+     const sampled = sampleFromTree(
+       tree,
+       Math.max(0, Math.round(cfg.sampleCount ?? 8000)),
+       makeRng(cfg.seed + 7717)
+     );
 
     postMessage(
       {
         type: MSG.DONE,
-        points, leafIds, boxes, boxLeafIds,
+         points, leafIds, boxes, boxLeafIds, sampled,
         splits: collectSplits(tree),
         text: treeText(tree),
         stats: { ...stats, ...counts, ms, nTrain: trainIdx.length, nTest: testIdx.length },
@@ -144,7 +150,8 @@ self.onmessage = (e) => {
         recovery: recover(tree, ds.truth),
         baseline: 3 * cfg.epsK,
       },
-      [points.buffer, leafIds.buffer, boxes.buffer, boxLeafIds.buffer]
+       [points.buffer, leafIds.buffer, boxes.buffer, boxLeafIds.buffer,
+        sampled.buffer]
     );
   } catch (err) {
     postMessage({ type: MSG.ERROR, text: String(err && err.stack || err) });

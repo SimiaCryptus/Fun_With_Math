@@ -26,6 +26,7 @@ export function createPointsLayer(scene) {
       );
       scene.add(obj);
     },
+     setVisible(v) { if (obj) obj.visible = v; },
     clear() { if (obj) scene.remove(obj); obj = null; },
   };
 }
