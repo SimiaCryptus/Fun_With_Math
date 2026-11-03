@@ -7,10 +7,19 @@ export function makeLeaf({ region, idx, measure, depth }) {
   return { type: 'leaf', region, idx, n: idx.length, measure, depth };
 }
 
-export function makeNode({ constraint, cost, gain, left, right, depth, family, label }) {
+export function makeNode({
+  constraint, cost, gain, left, right, depth, family, label, VL, VR,
+}) {
   return {
     type: 'node', constraint, cost, gain, left, right, depth, family, label,
+    VL: VL || null, VR: VR || null,
   };
+}
+export function* walkNodes(node) {
+  if (node.type === 'leaf') return;
+  yield node;
+  yield* walkNodes(node.left);
+  yield* walkNodes(node.right);
 }
 
 export function* walkLeaves(node) {

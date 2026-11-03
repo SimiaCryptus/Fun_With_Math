@@ -12,6 +12,12 @@ export const DEFAULTS = {
    showBoxes: true,
    showSurfaces: true,
   protocol: 'fullSample',
+  raceBudget: 8000,
+  raceStep: 750,
+  complexityMultiplier: 1,
+  baselines: true,
+  curve: false,
+  preset: '',
   params: {},
 };
 

@@ -6,11 +6,15 @@ import { bisect, boxMaxWidth, boxVolume } from './box.js';
 import { IN, UNKNOWN, OUT } from './region.js';
 import { classify } from './oracle.js';
 
-const DEFAULTS = { maxBoxes: 20000, minWidth: 1 / 1024 };
+const DEFAULTS = { maxBoxes: 20000, minWidth: 1 / 1024, initialBoxes: null };
 
 export class FieldBoxTree {
   constructor(region, field, opts = {}) {
     this.o = { ...DEFAULTS, ...opts };
+    this.cap = Math.min(
+      this.o.maxBoxes,
+      this.o.initialBoxes == null ? this.o.maxBoxes : this.o.initialBoxes
+    );
     this.region = region;
     this.field = field;
     this.leaves = []; // { box, status, active, vol, fmin, fmax, dead }
@@ -37,7 +41,7 @@ export class FieldBoxTree {
       return;
     }
     heap.push(boxVolume(this.region.box), { box: this.region.box, active: seed.active });
-    while (heap.size && this.created < this.o.maxBoxes) {
+    while (heap.size && this.created < this.cap) {
       const n = heap.pop();
       if (boxMaxWidth(n.box) <= this.o.minWidth) {
         this.leaves.push(this._leaf(n.box, UNKNOWN, n.active));
@@ -74,6 +78,7 @@ export class FieldBoxTree {
    * contested threshold. Largest volume first (measure × sensitivity proxy).
    */
   refine(thresholds, budget = 2000) {
+    this.cap = Math.min(this.o.maxBoxes, this.cap + 2 * budget);
     const ts = Array.from(thresholds).sort((a, b) => a - b);
     const straddles = (L) => {
       if (L.status === UNKNOWN) return true;
@@ -88,7 +93,7 @@ export class FieldBoxTree {
     });
     let used = 0;
     const cons = this.region.constraints;
-    while (heap.size && used < budget && this.created < this.o.maxBoxes) {
+    while (heap.size && used < budget && this.created < this.cap) {
       const i = heap.pop();
       const L = this.leaves[i];
       if (L.dead) continue;

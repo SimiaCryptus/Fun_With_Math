@@ -3,7 +3,10 @@ import { createPointsLayer } from './viz/pointsLayer.js';
 import { createBoxLayer } from './viz/boxLayer.js';
 import { createSurfaceLayer } from './viz/surfaceLayer.js';
 import { createLedgerView } from './viz/ledgerView.js';
+import { createRaceView } from './viz/raceView.js';
+import { createProfileView } from './viz/profileView.js';
 import { DATASETS, getDataset } from '../datasets/index.js';
+import { PRESETS } from '../datasets/presets.js';
 import { makeRng } from './core/rng.js';
 import { readHash, writeHash, DEFAULTS } from './config.js';
 import { MSG } from './workers/protocol.js';
@@ -17,6 +20,8 @@ const surfaces = createSurfaceLayer(scene);
 const $ = (id) => document.getElementById(id);
 const log = (m) => { $('log').textContent = m + '\n' + $('log').textContent; };
 const ledger = createLedgerView($('ledgerBar'));
+const raceView = createRaceView($('raceCanvas'));
+const profileView = createProfileView($('profileCanvas'));
 
 const ALL_FAMILIES = [
   'tightBox', 'axis', 'affinePCA', 'quadEllipsoid', 'quadImplicit',
@@ -28,16 +33,25 @@ for (const id of Object.keys(DATASETS)) {
   o.value = id; o.textContent = DATASETS[id].name;
   sel.appendChild(o);
 }
+const presetSel = $('preset');
+presetSel.appendChild(new Option('—', ''));
+for (const k of Object.keys(PRESETS)) presetSel.appendChild(new Option(k, k));
+
 sel.value = cfg.dataset;
 $('seed').value = cfg.seed;
 $('N').value = cfg.N;
 $('maxDepth').value = cfg.maxDepth;
 $('epsK').value = cfg.epsK;
+$('protocol').value = cfg.protocol;
+$('raceBudget').value = cfg.raceBudget;
+$('raceStep').value = cfg.raceStep;
+$('complexityMultiplier').value = cfg.complexityMultiplier;
+$('baselines').checked = cfg.baselines !== false;
+$('curve').checked = !!cfg.curve;
 $('slabs').checked = cfg.slabs !== false;
 $('showBoxes').checked = cfg.showBoxes !== false;
 $('showSurfaces').checked = cfg.showSurfaces !== false;
 
-// family checkboxes
 const famHost = $('families');
 for (const f of ALL_FAMILIES) {
   const lab = document.createElement('label');
@@ -72,6 +86,12 @@ function collect() {
   cfg.N = +$('N').value;
   cfg.maxDepth = +$('maxDepth').value;
   cfg.epsK = +$('epsK').value;
+  cfg.protocol = $('protocol').value;
+  cfg.raceBudget = +$('raceBudget').value;
+  cfg.raceStep = +$('raceStep').value;
+  cfg.complexityMultiplier = +$('complexityMultiplier').value;
+  cfg.baselines = $('baselines').checked;
+  cfg.curve = $('curve').checked;
   cfg.slabs = $('slabs').checked;
   cfg.showBoxes = $('showBoxes').checked;
   cfg.showSurfaces = $('showSurfaces').checked;
@@ -83,6 +103,20 @@ function collect() {
     cfg.params[inp.dataset.key] = isNaN(+v) || v === '' ? v : +v;
   }
   writeHash(cfg);
+}
+
+function applyPreset(name) {
+  const p = PRESETS[name];
+  if (!p) return;
+  cfg.dataset = p.dataset;
+  cfg.N = p.N;
+  cfg.seed = p.seed;
+  cfg.params = { ...p.params };
+  sel.value = cfg.dataset;
+  $('N').value = cfg.N;
+  $('seed').value = cfg.seed;
+  renderParams();
+  generate();
 }
 
 let xs = null;
@@ -100,9 +134,25 @@ const worker = new Worker(
   new URL('./workers/train.worker.js', import.meta.url), { type: 'module' }
 );
 
+function fmtRecovery(r) {
+  if (!r) return 'no declared truth for this dataset';
+  if (!r.matched) return `truth type "${r.type}": no matching constraint accepted`;
+  const b = r.best;
+  if (r.type === 'plane') {
+    return `plane recovered (${b.family}, depth ${b.depth})\n` +
+           `  angle error : ${b.angleDeg.toFixed(2)}°\n` +
+           `  slab width  : ${b.width == null ? 'n/a (one-sided)' : b.width.toFixed(4)}`;
+  }
+  return `sphere recovered (${b.family}, depth ${b.depth})\n` +
+         `  centre error : ${b.centerError.toFixed(4)}\n` +
+         `  radius       : ${b.radius.toFixed(4)} (truth ${r.truth.radius}, ` +
+         `err ${b.radiusError.toFixed(4)})`;
+}
+
 worker.onmessage = (e) => {
   const m = e.data;
   if (m.type === MSG.PROGRESS) { log(m.text); return; }
+  if (m.type === MSG.RACE) { raceView.draw(m.bars, m.note); return; }
   if (m.type === MSG.ERROR) { log('ERROR ' + m.text); return; }
   if (m.type !== MSG.DONE) return;
 
@@ -113,19 +163,39 @@ worker.onmessage = (e) => {
   surfaces.setVisible(cfg.showSurfaces);
 
   const ev = m.evaluation;
-  $('ledger').textContent =
+  let txt =
     `no model      : ${m.baseline.toFixed(2)} bits/pt\n` +
-    `train code    : ${ev.bitsPerPoint.toFixed(3)} bits/pt\n` +
+    `test  (mid V) : ${ev.bitsPerPoint.toFixed(3)} bits/pt\n` +
+    `test  (V+)    : ${m.evaluationUpper.bitsPerPoint.toFixed(3)} bits/pt\n` +
+    `train         : ${m.evaluationTrain.bitsPerPoint.toFixed(3)} bits/pt\n` +
     `model bits    : ${m.stats.modelBits.toFixed(1)} ` +
     `(${ev.modelBitsPerTrainPoint.toFixed(4)}/pt)\n` +
     `splits/leaves : ${m.stats.splits} / ${m.stats.leaves}\n` +
-    `IN boxes      : ${m.boxes.length / 6}\n` +
-    `time          : ${m.stats.ms.toFixed(0)} ms`;
+    `race boxes    : ${m.stats.raceBoxes} over ${m.stats.raceNodes} nodes\n` +
+    `codimension   : ${m.codim}\n` +
+    `time          : ${m.stats.ms.toFixed(0)} ms\n`;
+  if (m.baselines) {
+    txt += '\nbaselines (test bits/pt, +model/pt)\n';
+    for (const b of m.baselines) {
+      txt += `  ${b.name.padEnd(24)} ${b.bitsPerPoint.toFixed(3)}` +
+             ` +${b.modelBitsPerTrainPoint.toFixed(4)}\n`;
+    }
+  }
+  if (m.curve) {
+    txt += '\nbits vs model bits\n';
+    for (const c of m.curve) {
+      txt += `  λ=${String(c.lambda).padEnd(5)} model=${c.modelBits.toFixed(0)}` +
+             ` splits=${c.splits} test=${c.testBits.toFixed(3)}\n`;
+    }
+  }
+  $('ledger').textContent = txt;
   ledger.draw({
     baseline: m.baseline,
     total: ev.bitsPerPoint,
     modelPerPoint: ev.modelBitsPerTrainPoint,
   });
+  profileView.draw(m.profile);
+  $('recovery').textContent = fmtRecovery(m.recovery);
   $('tree').textContent = m.text;
   log(`trained: ${m.stats.splits} splits in ${m.stats.ms.toFixed(0)} ms`);
 };
@@ -137,6 +207,7 @@ function train() {
 }
 
 sel.addEventListener('change', renderParams);
+presetSel.addEventListener('change', () => applyPreset(presetSel.value));
 $('generate').addEventListener('click', generate);
 $('train').addEventListener('click', train);
 $('showBoxes').addEventListener('change', () => {

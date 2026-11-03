@@ -26,6 +26,18 @@
       <label>N <input id="N" type="number" value="20000" step="1000" /></label>
       <label>max depth <input id="maxDepth" type="number" value="6" /></label>
       <label>eps = 2^-k, k <input id="epsK" type="number" value="10" /></label>
+      <label>preset <select id="preset"></select></label>
+      <label>accounting
+        <select id="protocol">
+          <option value="fullSample">full-sample two-part</option>
+          <option value="conditional">two-stage conditional</option>
+        </select>
+      </label>
+      <label>race budget (boxes) <input id="raceBudget" type="number" value="8000" step="500" /></label>
+      <label>race step <input id="raceStep" type="number" value="750" step="50" /></label>
+      <label>complexity × <input id="complexityMultiplier" type="number" value="1" step="0.25" /></label>
+      <label class="inline"><input id="baselines" type="checkbox" checked /> baselines</label>
+      <label class="inline"><input id="curve" type="checkbox" /> bits-vs-model-bits curve</label>
        <h2>generators</h2>
        <div id="families"></div>
        <label class="inline"><input id="slabs" type="checkbox" checked /> two-sided slabs</label>
@@ -43,6 +55,11 @@
       <h2>ledger</h2>
        <canvas id="ledgerBar"></canvas>
       <pre id="ledger">—</pre>
+      <h2>race</h2>
+      <canvas id="raceCanvas"></canvas>
+      <h2>profile (codim &amp; scale)</h2>
+      <canvas id="profileCanvas"></canvas>
+      <pre id="recovery">—</pre>
       <h2>tree</h2>
       <pre id="tree">—</pre>
       <p class="tiny"><a href="tests.html">test suite →</a></p>

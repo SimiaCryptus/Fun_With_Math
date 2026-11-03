@@ -22,3 +22,5 @@ pre { white-space:pre-wrap; margin:4px 0; }
 label.inline { display:block; color:#9a9aa5; margin:2px 0; }
 label.inline input { width:auto; margin-right:4px; }
 #ledgerBar { width:100%; height:40px; display:block; }
+#raceCanvas { width:100%; display:block; background:#111115; }
+#profileCanvas { width:100%; height:140px; display:block; background:#111115; }
